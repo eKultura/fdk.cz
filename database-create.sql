@@ -1,1 +1,85 @@
-CREATE TABLE users (UserID INT PRIMARY KEY AUTO_INCREMENT , Username TEXT, PasswordHash TEXT, Email TEXT, Created TEXT);
+CREATE TABLE FDK_Categories (
+    CategoryID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT
+);
+
+CREATE TABLE FDK_Tasks (
+    TaskID INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(255) NOT NULL,
+    Description TEXT,
+    CategoryID INT,
+    PriorityID INT,
+    Status VARCHAR(50),
+    Created DATETIME,
+    DueDate DATE,
+    FOREIGN KEY (CategoryID) REFERENCES FDK_Categories(CategoryID) ON DELETE CASCADE,
+    FOREIGN KEY (PriorityID) REFERENCES FDK_Priorities(PriorityID) ON DELETE SET NULL
+);
+
+CREATE TABLE FDK_Priorities (
+    PriorityID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL,
+    Level INT
+);
+
+CREATE TABLE FDK_Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(100) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) NOT NULL,
+    Created DATETIME
+);
+
+CREATE TABLE FDK_TaskAssignments (
+    TaskID INT,
+    UserID INT,
+    AssignedDate DATE,
+    PRIMARY KEY (TaskID, UserID),
+    FOREIGN KEY (TaskID) REFERENCES FDK_Tasks(TaskID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES FDK_Users(UserID) ON DELETE CASCADE
+);
+
+CREATE TABLE FDK_Comments (
+    CommentID INT PRIMARY KEY AUTO_INCREMENT,
+    TaskID INT,
+    UserID INT,
+    Comment TEXT,
+    Posted DATETIME,
+    FOREIGN KEY (TaskID) REFERENCES FDK_Tasks(TaskID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES FDK_Users(UserID) ON DELETE SET NULL
+);
+
+CREATE TABLE FDK_Projects (
+    ProjectID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    URL VARCHAR(255),
+    Public BOOLEAN,
+    Created DATETIME
+);
+
+CREATE TABLE FDK_Tags (
+    TagID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE FDK_Attachments (
+    AttachmentID INT PRIMARY KEY AUTO_INCREMENT,
+    TaskID INT,
+    Filename VARCHAR(255) NOT NULL,
+    FilePath VARCHAR(255) NOT NULL,
+    UploadedBy INT,
+    UploadedDate DATETIME,
+    FOREIGN KEY (TaskID) REFERENCES FDK_Tasks(TaskID) ON DELETE CASCADE,
+    FOREIGN KEY (UploadedBy) REFERENCES FDK_Users(UserID) ON DELETE SET NULL
+);
+
+CREATE TABLE FDK_ActivityLog (
+    LogID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    Action VARCHAR(100) NOT NULL,
+    Description TEXT,
+    Timestamp DATETIME,
+    FOREIGN KEY (UserID) REFERENCES FDK_Users(UserID) ON DELETE SET NULL
+);
