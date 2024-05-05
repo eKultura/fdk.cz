@@ -1,0 +1,1 @@
+CREATE TABLE users (UserID INT PRIMARY KEY AUTO_INCREMENT , Username TEXT, PasswordHash TEXT, Email TEXT, Created TEXT);
