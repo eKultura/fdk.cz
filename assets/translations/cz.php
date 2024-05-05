@@ -4,5 +4,6 @@ return [
     'projects' => 'projekty',
     'task' => 'úkol',
     'tasks' => 'úkoly',
+    'title' => 'Správce úkolů',
 ];
 ?>
