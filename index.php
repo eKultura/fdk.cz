@@ -1,28 +1,26 @@
-<?php
+<?php 
 
-require_once "includes/db_connection.php";
-include "includes/settings.php";
+include "./includes/db_connection.php"; 
+include "./includes/settings.php"; 
 
-$translations = include "translations/$language.php";
+$translations = include "./assets/translations/$language.php";
+
+
 
 ?><!DOCTYPE html>
-<html>
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title><?php echo $translations['title'] ?></title>
+
+    <title><?php echo $translations['index_title'] ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/assets/style.css" rel="stylesheet">
-
+    <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-light py-4">
-        <div class="container text-center">
-            <h1 class="mb-0"><?php echo $translations['title'] ?></h1>
-        </div>
-    </header>
+
+<?php include "includes/header.php"; ?>
 
 
 <div class="container mt-5">
@@ -31,9 +29,11 @@ $translations = include "translations/$language.php";
         <div class="col-md-3 d-none d-md-block">
             <div class="sidebar-module">
                 <!--<h3>Testovací provoz</h3>-->
-                Projekt pro potřeby jednoho unikátního týmu, ale otevřeno pro testování všem.
+                <!-- Obsah sidebaru -->
+                <?php echo $translations['index_sidebar_text'] ?>
             </div>
         </div>
+        <!-- Obsah -->
         <div class="col-md-9 col-12">
             <!-- Hlavní obsah -->
             <div class="full-width-module">
@@ -41,10 +41,8 @@ $translations = include "translations/$language.php";
             možnosti spolupráce a efektivity. 
             Tento nástroj je něčím, o čem jste dosud jen snili, ale teď je to skutečností, 
             kterou můžete okamžitě využít zdarma.-->
-            Vítejte v revolučním nástroji pro správu úkolů! Náš task manager přináší rychlý a pružný způsob, 
-            jak koordinovat práci Vašeho týmu. To, co bylo dříve pouze snem, se nyní stává skutečností. 
-            A je navíc k dispozici zcela zdarma! 
-            Zapomeňte na hranice spolupráce a přesuňte svůj tým do nové éry produktivity.
+            <?php echo $translations['index_text'] ?>
+
             </div>
         </div>
     </div>
@@ -56,30 +54,34 @@ $translations = include "translations/$language.php";
     <!-- Main Content -->
     <div class="container mt-5">
         <div class="row">
+            <!-- Obsah (zabere celou šířku na mobilu a tabletu, tedy i v řádku) -->
             <div class="col-12">
                 <div class="task-board">
+                    <!-- To-Do Column -->
                     <div class="task-column">
-                        <h3>K provedení<!--To-Do--></h3>
+                        <h3><?php echo $translations['to_do'] ?><!--To-Do--></h3>
                         <div class="task-card">
                             <h4>Úkol 1</h4>
-                            <p>Vytvořit prezentaci pro klienta</p>
+                            <p>Přidat úkoly do správce úkolů </p>
                         </div>
-                        <div class="task-card">
+                        <!--<div class="task-card">
                             <h4>Úkol 2</h4>
                             <p>Aktualizovat obsah webové stránky</p>
+                        </div>-->
+                    </div>
+                    <!-- In Progress Column -->
+                    <div class="task-column">
+                        <h3><?php echo $translations['in_progress'] ?><!--In Progress--></h3>
+                        <div class="task-card">
+                            <h4>Úkol 2</h4>
+                            <p>Vytvořit nový projekt a přidat tým</p>
                         </div>
                     </div>
+                    <!-- Done Column -->
                     <div class="task-column">
-                        <h3>V procesu<!--In Progress--></h3>
+                        <h3><?php echo $translations['done'] ?><!--Done--></h3>
                         <div class="task-card">
-                            <h4>Úkol 3</h4>
-                            <p>Analyzovat výsledky marketingové kampaně</p>
-                        </div>
-                    </div>
-                    <div class="task-column">
-                        <h3>Hotovo<!--Done--></h3>
-                        <div class="task-card">
-                            <h4>Úkol  4</h4>
+                            <h4>Úkol  3</h4>
                             <p>Sehnat nástroj pro správu úkolů. Zdarma!</p>
                         </div>
                     </div>
@@ -90,7 +92,7 @@ $translations = include "translations/$language.php";
 
 
 
-
+    <!-- Full Width Module -->
     <div class="container mt-5">
         <div class="row">
             <div class="col">
@@ -108,7 +110,7 @@ $translations = include "translations/$language.php";
                             </tr>
                         </thead>
                         <tbody>
-
+                            <!-- Pět vzorových úkolů -->
                             <tr>
                                 <td>Sehnat nástroj pro správu úkolů</td>
                                 <td>Vysoká</td>
@@ -117,8 +119,10 @@ $translations = include "translations/$language.php";
                                 <td>Projekt</td>
                                 <td class="tablet mobile">Barča</td>
                             </tr>
+                            <!-- Další vzorové úkoly -->
+                            <!-- ... -->
 
-                          
+                            <!-- Dva náhodně přidělené podúkoly -->
                             <tr>
                                 <td class="small">Vytvořit strukturu</td>
                                 <td class="small">Střední</td>
@@ -146,34 +150,7 @@ $translations = include "translations/$language.php";
 
 
 
+<?php include "./includes/footer.php" ?>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h4>O nás</h4>
-                    <p>Lorem ipsum dolor sit amet. Ano, tento text tu chceme mít. Je to symbol něčeho co vzniká a mění se. Jediná konstanta v životě je změna.</p>
-                </div>
-                <div class="col-md-4">
-                    <h4>Užitečné odkazy</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Domů</a></li>
-                        <li><a href="#">O nás</a></li>
-                        <li><a href="#">Služby</a></li>
-                        <li><a href="#">Kontakt</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h4>Kontaktuje nás:</h4> 
-                    <p>eKultura z.s.</p>
-                    <p>Email: info@div.cz</p>
-                    <p>Phone: hmm, uvidíme</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
