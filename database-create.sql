@@ -13,8 +13,10 @@ CREATE TABLE FDK_Tasks (
     Status VARCHAR(50),
     Created DATETIME,
     DueDate DATE,
+    ParentID INT,  -- Přidaný sloupec pro Parent Task
     FOREIGN KEY (CategoryID) REFERENCES FDK_Categories(CategoryID) ON DELETE CASCADE,
-    FOREIGN KEY (PriorityID) REFERENCES FDK_Priorities(PriorityID) ON DELETE SET NULL
+    FOREIGN KEY (PriorityID) REFERENCES FDK_Priorities(PriorityID) ON DELETE SET NULL,
+    FOREIGN KEY (ParentID) REFERENCES FDK_Tasks(TaskID) ON DELETE CASCADE -- Vytvoření cizího klíče pro ParentID
 );
 
 CREATE TABLE FDK_Priorities (
