@@ -5,11 +5,6 @@ $loName = null;
 $loPassword = null;
 $chyba = null;
 
-//DB connection
-$servername = "46.28.109.13";
-$username = "div_tristan";
-$password = "div_@85ax987+258xi_fdk";
-$dbname = "fdkDB";
 
 
 try {
