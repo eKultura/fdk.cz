@@ -8,7 +8,21 @@ include './includes/settings.php';
 include './includes/functions.php';
 include './assets/languages.php';
 
-//$routes = include "./assets/routes.php";
+/*  
+// ROUTES doesn't work
+$routes = include "./assets/routes.php";
+
+if (isset($routes[$language][$urlParameter])) {
+    $targetPath = $routes[$language][$urlParameter];
+} else {
+    // default redirect if URL parameter not found
+    $targetPath = $routes[$language]['index'];
+}
+
+// perform the redirect
+header("Location: $targetPath", true, 301);
+exit();
+*/
 
 $translations = include "./assets/translations/$language.php";
 
