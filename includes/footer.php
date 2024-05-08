@@ -21,7 +21,7 @@
                     <h4 id="contact">Kontaktuje nás:</h4> 
                     <p>eKultura z.s.</p>
                     <p>Email: info@div.cz</p>
-                    <p>Phone: hmm, uvidíme</p>
+                    <p>Phone: </p>
                 </div>
             </div>
         </div>
