@@ -1,9 +1,23 @@
-<?php 
+<?php
+### ### ###  ### ### ###  ### ### ###
+### ### ###   Universal   ### ### ###
+### ### ###   includes    ### ### ###
+session_start();
+include './includes/db_connection.php';
+include './includes/settings.php';
+include './includes/functions.php';
+include './assets/languages.php';
 
-include "./includes/db_connection.php"; 
-include "./includes/settings.php"; 
+//$routes = include "./assets/routes.php";
 
 $translations = include "./assets/translations/$language.php";
+
+if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
+    $language = $_GET['lang'];
+}
+### ### ###  ### ### ###  ### ### ###
+### ### ###  / Universal  ### ### ###
+### ### ###  / includes   ### ### ###
 
 
 
