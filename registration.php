@@ -1,4 +1,5 @@
 <?php
+include "./includes/db_connection.php"; 
 
 $name = null;
 $password = null;
@@ -13,14 +14,6 @@ $password = "div_@85ax987+258xi_fdk";
 $dbname = "fdkDB";
 
 
-try {
-    $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Nastavení režimu chybových výjimek na výjimky
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-//    echo "Connection failed: " . $e->getMessage();
-}
-
 //CREATING ACC AFTER CLICK ON REGISTER BUTTON
 if (array_key_exists("register", $_POST)) {
     $name = $_POST["name"];
@@ -32,10 +25,24 @@ if (array_key_exists("register", $_POST)) {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
 //INSERTING INTO DATABASE VALUES FROM INPUTS
-    $sql = $db->prepare("INSERT INTO `users`(`Username`, `PasswordHash`, `Email`, `Created` ) VALUES ('$name','$hashed_password', '$email', '$date')");
-    $sql->execute();
-    header("Location: ./login.php");
-    }
+try {
+  $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  // Nastavení režimu chybových výjimek na výjimky
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  $sql = $pdo->prepare("INSERT INTO `users`(`Username`, `PasswordHash`, `Email`, `Created` ) VALUES (?, ?, ?, ?)");
+  $sql->execute([$name, $hashed_password, $email, $date]);
+
+  // Ověření úspěšného provedení dotazu
+  if ($sql->rowCount() > 0) {
+      header("Location: ./login.php");
+      exit(); // Ukončení skriptu, aby se přesunuli na novou stránku
+  } else {
+      echo "Insert operation failed.";
+  }
+} catch(PDOException $e) {
+  echo "Connection failed: " . $e->getMessage();
+}}
 ?>
 <!DOCTYPE html>
 <html lang="en">

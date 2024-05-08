@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 $loName = null;
 $loPassword = null;
@@ -25,7 +26,7 @@ if (array_key_exists("login", $_POST)) {
     $loPassword = $_POST["heslo"];
     
     //loading from the database by user name
-    $sql = $db->prepare("SELECT * FROM users WHERE Username =? LIMIT 1");
+    $sql = $pdo->prepare("SELECT * FROM users WHERE Username =? LIMIT 1");
     $sql->execute([$loName]);
     $result = $sql->fetch();
     
