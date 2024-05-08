@@ -7,11 +7,6 @@ $email = null;
 $date = date("d. m. Y");
 
 
-//DATABASE CONNECTION 
-$servername = "46.28.109.13";
-$username = "div_tristan";
-$password = "div_@85ax987+258xi_fdk";
-$dbname = "fdkDB";
 
 
 //CREATING ACC AFTER CLICK ON REGISTER BUTTON
