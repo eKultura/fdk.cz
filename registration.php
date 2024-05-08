@@ -7,14 +7,19 @@ $date = date("d. m. Y");
 
 
 //DATABASE CONNECTION 
-$db = new PDO(
-    "mysql:host=localhost;dbname=users;charset=utf8",
-    "root",
-    "", // heslo
-    array(
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    ),
-);
+$servername = "46.28.109.13";
+$username = "div_tristan";
+$password = "div_@85ax987+258xi_fdk";
+$dbname = "fdkDB";
+
+
+try {
+    $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    // Nastavení režimu chybových výjimek na výjimky
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+//    echo "Connection failed: " . $e->getMessage();
+}
 
 //CREATING ACC AFTER CLICK ON REGISTER BUTTON
 if (array_key_exists("register", $_POST)) {

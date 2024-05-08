@@ -5,14 +5,19 @@ $loPassword = null;
 $chyba = null;
 
 //DB connection
-$db = new PDO(
-    "mysql:host=localhost;dbname=users;charset=utf8",
-    "root",
-    "", // password
-    array(
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    ),
-);
+$servername = "46.28.109.13";
+$username = "div_tristan";
+$password = "div_@85ax987+258xi_fdk";
+$dbname = "fdkDB";
+
+
+try {
+    $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    // Nastavení režimu chybových výjimek na výjimky
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+//    echo "Connection failed: " . $e->getMessage();
+}
 
 //catching login process
 if (array_key_exists("login", $_POST)) {
@@ -78,7 +83,7 @@ if (array_key_exists("login", $_POST)) {
             <?php endif; ?>
 	
 	<button class="btn btn-primary w-100 py-2" type="submit" name="login">Sign in</button>
-    <a href="./registracia.php" id="acko">New user? Let´s create a account -></a>
+    <a href="./registration.php" id="acko">New user? Let´s create a account -></a>
 
 	
     
