@@ -34,81 +34,113 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
 ### ### ###  / includes   ### ### ###
 
 
-$name = null;
-$password = null;
-$email = null;
-$date = date("d. m. Y");
+$error_message = '';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $date = date('Y-m-d H:i:s');
 
-
-
-//CREATING ACC AFTER CLICK ON REGISTER BUTTON
-if (array_key_exists("register", $_POST)) {
-    $name = $_POST["name"];
-    $password = $_POST["password"];
-    $email = $_POST["email"];
-    
-
-// HASING PASSWORD
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    
-//INSERTING INTO DATABASE VALUES FROM INPUTS
-try {
-  $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-  // Nastavení režimu chybových výjimek na výjimky
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-  $sql = $pdo->prepare("INSERT INTO `users`(`Username`, `PasswordHash`, `Email`, `Created` ) VALUES (?, ?, ?, ?)");
-  $sql->execute([$name, $hashed_password, $email, $date]);
+    try {
+        $sql = "INSERT INTO FDK_users (username, password_hash, email, created) VALUES (?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $hashed_password, $email, $date]);
 
-  // Ověření úspěšného provedení dotazu
-  if ($sql->rowCount() > 0) {
-      header("Location: ./login.php");
-      exit(); // Ukončení skriptu, aby se přesunuli na novou stránku
-  } else {
-      echo "Insert operation failed.";
-  }
-} catch(PDOException $e) {
-  echo "Connection failed: " . $e->getMessage();
-}}
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['user_id'] = $pdo->lastInsertId(); // Ukládáme ID nově vytvořeného uživatele
+            $_SESSION['user_name'] = $name; // Ukládáme jméno uživatele pro zobrazení a další použití
+            header("Location: ./?success=new");
+            exit();
+        } else {
+            $error_message = $translations['registration_error_registraton'];
+        }
+    } catch(PDOException $e) {
+        if ($e->getCode() == 23000) {
+            // Chyba unikátnosti
+            $error_message = $translations['registration_error_user_exist'];
+        } else {
+            $error_message = "Chyba připojení: " . $e->getMessage();
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="<?= $language ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./css/registration.css">
+
+    <title><?php echo $translations['registration_page_title'] ?></title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
+
 </head>
-
 <body>
-<main class="form-signin w-100 m-auto text-center mt-5">
-  <form method="post">
-    
-    <h1 class="h3 mb-3 fw-normal">Sign up</h1>
 
-    <div class="form-floating">
-      <input type="email" class="form-control mb-2" id="floatingInput" placeholder="email" name="email">
-      <label for="floatingInput">Email</label>
-    </div>
 
-    <div class="form-floating">
-      <input type="text" class="form-control mb-2" id="floatingInput" placeholder="login" name="name">
-      <label for="floatingInput">Name</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control mb-2" id="floatingPassword" placeholder="Password" name="password">
-      <label for="floatingPassword">Password</label>
-    </div>
 
-    <button class="btn btn-primary w-100 py-2" type="submit" name="register">Create account</button>
-    <a href="./login.php" id="acko">Already have account? Let´s sign in -></a>
-  
-  </form>
-</main>
+    <?php include "includes/header.php"; ?>
+
+
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 d-none d-md-block">
+            <div class="sidebar-module">
+                <!--<h3>Testovací provoz</h3>-->
+                <!-- Obsah sidebaru -->
+                <?php echo $translations['registration_sidebar_text'] ?>
+            </div>
+        </div>
+        <!-- Obsah -->
+        <div class="col-md-9 col-12">
+
+
+
+            <main class="form-signin w-100 m-auto text-center mt-1 mb-5">
+                <form method="post">
+                    <h1 class="h3 mb-3 fw-normal"><?php echo $translations['registration_form_sign_in'] ?></h1>
+                    <?php if (!empty($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
+
+
+
+                <div class="form-floating">
+                    <input type="email" class="form-control mb-2" id="floatingInput" placeholder="email" name="email">
+                    <label for="floatingInput"><?php echo $translations['registration_form_email'] ?></label>
+                </div>
+                <div class="form-floating">
+                    <input type="text" class="form-control mb-2" id="floatingInput" placeholder="<?php echo $translations['registration_form_name'] ?>" name="name">
+                    <label for="floatingInput"><?php echo $translations['registration_form_name'] ?></label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control mb-2" id="floatingPassword" placeholder="<?php echo $translations['registration_form_password'] ?>" name="password">
+                    <label for="floatingPassword"><?php echo $translations['registration_form_password'] ?></label>
+                </div>
+
+
+
+                    <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="register"><?php echo $translations['registration_form_create_account'] ?></button>
+                    <a href="./prihlaseni"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
+                </form>
+            </main>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+    <?php include "./includes/footer.php" ?>
+
+
+
 </body>
-
 </html>
