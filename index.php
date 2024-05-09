@@ -1,41 +1,45 @@
 <?php
-### ### ###  ### ### ###  ### ### ###
-### ### ###   Universal   ### ### ###
-### ### ###   includes    ### ### ###
 session_start();
+// ### ### ###  ### ### ###  ### ### ###
+// ### ### ###   INCLUDES   ### ### ###
+// ### ### ###  ### ### ###  ### ### ###
 include './includes/db_connection.php';
 include './includes/settings.php';
 include './includes/functions.php';
+
+//$routes = include "./assets/routes.php";
+
 include './assets/languages.php';
-
-/*  
-// ROUTES doesn't work
-$routes = include "./assets/routes.php";
-
-if (isset($routes[$language][$urlParameter])) {
-    $targetPath = $routes[$language][$urlParameter];
-} else {
-    // default redirect if URL parameter not found
-    $targetPath = $routes[$language]['index'];
-}
-
-// perform the redirect
-header("Location: $targetPath", true, 301);
-exit();
-*/
-
 $translations = include "./assets/translations/$language.php";
 
 if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
     $language = $_GET['lang'];
 }
-### ### ###  ### ### ###  ### ### ###
-### ### ###  / Universal  ### ### ###
-### ### ###  / includes   ### ### ###
+// ### ### ###  ### ### ###  ### ### ###
+// ### ### ###  / INCLUDES   ### ### ###
+// ### ### ###  ### ### ###  ### ### ###
+
+
+$welcome_message = '';
+$welcome_message_new_user = '';
+if (isset($_GET['success']) && $_GET['success'] == 'new') {
+    $welcome_message_new_user = "<div class='alert alert-success' role='alert'>Vítejte na našem webu! Vaše registrace byla úspěšná.</div>";
+}
+if (isset($_GET['success']) && $_GET['success'] == 'logout') {
+    $welcome_message_new_user = "<div class='alert alert-success' role='alert'>Odhlášení bylo úspěšné.</div>";
+}
+
+if (isset($_SESSION["username"])) {
+    $username = $_SESSION["username"];
+    $welcome_message = "Vítejte, <strong>$username</strong>! Jsme rádi, že jsi tu.";
+} else {
+    $welcome_message = "Vítejte na našem webu! Pro plný přístup prosím <a href='./prihlaseni'>přihlaste se</a> nebo <a href='./registrace'>vytvořte účet</a>.";
+}
 
 
 
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -44,45 +48,13 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
     <title><?php echo $translations['index_title'] ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
+
 </head>
 <body>
 
 <?php include "includes/header.php"; ?>
 
-<!-- Navigation -->
-<nav class="navbar bg-body-tertiary fixed-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Task manager</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Logged user : </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">My profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">My tasks</a>
-          </li>
-          </ul>
-        <form class="d-flex mt-3" method="post">
-            <button class="btn btn-outline-success" type="submit" name="logout">Log out</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</nav>
-<!-- end of navigation -->
 
 <div class="container mt-5">
     <div class="row">
@@ -91,6 +63,38 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
             <div class="sidebar-module">
                 <!--<h3>Testovací provoz</h3>-->
                 <!-- Obsah sidebaru -->
+<?php
+                if (isset($_SESSION["user_id"])) {
+    $user_id = $_SESSION["user_id"];
+
+    // SQL dotaz na výběr projektů
+    $stmt = $pdo->prepare("SELECT * FROM FDK_projects WHERE owner_id = ? ORDER BY created DESC LIMIT 5");
+    $stmt->execute([$user_id]);
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Kontrola, jestli existují nějaké projekty
+    if (count($projects) > 0) {
+        echo "<h4>Moje projekty</h4>";
+        echo "<ul>";
+        foreach ($projects as $project) {
+            echo "<li style='list-style-type:none;margin-left:-30px'><a href='/" . htmlspecialchars($project['url']) . "'>" . htmlspecialchars($project['name']) . "</a></li>";
+        }
+        echo "</ul>";
+    } else {
+        echo "<p>Žádné projekty nebyly nalezeny.</p>";
+    }
+    
+echo "<p><small><a href='./odhlaseni'>Odhlásit</a></small></p>";
+
+                
+} else {
+
+echo "<p>Pro zobrazení projektů se musíte <a href='/prihlaseni'>přihlásit</a>.</p>";
+
+}
+?>
+            </div>
+            <div class="sidebar-module">
                 <?php echo $translations['index_sidebar_text'] ?>
             </div>
         </div>
@@ -98,11 +102,15 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
         <div class="col-md-9 col-12">
             <!-- Hlavní obsah -->
             <div class="full-width-module">
+            
+                        <?= $welcome_message_new_user ?>
+
+            <p><?php echo $welcome_message; ?></p>
             <!--Vítejte v novém a jedinečném nástroji pro správu úkolů, který přináší revoluční 
             možnosti spolupráce a efektivity. 
             Tento nástroj je něčím, o čem jste dosud jen snili, ale teď je to skutečností, 
             kterou můžete okamžitě využít zdarma.-->
-            <?php echo $translations['index_text'] ?>
+            <p><?php echo $translations['index_text'] ?></p>
 
             </div>
         </div>
@@ -135,7 +143,7 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
                         <h3><?php echo $translations['in_progress'] ?><!--In Progress--></h3>
                         <div class="task-card">
                             <h4>Úkol 2</h4>
-                            <p>Vytvořit nový projekt a přidat tým</p>
+                            <p>Vytvořit <a href="novy-projekt">nový projekt</a> a přidat tým</p>
                         </div>
                     </div>
                     <!-- Done Column -->
