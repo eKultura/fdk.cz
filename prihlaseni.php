@@ -8,11 +8,6 @@
 
 
 session_start();
-
-if (isset($_SESSION["user_name"])) {
-    header("Location: ./"); // Redirect to home if already logged in
-    exit;
-}
 // ### ### ###  ### ### ###  ### ### ###
 // ### ### ###   INCLUDES   ### ### ###
 // ### ### ###  ### ### ###  ### ### ###
@@ -46,8 +41,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
     if ($result) {
         $hashed_password = $result['password_hash'];
         if (password_verify($loPassword, $hashed_password)) {
-            $_SESSION["user_name"] = $result['username'];
+            $_SESSION["username"] = $result['username'];
             $_SESSION["user_id"] = $result['user_id'];
+
+            $update_sql = $pdo->prepare("UPDATE FDK_users SET last_login = NOW() WHERE user_id = ?");
+            $update_sql->execute([$_SESSION["user_id"]]);
+            // Insert activity log
+            $log_sql = $pdo->prepare("INSERT INTO FDK_activity_log (user_id, user_action, description, date_time) VALUES (?, ?, ?, NOW())");
+            $log_sql->execute([$_SESSION["user_id"], 'User Login', 'User successfully logged in.']);
 
             header("Location: ./");
             exit;
@@ -95,28 +96,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
         <div class="col-md-9 col-12">
 
     <main class="form-signin w-100 m-auto text-center mt-1 mb-5">
-        <form method="post">
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
 
+
+            <h1 class="h3 mb-3 fw-normal">Přihlášení</h1>
+
+                <?php if (!isset($_SESSION["username"])): ?>
+        <form method="post">
         <?php if (!empty($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
 
             <div class="form-floating">
                 <input type="text" class="form-control mb-2" id="floatingInput" placeholder="name@example.com" name="name" required>
                 <label for="floatingInput"><?php echo $translations['sign_in_form_name'] ?></label>
             </div>
-
             <div class="form-floating">
                 <input type="password" class="form-control mb-2" id="floatingPassword" placeholder="<?php echo $translations['sign_in_form_password'] ?>" name="password" required>
                 <label for="floatingPassword"><?php echo $translations['sign_in_form_password'] ?></label>
             </div>
-
             <?php if (!empty($chyba)): ?>
                 <div class="alert alert-danger mt-2 mb-2"><?= $chyba; ?></div>
             <?php endif; ?>
-
             <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="login"><?php echo $translations['sign_in_form_button'] ?></button>
             <a href="./registrace" class="mt-2"><?php echo $translations['sign_in_form_new_user'] ?></a>
         </form>
+    
+                <?php else: ?>
+                    <div class="alert alert-info">Jste již přihlášen/a jako <?= htmlspecialchars($_SESSION["username"]); ?>. <br>
+                    <a href="/odhlaseni">Odhlášení</a>. <br><a href="./">Přejít na domovskou stránku.</a></div>
+                <?php endif; ?>
     </main>
 
         </div>
