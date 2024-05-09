@@ -1,76 +1,92 @@
 <?php
 
 
+
 ### ### ###  ### ### ###  ### ### ###
 # TEMP FILE UNTIL ROUTING WILL WORK #
 ### ### ###  ### ### ###  ### ### ###
 
 
 session_start();
+### ### ###  ### ### ###  ### ### ###
+### ### ###   Universal   ### ### ###
+### ### ###   includes    ### ### ###
 
-if (isset($_SESSION["user_name"])) {
-    header("Location: ./"); // Redirect to home if already logged in
-    exit;
-}
-### ### ###  ### ### ###  ### ### ###
-### ### ###   INCLUDES   ### ### ###
-### ### ###  ### ### ###  ### ### ###
 include './includes/db_connection.php';
 include './includes/settings.php';
 include './includes/functions.php';
-
-//$routes = include "./assets/routes.php";
-
 include './assets/languages.php';
+
+/*  
+// ROUTES doesn't work
+$routes = include "./assets/routes.php";
+
+if (isset($routes[$language][$urlParameter])) {
+    $targetPath = $routes[$language][$urlParameter];
+} else {
+    // default redirect if URL parameter not found
+    $targetPath = $routes[$language]['index'];
+}
+
+// perform the redirect
+header("Location: $targetPath", true, 301);
+exit();
+*/
+
 $translations = include "./assets/translations/$language.php";
 
 if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
     $language = $_GET['lang'];
 }
 ### ### ###  ### ### ###  ### ### ###
-### ### ###  / INCLUDES   ### ### ###
-### ### ###  ### ### ###  ### ### ###
+### ### ###  / Universal  ### ### ###
+### ### ###  / includes   ### ### ###
 
 
-$chyba = '';
+$error_message = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
-    $loName = $_POST["name"] ?? '';
-    $loPassword = $_POST["password"] ?? '';
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $date = date('Y-m-d H:i:s');
 
-    $sql = $pdo->prepare("SELECT * FROM FDK_users WHERE username = ? LIMIT 1");
-    $sql->execute([$loName]);
-    $result = $sql->fetch();
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    if ($result) {
-        $hashed_password = $result['password_hash'];
-        if (password_verify($loPassword, $hashed_password)) {
-            $_SESSION["user_name"] = $result['username'];
-            $_SESSION["user_id"] = $result['user_id'];
+    try {
+        $sql = "INSERT INTO FDK_users (username, password_hash, email, created) VALUES (?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $hashed_password, $email, $date]);
 
-            header("Location: ./");
-            exit;
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['user_id'] = $pdo->lastInsertId(); // Ukládáme ID nově vytvořeného uživatele
+            $_SESSION['username'] = $name; // Ukládáme jméno uživatele pro zobrazení a další použití
+            header("Location: ./?success=new");
+            exit();
         } else {
-            $error_message = $translations['sign_in_error_incorrect_login_information'];
+            $error_message = $translations['registration_error_registraton'];
         }
-    } else {
-        $error_message =  $translations['sign_in_error_user_not_found'];
+    } catch(PDOException $e) {
+        if ($e->getCode() == 23000) {
+            // Chyba unikátnosti
+            $error_message = $translations['registration_error_user_exist'];
+        } else {
+            $error_message = "Chyba připojení: " . $e->getMessage();
+        }
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="<?= $language ?>">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title><?php echo $translations['sign_in_page_title'] ?></title>
+    <title><?php echo $translations['registration_page_title'] ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
+
 </head>
 <body>
 
@@ -87,36 +103,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
             <div class="sidebar-module">
                 <!--<h3>Testovací provoz</h3>-->
                 <!-- Obsah sidebaru -->
-                <?php echo $translations['sign_in_sidebar_text'] ?>
+                <?php echo $translations['registration_sidebar_text'] ?>
             </div>
         </div>
         <!-- Obsah -->
         <div class="col-md-9 col-12">
 
-    <main class="form-signin w-100 m-auto text-center mt-1 mb-5">
-        <form method="post">
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
 
-        <?php if (!empty($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
 
-            <div class="form-floating">
-                <input type="text" class="form-control mb-2" id="floatingInput" placeholder="name@example.com" name="name" required>
-                <label for="floatingInput"><?php echo $translations['sign_in_form_name'] ?></label>
-            </div>
+            <main class="form-signin w-100 m-auto text-center mt-1 mb-5">
 
-            <div class="form-floating">
-                <input type="password" class="form-control mb-2" id="floatingPassword" placeholder="<?php echo $translations['sign_in_form_password'] ?>" name="password" required>
-                <label for="floatingPassword"><?php echo $translations['sign_in_form_password'] ?></label>
-            </div>
 
-            <?php if (!empty($chyba)): ?>
-                <div class="alert alert-danger mt-2 mb-2"><?= $chyba; ?></div>
-            <?php endif; ?>
+                <?php if (!isset($_SESSION["username"])): ?>
+                <form method="post">
+                    <h1 class="h3 mb-3 fw-normal"><?php echo $translations['registration_form_sign_in'] ?></h1>
+                    <?php if (!empty($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
+                <div class="form-floating">
+                    <input type="email" class="form-control mb-2" id="floatingInput" placeholder="email" name="email">
+                    <label for="floatingInput"><?php echo $translations['registration_form_email'] ?></label>
+                </div>
+                <div class="form-floating">
+                    <input type="text" class="form-control mb-2" id="floatingInput" placeholder="<?php echo $translations['registration_form_name'] ?>" name="name">
+                    <label for="floatingInput"><?php echo $translations['registration_form_name'] ?></label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control mb-2" id="floatingPassword" placeholder="<?php echo $translations['registration_form_password'] ?>" name="password">
+                    <label for="floatingPassword"><?php echo $translations['registration_form_password'] ?></label>
+                </div>
+                    <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="register"><?php echo $translations['registration_form_create_account'] ?></button>
+                    <a href="./prihlaseni"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
+                </form>
+                <?php else: ?>
+                    <div class="alert alert-info">Jste již přihlášen/a jako <?= htmlspecialchars($_SESSION["username"]); ?>. <a href="./">Přejít na domovskou stránku.</a></div>
+                <?php endif; ?>
 
-            <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="login"><?php echo $translations['sign_in_form_button'] ?></button>
-            <a href="./registrace" class="mt-2"><?php echo $translations['sign_in_form_new_user'] ?></a>
-        </form>
-    </main>
+
+            </main>
+
+
+
 
         </div>
     </div>
