@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
 
 
                     <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="register"><?php echo $translations['registration_form_create_account'] ?></button>
-                    <a href="./prihlaseni"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
+                    <a href="./login.php"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
                 </form>
             </main>
 
