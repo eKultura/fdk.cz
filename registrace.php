@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
                     <label for="floatingPassword"><?php echo $translations['registration_form_password'] ?></label>
                 </div>
                     <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="register"><?php echo $translations['registration_form_create_account'] ?></button>
-                    <a href="./prihlaseni"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
+                    <a href="./prihlaseni.php"><?php echo $translations['registration_form_already_have_account_text'] ?></a>
                 </form>
                 <?php else: ?>
                     <div class="alert alert-info">Jste již přihlášen/a jako <?= htmlspecialchars($_SESSION["username"]); ?>. <a href="./">Přejít na domovskou stránku.</a></div>
