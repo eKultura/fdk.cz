@@ -71,7 +71,7 @@ if (isset($_SESSION["username"])) {
                 echo "Logged user $username";
             }
             else {
-                echo "<a>Login</a>";
+                echo "<a>Prihlašte se</a>";
             }
             
             ?>
@@ -89,15 +89,20 @@ if (isset($_SESSION["username"])) {
               <li class="nav-item">
               <a class="nav-link" href="#">Moje úkoly</a>
             </li>
-              
+             
                
-            <form class="d-flex mt-3" role="search">
-             <button class="btn btn-outline-danger" type="submit" name="logout">Logout</button>
+            <form class="d-flex mt-3" role="search" method="post">
+                <?php if(array_key_exists('username', $_SESSION)){
+                    echo '<button class="btn btn-outline-danger" type="submit" name="logout">Logout</button>';
+                }
+                ?>
+             
             </form>
           </div>
         </div>
       </div>
     </nav>
+    <!-- END OF NAVBAR --> 
 
 
 <div class="container mt-5">
