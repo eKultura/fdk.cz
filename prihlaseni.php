@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
 
 
 
-<div class="container mt-5">
+<div class="container mt-2">
     <!--
     <div class="row">
     
@@ -128,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
                 <div class="alert alert-danger mt-2 mb-2"><?= $chyba; ?></div>
             <?php endif; ?>
             <button class="btn btn-primary w-100 py-2 mb-3" type="submit" name="login"><?php echo $translations['sign_in_form_button'] ?></button>
-            <a href="./registrace.php" class="mt-2"><?php echo $translations['sign_in_form_new_user'] ?></a>
+            <a href="./registration.php" class="mt-2"><?php echo $translations['sign_in_form_new_user'] ?></a>
         </form>
     
                 <?php else: ?>
