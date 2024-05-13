@@ -68,10 +68,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title><?php echo $translations['sign_in_page_title'] ?></title>
-
+    <!--BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!--FONT AWSOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="./css/login.css">
+
 
     <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
 </head>
@@ -84,23 +90,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
 
 
 <div class="container mt-5">
+    <!--
     <div class="row">
-        <!-- Sidebar -->
+    
+     Sidebar 
         <div class="col-md-3 d-none d-md-block">
             <div class="sidebar-module">
-                <!--<h3>Testovací provoz</h3>-->
-                <!-- Obsah sidebaru -->
-                <?php echo $translations['sign_in_sidebar_text'] ?>
+                <h3>Testovací provoz</h3>
+                 Obsah sidebaru 
+                
             </div>
         </div>
-        <!-- Obsah -->
+         Obsah 
         <div class="col-md-9 col-12">
+        -->
 
     <main class="form-signin w-100 m-auto text-center mt-1 mb-5">
     
     <!--POP OVER -->
     <span class="d-inline-block text-dark" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="<?php echo $translations['sign_in_sidebar_text'] ?>">
-      <button class="btn border border-white" type="button" disabled=""><h1 class="text-dark">Prihlašení </h1></button>
+      <button class="btn border border-white" type="button" disabled=""><h1 class="text-dark">Prihlašení <i class="fa-solid fa-circle-info fa-2xs" id="info"></i> </h1></button>
     </span>
 
                 <?php if (!isset($_SESSION["username"])): ?>
