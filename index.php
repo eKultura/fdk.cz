@@ -33,7 +33,14 @@ if (isset($_SESSION["username"])) {
     $username = $_SESSION["username"];
     $welcome_message = "Vítejte, <strong>$username</strong>! Jsme rádi, že jsi tu.";
 } else {
-    $welcome_message = "Vítejte na našem webu! Pro plný přístup prosím <a href='./prihlaseni'>přihlaste se</a> nebo <a href='./registrace'>vytvořte účet</a>.";
+    $welcome_message = "Vítejte na našem webu! Pro plný přístup prosím <a href='./prihlaseni.php'>přihlaste se</a> nebo <a href='./registrace'>vytvořte účet</a>.";
+}
+
+//navbar logout 
+if(array_key_exists('logout', $_POST))
+{
+   unset($_SESSION['username']);
+   header("Location: ?");
 }
 
 
@@ -58,9 +65,9 @@ if (isset($_SESSION["username"])) {
 <?php include "includes/header.php"; ?>
 
 <!-- NAVBAR -->
-<nav class="navbar bg-body-tertiary fixed-top">
+<nav class="navbar bg-body-secondary fixed-top mb-4 ">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Správce úkolů</a>
+        <a class="navbar-brand" href="#">FDK</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -68,10 +75,10 @@ if (isset($_SESSION["username"])) {
           <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
                 <?php if(array_key_exists('username', $_SESSION)){
-                echo "Logged user $username";
+                echo "Prihlašený uživatel : $username";
             }
             else {
-                echo "<a>Prihlašte se</a>";
+                echo '<a href="./prihlaseni.php">Prihlašte se</a>';
             }
             
             ?>
