@@ -119,7 +119,9 @@ if(array_key_exists('logout', $_POST))
 
     
     <div class="container xl">
-	<h1 class="text-center" id="task-header">Všechny úkoly</h1>
+    <h1 class="text-center" id="task-header">Správce úkolů aplikace </h1>
+    <input type="text" id="finder" placeholder="Vyhledej úkol">
+	<h1 class="text-center" id="task-header">Kategorie </h1>
     
     <!-- ALL CATEGORIES -->
     <div class="categories">
@@ -128,18 +130,23 @@ if(array_key_exists('logout', $_POST))
             <p>frontend</p>
         </div>
         <div class="category text-center">
-            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <img src="https://img.freepik.com/free-vector/desktop-smartphone-app-development_23-2148683810.jpg?t=st=1715686938~exp=1715690538~hmac=4b6bc30ed1434d9b80921d5ca010e1a8db5039fa02cbb877d14ea8c3ccbf184d&w=740" width="100px" alt="">
             <p>backend</p>
         </div>
         <div class="category text-center">
-            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <img src="https://img.freepik.com/free-vector/reading-news-latest-world-events-breaking-stories-comments-issues-girl-reading-internet-article-smartphone-device-social-media-concept-illustration_335657-2076.jpg?w=740&t=st=1715687158~exp=1715687758~hmac=8df62e7c61943e8b8afb8caeb91b59d10b6c743b6fd3bd0e4ce6c28ec12d2b06" width="100px" alt="">
             <p>ios</p>
         </div>
         <div class="category text-center">
-            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <img src="https://img.freepik.com/free-vector/bug-fixing-software-testing-computer-virus-searching-tool-devops-web-optimization-antivirus-app-magnifier-cogwheel-monitor-design-element_335657-2640.jpg?t=st=1715687081~exp=1715690681~hmac=ca3353a7f6d179ef8296b67253f46b9697e0a41020e5c5cfcf2be253d956b1d4&w=740" width="100px" alt="">
             <p>testing</p>
         </div>
     </div>
+
+    <h1 class="text-center" id="task-header">Přidat ukol </h1>
+    <button>Přidej</button>
+
+    
 		
      <!-- ALL TASKS -->
     <div class="ukoly">
