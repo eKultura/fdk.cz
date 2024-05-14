@@ -63,13 +63,13 @@ if(array_key_exists('logout', $_POST))
 </head>
 <body>
 
-<?php include "includes/header.php"; ?>
+
 
 <!-- NAVBAR -->
 <div class="container-md">
 <nav class="navbar bg-body-secondary fixed-top mb-4 ">
       <div class="container-xxl">
-        <a class="navbar-brand" href="#">FDK</a>
+        <a class="navbar-brand" href="#">FDK Správce úloh</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -115,114 +115,12 @@ if(array_key_exists('logout', $_POST))
     <!-- END OF NAVBAR --> 
 
 
-<div class="container mt-5">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 d-none d-md-block">
-            <div class="sidebar-module">
-                <!--<h3>Testovací provoz</h3>-->
-                <!-- Obsah sidebaru -->
-<?php
-                if (isset($_SESSION["user_id"])) {
-    $user_id = $_SESSION["user_id"];
-
-    // SQL dotaz na výběr projektů
-    $stmt = $pdo->prepare("SELECT * FROM FDK_projects WHERE owner_id = ? ORDER BY created DESC LIMIT 5");
-    $stmt->execute([$user_id]);
-    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Kontrola, jestli existují nějaké projekty
-    if (count($projects) > 0) {
-        echo "<h4>Moje projekty</h4>";
-        echo "<ul>";
-        foreach ($projects as $project) {
-            echo "<li style='list-style-type:none;margin-left:-30px'><a href='/" . htmlspecialchars($project['url']) . "'>" . htmlspecialchars($project['name']) . "</a></li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "<p>Žádné projekty nebyly nalezeny.</p>";
-    }
-    
-echo "<p><small><a href='./odhlaseni'>Odhlásit</a></small></p>";
-
-                
-} else {
-
-echo "<p>Pro zobrazení projektů se musíte <a href='/prihlaseni'>přihlásit</a>.</p>";
-
-}
-?>
-            </div>
-            <div class="sidebar-module">
-                <?php echo $translations['index_sidebar_text'] ?>
-            </div>
-        </div>
-        <!-- Obsah -->
-        <div class="col-md-9 col-12">
-            <!-- Hlavní obsah -->
-            <div class="full-width-module">
-            
-                        <?= $welcome_message_new_user ?>
-
-            <p><?php echo $welcome_message; ?></p>
-            <!--Vítejte v novém a jedinečném nástroji pro správu úkolů, který přináší revoluční 
-            možnosti spolupráce a efektivity. 
-            Tento nástroj je něčím, o čem jste dosud jen snili, ale teď je to skutečností, 
-            kterou můžete okamžitě využít zdarma.-->
-            <p><?php echo $translations['index_text'] ?></p>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-    <!-- Main Content -->
-    <div class="container mt-5">
-        <div class="row">
-            <!-- Obsah (zabere celou šířku na mobilu a tabletu, tedy i v řádku) -->
-            <div class="col-12">
-                <div class="task-board">
-                    <!-- To-Do Column -->
-                    <div class="task-column">
-                        <h3><?php echo $translations['to_do'] ?><!--To-Do--></h3>
-                        <div class="task-card">
-                            <h4>Úkol 1</h4>
-                            <p>Přidat úkoly do správce úkolů </p>
-                        </div>
-                        <!--<div class="task-card">
-                            <h4>Úkol 2</h4>
-                            <p>Aktualizovat obsah webové stránky</p>
-                        </div>-->
-                    </div>
-                    <!-- In Progress Column -->
-                    <div class="task-column">
-                        <h3><?php echo $translations['in_progress'] ?><!--In Progress--></h3>
-                        <div class="task-card">
-                            <h4>Úkol 2</h4>
-                            <p>Vytvořit <a href="novy-projekt">nový projekt</a> a přidat tým</p>
-                        </div>
-                    </div>
-                    <!-- Done Column -->
-                    <div class="task-column">
-                        <h3><?php echo $translations['done'] ?><!--Done--></h3>
-                        <div class="task-card">
-                            <h4>Úkol  3</h4>
-                            <p>Sehnat nástroj pro správu úkolů. Zdarma!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+<
 
     
     <div class="container xl">
-	<h1 class="text-center">Všechny úkoly</h1>
+	<h1 class="text-center" id="task-header">Všechny úkoly</h1>
+    
     <!-- ALL CATEGORIES -->
     <div class="categories">
          <div class="category text-center">
