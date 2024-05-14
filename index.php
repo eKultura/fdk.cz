@@ -220,13 +220,34 @@ echo "<p>Pro zobrazení projektů se musíte <a href='/prihlaseni'>přihlásit</
 
 
 
-    <!-- Full Width Module -->
+    
     <div class="container xl">
-	<h1 class="text-center">Vaše úkoly</h1>
-		<div class="ukoly">
-       
-	   <div class="ukol text-center">
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
+	<h1 class="text-center">Všechny úkoly</h1>
+    <!-- ALL CATEGORIES -->
+    <div class="categories">
+         <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <p>frontend</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <p>backend</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <p>ios</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
+            <p>testing</p>
+        </div>
+    </div>
+		
+     <!-- ALL TASKS -->
+    <div class="ukoly">
+        <div class="ukol text-center">
+		<!-- kategoria -->
+         <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
 	   	<p><b>Vylepšit frontend</b></p>
 	    <p>Martin -> Tristan</p>
 		<p> vysoká</p>
