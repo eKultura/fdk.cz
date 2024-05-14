@@ -1,0 +1,21 @@
+.ukol {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	border-radius: 5%;
+	box-shadow: 2px 2px black;
+	width: 250px;
+	margin: 20px;
+	border: 3px solid black;
+
+
+}
+
+
+
+.ukoly  {
+	display: flex;
+	flex-wrap: wrap;
+	
+}
+
