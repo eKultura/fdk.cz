@@ -36,3 +36,37 @@
 	margin-bottom: 50px;
 }
 
+.add-task {
+	display: flex;
+	flex-direction: column;
+}
+
+body {
+	display: flex;
+}
+#sidebar {
+	width: 250px;
+	height: 100vh;
+	background: #f8f9fa;
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 15px;
+	overflow-y: auto;
+}
+#main-content {
+	margin-left: 270px;
+	padding: 20px;
+	width: calc(100% - 270px);
+}
+.sidebar-link {
+	display: block;
+	padding: 10px 15px;
+	color: #333;
+	text-decoration: none;
+	border-radius: 5px;
+	transition: background-color 0.3s;
+}
+.sidebar-link:hover {
+	background-color: #ddd;
+}

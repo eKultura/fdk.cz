@@ -19,7 +19,6 @@ if (isset($_GET['lang']) && array_search($_GET['lang'], $languages) !== false) {
 // ### ### ###  / INCLUDES   ### ### ###
 // ### ### ###  ### ### ###  ### ### ###
 
-
 $welcome_message = '';
 $welcome_message_new_user = '';
 if (isset($_GET['success']) && $_GET['success'] == 'new') {
@@ -43,8 +42,6 @@ if(array_key_exists('logout', $_POST))
    header("Location: ?");
 }
 
-
-
 ?>
 <!DOCTYPE html>
 <html lang="cs">
@@ -57,75 +54,33 @@ if(array_key_exists('logout', $_POST))
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    
     <link href="https://fdk.cz/assets/style.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/index.css">
-</head>
+    <link rel="stylesheet" href="css/index.css">
+    </head>
 <body>
 
-
-
-<!-- NAVBAR -->
-<div class="container-md">
-<nav class="navbar bg-body-secondary fixed-top mb-4 ">
-      <div class="container-xxl">
-        <a class="navbar-brand" href="#">FDK Správce úloh</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
-                <?php if(array_key_exists('username', $_SESSION)){
-                echo "Prihlašený uživatel : $username";
-            }
-            else {
-                echo '<a href="./prihlaseni.php">Prihlašte se</a>';
-            }
-            
-            ?>
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-              <li class="nav-item">
-                <a class="nav-link " aria-current="page" href="#">Můj účet</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Moje projekty</a>
-              </li>
-              <li class="nav-item">
-              <a class="nav-link" href="#">Moje úkoly</a>
-            </li>
-             
-               
-            <form class="d-flex mt-3" role="search" method="post">
-                <?php if(array_key_exists('username', $_SESSION)){
-                    echo '<button class="btn btn-outline-danger" type="submit" name="logout">Logout</button>';
-                }
-                ?>
-             
-            </form>
-          </div>
-        </div>
-      </div>
-    </nav>
+<div id="sidebar">
+    <h3>Navigácia</h3>
+    <a class="sidebar-link" href="#welcome-message">Úvod</a>
+    <a class="sidebar-link" href="./add-task.php">Pridať úlohy</a>
+    <a class="sidebar-link" href="#all-categories">Všetky kategórie</a>
+    <a class="sidebar-link" href="#all-tasks">Všetky úlohy</a>
 </div>
-    <!-- END OF NAVBAR --> 
 
+<div id="main-content">
+    <?php include "includes/header.php"; ?>
 
-<
+    <div id="welcome-message">
+        <?php echo $welcome_message; ?>
+        <?php echo $welcome_message_new_user; ?>
+    </div>
 
-    
-    <div class="container xl">
-    <h1 class="text-center" id="task-header">Správce úkolů aplikace </h1>
-    <input type="text" id="finder" placeholder="Vyhledej úkol">
-	<h1 class="text-center" id="task-header">Kategorie </h1>
-    
+  
+
     <!-- ALL CATEGORIES -->
+    <h1 id="all-categories" class="text-center" id="task-header">Všetky kategórie</h1>
     <div class="categories">
-         <div class="category text-center">
+        <div class="category text-center">
             <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="100px" alt="">
             <p>frontend</p>
         </div>
@@ -143,72 +98,17 @@ if(array_key_exists('logout', $_POST))
         </div>
     </div>
 
-    <h1 class="text-center" id="task-header">Přidat ukol </h1>
-    <button>Přidej</button>
-
-    
-		
-     <!-- ALL TASKS -->
-    <div class="ukoly">
+    <!-- ALL TASKS -->
+    <div id="all-tasks" class="ukoly">
         <div class="ukol text-center">
-		<!-- kategoria -->
-         <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-	   	<p><b>Vylepšit frontend</b></p>
-	    <p>Martin -> Tristan</p>
-		<p> vysoká</p>
-		<p>Probíha</p>
-		</div>
-		
-		<div class="ukol text-center">
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-		<p><b>Vylepšit frontend</b></p>
-		<p>Zadal Martin -> Tristan</p>
-		<p>Priorita : vysoká</p>
-		<p>Probíha</p>
-		</div>
-		
-		<div class="ukol text-center">
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-		<p><b>Vylepšit frontend</b></p>
-		<p>Zadal Martin -> Tristan</p>
-		<p>Priorita : vysoká</p>
-		<p>Probíha</p>
-		</div>
-		
-		<div class="ukol text-center">
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-		<p><b>Vylepšit frontend</b></p>
-		<p>Zadal Martin -> Tristan</p>
-		<p>Priorita : vysoká</p>
-		<p>Probíha</p>
-		</div>
-		
-		<div class="ukol text-center">
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-		<p><b>Vylepšit frontend</b></p>
-		<p>Zadal Martin -> Tristan</p>
-		<p>Priorita : vysoká</p>
-		<p>Probíha</p>
-		</div>
-		<div class="ukol text-center">
-		
-		<!-- kategoria --> <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-		<p><b>Vylepšit frontend</b></p>
-		<p>Zadal Martin -> Tristan</p>
-		<p>Priorita : vysoká</p>
-		<p>Probíha</p>
-		</div>
-
-
-
-
-	   </div>
+            <!-- kategoria -->
+            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
+            <p><b>Vylepšiť frontend</b></p>
+            <p>Martin -> Tristan</p>
+            <p>vysoká</p>
+            <p>Prebieha</p>
+        </div>
     </div>
 
-
-
-
-<?php include "./includes/footer.php" ?>
-
-</body>
-</html>
+    <?php include "./includes/footer.php"; ?>
+    <
