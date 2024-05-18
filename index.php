@@ -42,6 +42,13 @@ if(array_key_exists('logout', $_POST))
    header("Location: ?");
 }
 
+//tasks from database
+$sql = $pdo->prepare("SELECT * FROM `FDK_tasks` LIMIT 30");
+$sql->execute();
+$result_tasks = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="cs">
@@ -94,21 +101,45 @@ if(array_key_exists('logout', $_POST))
         </div>
         <div class="category text-center">
             <img src="https://img.freepik.com/free-vector/bug-fixing-software-testing-computer-virus-searching-tool-devops-web-optimization-antivirus-app-magnifier-cogwheel-monitor-design-element_335657-2640.jpg?t=st=1715687081~exp=1715690681~hmac=ca3353a7f6d179ef8296b67253f46b9697e0a41020e5c5cfcf2be253d956b1d4&w=740" width="100px" alt="">
-            <p>testing</p>
+            <p>Testing</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/big-data-job-abstract-concept-illustration_335657-3840.jpg?w=740&t=st=1715968853~exp=1715969453~hmac=8a4c3f3cd448a3d238aba81ac536498d7e745f827736ff136da0528703da8ff4" width="100px" alt="">
+            <p>Databaze</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/cloud-computing-security-abstract-concept-illustration_335657-3798.jpg?w=740&t=st=1716026514~exp=1716027114~hmac=e709b94c5554a7b86ebb6c8e2dd91c5e24eb826eda48c4fb495c7f0e8018382b" width="100px" alt="">
+            <p>Server</p>
+        </div>
+        <div class="category text-center">
+            <img src="https://img.freepik.com/free-vector/online-chatting-app-cartoon-characters-communicating-internet-gadget-addiction-blogging-posting-modern-digital-technologies-design-element_335657-2655.jpg?w=740&t=st=1716026569~exp=1716027169~hmac=e8778935ebc3ef22331ed68ab018cbdd018da231f0648fef50b174b272050a4c" width="100px" alt="">
+            <p>Android</p>
         </div>
     </div>
 
-    <!-- ALL TASKS -->
-    <div id="all-tasks" class="ukoly">
-        <div class="ukol text-center">
-            <!-- kategoria -->
-            <img src="https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38" width="auto" alt="">
-            <p><b>Vylepšiť frontend</b></p>
-            <p>Martin -> Tristan</p>
-            <p>vysoká</p>
-            <p>Prebieha</p>
-        </div>
+   
+    
+    <!-- ALL TASKS DYNAMIC -->
+    
+    <div class="ukoly" id="all-tasks">
+    <?php 
+        foreach($result_tasks as $task){
+            echo "<div class='ukol text-center'>";
+            if($task['category'] == 1){
+            echo "<img src='https://img.freepik.com/free-vector/computer-programming-camp-abstract-concept-illustration_335657-3921.jpg?w=740&t=st=1715671724~exp=1715672324~hmac=641e20463145d796f8ba48cfc3aac38ffa0d71cd01d7c3e5630413d3e9248a38' width='100px'>";
+            }
+            
+            echo "<p>{$task['title']}</p>";
+            echo "<p>{$task['assigned']}</p>";
+            echo "<p>{$task['priority']}</p>";
+            echo "<p>{$task['status']}</p>";
+            echo "</div>";
+        }
+        var_dump($result_tasks);
+    ?>
     </div>
+
+    
 
     <?php include "./includes/footer.php"; ?>
-    <
+   

@@ -5,17 +5,34 @@ $category = null;
 $priority = null;
 $assigned = null;
 
+include './includes/db_connection.php';
+
+//GETTING VALUES FROM FOMR INTO VARIABILES
 if(array_key_exists('send', $_POST)){
 	$title = $_POST['title'];
 	$description = $_POST['description'];
 	$category = $_POST['category'];
 	$priority = $_POST['priority'];
 	$assigned = $_POST['assigned'];
-	
-	var_dump(
-		$title, $category, $priority, $assigned
-	);
+
+    
+    
+    //INSERTING VALUES INTO DATABASE
+    //EXEPTION
+    try
+    {
+    $sql = $pdo->prepare("INSERT INTO `FDK_tasks` (title, description, category, priority, assigned) VALUES (?,?,?,?,?)");
+    $sql->execute([$title, $description, $category_id, $priority, $assigned]);
+    echo "Záznam byl úspěšně vložen!";
 }
+
+catch (PDOException $e) {
+    echo "Chyba: " . $e->getMessage();
+}
+
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,10 +61,13 @@ if(array_key_exists('send', $_POST)){
 
                 <label for="category">Kategórie:</label>
                 <select name="category" id="category">
-                    <option value="frontend">Frontend</option>
-                    <option value="backend">Backend</option>
-                    <option value="ios">IOS</option>
-                    <option value="testing">Testing</option>
+                    <option value="1">Frontend</option>
+                    <option value="2">Backend</option>
+                    <option value="3">Testovaní</option>
+                    <option value="4">Databáze</option>
+                    <option value="5">Server</option>
+                    <option value="6">IOS</option>
+                    <option value="7">Android</option>
                 </select>
 
                 <label for="priority">Priorita</label>
