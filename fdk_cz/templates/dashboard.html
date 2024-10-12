@@ -1,0 +1,99 @@
+{% extends 'user/base.html' %}
+{% load i18n %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Dashboard</h2>
+
+    <header>
+        <h1>Vítejte na Dashboardu</h1>
+    </header>
+    
+    <!-- Navigační menu -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Home</a></li>
+            <li><a href="{% url 'user_profile' %}">Profile</a></li>
+            <li><a href="{% url 'user_settings' %}">Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sekce úkolů -->
+    <h3>Moje úkoly</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Název úkolu</th>
+                <th>Stav</th>
+                <th>Termín</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if user_tasks %}
+                {% for task in user_tasks %}
+                <tr>
+                    <td><a href="{% url 'detail_task' task.task_id %}">{{ task.title }}</a></td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.due_date|date:"d.m.Y" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="3">Žádné úkoly k zobrazení.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Sekce projektů -->
+    <h3>Moje projekty</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Název projektu</th>
+                <th>Popis</th>
+                <th>Datum vytvoření</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if user_projects %}
+                {% for project in user_projects %}
+                <tr>
+                    <td><a href="{% url 'detail_project' project.project_id %}">{{ project.name }}</a></td>
+                    <td>{{ project.description|truncatewords:10 }}</td>
+                    <td>{{ project.created|date:"d.m.Y" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="3">Žádné projekty k zobrazení.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Sekce kontaktů -->
+    <h3>Moje kontakty</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Jméno</th>
+                <th>Email</th>
+                <th>Telefon</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if user_contacts %}
+                {% for contact in user_contacts %}
+                <tr>
+                    <td>{{ contact.first_name }} {{ contact.last_name }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.phone }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="3">Žádné kontakty k zobrazení.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+  </div>
+{% endblock %}

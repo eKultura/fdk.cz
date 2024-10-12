@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% block title %}Vytvořit fakturu bez registrace{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10">
+    <h1 class="text-2xl font-bold mb-5">Vytvořit fakturu bez registrace</h1>
+
+    <!-- Zobrazování chybových hlášek -->
+    {% if form.errors or item_formset.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+            <ul>
+                {% for field in form %}
+                    {% if field.errors %}
+                        <li><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</li>
+                    {% endif %}
+                {% endfor %}
+                {% for form in item_formset %}
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</li>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="get" action=".">
+        <div class="grid grid-cols-2 gap-8">
+            <!-- Dodavatel -->
+            <table><tr><td>
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Dodavatel</h3>
+                <div class="flex flex-col mb-4">
+                    <label for="id_company_name" class="block text-gray-700">Název firmy / jméno:</label>
+                    <input type="text" name="company_name" id="id_company_name" class="border border-gray-300 p-2 rounded w-full" value="{{ form.company_name.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_street" class="block text-gray-700">Ulice:</label>
+                    <input type="text" name="street" id="id_street" class="border border-gray-300 p-2 rounded w-full" value="{{ form.street.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_street_number" class="block text-gray-700">Číslo popisné:</label>
+                    <input type="text" name="street_number" id="id_street_number" class="border border-gray-300 p-2 rounded w-full" value="{{ form.street_number.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_city" class="block text-gray-700">Město:</label>
+                    <input type="text" name="city" id="id_city" class="border border-gray-300 p-2 rounded w-full" value="{{ form.city.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_postal_code" class="block text-gray-700">PSČ:</label>
+                    <input type="text" name="postal_code" id="id_postal_code" class="border border-gray-300 p-2 rounded w-full" value="{{ form.postal_code.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_ico" class="block text-gray-700">IČO:</label>
+                    <input type="text" name="ico" id="id_ico" class="border border-gray-300 p-2 rounded w-full" value="{{ form.ico.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_dic" class="block text-gray-700">DIČ (volitelně):</label>
+                    <input type="text" name="dic" id="id_dic" class="border border-gray-300 p-2 rounded w-full" value="{{ form.dic.value|default_if_none:'' }}">
+                </div>
+            </div>
+
+
+            </td><td>
+
+
+            <!-- Odběratel -->
+            <div>
+                <h3 class="text-xl font-semibold mb-4">Odběratel</h3>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_name" class="block text-gray-700">Název firmy / jméno:</label>
+                    <input type="text" name="client_name" id="id_client_name" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_name.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_street" class="block text-gray-700">Ulice:</label>
+                    <input type="text" name="client_street" id="id_client_street" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_street.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_street_number" class="block text-gray-700">Číslo popisné:</label>
+                    <input type="text" name="client_street_number" id="id_client_street_number" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_street_number.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_city" class="block text-gray-700">Město:</label>
+                    <input type="text" name="client_city" id="id_client_city" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_city.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_postal_code" class="block text-gray-700">PSČ:</label>
+                    <input type="text" name="client_postal_code" id="id_client_postal_code" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_postal_code.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_ico" class="block text-gray-700">IČO:</label>
+                    <input type="text" name="client_ico" id="id_client_ico" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_ico.value|default_if_none:'' }}">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="id_client_dic" class="block text-gray-700">DIČ (volitelně):</label>
+                    <input type="text" name="client_dic" id="id_client_dic" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_dic.value|default_if_none:'' }}">
+                </div>
+            </div>
+            </td></tr></table>
+        </div>
+
+        <!-- Fakturační údaje -->
+        <h3 class="text-xl font-semibold mb-4 mt-6">Informace o faktuře</h3>
+        <div class="grid grid-cols-2 gap-8">
+            <div class="mb-4">
+                <label for="id_issue_date" class="block text-gray-700">Datum vystavení:</label>
+                <input type="date" name="issue_date" id="id_issue_date" class="border border-gray-300 p-2 rounded w-full" value="{{ form.issue_date.value|default_if_none:'' }}">
+            </div>
+            <div class="mb-4">
+                <label for="id_due_date" class="block text-gray-700">Datum splatnosti:</label>
+                <input type="date" name="due_date" id="id_due_date" class="border border-gray-300 p-2 rounded w-full" value="{{ form.due_date.value|default_if_none:'' }}">
+            </div>
+        </div>
+
+ <!-- Způsob úhrady -->
+<div class="mb-4">
+    <label for="id_payment_method" class="block text-gray-700">Způsob úhrady:</label>
+    <select name="payment_method" id="id_payment_method" class="border border-gray-300 p-2 rounded w-full">
+        <option value="bank" {% if form.payment_method.value == 'bank' %}selected{% endif %}>Převod na účet</option>
+        <option value="cash" {% if form.payment_method.value == 'cash' %}selected{% endif %}>Hotově</option>
+    </select>
+</div>
+
+<!-- Bankovní údaje, zobrazené defaultně -->
+<div id="bank-details" style="display: {% if form.payment_method.value == 'bank' %}block{% else %}block{% endif %};">
+    <div class="mb-4">
+        <label for="account_number" class="block text-gray-700">Číslo účtu:</label>
+        <input type="text" name="account_number" id="account_number" class="border border-gray-300 p-2 rounded w-full" value="{{ request.GET.account_number }}">
+    </div>
+    <div class="mb-4">
+        <label for="bank_code" class="block text-gray-700">Kód banky:</label>
+        <input type="text" name="bank_code" id="bank_code" class="border border-gray-300 p-2 rounded w-full" value="{{ request.GET.bank_code }}">
+    </div>
+</div>
+
+<!-- DPH a plátce -->
+<div class="mb-4">
+    <label for="id_is_vat_payer" class="block text-gray-700">Jsem plátce DPH</label>
+    <input type="checkbox" name="is_vat_payer" id="id_is_vat_payer" class="form-check-input" {% if form.is_vat_payer.value %}checked{% endif %}>
+</div>
+
+<!-- Zobrazí pole pro zadání sazby DPH, pokud je uživatel plátcem -->
+<div id="vat-rate-field" class="mb-4" style="{% if not form.is_vat_payer.value %}display:none;{% endif %}">
+    <label for="id_vat_rate" class="block text-gray-700">DPH (%)</label>
+    <input type="number" name="vat_rate" id="id_vat_rate" class="border border-gray-300 p-2 rounded w-full" value="{{ form.vat_rate.value|default_if_none:21 }}">
+</div>
+
+<script>
+document.getElementById('id_is_vat_payer').addEventListener('change', function() {
+    const vatField = document.getElementById('vat-rate-field');
+    const vatInput = document.getElementById('id_vat_rate');
+    
+    if (this.checked) {
+        vatField.style.display = 'block';
+        vatInput.disabled = false;
+    } else {
+        vatField.style.display = 'none';
+        vatInput.disabled = true;
+        vatInput.value = '';  // Vymaže hodnotu DPH
+    }
+});
+</script>
+
+
+
+
+
+<!-- Položky faktury -->
+<h3 class="text-xl font-semibold mb-4 mt-6">Položky faktury</h3>
+<div class="item-container">
+    {{ item_formset.management_form }}
+    {% for form in item_formset %}
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-2">
+                <label for="id_form-{{ forloop.counter0 }}-description" class="block text-gray-700">Popis položky:</label>
+                <input type="text" name="form-{{ forloop.counter0 }}-description" class="border border-gray-300 p-2 rounded w-full" id="id_form-{{ forloop.counter0 }}-description" value="{{ form.description.value|default_if_none:'Služby' }}">
+            </div>
+            <div>
+                <label for="id_form-{{ forloop.counter0 }}-quantity" class="block text-gray-700">Množství:</label>
+                <input type="number" name="form-{{ forloop.counter0 }}-quantity" class="border border-gray-300 p-2 rounded w-full" id="id_form-{{ forloop.counter0 }}-quantity" value="{{ form.quantity.value|default_if_none:'1' }}">
+            </div>
+            <div>
+                <label for="id_form-{{ forloop.counter0 }}-unit_price" class="block text-gray-700">Cena za jednotku:</label>
+                <input type="number" name="form-{{ forloop.counter0 }}-unit_price" class="border border-gray-300 p-2 rounded w-full" id="id_form-{{ forloop.counter0 }}-unit_price" value="{{ form.unit_price.value|default_if_none:'2000' }}">
+            </div>
+            <div>
+                <label for="id_form-{{ forloop.counter0 }}-total_price" class="block text-gray-700">Celková cena:</label>
+                <input type="number" name="form-{{ forloop.counter0 }}-total_price" class="border border-gray-300 p-2 rounded w-full" id="id_form-{{ forloop.counter0 }}-total_price" readonly>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Součet položek -->
+<h3 class="text-lg font-semibold mb-4 mt-6">Celková cena: <span id="total_price">0</span> Kč</h3>
+
+<!-- Tlačítka -->
+<div class="flex justify-between mt-6">
+    <button type="button" class="bg-blue text-white py-2 px-4 rounded" onclick="addNewItem(); return false;">Přidat další položku</button>
+    <button type="submit" class="bg-blue text-white py-2 px-4 rounded">Zobrazit fakturu</button>
+</div>
+
+
+    </form>
+</div>
+
+<script>
+
+
+// Skript pro zobrazení/skrytí bankovních údajů podle způsobu úhrady
+document.getElementById('id_payment_method').addEventListener('change', function() {
+    const bankDetails = document.getElementById('bank-details');
+    if (this.value === 'bank') {
+        bankDetails.style.display = 'block';
+    } else {
+        bankDetails.style.display = 'none';
+    }
+});
+
+// Inicializace zobrazení na základě výchozího způsobu platby
+window.onload = function() {
+    if (document.getElementById('id_payment_method').value === 'cash') {
+        document.getElementById('bank-details').style.display = 'none';
+    } else {
+        document.getElementById('bank-details').style.display = 'block';
+    }
+}
+
+
+
+
+
+
+
+// Skript pro přidání nové položky
+function addNewItem() {
+    let formsetTotalForms = document.querySelector('#id_form-TOTAL_FORMS');
+    let currentForms = parseInt(formsetTotalForms.value);
+
+    // Naklonování poslední položky
+    let newForm = document.querySelector('.item-container div.grid:last-of-type').cloneNode(true);
+
+    // Vymazání hodnot z nové položky
+    newForm.querySelectorAll('input').forEach(input => {
+        input.value = ''; // Vymazání hodnoty
+        let name = input.getAttribute('name').replace(`form-${currentForms - 1}`, `form-${currentForms}`);
+        let id = input.getAttribute('id').replace(`form-${currentForms - 1}`, `form-${currentForms}`);
+        input.setAttribute('name', name);
+        input.setAttribute('id', id);
+    });
+
+    // Aktualizace počtu formulářů
+    formsetTotalForms.value = currentForms + 1;
+
+    // Přidání nové položky na konec kontejneru
+    document.querySelector('.item-container').appendChild(newForm);
+
+    // Inicializace výpočtu celkové ceny pro novou položku
+    initTotalPriceCalculation(newForm);
+
+    // Posun na nově přidanou položku
+    newForm.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+
+
+// Inicializace výpočtu celkové ceny
+function initTotalPriceCalculation(row) {
+    let quantityField = row.querySelector('[name$="quantity"]');
+    let unitPriceField = row.querySelector('[name$="unit_price"]');
+    let totalPriceField = row.querySelector('[name$="total_price"]');
+
+    function calculateTotalPrice() {
+        let quantity = parseFloat(quantityField.value) || 0;
+        let unitPrice = parseFloat(unitPriceField.value) || 0;
+        totalPriceField.value = (quantity * unitPrice).toFixed(2);
+        updateTotalPrice(); // Aktualizace celkové ceny
+    }
+
+    quantityField.addEventListener('input', calculateTotalPrice);
+    unitPriceField.addEventListener('input', calculateTotalPrice);
+
+    calculateTotalPrice();  // Spočítá na začátku
+}
+
+// Funkce pro aktualizaci celkové ceny
+function updateTotalPrice() {
+    let total = 0;
+    document.querySelectorAll('[name$="total_price"]').forEach(field => {
+        total += parseFloat(field.value) || 0;
+    });
+    document.getElementById('total_price').textContent = total.toFixed(2);
+}
+
+
+window.onload = function() {
+    document.querySelectorAll('.item-container div').forEach(initTotalPriceCalculation);
+    updateTotalPrice();
+}
+
+
+
+
+
+// Načtení celkové ceny při startu
+window.onload = function() {
+    document.querySelectorAll('.item-container div.grid').forEach(initTotalPriceCalculation);
+    updateTotalPrice();
+
+    // Zajistit, že pokud je zaškrtnutý "nejsem plátce DPH", nejsou vyžadovány hodnoty DPH a celková cena
+    const vatField = document.getElementById('id_vat_rate');
+    const totalPriceFields = document.querySelectorAll('[name$="total_price"]');
+
+    if (document.getElementById('id_without_vat').checked) {
+        vatField.disabled = true;
+        totalPriceFields.forEach(function (field) {
+            field.removeAttribute('required');
+        });
+    }
+}
+
+
+document.getElementById('id_without_vat').addEventListener('change', function() {
+    const vatField = document.getElementById('id_vat_rate');
+    if (this.checked) {
+        vatField.disabled = true;
+        vatField.value = ''; // Vymaže hodnotu DPH
+    } else {
+        vatField.disabled = false;
+        vatField.value = '21'; // Výchozí hodnota, pokud je uživatel plátce
+    }
+});
+
+
+
+</script>
+
+{% endblock %}

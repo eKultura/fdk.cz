@@ -1,0 +1,14 @@
+{% extends "test/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Detail chyby: {{ error.error_title }}</h1>
+
+    <p><strong>Status:</strong> {{ error.status }}</p>
+    <p><strong>Test:</strong> {% if error.test %}{{ error.test.name }}{% else %}N/A{% endif %}</p>
+    <p><strong>Autor:</strong> {% if error.created_by %}{{ error.created_by.username }}{% else %}Neznámý{% endif %}</p>
+    <p><strong>Popis:</strong> {{ error.description }}</p>
+
+    <a href="{% url 'edit_test_error' error.test_error_id %}" class="btn btn-warning">Upravit chybu</a>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}Editace projektu{% endblock %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editace Projektu</h1>
+    
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_name" class="form-label">Název projektu</label>
+                {{ form.name }}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_url" class="form-label">URL projektu</label>
+                {{ form.url }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis projektu</label>
+            {{ form.description }}
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_start_date" class="form-label">Datum začátku</label>
+                {{ form.start_date }}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_end_date" class="form-label">Datum konce</label>
+                {{ form.end_date }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+    </form>
+</div>
+{% endblock %}

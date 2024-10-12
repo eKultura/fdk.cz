@@ -1,0 +1,66 @@
+{% extends 'contact/base.html' %}
+{% block title %}Seznam kontaktů{% endblock %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+<h1>Kontakty <a href="/kontakt/novy/" style="font-size:60%">(nový kontakt)</a></h1>
+
+<!-- Filtrování kontaktů podle projektu -->
+<form method="GET" style="mb-4">
+    <label for="filter">Filtruj podle projektu:</label>
+    <select name="project_id" id="filter" onchange="this.form.submit()">
+        <option value="">Všechny projekty</option>
+        {% for project in projects %}
+            <option value="{{ project.project_id }}" {% if project_id == project.project_id|stringformat:"s" %}selected{% endif %}>
+                {{ project.name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
+<!-- Výpis kontaktů jako vizitky -->
+<div class="row">
+    {% for contact in contacts %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="https://div.cz/static/img/creator/noperson.svg" class="card-img-top" alt="Profilová fotka">
+            <div class="card-body">
+                <h5 class="card-title">
+                {% if contact.first_name %}{{ contact.first_name }}{% endif %}
+                {% if contact.last_name %}{{ contact.last_name }}{% endif %}
+                </h5>
+
+                <p class="card-text">{% if contact.company %}{{ contact.company }}{% endif %}</p>
+                <p class="card-text">{% if contact.email %}{{ contact.email }}{% endif %}</p>
+                <a href="{% url 'detail_contact' contact.contact_id %}" class="btn btn-primary">Detail</a>
+                <a href="{% url 'edit_contact' contact.contact_id %}" class="btn btn-sm btn-warning">Upravit</a>
+                <a href="{% url 'delete_contact' contact.contact_id %}" class="btn btn-sm btn-danger">Smazat</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Žádné kontakty.</p>
+    {% endfor %}
+</div>
+
+<!-- Stránkování -->
+<div class="pagination">
+    <span class="step-links">
+        {% if contacts.has_previous %}
+            <a href="?page=1">&laquo; První</a>
+            <a href="?page={{ contacts.previous_page_number }}">Předchozí</a>
+        {% endif %}
+
+        <span class="current">
+            Strana {{ contacts.number }} z {{ contacts.paginator.num_pages }}.
+        </span>
+
+        {% if contacts.has_next %}
+            <a href="?page={{ contacts.next_page_number }}">Další</a>
+            <a href="?page={{ contacts.paginator.num_pages }}">Poslední &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

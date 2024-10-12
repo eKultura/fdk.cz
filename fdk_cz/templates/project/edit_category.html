@@ -1,0 +1,17 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Upravit kategorii" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{% trans "Upravit kategorii" %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% trans "Uložit zmìny" %}</button>
+        <a href="{% url 'detail_project' category.project.project_id %}" class="btn btn-secondary">{% trans "Zpìt" %}</a>
+    </form>
+</div>
+{% endblock %}

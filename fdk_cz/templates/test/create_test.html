@@ -1,0 +1,78 @@
+{% extends "test/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Přidat nový test</h1>
+    
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_project" class="form-label">Projekt</label>
+                {{ form.project }}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_test_type" class="form-label">Typ testu</label>
+                {{ form.test_type }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Název testu</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis testu</label>
+            {{ form.description }}
+        </div>
+
+        <!-- Dropdown pro výběr mřížky -->
+        <div class="mb-3">
+            <label for="id_grid_location" class="form-label">Mřížka (umístění)</label>
+            {{ form.grid_location }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Přidat</button>
+    </form>
+
+    <!-- Zobrazení mřížky vedle roletky -->
+    <div class="grid mt-4">
+        <table class="table table-bordered text-center">
+            <tr>
+                <td>A1</td><td>A2</td><td>A3</td>
+            </tr>
+            <tr>
+                <td>B1</td><td>B2</td><td>B3</td>
+            </tr>
+            <tr>
+                <td>C1</td><td>C2</td><td>C3</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_project').addEventListener('change', function() {
+    var projectId = this.value;
+    var testTypeSelect = document.getElementById('id_test_type');
+
+    testTypeSelect.innerHTML = '<option value="">--- Vyberte typ testu ---</option>';
+
+    if (projectId) {
+        fetch(`/testy/get_test_types/${projectId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.test_types.forEach(function(testType) {
+                    var option = document.createElement('option');
+                    option.value = testType.id;
+                    option.text = testType.name;
+                    testTypeSelect.add(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}

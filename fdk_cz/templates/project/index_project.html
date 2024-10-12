@@ -1,0 +1,38 @@
+{% extends 'project/base.html' %}
+{% load static %}{% load i18n %}
+
+{% block title %}Projekty{% endblock %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Projekty</h1>
+
+    {% if user_projects %}
+        <div class="row">
+            {% for project in user_projects %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.name }}</h5>
+                        <p class="card-text text-truncate">{{ project.description|default:"Žádný popis." }}</p>
+                        <p class="card-text"><small class="text-muted">Vytvořeno: {{ project.created|date:"d.m.Y" }}</small></p>
+                        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-primary">Detail projektu</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Nemáte žádné projekty.</p>
+    {% endif %}
+
+    <hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
+
+    <a href="{% url 'new_project_cs' %}" class="btn btn-primary">Nový projekt</a>
+
+    <hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
+</div>
+{% endblock %}

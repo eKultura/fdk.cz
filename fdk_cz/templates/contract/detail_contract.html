@@ -1,0 +1,24 @@
+{% extends 'contract/base.html' %}
+{% load i18n %}
+
+{% block title %}Kontrakt{% endblock %}
+
+
+
+    {% block meta %}
+    
+    
+    {% endblock %}
+
+
+
+{% block content %}
+
+<h1>Detail kontraktu: {{ contract.name }}</h1>
+<p><strong>Popis:</strong> {{ contract.description }}</p>
+<p><strong>Datum začátku:</strong> {{ contract.start_date }}</p>
+<p><strong>Datum ukončení:</strong> {{ contract.end_date }}</p>
+<p><strong>Dokument:</strong> <a href="{{ contract.document.url }}">{{ contract.document.name }}</a></p>
+
+{% endblock %}
+

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Vytvořit fakturu{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Vytvořit novou fakturu</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ items_formset.management_form }}
+        {% for form in items_formset %}
+            <div class="form-row">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Vytvořit fakturu</button>
+    </form>
+</div>
+
+
+
+<div class="container mt-5">
+    <h1>Vytvořit novou fakturu 2</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Vytvořit fakturu</button>
+        <a href="{% url 'list_invoices' %}" class="btn btn-secondary">Zpět na seznam faktur</a>
+    </form>
+</div>
+{% endblock %}

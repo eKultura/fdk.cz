@@ -1,0 +1,16 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Smazat kategorii" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{% trans "Opravdu chcete smazat tuto kategorii?" %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% trans "Smazat" %}</button>
+        <a href="{% url 'detail_project' category.project.project_id %}" class="btn btn-secondary">{% trans "Zpìt" %}</a>
+    </form>
+</div>
+{% endblock %}

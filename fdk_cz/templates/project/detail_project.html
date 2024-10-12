@@ -1,0 +1,124 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ project.name }} - Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ project.name }}</h1>
+    <p><strong>{% trans "Popis" %}:</strong> {{ project.description }}</p>
+    <p><strong>{% trans "Vlastník" %}:</strong> {{ project.owner.username }}</p>
+    
+    <!-- Přepínání mezi tabulkou a sloupcovým zobrazením -->
+    <a href="{% url 'create_task' project.project_id %}" class="btn btn-success mb-2">{% trans "Nový úkol" %}</a>
+    <button id="toggleView" class="btn btn-info mb-2">{% trans "Zobrazit Sloupce" %}</button>
+    
+    <!-- Sloupcové zobrazení -->
+    <div class="row" id="task_columns" style="display:none;">
+        {% for status, tasks in tasks_by_status.items %}
+        <div class="col-md-4">
+            <h3>{{ status }}</h3>
+            {% for task in tasks %}
+            <div class="task-card">
+                <strong>{{ task.title }}</strong> - {{ task.status }}
+                {% if task.assigned %}
+                    <p>{% trans "Přiřazeno" %}: {{ task.assigned.username }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Tabulkové zobrazení -->
+    <div id="task_table">
+        <h2>{% trans "Úkoly" %}</h2>
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th>{% trans "Název úkolu" %}</th>
+                    <th>{% trans "Priorita" %}</th>
+                    <th>{% trans "Stav" %}</th>
+                    <th>{% trans "Přiřazeno" %}</th>
+                    <th>{% trans "Kategorie" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for status, tasks in tasks_by_status.items %}
+                {% for task in tasks %}
+                <tr>
+                    <td><a href="{% url 'detail_task' task.task_id %}">{{ task.title }}</a></td>
+                    <td>{{ task.priority }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>
+                        {% if task.assigned %}
+                            {{ task.assigned.username }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if task.category %}
+                            {{ task.category.name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Script for toggle view -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toggleButton = document.getElementById('toggleView');
+            var taskColumns = document.getElementById('task_columns');
+            var taskTable = document.getElementById('task_table');
+
+            toggleButton.addEventListener('click', function() {
+                if (taskTable.style.display === 'none') {
+                    taskTable.style.display = 'block';
+                    taskColumns.style.display = 'none';
+                    toggleButton.textContent = '{% trans "Zobrazit Sloupce" %}';
+                } else {
+                    taskTable.style.display = 'none';
+                    taskColumns.style.display = 'flex';
+                    toggleButton.textContent = '{% trans "Zobrazit Tabulku" %}';
+                }
+            });
+        });
+    </script>
+    
+    <!-- Milníky -->
+    <h2>{% trans "Milníky" %}</h2>
+    {% for milestone in project.milestones.all %}
+        <div>{{ milestone.title }} - {{ milestone.due_date }}</div>
+    {% endfor %}
+    <a href="{% url 'create_milestone' project.project_id %}" class="btn btn-success">{% trans "Nový milník" %}</a>
+    
+    <!-- Nice to have úkoly -->
+    <h2>{% trans "Nice to have" %}</h2>
+    {% for task in nice_to_have_tasks %}
+        <div>{{ task.title }}</div>
+    {% endfor %}
+    
+    <!-- Dokumenty -->
+    <h2>{% trans "Dokumenty" %}</h2>
+    {% for document in project.documents.all %}
+        <div>{{ document.title }}</div>
+    {% endfor %}
+    
+    <!-- Kontakty -->
+    {% if can_view_contacts %}
+    <h2>{% trans "Kontakty" %}</h2>
+    {% for contact in project.contacts.all %}
+        <div>{{ contact.first_name }} {{ contact.last_name }}</div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

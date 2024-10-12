@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Účetnictví - Přehled{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Účetnictví - Přehled</h1>
+
+    <!-- Blok 1: Informace o účetnictví (naplnění později) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Informace o účetnictví</h3>
+        </div>
+        <div class="card-body">
+            <p>Faktury a peněžní deníky.</p>
+        </div>
+    </div>
+
+    <!-- Blok 2: Tvorba nové faktury -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Tvorba faktur</h3>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'create_invoice' %}" class="btn btn-primary">Vytvořit novou fakturu</a>
+        </div>
+    </div>
+
+    <!-- Blok 3: Seznam faktur -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Seznam faktur</h3>
+        </div>
+        <div class="card-body">
+            {% if invoices %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Číslo faktury</th>
+                            <th>Datum vystavení</th>
+                            <th>Datum splatnosti</th>
+                            <th>Plátce</th>
+                            <th>Stav</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td>{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.issue_date }}</td>
+                            <td>{{ invoice.due_date }}</td>
+                            <td>{{ invoice.company.name }}</td>
+                            <td>{{ invoice.get_status_display }}</td>
+                            <td>
+                                <a href="{% url 'detail_invoice' invoice.id %}" class="btn btn-info btn-sm">Detail</a>
+                                <a href="{% url 'edit_invoice' invoice.id %}" class="btn btn-warning btn-sm">Upravit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nemáte žádné faktury.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

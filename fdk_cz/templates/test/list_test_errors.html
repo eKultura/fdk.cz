@@ -1,0 +1,38 @@
+{% extends "test/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Seznam chyb</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Název chyby</th>
+                <th>Test</th>
+                <th>Status</th>
+                <th>Autor</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for error in test_errors %}
+            <tr>
+                <td>{{ error.error_title }}</td>
+                <td>{% if error.test %}{{ error.test.name }}{% else %}N/A{% endif %}</td>
+                <td>{{ error.status }}</td>
+                <td>{% if error.created_by %}{{ error.created_by.username }}{% else %}Neznámý{% endif %}</td>
+                <td>
+                    <a href="{% url 'edit_test_error' error.test_error_id %}" class="btn btn-warning btn-sm">Upravit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Žádné chyby nejsou k dispozici.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'create_test_error' %}" class="btn btn-primary mt-3">Přidat novou chybu</a>
+</div>
+{% endblock %}

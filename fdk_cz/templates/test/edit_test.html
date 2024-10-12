@@ -1,0 +1,64 @@
+{% extends 'test/base.html' %}
+
+{% block title %}Editace testu{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editace testu</h1>
+    
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_project" class="form-label">Projekt</label>
+                {{ form.project }}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_test_type" class="form-label">Typ testu</label>
+                {{ form.test_type }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Název testu</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis testu</label>
+            {{ form.description }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_grid_location" class="form-label">Mřížka (umístění)</label>
+            {{ form.grid_location }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('id_project').addEventListener('change', function() {
+    var projectId = this.value;
+    var testTypeSelect = document.getElementById('id_test_type');
+
+    testTypeSelect.innerHTML = '<option value="">--- Vyberte typ testu ---</option>';
+
+    if (projectId) {
+        fetch(`/testy/get_test_types/${projectId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.test_types.forEach(function(testType) {
+                    var option = document.createElement('option');
+                    option.value = testType.id;
+                    option.text = testType.name;
+                    testTypeSelect.add(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}

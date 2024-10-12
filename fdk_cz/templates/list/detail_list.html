@@ -1,0 +1,39 @@
+{% extends 'list/base.html' %}
+
+{% block title %}Detail seznamu{% endblock %}
+
+{% block content %}
+    <h1>{{ list.name }}</h1>
+    <p>{{ list.description }}</p>
+
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <p class="card-text">{{ item.content }}</p>
+                    <small class="text-muted">Pořadí: {{ item.item_order }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Žádné položky v seznamu.</p>
+        {% endfor %}
+    </div>
+
+    <h2>Přidat položku</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <label for="id_content" class="form-label">Položka</label>
+                <input type="text" name="content" id="id_content" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="id_item_order" class="form-label">Pořadí</label>
+                <input type="number" name="item_order" id="id_item_order" class="form-control" min="1" value="1" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Přidat</button>
+    </form>
+{% endblock %}

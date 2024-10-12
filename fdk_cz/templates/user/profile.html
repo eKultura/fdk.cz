@@ -1,0 +1,21 @@
+{% extends 'user/base.html' %}
+{% load i18n %}
+
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Profil</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">{{ user.username }}</h4>
+        <p class="card-text">
+          <strong>Email:</strong> {{ user.email }} <br>
+          <strong>Jméno:</strong> {{ user.first_name }} {{ user.last_name }}<br>
+          ID: {{ user.id }}
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

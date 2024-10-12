@@ -1,0 +1,22 @@
+{% extends 'contact/base.html' %}
+{% load i18n %}
+
+    {% block meta %}
+    
+    
+    {% endblock %}
+
+{% block title %}Smazat kontakt{% endblock %}
+
+{% block content %}
+
+<h1>Smazat kontakt</h1>
+<p>Opravdu chcete smazat kontakt "{{ contact.first_name }} {{ contact.last_name }}"?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ano, smazat</button>
+    <a href="{% url 'my_contacts' %}" class="btn btn-secondary">Zpět</a>
+</form>
+
+{% endblock %}

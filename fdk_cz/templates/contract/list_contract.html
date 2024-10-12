@@ -1,0 +1,27 @@
+{% extends 'contract/base.html' %}
+{% load i18n %}
+
+{% block title %}Nový kontrakt{% endblock %}
+
+
+
+    {% block meta %}
+    
+    
+    {% endblock %}
+
+
+
+{% block content %}
+
+    <h2>Seznam kontraktů</h2>
+    <ul>
+        {% for contract in contracts %}
+            <li>{{ contract.name }} ({{ contract.start_date }} - {{ contract.end_date }})</li>
+        {% empty %}
+            <li>Žádné kontrakty k zobrazení.</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+

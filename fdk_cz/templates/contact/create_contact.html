@@ -1,0 +1,105 @@
+{% extends 'contact/base.html' %}
+{% load i18n %}
+
+{% block title %}Nový kontakt{% endblock %}
+
+{% block meta %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Nový kontakt</h1>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_first_name" class="form-label">Jméno</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger">
+                        {{ form.first_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_last_name" class="form-label">Příjmení</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_phone" class="form-label">Telefon</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="text-danger">
+                        {{ form.phone.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_email" class="form-label">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_company" class="form-label">Firma</label>
+                {{ form.company }}
+                {% if form.company.errors %}
+                    <div class="text-danger">
+                        {{ form.company.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_project" class="form-label">Projekt</label>
+                {{ form.project }}
+                {% if form.project.errors %}
+                    <div class="text-danger">
+                        {{ form.project.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Poznámka</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">
+                    {{ form.description.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="form-check form-switch">
+                {{ form.is_private }}
+                <label for="id_is_private" class="form-check-label">Soukromý kontakt</label>
+                {% if form.is_private.errors %}
+                    <div class="text-danger">
+                        {{ form.is_private.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Přidat kontakt</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

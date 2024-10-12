@@ -1,0 +1,77 @@
+{% extends "test/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Testy</h1>
+    <a href="{% url 'create_test' %}" class="btn btn-primary mb-3">Přidat nový test</a>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Název</th>
+                <th>Popis</th>
+                <th>Typ</th>
+                <th>Projekt</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test in tests %}
+            <tr>
+                <td>{{ test.name }}</td>
+                <td>{{ test.description }}</td>
+                <td>{{ test.test_type.name }}</td>
+                <td>{{ test.project.name }}</td>
+                <td>
+                    <a href="{% url 'edit_test' test.test_id %}" class="btn btn-warning btn-sm">Upravit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Žádné testy.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Krátký seznam typů testů -->
+    <h2 class="mt-5">Dostupné typy testů</h2>
+    <ul>
+        {% for test_type in test_types|slice:":5" %}
+            <li>{{ test_type.name }} - {{ test_type.description }}</li>
+        {% empty %}
+            <li>Žádné typy testů nejsou k dispozici.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'list_test_types' %}" class="btn btn-secondary">Zobrazit všechny typy testů</a>
+    <a href="{% url 'create_test_type' %}" class="btn btn-secondary">Přidat nový typ testu</a>
+
+
+
+
+
+    <!-- Krátký seznam posledních aktivních chyb -->
+    <h2 class="mt-5">Posledních 10 aktivních chyb</h2>
+
+
+<ul>
+    {% for error in test_errors %}
+        <li>
+            <strong>{{ error.error_title }}</strong> - {{ error.status }} 
+            (Test: {% if error.test %}{{ error.test.name }}{% else %}N/A{% endif %})
+            <br>Autor: {% if error.created_by %}{{ error.created_by.username }}{% else %}Neznámý{% endif %}
+        </li>
+    {% empty %}
+        <li>Žádné aktivní chyby.</li>
+    {% endfor %}
+</ul>
+
+
+
+    <a href="{% url 'list_test_errors' %}" class="btn btn-secondary mt-3">Zobrazit všechny chyby</a>
+    <a href="{% url 'create_test_error' %}" class="btn btn-secondary mt-3">Přidat novou chybu</a>
+
+
+</div>
+{% endblock %}

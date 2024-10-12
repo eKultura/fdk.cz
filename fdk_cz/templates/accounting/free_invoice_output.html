@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faktura č. {{ invoice_number }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                font-family: 'Raleway', sans-serif;
+                line-height: 1.15;
+                -webkit-text-size-adjust: 100%;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+
+            body {
+                margin: 0;
+                max-width:900px;
+            }
+
+            .w-full {
+                width: 100%;
+            }
+
+            .w-1\/2 {
+                width: 50%;
+            }
+
+            .p-2 {
+                padding: 0.5rem; /* 8px */
+            }
+
+            .p-5 {
+                padding: 1.25rem; /* 20px */
+            }
+
+            .p-12 {
+                padding: 3rem; /* 48px */
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .text-right {
+                text-align: right;
+            }
+
+            .text-\[\#1a8abe\] {
+                color: #1a8abe;
+            }
+
+            .text-\[\#b4b4b4\] {
+                color: #b4b4b4;
+            }
+
+            .text-\[\#ffffff\] {
+                color: #ffffff;
+            }
+
+            .bg-\[\#1a8abe\] {
+                background-color: #1a8abe;
+            }
+
+            .bg-\[\#f1f1f1\] {
+                background-color: #f1f1f1;
+            }
+            
+            .bg-\[\#e0e0e0\] {
+                background-color: #e0e0e0;
+            }
+
+            .font-bold {
+                font-weight: 700;
+            }
+
+            .m-0 {
+                margin: 0; 
+            }
+
+            .m-12 {
+                margin: 3rem; /* 48px */
+            }
+
+            .mb-5 {
+                margin-bottom: 1.25rem; /* 20px */
+            }
+
+            .ml-auto {
+                margin-left: auto;
+            }
+
+            .ml-3 {
+                margin-left: 0.75rem; /* 12px */
+            }
+
+            .ml-5 {
+                margin-left: 1.25rem; /* 20px */
+            }	
+
+            .ml-7 {
+                margin-left: 1.75rem; /* 28px */
+            }	
+
+            .my-2 {
+                margin-top: 0.5rem; /* 8px */
+                margin-bottom: 0.5rem; /* 8px */
+            }	
+
+            .my-9 {
+                margin-top: 2.25rem; /* 36px */
+                margin-bottom: 2.25rem; /* 36px */
+            }	
+
+            .ml-80 {
+                margin-left: 20rem; /* 320px */
+            }	
+
+            .flex {
+                display: flex;
+            }
+
+            .flex-wrap {
+                flex-wrap: wrap;
+            }
+
+            .items-center {
+                align-items: center;
+            }
+
+            .content-center {
+                align-content: center;
+            }
+
+            .grid {
+                display: grid;
+            }
+
+            .my-grid {
+                grid-template-columns: 100px auto 120px 120px;
+            }
+
+            .grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .after::after {
+                content: "";
+                display: block;
+                height: 2px;
+                background-color: #1a8abe;
+                margin-left: -3rem;
+                width: 50%;
+            }
+
+        </style>
+</head>
+<body>
+
+
+
+        <section>
+
+            <div class="bg-[#1a8abe] text-[#ffffff] w-1/2 ml-auto p-5">
+                <h2 class="w-full text-right">FAKTURA č. <span>{{ invoice_number }}</span></h2> <!-- zautomatizované číslo -->
+                <h3 class="text-[#b4b4b4] text-right">Evidenční č. <span>{{ invoice_number }}</span></h3>
+            </div>
+
+            <div class="grid grid-cols-2">
+<div class="p-12">
+    <h3 class="text-[#1a8abe] after">DODAVATEL</h3>
+    <p class="font-bold">{{ company_name }}</p> <!-- Název dodavatele -->
+    <p class="m-0">{{ street }} {{ street_number }}</p>
+    <p class="m-0">{{ city }} {{ postal_code }}</p>
+    <p class="m-0">Česká republika</p>
+    <p><p>{% if is_vat_payer %}Plátce DPH{% else %}Neplátce DPH{% endif %}</p></p>
+    <p class="text-[#1a8abe] font-bold">Kontaktní údaje</p>
+    <p class="m-0">{{ ico }}</p> <!-- IČO -->
+    <p class="m-0">{{ dic }}</p> <!-- DIČ -->
+</div>
+
+
+
+
+
+<div class="p-12" style="border-left: 1px solid #1a8abe">
+    <h3 class="text-[#1a8abe] after">ODBĚRATEL</h3>
+    <p class="m-0 font-bold">{{ client_name }}</p> <!-- Název odběratele -->
+    <p class="m-0">{{ client_street }} {{ client_street_number }}</p> <!-- Ulice a číslo popisné -->
+    <p class="m-0">{{ client_city }}, {{ client_postal_code }}</p> <!-- Město a PSČ -->
+    <p class="m-0">IČO: {{ client_ico }}</p> <!-- IČO odběratele -->
+    <p class="m-0">DIČ: {{ client_dic }}</p> <!-- DIČ odběratele -->
+</div>
+
+</div>
+
+
+
+            <div class="flex">
+                <div class="flex items-center bg-[#1a8abe] text-[#ffffff] p-5">
+                    <div class="text-center" style="width: 20%;">
+                        <img class="ml-3" style="width: 75%;" src="{{ form.qr_code_url.value }}"> <!-- Dynamický QR kód -->
+                    </div>
+                    <div class="flex flex-wrap ml-7" style="width: 75%;">
+                        <h3 class="w-full font-bold mb-5">Platební údaje</h3>
+                        <div class="grid grid-cols-2 w-full">
+                            <div class="w-full" style="border-right: 1px solid white;">
+                                <div class="flex">
+                                    <p class="my-2">Číslo účtu:</p>
+                                    <p class="ml-3 my-2 font-bold">{{ account_number }} / {{ bank_code }}</p> <!-- Číslo účtu a kód banky -->
+
+
+
+                                </div>
+                                <div class="flex w-full">
+                                    <p class="my-2">Variabilní symbol:</p>
+                                    <p class="font-bold ml-3 my-2">{{ invoice_number }}</p> <!-- Číslo faktury -->
+                                </div>
+                                <div class="flex w-full">
+                                    <p class="my-2">Forma úhrady:</p>
+                                    <p class="font-bold ml-3 my-2">    
+    {% if form.payment_method.value == 'bank' %}
+        bankovním převodem
+    {% elif form.payment_method.value == 'cash' %}
+        v hotovosti
+    {% else %}
+        {{ form.payment_method.value }} <!-- Pokud by byla nějaká jiná možnost -->
+    {% endif %}
+                                  </p> <!-- Způsob úhrady -->
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center ml-5">
+                                <div class="w-full">
+                                    <p class="my-2">Datum vystavení:</p>
+                                    <p class="font-bold ml-3 my-2">{{ form.issue_date.value }}</p> <!-- Datum vystavení -->
+                                </div>
+                                <div class="w-full">
+                                    <p class="my-2">Datum splatnost:</p>
+                                    <p class="font-bold ml-3 my-2">{{ form.due_date.value }}</p> <!-- Datum splatnosti -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 my-9">
+                <div class="grid my-grid p-2">
+                    <p class="m-0">Počet</p>
+                    <p class="m-0">Popis</p>
+                    <p class="m-0">Jedn. cena</p>
+                    <p class="m-0">Celkem</p>
+                </div>
+                {% for item in items %}
+                <div class="grid my-grid bg-[#f1f1f1] p-2">
+                    <p class="m-0">{{ item.quantity }}</p>
+                    <p class="m-0">{{ item.description }}</p>
+                    <p class="m-0">{{ item.unit_price }} Kč</p>
+                    <p class="m-0">{{ item.total_price }} Kč</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="bg-[#1a8abe] text-[#ffffff] w-1/2 ml-auto p-5">
+                <h4>Celkem k úhradě <span class="ml-7">{{ total_price }} Kč</span></h4> <!-- Celková částka -->
+            </div>
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+<script>
+function addToFavorites() {
+    alert("Tato funkce není podporována ve všech prohlížečích.");
+}
+
+window.onbeforeprint = function() {
+    document.querySelector('.buttons').style.display = 'none';
+};
+
+window.onafterprint = function() {
+    document.querySelector('.buttons').style.display = 'block';
+};
+</script>
+
+</body>
+</html>

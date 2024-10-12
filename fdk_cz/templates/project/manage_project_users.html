@@ -1,0 +1,42 @@
+{% extends 'project/base.html' %}
+
+{% block title %}Správa uživatelů projektu{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Správa uživatelů projektu: {{ project.name }}</h1>
+
+    <h3>Přidat člena do projektu</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Přidat uživatele</button>
+    </form>
+
+    <h3 class="mt-4">Členové projektu</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Uživatel</th>
+                <th>Role</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+            <tr>
+                <td>{{ member.user.username }}</td>
+                <td>{{ member.role.role_name }}</td>
+                <td>
+                    <a href="{% url 'remove_project_user' project.project_id member.user.user_id %}" class="btn btn-danger btn-sm">Odebrat</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Žádní členové projektu.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

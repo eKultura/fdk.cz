@@ -1,1 +1,5 @@
 
+config.py
+config/settings.py
+settings.py
+fdk_env/

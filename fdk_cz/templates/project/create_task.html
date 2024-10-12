@@ -1,0 +1,79 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Nový úkol" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{% trans "Vytvořit nový úkol" %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.title.label_tag }} {{ form.title }}
+            {% if form.title.errors %}
+                <div class="text-danger">
+                    {{ form.title.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.description.label_tag }} {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">
+                    {{ form.description.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.category.label_tag }} {{ form.category }}
+            {% if form.category.errors %}
+                <div class="text-danger">
+                    {{ form.category.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.priority.label_tag }} {{ form.priority }}
+            {% if form.priority.errors %}
+                <div class="text-danger">
+                    {{ form.priority.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.status.label_tag }} {{ form.status }}
+            {% if form.status.errors %}
+                <div class="text-danger">
+                    {{ form.status.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.due_date.label_tag }} {{ form.due_date }}
+            {% if form.due_date.errors %}
+                <div class="text-danger">
+                    {{ form.due_date.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.assigned.label_tag }} {{ form.assigned }}
+            {% if form.assigned.errors %}
+                <div class="text-danger">
+                    {{ form.assigned.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success">{% trans "Vytvořit úkol" %}</button>
+        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-secondary">{% trans "Zpět" %}</a>
+    </form>
+</div>
+{% endblock %}

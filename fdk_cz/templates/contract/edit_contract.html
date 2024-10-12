@@ -1,0 +1,26 @@
+
+{% extends 'contract/base.html' %}
+{% load i18n %}
+
+{% block title %}Editace kontraktu{% endblock %}
+
+
+
+    {% block meta %}
+    
+    
+    {% endblock %}
+
+
+
+{% block content %}
+
+<h1>Editace kontraktu: {{ contract.name }}</h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Uložit změny</button>
+</form>
+
+{% endblock %}
+

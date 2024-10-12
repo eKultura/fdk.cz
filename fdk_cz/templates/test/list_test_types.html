@@ -1,0 +1,35 @@
+{% extends 'test/base.html' %}
+
+{% block title %}Seznam typů testů{% endblock %}
+
+{% block content %}
+    <h1>Typy testů</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Název</th>
+                <th>Popis</th>
+                <th>Projekt</th>
+                <th>Akce</th>  <!-- Přidáno pro editaci -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for test_type in test_types %}
+            <tr>
+                <td>{{ test_type.name }}</td>
+                <td>{{ test_type.description }}</td>
+                <td>{{ test_type.project.name }}</td>
+                <td>
+                    <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-sm btn-warning">Upravit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Žádné typy testů nejsou k dispozici.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'create_test_type' %}" class="btn btn-primary">Nový typ</a>
+{% endblock %}

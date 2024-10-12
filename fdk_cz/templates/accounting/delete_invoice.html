@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Smazat fakturu</h1>
+    <p>Opravdu chcete smazat fakturu číslo {{ invoice.invoice_number }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Smazat</button>
+        <a href="{% url 'detail_invoice' invoice.invoice_id %}" class="btn btn-secondary">Zpět</a>
+    </form>
+</div>
+{% endblock %}

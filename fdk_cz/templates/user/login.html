@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Přihlášení{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Přihlášení</h2>
+
+    {% if user.is_authenticated %}
+      <p class="alert alert-success">Přihlášen jako {{ user.username }}</p>
+    {% else %}
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Uživatelské jméno</label>
+          <input type="text" name="username" id="id_username" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="id_password" class="form-label">Heslo</label>
+          <div class="input-group">
+            <input type="password" name="password" id="id_password" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('id_password')">Zobrazit</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Přihlásit se</button>
+      </form>
+      <p class="mt-3">Nemáte účet? <a href="{% url 'registration_cs' %}">Registrujte se zde</a></p>
+    {% endif %}
+  </div>
+
+  <script>
+    function togglePassword(fieldId) {
+      var passwordField = document.getElementById(fieldId);
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+      } else {
+        passwordField.type = "password";
+      }
+    }
+  </script>
+{% endblock %}

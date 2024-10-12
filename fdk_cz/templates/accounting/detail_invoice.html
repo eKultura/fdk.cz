@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faktura {{ invoice.invoice_number }}</title>
+    <style>
+        /* Základní styl faktury */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .container { width: 80%; margin: 0 auto; }
+        h1 { text-align: center; }
+        .invoice-details, .invoice-items { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid black; }
+        th, td { padding: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Faktura č. {{ invoice.invoice_number }}</h1>
+    
+    <div class="invoice-details">
+        <p><strong>Datum vystavení:</strong> {{ invoice.issue_date }}</p>
+        <p><strong>Datum splatnosti:</strong> {{ invoice.due_date }}</p>
+        <p><strong>Společnost:</strong> {{ invoice.company.name }}</p>
+    </div>
+
+    <div class="invoice-items">
+        <h2>Položky faktury:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Popis</th>
+                    <th>Množství</th>
+                    <th>Cena za jednotku</th>
+                    <th>Celková cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items.all %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unit_price }}</td>
+                    <td>{{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><strong>Celková cena:</strong> {{ invoice.total_price }}</p>
+    </div>
+</div>
+
+<!-- JavaScript pro automatické otevření dialogu tisku -->
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
+
+</body>
+</html>

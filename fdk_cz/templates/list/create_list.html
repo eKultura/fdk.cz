@@ -1,0 +1,39 @@
+{% extends 'list/base.html' %}
+
+{% block title %}Vytvořit nový seznam{% endblock %}
+
+{% block meta %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Vytvořit nový seznam</h1>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="id_name" class="form-label">Název seznamu</label>
+                {{ form.name }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_is_private" class="form-label">Soukromý seznam</label>
+                <div class="form-check form-switch">
+                    {{ form.is_private }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis</label>
+            {{ form.description }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_project" class="form-label">Projekt</label>
+            {{ form.project }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Vytvořit seznam</button>
+    </form>
+</div>
+{% endblock %}

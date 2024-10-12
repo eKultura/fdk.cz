@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Výsledky Testù{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Výsledky Testù</h1>
+
+    {% if test_results %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Název Testu</th>
+                    <th>Projekt</th>
+                    <th>Výsledek</th>
+                    <th>Provádìno kým</th>
+                    <th>Datum provedení</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in test_results %}
+                    <tr>
+                        <td>{{ result.test.name }}</td>
+                        <td>{{ result.project.name }}</td>
+                        <td>{{ result.result }}</td>
+                        <td>{{ result.executed_by.username }}</td>
+                        <td>{{ result.execution_date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Žádné výsledky testù zatím nebyly nalezeny.</p>
+    {% endif %}
+</div>
+{% endblock %}

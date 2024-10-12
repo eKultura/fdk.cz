@@ -1,0 +1,73 @@
+{% load i18n %}{# překlady #}
+<p>{% trans "Hello, world!" %}</p>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% load cache %}
+{% cache 500 sidebar %}
+  ... obsah k uložení do cache na 500 sekund ...
+{% endcache %}
+
+
+
+{% if user.is_superuser %}
+  <p>Toto vidí pouze superuser.</p>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+{% else %}
+{% endif %}
+
+
+{# Tento kód je pro zobrazení uživatele Martinu a Lucii #}
+
+{% if user.username == "martin" %}
+  <p>Vítejte, Martine!</p>
+{% elif user.username == "lucie" %}
+  <p>Vítejte, Lucie!</p>
+{% endif %}
+
+
+
+{% if user.is_staff %}
+  <p>Tento obsah je viditelný pro staff uživatele.</p>
+{% endif %}
+
+
+{% if user.groups.filter(name='název_skupiny').exists %}
+  <p>Tento obsah je viditelný pro uživatele ve skupině 'název_skupiny'.</p>
+{% endif %}
+
+
+
+{# Kompletní ukázka #}
+
+{% if user.is_authenticated %}
+  
+  {# Obsah pro uživatele Martinu a Lucii #}
+  {% if user.username == "martin" %}
+    <p>Vítejte, Martine!</p>
+  {% elif user.username == "lucie" %}
+    <p>Vítejte, Lucie!</p>
+  {% endif %}
+
+  {# Obsah pro superusera #}
+  {% if user.is_superuser %}
+    <p>Toto vidí pouze superuser.</p>
+  {% endif %}
+
+  {# Obsah pro staff #}
+  {% if user.is_staff %}
+    <p>Tento obsah je viditelný pro staff uživatele.</p>
+  {% endif %}
+
+  {# Obsah pro uživatele ve skupině 'editor' #}
+  {% if user.groups.filter(name='editor').exists %}
+    <p>Tento obsah je pro uživatele ze skupiny 'editor'.</p>
+  {% endif %}
+
+{% else %}
+  <p>Nejste přihlášen.</p>
+{% endif %}

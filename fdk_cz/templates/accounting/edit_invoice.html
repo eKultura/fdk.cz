@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Upravit fakturu{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Upravit fakturu č. {{ invoice.invoice_number }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Uložit změny</button>
+        <a href="{% url 'list_invoices' %}" class="btn btn-secondary">Zpět na seznam faktur</a>
+    </form>
+</div>
+
+
+
+<!-- // -->
+<div class="container mt-5">
+    <h1>Upravit fakturu</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ items_formset.management_form }}
+        {% for form in items_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+    </form>
+</div>
+{% endblock %}

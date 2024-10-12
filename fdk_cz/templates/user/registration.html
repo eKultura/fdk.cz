@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Registrace{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Registrace</h2>
+    {% if user.is_authenticated %}
+      <p class="alert alert-success">Přihlášen jako {{ user.username }}</p>
+    {% else %}
+      <!-- Zobrazení obecných chyb formuláře -->
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          <ul>
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+          <label for="id_username" class="form-label">Uživatelské jméno</label>
+          <input type="text" name="username" id="id_username" class="form-control" value="{{ form.username.value|default_if_none:'' }}" required>
+          {% if form.username.errors %}
+            <div class="text-danger">
+              {% for error in form.username.errors %}
+                <small>{{ error }}</small><br>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_email" class="form-label">Email</label>
+          <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default_if_none:'' }}" required>
+          {% if form.email.errors %}
+            <div class="text-danger">
+              {% for error in form.email.errors %}
+                <small>{{ error }}</small><br>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_password1" class="form-label">Heslo</label>
+          <div class="input-group">
+            <input type="password" name="password1" id="id_password1" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('id_password1')">Zobrazit</button>
+          </div>
+          <small class="form-text text-muted">
+            Heslo musí mít alespoň 8 znaků a mít kromě písmen i číslo. Heslo nesmí obsahovat sekvence znaků (123456, abcdef)
+          </small>
+          {% if form.password1.errors %}
+            <div class="text-danger">
+              {% for error in form.password1.errors %}
+                <small>{{ error }}</small><br>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_password2" class="form-label">Potvrzení hesla</label>
+          <div class="input-group">
+            <input type="password" name="password2" id="id_password2" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('id_password2')">Zobrazit</button>
+          </div>
+          {% if form.password2.errors %}
+            <div class="text-danger">
+              {% for error in form.password2.errors %}
+                <small>{{ error }}</small><br>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrovat se</button>
+      </form>
+      
+      <p class="mt-3">Již máte účet? <a href="{% url 'login_cs' %}">Přihlaste se zde</a></p>
+    {% endif %}
+  </div>
+
+  <script>
+    function togglePassword(fieldId) {
+      var passwordField = document.getElementById(fieldId);
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+      } else {
+        passwordField.type = "password";
+      }
+    }
+  </script>
+{% endblock %}

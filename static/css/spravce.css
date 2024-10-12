@@ -1,0 +1,60 @@
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+.dropdown-arrow {
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+        .hlavni-obsah {
+            flex: 1;
+        }
+        .paticka {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .postranni-panel {
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+        }
+        .postranni-panel a {
+            color: white;
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .postranni-panel a:hover {
+            background-color: #495057;
+        }
+        /* Stylování pro vnoøené podúrovnì */
+        .postranni-panel ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .postranni-panel li {
+            position: relative;
+        }
+        .postranni-panel .submenu {
+            #display: none;
+            padding-left: 20px; /* Odsazení pro podúrovnì */
+        }
+        .postranni-panel li:hover .submenu {
+            display: block;
+        }
+        .postranni-panel a small {
+            font-size: 0.8rem;
+        }
+        
+        
+hr {border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));}
+
+
+
+
+
+
+

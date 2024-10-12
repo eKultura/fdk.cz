@@ -1,0 +1,33 @@
+{% extends 'list/base.html' %}
+{% load static %}{% load i18n %}
+
+{% block title %}Seznamy{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Moje seznamy</h1>
+
+    {% if lists %}
+        <div class="row">
+            {% for list in lists %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ list.name }}</h5>
+                        <p class="card-text text-truncate">{{ list.description|default:"Žádný popis." }}</p>
+                        <p class="card-text"><small class="text-muted">Vytvořeno: {{ list.created|date:"d.m.Y" }}</small></p>
+                        <a href="{% url 'detail_list' list.list_id %}" class="btn btn-primary">Detail seznamu</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Nemáte žádné seznamy.</p>
+    {% endif %}
+
+    <hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
+
+    <a href="{% url 'create_list' %}" class="btn btn-primary">Vytvořit nový seznam</a>
+</div>
+{% endblock %}

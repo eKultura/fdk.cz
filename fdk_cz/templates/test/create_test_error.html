@@ -1,0 +1,119 @@
+{% extends "test/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Přidat novou chybu</h1>
+
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+
+<div class="mb-3">
+    <label for="id_project" class="form-label">Projekt</label>
+    <select id="id_project" name="project" class="form-control">
+        {% for project in form.fields.project.queryset %}
+            <option value="{{ project.pk }}" {% if project.pk == form.project.value %}selected{% endif %}>
+                {{ project.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <div class="form-text">
+        Vyberte projekt, ke kterému se chyba vztahuje.
+    </div>
+</div>
+
+        
+        <div class="mb-3">
+            <label for="id_test_result" class="form-label">Výsledek testu (nepovinné)</label>
+            
+
+<select id="id_test_result" name="test_result" class="form-control">
+    <option value="">--- Vyberte výsledek testu ---</option>
+    {% for result in form.fields.test_result.queryset %}
+        <option value="{{ result.test_result_id }}" {% if result.test_result_id == form.test_result.value %}selected{% endif %}>
+            {{ result.test.name }}
+        </option>
+    {% endfor %}
+</select>
+
+
+
+            <div class="form-text">
+                Volitelné - vyberte výsledek testu, pokud je k dispozici.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_error_title" class="form-label">Název chyby</label>
+            <input type="text" class="form-control" id="id_error_title" name="error_title" value="{{ form.error_title.value|default_if_none:'' }}">
+            <div class="invalid-feedback">
+                Zadejte název chyby.
+            </div>
+        </div>
+
+        <!-- Ostatní pole -->
+
+
+
+        <!-- Ostatní pole -->
+
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis chyby</label>
+            <textarea class="form-control" id="id_description" name="description">{{ form.description.value|default_if_none:'' }}</textarea>
+            <div class="form-text">
+                Volitelné - Popis chyby a podrobnosti.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_steps_to_replicate" class="form-label">Kroky k replikaci</label>
+            <textarea class="form-control" id="id_steps_to_replicate" name="steps_to_replicate">{{ form.steps_to_replicate.value|default_if_none:'' }}</textarea>
+            <div class="form-text">
+                Popište kroky k opětovnému vyvolání chyby.
+            </div>
+        </div>
+
+
+<div class="mb-3">
+    <label for="id_status" class="form-label">Status</label>
+    <select id="id_status" name="status" class="form-control">
+        {% for key, value in form.fields.status.choices %}
+            <option value="{{ key }}" {% if key == form.status.value %}selected{% endif %}>
+                {{ value }}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+
+
+
+        <button type="submit" class="btn btn-primary">Přidat chybu</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('id_project').addEventListener('change', function() {
+    var projectId = this.value;
+    var testResultSelect = document.getElementById('id_test_result');
+    testResultSelect.innerHTML = '<option value="">--- Vyberte výsledek testu ---</option>';
+
+    if (projectId) {
+        fetch(`/testy/get_test_results/${projectId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.test_results.forEach(function(result) {
+                    var option = document.createElement('option');
+                    option.value = result.id;
+                    option.text = result.name;
+                    testResultSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
+
+</script>
+
+{% endblock %}
+

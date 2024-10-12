@@ -1,0 +1,28 @@
+{% extends 'test/base.html' %}
+{% block title %}Editace typu testu{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editace typu testu</h1>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_project" class="form-label">Projekt</label>
+            {{ form.project }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_name" class="form-label">Název</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Popis</label>
+            {{ form.description }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+    </form>
+</div>
+{% endblock %}

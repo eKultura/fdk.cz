@@ -1,0 +1,16 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}Vytvořit nový milník{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{% trans "Vytvořit nový milník" %} - {{ project.name }}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">{% trans "Vytvořit milník" %}</button>
+    </form>
+</div>
+{% endblock %}

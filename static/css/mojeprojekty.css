@@ -1,0 +1,8 @@
+
+.dropdown-content{
+    display: none;
+}
+.dropdown-content .text-wrapper{
+    display: flex;
+    flex-direction: column;
+}

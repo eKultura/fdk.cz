@@ -1,0 +1,11 @@
+msgid "Create New Project"
+msgstr "Vytvoøit nový projekt"
+
+msgid "Project Name"
+msgstr "Název projektu"
+
+msgid "Project Description"
+msgstr "Popis projektu"
+
+msgid "Project URL"
+msgstr "URL projektu"
