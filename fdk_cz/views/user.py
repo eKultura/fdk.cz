@@ -4,11 +4,12 @@
 
 # views.user.py
 
+from django.contrib import messages
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 
-from fdk_cz.forms.user import user_registration_form
+from fdk_cz.forms.user import user_registration_form, profile_edit_form
 
 from django.shortcuts import render, redirect
 
@@ -21,10 +22,13 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            return redirect('dashboard')  # redirect to dashboard
+            return redirect('index')  # přesměrování na index nebo dashboard
+        else:
+            messages.error(request, "Nesprávné uživatelské jméno nebo heslo.")  # Zobrazit chybovou zprávu
     else:
         form = AuthenticationForm()
     return render(request, 'user/login.html', {'form': form})
+    
 
 
 def logout(request):
@@ -38,7 +42,14 @@ def user_profile(request):
 
 @login_required
 def user_settings(request):
-    return render(request, 'user/settings.html', {'user': request.user})
+    if request.method == 'POST':
+        form = profile_edit_form(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_profile')
+    else:
+        form = profile_edit_form(instance=request.user)
+    return render(request, 'user/settings.html', {'user': request.user, 'form': form})
 
 
 def registration(request):
@@ -47,7 +58,7 @@ def registration(request):
         if form.is_valid():
             user = form.save()
             auth_login(request, user)  # automatické přihlášení po registraci
-            return redirect('dashboard')  # Přesměrování po úspěšné registraci
+            return redirect('index')  # Přesměrování po úspěšné registraci
     else:
         form = user_registration_form()
     return render(request, 'user/registration.html', {'form': form})

@@ -10,9 +10,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 
-
-
-
 @login_required
 def new_project(request):
     if request.method == 'POST':
@@ -43,6 +40,75 @@ def new_project(request):
     else:
         form = project_form()
     return render(request, 'project/new_project.html', {'form': form})
+
+
+
+
+@login_required
+def detail_project(request, project_id):
+    proj = get_object_or_404(project, pk=project_id)
+    members = project_user.objects.filter(project=proj)
+    milestones = proj.milestones.all()
+    documents = proj.documents.all()
+    # Load form for adding a new user
+    if request.method == 'POST':
+        form = add_user_form(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            role_instance = form.cleaned_data['role']
+            project_user_instance, created = project_user.objects.get_or_create(user=user, project=proj)
+            project_user_instance.role = role_instance
+            project_user_instance.save()
+            return redirect('detail_project', project_id=project_id)
+    else:
+        form = add_user_form()
+
+    # Load form for adding a new milestone
+    if request.method == 'POST' and 'milestone_form' in request.POST:
+        milestone_form = milestone_form(request.POST)
+        if milestone_form.is_valid():
+            new_milestone = milestone_form.save(commit=False)
+            new_milestone.project = proj
+            new_milestone.save()
+            return redirect('detail_project', project_id=project_id)
+    else:
+        milestone_form = milestone_form()
+
+    if request.method == 'POST' and 'document_form' in request.POST:
+        document_form = DocumentForm(request.POST, request.FILES)
+        if document_form.is_valid():
+            new_document = document_form.save(commit=False)
+            new_document.project = proj
+            new_document.save()
+            return redirect('detail_project', project_id=project_id)
+    else:
+        document_form = DocumentForm()
+
+
+
+
+    # Other project details logic
+    tasks_by_status = {
+        'Ke zpracování': proj.tasks.filter(status='Ke zpracování'),
+        'Probíhá': proj.tasks.filter(status='Probíhá'),
+        'Hotovo': proj.tasks.filter(status='Hotovo')
+    }
+    nice_to_have_tasks = proj.tasks.filter(status='Nice to have')
+
+    can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
+    
+    return render(request, 'project/detail_project.html', {
+        'project': proj,
+        'milestones': milestones,
+        'milestone_form': milestone_form,
+        'documents': documents,
+        'document_form': document_form,
+        'tasks_by_status': tasks_by_status,
+        'nice_to_have_tasks': nice_to_have_tasks,
+        'can_view_contacts': can_view_contacts,
+        'members': members,
+        'form': form  # Pass form to the template
+    })
 
 
 
@@ -82,8 +148,9 @@ def index_project(request):
     current_user = User.objects.get(pk=request.user.pk)
     # Vyhledáme projekty, kde je aktuální uživatel vlastníkem
     user_projects = project.objects.filter(owner=current_user).order_by('-created')
-    return render(request, 'project/index_project.html', {'user_projects': user_projects})
+    assigned_tasks = task.objects.filter(assigned=request.user).order_by('-created')
 
+    return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})
 
 
 
@@ -91,26 +158,29 @@ def index_project(request):
 @login_required
 def detail_project(request, project_id):
     proj = get_object_or_404(project, pk=project_id)
-    
-    # Načteme úkoly a rozdělíme je do kategorií
+    members = project_user.objects.filter(project=proj)  # Fetch project members
+
     tasks_by_status = {
         'Ke zpracování': proj.tasks.filter(status='Ke zpracování'),
         'Probíhá': proj.tasks.filter(status='Probíhá'),
         'Hotovo': proj.tasks.filter(status='Hotovo')
     }
+    
+    categories = proj.categories.all()
 
-    # Načteme úkoly "Nice to have"
     nice_to_have_tasks = proj.tasks.filter(status='Nice to have')
 
-    # Kontrola práv pro zobrazení kontaktů
     can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
     
     return render(request, 'project/detail_project.html', {
         'project': proj,
+        'members': members,
         'tasks_by_status': tasks_by_status,
+        'categories': categories,
         'nice_to_have_tasks': nice_to_have_tasks,
         'can_view_contacts': can_view_contacts,
     })
+
 
 
 
@@ -155,6 +225,7 @@ def remove_project_user(request, project_id, user_id):
 
 
 # # # T a s k s # # #
+"""
 @login_required
 def create_task(request, project_id):
     proj = get_object_or_404(project, pk=project_id)
@@ -171,19 +242,35 @@ def create_task(request, project_id):
         form = task_form(project=proj)
     
     return render(request, 'project/create_task.html', {'form': form, 'project': proj})
+"""
+def create_task(request, project_id):
+    proj = get_object_or_404(project, pk=project_id)
+    if request.method == 'POST':
+        form = task_form(request.POST, project=proj)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.project = proj
+            task.creator = request.user.username
+            task.save()
+            return redirect('detail_project', project_id=project_id)
+    else:
+        form = task_form(project=proj)
+    
+    return render(request, 'project/create_task.html', {'form': form, 'project': proj})
+
 
 
 
 
 @login_required
 def detail_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
-    return render(request, 'project/detail_task.html', {'task': task})
+    task_obj = get_object_or_404(task, pk=task_id)
+    return render(request, 'project/detail_task.html', {'task': task_obj})
 
 
 @login_required
 def edit_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
+    task_edit = get_object_or_404(task, pk=task_id)
     if request.method == 'POST':
         form = task_form(request.POST, instance=task)
         if form.is_valid():
@@ -191,7 +278,7 @@ def edit_task(request, task_id):
             return redirect('detail_project', project_id=task.project.project_id)
     else:
         form = task_form(instance=task)
-    return render(request, 'project/edit_task.html', {'form': form, 'task': task})
+    return render(request, 'project/edit_task.html', {'form': form, 'task': task_edit})
 
 @login_required
 def delete_task(request, task_id):
@@ -210,20 +297,25 @@ def update_task_status(request, task_id, status):
 
 
 # # # M i l e s t o n e s # # #@login_required
+@login_required
 def create_milestone(request, project_id):
     proj = get_object_or_404(project, pk=project_id)
     
     if request.method == 'POST':
-        form = MilestoneForm(request.POST)
+        form = milestone_form(request.POST)
         if form.is_valid():
             new_milestone = form.save(commit=False)
             new_milestone.project = proj
             new_milestone.save()
             return redirect('detail_project', project_id=proj.project_id)
+        else:
+            print("Form errors:", form.errors)  # Debugging
     else:
         form = milestone_form()
     
     return render(request, 'project/create_milestone.html', {'form': form, 'project': proj})
+
+
 
 
 ### C A T E G O R Y ###

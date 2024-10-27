@@ -1,73 +1,46 @@
 {% load static %}{% load i18n %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dashboard{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .dropdown-arrow {
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-        .hlavni-obsah {
-            flex: 1;
-        }
-        .paticka {
-            background-color: #f8f9fa;
-            padding: 10px 0;
-            text-align: center;
-        }
-        .postranni-panel {
-            height: 100vh;
-            background-color: #1f2937; /* Tailwind bg-gray-800 */
-            color: white;
-            padding-top: 20px;
-            height:100%;
-        }
-        .postranni-panel a {
-            color: white;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .postranni-panel a:hover {
-            background-color: #374151; /* Tailwind bg-gray-700 */
-        }
-        .alert-danger {
-            color: #f44336;
-        }
-    </style>
-    {% block meta %}{% endblock %}
+
+    <title>{% block title %}Správa financí | Účetnictví | FDK.cz{% endblock %}</title>
+
+
+{% block meta %}{% endblock %}
+
+    {% include "inc/head.html" %}
+
 </head>
-<body class="flex flex-col min-h-screen">
-    <div class="flex flex-1">
-        <!-- Postranní panel -->
-        <nav class="w-1/5 bg-gray-800 text-white p-4 postranni-panel">
-            <div>
-                <h4 class="text-center mb-4 text-lg font-semibold">Nástěnka</h4>
-                {% include "left_links.html" %}
-            </div>
-        </nav>
+<body class="bg-gray-100">
 
-        <!-- Hlavní obsah -->
-        <main class="flex-1 px-6 py-4 bg-white hlavni-obsah">
-            {% block content %}
-            {% endblock %}
-        </main>
-    </div>
+                        {% if user.is_authenticated %}
+                            {% if user.is_superuser or user.is_staff %}
+                            {% else %}
+                            {% endif %}
+                        <!-- přihlášen -->
+                        {% else %}
+                        <!-- nepřihlášen-->
+                        {% endif %}
 
-    <!-- Paticka -->
-    <footer class="paticka bg-gray-100">
-        <div class="container mx-auto text-center">
-            <span class="text-gray-500">© 2024 eKultura. Všechna práva vyhrazena.</span>
-        </div>
-    </footer>
+    <!-- Horní lišta -->
+    {% include "inc/topnav.html" %}
+
+
+<!-- Hlavní obsah dashboardu -->
+<div class="container mx-auto px-4 py-8">
+
+
+                {% block content %}
+                {% endblock %}
+
+
+</div>
+
+
+
+    {% include "inc/footer.html" %}
+
 </body>
 </html>

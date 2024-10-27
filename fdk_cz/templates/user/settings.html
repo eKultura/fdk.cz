@@ -1,17 +1,44 @@
-{% extends 'user/base.html' %}
-{% load i18n %}
+{% extends 'base.html' %}
 
-{% block title %}Nastavení{% endblock %}
+{% block title %}Úprava profilu{% endblock %}
 
 {% block content %}
-  <div class="container mt-5">
-    <h2 class="mb-4">Nastavení</h2>
+<div class="container mt-5" style="max-width: 400px;">
+    <h2 class="mb-4 text-center" style="font-weight: bold; color: #333;">Úprava profilu</h2>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success text-center" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 6px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
+    <form method="POST" class="p-4 border rounded shadow-sm" style="background-color: #f0f4f8; border: 1px solid #d1d5db; border-radius: 8px;">
+        {% csrf_token %}
 
-Nasstavení
+        <!-- Jméno -->
+        <div class="mb-4">
+            <label for="id_first_name" class="form-label" style="font-weight: 600; color: #555;">Jméno</label>
+            <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default_if_none:'' }}" 
+                   class="form-control" placeholder="Zadejte jméno" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff; width: 100%;">
+        </div>
 
+        <!-- Příjmení -->
+        <div class="mb-4">
+            <label for="id_last_name" class="form-label" style="font-weight: 600; color: #555;">Příjmení</label>
+            <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default_if_none:'' }}" 
+                   class="form-control" placeholder="Zadejte příjmení" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff; width: 100%;">
+        </div>
 
+        <!-- Email -->
+        <div class="mb-4">
+            <label for="id_email" class="form-label" style="font-weight: 600; color: #555;">Email</label>
+            <input type="email" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" 
+                   class="form-control" placeholder="Zadejte email" style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff; width: 100%;">
+        </div>
 
-  </div>
+        <button type="submit" class="btn btn-primary w-100 mt-3" style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">Uložit změny</button>
+    </form>
+</div>
 {% endblock %}

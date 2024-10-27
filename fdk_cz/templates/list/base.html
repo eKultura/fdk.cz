@@ -1,91 +1,46 @@
 {% load static %}{% load i18n %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dashboard{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .dropdown-arrow {
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-        .hlavni-obsah {
-            flex: 1;
-        }
-        .paticka {
-            background-color: #f8f9fa;
-            padding: 10px 0;
-            text-align: center;
-        }
-        .postranni-panel {
-            height: 100vh;
-            background-color: #343a40;
-            color: white;
-            padding-top: 20px;
-        }
-        .postranni-panel a {
-            color: white;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .postranni-panel a:hover {
-            background-color: #495057;
-        }
-        .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        .navbar-toggler-icon {
-            background-image: url("https://upload.wikimedia.org/wikipedia/commons/5/59/Hamburger_icon_white.svg");
-            background-size: cover;
-        }
-    </style>
-    {% block meta %}{% endblock %}
+
+    <title>{% block title %}Seznamy | FDK.cz{% endblock %}</title>
+
+
+{% block meta %}{% endblock %}
+
+    {% include "inc/head.html" %}
+
 </head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Navbar for mobile devices -->
-            <nav class="navbar navbar-dark bg-dark d-md-none">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </nav>
+<body class="bg-gray-100">
 
-            <!-- Postranní panel -->
-            <nav class="col-md-2 collapse d-md-block bg-dark postranni-panel" id="mobileNav">
-                <div class="position-sticky">
-                    <h4 class="text-center mb-4">Nástěnka</h4>
+                        {% if user.is_authenticated %}
+                            {% if user.is_superuser or user.is_staff %}
+                            {% else %}
+                            {% endif %}
+                        <!-- přihlášen -->
+                        {% else %}
+                        <!-- nepřihlášen-->
+                        {% endif %}
 
-
-                    {% include "left_links.html" %}
+    <!-- Horní lišta -->
+    {% include "inc/topnav.html" %}
 
 
-                </div>
-            </nav>
+<!-- Hlavní obsah dashboardu -->
+<div class="container mx-auto px-4 py-8">
 
-            <!-- Hlavní obsah -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 hlavni-obsah">
+
                 {% block content %}
                 {% endblock %}
-            </main>
-        </div>
-    </div>
 
-    <!-- Paticka -->
-    <footer class="paticka mt-auto">
-        <div class="container">
-            <span class="text-muted">© 2024 eKultura. Všechna práva vyhrazena.</span>
-        </div>
-    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+
+
+    {% include "inc/footer.html" %}
+
 </body>
 </html>

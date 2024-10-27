@@ -1,24 +1,35 @@
 {% extends 'project/base.html' %}
+{% load i18n %}
 
 {% block title %}{{ task.title }} - Detail{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h1>{{ task.title }}</h1>
+    <p><strong>Status:</strong> {{ task.status|default:"NedefinovÃ¡n" }}</p>
+    
     <p><strong>{% trans "Popis" %}:</strong> {{ task.description }}</p>
     <p><strong>{% trans "Kategorie" %}:</strong> {{ task.category.name }}</p>
     <p><strong>{% trans "Priorita" %}:</strong> {{ task.priority }}</p>
     <p><strong>{% trans "Stav" %}:</strong> {{ task.status }}</p>
-    <p><strong>{% trans "Vytvoøeno" %}:</strong> {{ task.created }}</p>
-    <p><strong>{% trans "Pøiøazeno" %}:</strong> {{ task.assigned.username if task.assigned else 'N/A' }}</p>
+    <p><strong>{% trans "VytvoÅ™eno" %}:</strong> {{ task.created }}</p>
+
+    <p><strong>{% trans "PÅ™iÅ™azeno" %}:</strong> 
+    {% if task.assigned %}
+        {{ task.assigned.username }}
+    {% else %}
+        N/A
+    {% endif %}
+    </p>
+
     <p><strong>{% trans "Datum splatnosti" %}:</strong> {{ task.due_date }}</p>
 
     {% if task.parent %}
-        <p><strong>{% trans "Nadøazenı úkol" %}:</strong> <a href="{% url 'detail_task' task.parent.task_id %}">{{ task.parent.title }}</a></p>
+        <p><strong>{% trans "NadÅ™azenÃ½ Ãºkol" %}:</strong> <a href="{% url 'detail_task' task.parent.task_id %}">{{ task.parent.title }}</a></p>
     {% endif %}
     
     {% if task.subtasks.exists %}
-        <h3>{% trans "Podúkoly" %}</h3>
+        <h3>{% trans "PodÃºkoly" %}</h3>
         <ul>
             {% for subtask in task.subtasks.all %}
                 <li><a href="{% url 'detail_task' subtask.task_id %}">{{ subtask.title }}</a></li>
@@ -26,7 +37,7 @@
         </ul>
     {% endif %}
 
-    <a href="{% url 'edit_task' task.task_id %}" class="btn btn-warning">{% trans "Editovat úkol" %}</a>
-    <a href="{% url 'delete_task' task.task_id %}" class="btn btn-danger" onclick="return confirm('{% trans "Opravdu chcete smazat tento úkol?" %}');">{% trans "Smazat úkol" %}</a>
+    <a href="{% url 'edit_task' task.task_id %}" class="btn btn-warning">{% trans "Editovat Ãºkol" %}</a>
+    <a href="{% url 'delete_task' task.task_id %}" class="btn btn-danger" onclick="return confirm('{% trans "Opravdu chcete smazat tento Ãºkol?" %}');">{% trans "Smazat Ãºkol" %}</a>
 </div>
 {% endblock %}

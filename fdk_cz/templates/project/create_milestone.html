@@ -4,13 +4,48 @@
 {% block title %}Vytvořit nový milník{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>{% trans "Vytvořit nový milník" %} - {{ project.name }}</h1>
-    
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">{% trans "Vytvořit milník" %}</button>
-    </form>
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Formulář vlevo -->
+        <form method="post" action="{% url 'create_milestone' project.project_id %}" class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Vytvořit nový milník" %}</h2>
+            {% csrf_token %}
+            
+            <!-- Název milníku -->
+            <div class="mb-4">
+                <label for="id_title" class="form-label font-semibold text-gray-600 mb-1">{% trans "Název milníku" %}</label>
+                <input type="text" name="title" id="id_title" class="w-full p-2 border border-gray-300 rounded-lg" required placeholder="{% trans 'Zadejte název milníku' %}">
+                {% if form.title.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Popis milníku -->
+            <div class="mb-4">
+                <label for="id_description" class="form-label font-semibold text-gray-600 mb-1">{% trans "Popis" %}</label>
+                <textarea name="description" id="id_description" class="w-full p-2 border border-gray-300 rounded-lg" rows="3" placeholder="{% trans 'Popis milníku (volitelné)' %}"></textarea>
+                {% if form.description.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Datum dokončení milníku -->
+            <div class="mb-4">
+                <label for="id_due_date" class="form-label font-semibold text-gray-600 mb-1">{% trans "Termín dokončení" %}</label>
+                <input type="date" name="due_date" id="id_due_date" class="w-full p-2 border border-gray-300 rounded-lg">
+                {% if form.due_date.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.due_date.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 mt-3">{% trans "Vytvořit milník" %}</button>
+        </form>
+
+        <!-- Sekce s názvem projektu vpravo -->
+        <div class="bg-white p-6 rounded-lg shadow-md flex justify-center items-center">
+            <h1 class="text-2xl font-bold text-gray-700">{{ project.name }}</h1>
+        </div>
+    </div>
 </div>
 {% endblock %}

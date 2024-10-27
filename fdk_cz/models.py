@@ -113,6 +113,12 @@ class role_permission(models.Model):
 
 
 class task(models.Model):
+    STATUS_CHOICES = [
+        ('Ke zpracování', 'Ke zpracování'),
+        ('Probíhá', 'Probíhá'),
+        ('Hotovo', 'Hotovo'),
+        ('Nice to have', 'Nice to have'), 
+    ]
     task_id = models.AutoField(primary_key=True, db_column='task_id')
     title = models.CharField(max_length=255, db_column='title')
     description = models.TextField(null=True, blank=True, db_column='description')

@@ -1,0 +1,52 @@
+<!-- Horní lišta -->
+<nav class="bg-white shadow-md py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <!-- Logo -->
+        <a href="https://fdk.cz/" class="text-xl font-bold text-gray-800">FDK.cz</a>
+        
+        <!-- Uživatelský stav -->
+        <div class="relative flex items-center">
+            {% if user.is_authenticated %}
+                <!-- Jméno uživatele s rozbalovacím menu -->
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleDropdown()">
+                    <span class="inline-block w-8 h-8 rounded-full bg-gray-300"></span>
+                    <span class="text-gray-800 font-semibold">{{ user.username }}</span>
+                    <span class="text-gray-600">&#9662;</span> <!-- Šipka dolů -->
+                </div>
+                
+                <!-- Rozbalovací menu -->
+                <div id="dropdownMenu" class="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+                    <a href="/profil/" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Účet</a>
+                    <a href="/projekty/" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Moje projekty</a>
+                    <a href="/seznamy/" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Seznamy</a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="/odhlaseni/" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Odhlásit se</a>
+                </div>
+            {% else %}
+                <!-- Zobrazení pro nepřihlášeného uživatele -->
+                <div class="flex items-center space-x-2">
+                    <span class="inline-block w-8 h-8 rounded-full bg-gray-300"></span>
+                    <a href="/prihlaseni/" class="text-blue-500 ml-2">Přihlásit</a>
+                    <!--<a href="/registrace/" class="text-blue-500 ml-2">Registrace</a>-->
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+    
+    // Close the dropdown if clicked outside
+    window.onclick = function(event) {
+        if (!event.target.closest('.cursor-pointer')) {
+            var dropdown = document.getElementById("dropdownMenu");
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    }
+</script>

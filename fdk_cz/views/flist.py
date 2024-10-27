@@ -3,6 +3,9 @@
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -51,13 +54,13 @@ def edit_list(request, list_id):
 
     # Ověření, že uživatel je vlastníkem seznamu
     if flist_instance.owner != request.user:
-        return redirect('list_detail', list_id=list_id)  # Přesměrování zpět na detail seznamu
+        return redirect('detail_list', list_id=list_id)  # Přesměrování zpět na detail seznamu
 
     if request.method == 'POST':
         form = list_form(request.POST, instance=flist_instance)
         if form.is_valid():
             form.save()
-            return redirect('list_detail', list_id=list_id)
+            return redirect('detail_list', list_id=list_id)
     else:
         form = list_form(instance=flist_instance)
 
@@ -77,7 +80,7 @@ def detail_list(request, list_id):
             new_item.flist = flist_instance
             new_item.created = timezone.now()  # Použití timezone pro nastavení data vytvoření
             new_item.save()
-            return redirect('detail_list', list_id=list_id)
+            return redirect('detail_list', list_id=new_item.flist.list_id)
     else:
         item_form = list_item_form()
 
@@ -98,4 +101,27 @@ def add_item(request, list_id):
             return redirect('detail_list', list_id=list_id)
 
     return render(request, 'list/add_item.html', {'flist': flist_instance})
+
+
+
+def edit_item(request, item_id):
+    item = get_object_or_404(list_item, pk=item_id)
+    if request.method == 'POST':
+        form = list_item_form(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('detail_list', args=[item.flist.list_id]))
+    else:
+        form = list_item_form(instance=item)
+    return render(request, 'list/edit_item.html', {'form': form, 'item': item})
+
+
+@login_required
+def delete_item(request, item_id):
+    item = get_object_or_404(list_item, pk=item_id)
+    flist_id = item.flist.list_id
+    item.delete()
+    return redirect('detail_list', list_id=flist_id)
+
+
 

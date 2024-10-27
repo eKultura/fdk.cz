@@ -43,6 +43,7 @@ class milestone_form(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
 
+
 class task_form(forms.ModelForm):
     class Meta:
         model = task
@@ -57,8 +58,12 @@ class task_form(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        project = kwargs.pop('project', None) 
+        project = kwargs.pop('project', None)
         super().__init__(*args, **kwargs)
         if project:
-            self.fields['category'].queryset = category.objects.filter(project__in=[project, None])
+            self.fields['category'].queryset = category.objects.filter(project=project)
+        else:
+            self.fields['category'].queryset = category.objects.none()
+        self.fields['category'].empty_label = "Vyberte kategorii"
+
 

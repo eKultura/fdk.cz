@@ -2,19 +2,24 @@
 {% block title %}Přidat novou položku{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Přidat novou položku</h1>
-    <form method="POST" class="row g-3">
+<div class="container mt-5" style="max-width: 600px;">
+    <h1 class="text-center mb-4" style="font-weight: bold; color: #333;">Přidat novou položku</h1>
+    <form method="POST" class="p-4 border rounded shadow-sm" 
+          style="background-color: #f8f9fa; max-width: 100%; border-radius: 8px; border: 1px solid #d1d5db;">
         {% csrf_token %}
         
-        <div class="col-md-12">
-            <label for="content" class="form-label">Název položky</label>
-            <input type="text" name="content" id="content" class="form-control" placeholder="Zadejte název položky" required>
+        <!-- Název položky -->
+        <div class="mb-4">
+            <label for="content" class="form-label" style="font-weight: 600; color: #555;">Název položky</label>
+            <input type="text" name="content" id="content" class="form-control" 
+                   placeholder="Zadejte název položky" required 
+                   style="padding: 10px; border-radius: 6px; width: 100%; border: 1px solid #cbd5e0; background-color: #fff;">
         </div>
 
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Přidat položku</button>
-        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-3" 
+                style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">
+            Přidat položku
+        </button>
     </form>
 </div>
 {% endblock %}

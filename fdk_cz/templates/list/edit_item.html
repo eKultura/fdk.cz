@@ -1,0 +1,47 @@
+{% extends 'list/base.html' %}
+
+{% block title %}Editace položky{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-5 max-w-screen-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Levý blok - Formulář pro editaci položky -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-center mb-4 text-2xl font-semibold text-gray-800">Editace položky</h1>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                
+                <!-- Název položky -->
+                <div>
+                    <label for="id_content" class="font-semibold text-gray-700 mb-1 block">Název položky</label>
+                    <input type="text" name="content" id="id_content" value="{{ form.content.value|default_if_none:'' }}" 
+                           class="w-full p-2 border rounded-md" required>
+                </div>
+
+                <!-- Pořadí položky -->
+                <div>
+                    <label for="id_item_order" class="font-semibold text-gray-700 mb-1 block">Pořadí</label>
+                    <input type="number" name="item_order" id="id_item_order" value="{{ form.item_order.value|default_if_none:1 }}" 
+                           class="w-full p-2 border rounded-md" min="1" required>
+                </div>
+
+                <button type="submit" class="w-full py-2 mt-4 bg-blue-600 text-white rounded-md font-bold hover:bg-blue-700">
+                    Uložit změny
+                </button>
+            </form>
+        </div>
+
+        <!-- Pravý blok - Informace o seznamu -->
+        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-center">
+            <div class="text-center">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2">{{ list.name }}</h2>
+                <p class="text-gray-500">{{ list.description|default:"Bez popisu." }}</p>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="200" height="200" class="text-blue-600">
+                <!-- Příklad SVG ikony seznamu -->
+                <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

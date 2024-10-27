@@ -1,67 +1,179 @@
-{% extends 'base.html' %}
-{% load i18n %}
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block title %}FDK.cz - správce úkolů {% endblock %}
+    <title>FDK.cz Dashboard</title>
 
-{% block meta %}{% endblock %}
+    {% include "inc/head.html" %}
+</head>
+<body class="bg-gray-100">
 
-{% block content %}
+                        {% if user.is_authenticated %}
+                            {% if user.is_superuser or user.is_staff %}
+                            {% else %}
+                            {% endif %}
+                        <!-- přihlášen -->
+                        {% else %}
+                        <!-- nepřihlášen-->
+                        {% endif %}
 
-
-
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Vítejte na vaší nástěnce</h1>
-                </div>
-                
-                <p style="color:red;font-size:bold">Připravujeme nový design a funkce..</p>
-
-                <!-- Obsah -->
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Projekty</h5>
-                                <p class="card-text">Efektivně spravujte své projekty.</p>
-                                <a href="/projekty/" class="btn btn-primary">Přejít na Projekty</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Kontakty</h5>
-                                <p class="card-text">Kontakty k projektu, k seznamu.</p>
-                                <a href="/kontakty/" class="btn btn-primary">Zobrazit kontakty</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Nastavení</h5>
-                                <p class="card-text">Přizpůsobte si svou nástěnku.</p>
-                                <a href="#" class="btn btn-primary">Přejít na Nastavení</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Horní lišta -->
+    {% include "inc/topnav.html" %}
 
 
-<hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
+<!-- Obsah Dashboardu Modul -->
+<!-- Hlavní obsah dashboardu -->
+<div class="container mx-auto px-4 py-8">
+    <!-- Titulek dashboardu -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Přehled Dashboardu</h1>
+    </div>
 
-<a href="/ucetnictvi/">Vytvářejte faktury</a> - <a href="/ucetnictvi/faktura/bez-registrace/">i bez registrace</a>
+    <!-- Přehledové karty Modul -->
+    <!-- Karty přehledu -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Dlaždice Projektů -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Celkem projektů</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
+            <a href="{% url 'index_project_cs' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/projekty/</a>
+        </div>
+        <!-- Dlaždice Úkolů -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Otevřených úkolů</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ open_tasks_count }}</p>
+            <a href="{% url 'list_tests' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/ukoly/</a>
+        </div>
+        <!-- Dlaždice Testů -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Celkem testů</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_test_results }}</p>
+            <a href="/testy/" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/testy/</a>
+        </div>
+        <!-- Dlaždice Uživatelů -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Uživatelé</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_users }}</p>
+            <a href="{% url 'user_profile' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/uzivatele/</a>
+        </div>
+    </div>
 
 
-<hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
 
 
 
-Volitelné moduly: <a href="/kontrakty/">Správce kontraktů</a>, <a href="/muj-ucet/kontakty/">Kontakty</a>
-
-<hr style="border: none; height: 1px; background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1), rgba(0,0,0,0));">
 
 
-V přípravě: Test management, skladové hospodářství
+
+    <!-- Tabulka Uživatelů Modul -->
+    <!-- Přehled uživatelů -->
+    <div class="mt-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Přehled Uživatelů</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="w-full bg-gray-100">
+                        <th class="py-2 px-4 text-left text-gray-700">ID Uživatele</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Jméno</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Email</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Role</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Stav</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">1</td>
+                        <td class="py-2 px-4 text-gray-600">Jan Novák</td>
+                        <td class="py-2 px-4 text-gray-600">jan@example.com</td>
+                        <td class="py-2 px-4 text-gray-600">Admin</td>
+                        <td class="py-2 px-4 text-green-600">Aktivní</td>
+                    </tr>
+                    <!-- Další řádky -->
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">2</td>
+                        <td class="py-2 px-4 text-gray-600">Petr Svoboda</td>
+                        <td class="py-2 px-4 text-gray-600">petr@example.com</td>
+                        <td class="py-2 px-4 text-gray-600">Manažer</td>
+                        <td class="py-2 px-4 text-red-600">Neaktivní</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 
-{% endblock %}
+
+
+
+
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Blok Seznamu -->
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Seznam úkolů</h2>
+            <ul class="list-disc pl-5">
+                {% if user.is_authenticated %}
+                    <!-- přihlášen -->
+                    {% if user_tasks %}
+                        {% for task in user_tasks %}
+                            <li class="text-gray-600">
+                                <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:text-blue-800">{{ task.title }}</a>
+                                - <small>{{ task.due_date|date:"d.m.Y" }}</small>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="text-gray-600">Nemáte žádné přidělené úkoly</li>
+                    {% endif %}
+                {% else %}
+                    <!-- nepřihlášen-->
+                    <li class="text-gray-600">Úkol 1: <a href="/prihlaseni/">Přihlášení</a> | <a href="/registrace/">Registrace</a></li>
+                    <li class="text-gray-600">Úkol 2: Přidat se k projektu</li>
+                    <li class="text-gray-600">Úkol 3: Vytvořit úkol</li>
+                    <li class="text-gray-600">Úkol 4: Dokončit projekt</li>
+                {% endif %}
+            </ul>
+        </div>
+
+
+        <!-- Blok s kruhovým grafem (s pevnou výškou) -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Statistika projektů</h2>
+            <div class="relative" style="height: 300px;">
+                <canvas id="myPieChart"></canvas>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Skript pro zobrazení kruhového grafu -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Dokončené', 'Rozpracované', 'Opožděné'],
+            datasets: [{
+                label: 'Statistika projektů',
+                data: [50, 30, 20],
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+
+
+{% include "inc/footer.html" %}
+
+</body>
+</html>

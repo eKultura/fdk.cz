@@ -8,7 +8,7 @@ from fdk_cz.views.accounting import accounting_dashboard, create_invoice, edit_i
 from fdk_cz.views.contact import create_contact, delete_contact, detail_contact, edit_contact, list_contacts
 from fdk_cz.views.contract import create_contract, edit_contract, detail_contract, list_contracts
 
-from fdk_cz.views.flist import add_item, create_list,  edit_list, index_list, detail_list
+from fdk_cz.views.flist import add_item, create_list, delete_item, edit_item, edit_list, index_list, detail_list
 from fdk_cz.views.index import index, dashboard
 
 from fdk_cz.views.project import create_category, create_task, create_milestone, edit_category, edit_project, edit_task, delete_category, delete_project, delete_task, detail_project, detail_task, index_project, new_project, manage_project_users, remove_project_user, update_task_status
@@ -25,7 +25,7 @@ urlpatterns = (
     path('odhlaseni/', logout, name='logout_cs'),
     path('registrace/', registration, name='registration_cs'),
     path('profil/', user_profile, name='user_profile'),   
-    path('nastaveni/', user_settings, name='user_settings'),   
+    path('profil/nastaveni/', user_settings, name='user_settings'),   
          
     # EN
     path('login/', login, name='login_en'),
@@ -47,6 +47,7 @@ urlpatterns = (
     path('projekt/<int:project_id>/edit/', edit_project, name='edit_project_cs'),
 
     path('projekt/<int:project_id>/novy-ukol/', create_task, name='create_task'),
+    path('projekt/ukol/<int:task_id>/', detail_task, name='detail_task'),  
     path('projekt/ukol/<int:task_id>/upravit/', edit_task, name='edit_task'),
     path('projekt/ukol/<int:task_id>/smazat/', delete_task, name='delete_task'),
     path('projekt/ukol/<int:task_id>/status/<str:status>/', update_task_status, name='update_task_status'),
@@ -59,7 +60,7 @@ urlpatterns = (
     # Projects - management of users and roles
     path('projekty/<int:project_id>/users/', manage_project_users, name='manage_project_users'),
     path('projekty/<int:project_id>/users/<int:user_id>/remove/', remove_project_user, name='remove_project_user'),
-    path('projekt/<int:project_id>/novy_milnik/', create_milestone, name='create_milestone'),
+    path('projekt/<int:project_id>/novy-milnik/', create_milestone, name='create_milestone'),
 
     path('projekt/<int:project_id>/nova_kategorie/', create_category, name='create_category'),
     path('projekt/kategorie/<int:category_id>/editovat/', edit_category, name='edit_category'),
@@ -72,6 +73,9 @@ urlpatterns = (
     path('seznam/<int:list_id>/edit/', edit_list, name='edit_list'),
     path('seznam/<int:list_id>/polozka/pridat/', add_item, name='add_item'),
     path('seznam/<int:list_id>', detail_list, name='detail_list'),
+    path('seznam/polozka/<int:item_id>/upravit/', edit_item, name='edit_item'),
+    path('seznam/polozka/<int:item_id>/smazat/', delete_item, name='delete_item'),
+
     
 
     

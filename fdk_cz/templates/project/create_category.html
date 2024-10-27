@@ -1,17 +1,48 @@
 {% extends 'project/base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Nov� kategorie" %}{% endblock %}
+{% block title %}{% trans "Nová kategorie" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>{% trans "Vytvo�it novou kategorii" %}</h1>
-    
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">{% trans "Vytvo�it kategorii" %}</button>
-        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-secondary">{% trans "Zp�t" %}</a>
-    </form>
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Formulář vlevo -->
+        <form method="POST" class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Vytvořit novou kategorii" %}</h2>
+            {% csrf_token %}
+
+            <!-- Název kategorie -->
+            <div class="mb-4">
+                <label for="id_name" class="form-label" style="font-weight: 600; color: #555;">{% trans "Název kategorie" %}</label>
+                <input type="text" name="name" id="id_name" class="form-control" required 
+                       placeholder="{% trans 'Zadejte název kategorie' %}" 
+                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
+                {% if form.name.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Popis kategorie -->
+            <div class="mb-4">
+                <label for="id_description" class="form-label" style="font-weight: 600; color: #555;">{% trans "Popis" %}</label>
+                <textarea name="description" id="id_description" class="form-control" rows="3" 
+                          placeholder="{% trans 'Zadejte popis kategorie (volitelné)' %}" 
+                          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;"></textarea>
+                {% if form.description.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full mt-3" style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">
+                {% trans "Vytvořit kategorii" %}
+            </button>
+        </form>
+
+        <!-- Sekce s textem FDK.cz vpravo -->
+        <div class="bg-white p-6 rounded-lg shadow-md flex justify-center items-center">
+            <h1 class="text-2xl font-bold text-gray-700">FDK.cz</h1>
+        </div>
+    </div>
 </div>
 {% endblock %}

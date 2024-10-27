@@ -28,7 +28,7 @@
     <form method="get" action=".">
         <div class="grid grid-cols-2 gap-8">
             <!-- Dodavatel -->
-            <table><tr><td>
+            
             <div>
                 <h3 class="text-xl font-semibold mb-4">Dodavatel</h3>
                 <div class="flex flex-col mb-4">
@@ -62,8 +62,7 @@
             </div>
 
 
-            </td><td>
-
+            
 
             <!-- Odběratel -->
             <div>
@@ -97,7 +96,7 @@
                     <input type="text" name="client_dic" id="id_client_dic" class="border border-gray-300 p-2 rounded w-full" value="{{ form.client_dic.value|default_if_none:'' }}">
                 </div>
             </div>
-            </td></tr></table>
+            
         </div>
 
         <!-- Fakturační údaje -->
@@ -197,8 +196,15 @@ document.getElementById('id_is_vat_payer').addEventListener('change', function()
 
 <!-- Tlačítka -->
 <div class="flex justify-between mt-6">
-    <button type="button" class="bg-blue text-white py-2 px-4 rounded" onclick="addNewItem(); return false;">Přidat další položku</button>
-    <button type="submit" class="bg-blue text-white py-2 px-4 rounded">Zobrazit fakturu</button>
+
+<button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-md">
+    Zobrazit fakturu
+</button>
+
+<button type="button" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-md" onclick="addNewItem(); return false;">
+    Přidat další položku
+</button>
+
 </div>
 
 

@@ -3,46 +3,49 @@
 
 {% block title %}Editace projektu{% endblock %}
 
-{% block meta %}
-{% endblock %}
-
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">Editace Projektu</h1>
-    
-    <form method="post" class="needs-validation" novalidate>
+<div class="container mt-5" style="max-width: 800px;">
+    <h1 class="text-center mb-4" style="font-weight: bold; color: #333;">Editace projektu</h1>
+
+    <form method="post" class="p-4 border rounded shadow-sm" style="background-color: #f0f4f8;">
         {% csrf_token %}
         
-        <div class="row mb-3">
+        <!-- Název a URL projektu -->
+        <div class="row mb-4">
             <div class="col-md-6">
-                <label for="id_name" class="form-label">Název projektu</label>
-                {{ form.name }}
+                <label for="id_name" class="form-label" style="font-weight: 600; color: #555;">Název projektu</label>
+                <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}" required
+                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; width: 100%; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">
             </div>
-
             <div class="col-md-6">
-                <label for="id_url" class="form-label">URL projektu</label>
-                {{ form.url }}
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="id_description" class="form-label">Popis projektu</label>
-            {{ form.description }}
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_start_date" class="form-label">Datum začátku</label>
-                {{ form.start_date }}
-            </div>
-
-            <div class="col-md-6">
-                <label for="id_end_date" class="form-label">Datum konce</label>
-                {{ form.end_date }}
+                <label for="id_url" class="form-label" style="font-weight: 600; color: #555;">Web projektu (pokud existuje)</label>
+                <input type="url" name="url" id="id_url" value="{{ form.url.value|default_if_none:'' }}" 
+                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; width: 100%; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Uložit změny</button>
+        <!-- Popis projektu -->
+        <div class="mb-4">
+            <label for="id_description" class="form-label" style="font-weight: 600; color: #555;">Popis projektu</label>
+            <textarea name="description" id="id_description" rows="4" 
+                      style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; width: 100%; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">{{ form.description.value|default_if_none:'' }}</textarea>
+        </div>
+
+        <!-- Datum začátku a konce -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="id_start_date" class="form-label" style="font-weight: 600; color: #555;">Datum začátku</label>
+                <input type="date" name="start_date" id="id_start_date" value="{{ form.start_date.value|default_if_none:'' }}" 
+                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; width: 100%; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">
+            </div>
+            <div class="col-md-6">
+                <label for="id_end_date" class="form-label" style="font-weight: 600; color: #555;">Datum konce</label>
+                <input type="date" name="end_date" id="id_end_date" value="{{ form.end_date.value|default_if_none:'' }}" 
+                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; width: 100%; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">Uložit změny</button>
     </form>
 </div>
 {% endblock %}

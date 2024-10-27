@@ -13,19 +13,19 @@ from fdk_cz.models import invoice, invoice_item
 class FreeInvoiceForm(forms.Form):
     # Informace o dodavateli
     company_name = forms.CharField(label='Název firmy / jméno', max_length=255)
-    street = forms.CharField(label='Ulice', max_length=255)
-    street_number = forms.CharField(label='Číslo popisné', max_length=20)
-    city = forms.CharField(label='Město', max_length=255)
-    postal_code = forms.CharField(label='PSČ', max_length=20)
-    ico = forms.CharField(label='IČO', max_length=20)
+    street = forms.CharField(label='Ulice', max_length=255, required=False)
+    street_number = forms.CharField(label='Číslo popisné', max_length=20, required=False)
+    city = forms.CharField(label='Město', max_length=255, required=False)
+    postal_code = forms.CharField(label='PSČ', max_length=20, required=False)
+    ico = forms.CharField(label='IČO', max_length=20, required=False)
     dic = forms.CharField(label='DIČ', max_length=20, required=False)
 
     # Přidaná pole pro údaje o odběrateli
     client_name = forms.CharField(label='Název firmy / jméno odběratele', max_length=255)
-    client_street = forms.CharField(label='Ulice odběratele', max_length=255)
-    client_street_number = forms.CharField(label='Číslo popisné odběratele', max_length=20)
-    client_city = forms.CharField(label='Město odběratele', max_length=255)
-    client_postal_code = forms.CharField(label='PSČ odběratele', max_length=20)
+    client_street = forms.CharField(label='Ulice odběratele', max_length=255, required=False)
+    client_street_number = forms.CharField(label='Číslo popisné odběratele', max_length=20, required=False)
+    client_city = forms.CharField(label='Město odběratele', max_length=255, required=False)
+    client_postal_code = forms.CharField(label='PSČ odběratele', max_length=20, required=False)
     client_ico = forms.CharField(label='IČO odběratele', max_length=20, required=False)
     client_dic = forms.CharField(label='DIČ odběratele', max_length=20, required=False)
 
