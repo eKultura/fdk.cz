@@ -1,35 +1,66 @@
-{% extends 'test/base.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Seznam typů testů{% endblock %}
+{% block title %}{% trans "Seznam typů testů" %}{% endblock %}
 
 {% block content %}
-    <h1>Typy testů</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Název</th>
-                <th>Popis</th>
-                <th>Projekt</th>
-                <th>Akce</th>  <!-- Přidáno pro editaci -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for test_type in test_types %}
-            <tr>
-                <td>{{ test_type.name }}</td>
-                <td>{{ test_type.description }}</td>
-                <td>{{ test_type.project.name }}</td>
-                <td>
-                    <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-sm btn-warning">Upravit</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">Žádné typy testů nejsou k dispozici.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <a href="{% url 'create_test_type' %}" class="btn btn-primary">Nový typ</a>
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Levý blok - Typy testů (2/3 šířka) -->
+    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Typy testů" %}</h2>
+
+        <div class="overflow-hidden rounded-lg">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/4">{% trans "Název" %}</th>
+                        <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/2">{% trans "Popis" %}</th>
+                        <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/4">{% trans "Projekt" %}</th>
+                        <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6">{% trans "Akce" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test_type in test_types %}
+                        <tr class="border-b">
+                            <td class="py-3 px-4 text-gray-600">{{ test_type.name }}</td>
+                            <td class="py-3 px-4 text-gray-600">{{ test_type.description|default:"-" }}</td>
+                            <td class="py-3 px-4 text-gray-600">
+                                <a href="/projekt/{{ test_type.project.project_id }}/" class="text-blue-500 hover:text-blue-700 underline font-semibold">{{ test_type.project.name }}</a>
+                            </td>
+                            <td class="py-3 px-4 text-blue-600 hover:text-blue-800">
+                                <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="text-yellow-600 hover:text-yellow-800 font-semibold">{% trans "Upravit" %}</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="py-4 text-center text-gray-500">{% trans "Žádné typy testů nejsou k dispozici." %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="{% url 'create_test_type' %}" class="bg-blue-600 text-white py-2 px-4 rounded font-semibold hover:bg-blue-700">
+                {% trans "Nový typ" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Pravý blok - Pomocník (1/3 šířka) -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
+        <p class="text-gray-600 mb-4">
+            {% trans "Seznam typů testů vám umožňuje rychle spravovat a upravovat jednotlivé typy testů přidružené k projektům." %}
+        </p>
+        <p class="text-gray-600">{% trans "Chcete-li přidat nový typ testu, použijte tlačítko v levé části. " %}</p>
+
+        <!-- FDK.cz v šedé barvě -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

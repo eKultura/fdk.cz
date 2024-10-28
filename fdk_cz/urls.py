@@ -11,8 +11,8 @@ from fdk_cz.views.contract import create_contract, edit_contract, detail_contrac
 from fdk_cz.views.flist import add_item, create_list, delete_item, edit_item, edit_list, index_list, detail_list
 from fdk_cz.views.index import index, dashboard
 
-from fdk_cz.views.project import create_category, create_task, create_milestone, edit_category, edit_project, edit_task, delete_category, delete_project, delete_task, detail_project, detail_task, index_project, new_project, manage_project_users, remove_project_user, update_task_status
-from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
+from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category,edit_document,  edit_project, edit_task, delete_category, delete_document, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, new_project, manage_project_users, remove_project_user, update_task_status
+from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings
 
 urlpatterns = (
@@ -40,8 +40,6 @@ urlpatterns = (
     path('project/new-project', new_project, name='new_project_en'),
     path('neues-projekt/', new_project, name='new_project_de'),
     path('nuevo-proyecto/', new_project, name='new_project_es'),
-    # Další cesty pro různé jazyky
-
 
     path('projekt/<int:project_id>/', detail_project, name='detail_project'),
     path('projekt/<int:project_id>/edit/', edit_project, name='edit_project_cs'),
@@ -58,13 +56,19 @@ urlpatterns = (
     path('projekt/<int:project_id>/delete/', delete_project, name='delete_project'),
 
     # Projects - management of users and roles
-    path('projekty/<int:project_id>/users/', manage_project_users, name='manage_project_users'),
-    path('projekty/<int:project_id>/users/<int:user_id>/remove/', remove_project_user, name='remove_project_user'),
+    path('projekt/<int:project_id>/uzivatele/', manage_project_users, name='manage_project_users'),
+    path('projekt/<int:project_id>/uzivatel/<int:user_id>/smazat/', remove_project_user, name='remove_project_user'),
     path('projekt/<int:project_id>/novy-milnik/', create_milestone, name='create_milestone'),
 
     path('projekt/<int:project_id>/nova_kategorie/', create_category, name='create_category'),
     path('projekt/kategorie/<int:category_id>/editovat/', edit_category, name='edit_category'),
     path('projekt/kategorie/<int:category_id>/smazat/', delete_category, name='delete_category'),
+
+    # Projects - documents
+    path('projekt/<int:project_id>/vytvorit-dokument/', create_document, name='create_document'),
+    path('dokument/<int:document_id>/editovat/', edit_document, name='edit_document'),
+    path('dokument/<int:document_id>/smazat/', delete_document, name='delete_document'),
+    path('dokument/<int:document_id>/', detail_document, name='detail_document'),
 
 
     # LIST - SEZNAM
@@ -122,6 +126,8 @@ urlpatterns = (
     path('testy/chyby/novy/', create_test_error, name='create_test_error'),
     path('testy/chyby/<int:test_error_id>/upravit/', edit_test_error, name='edit_test_error'),
     path('testy/chyba/<int:test_error_id>/', detail_test_error, name='detail_test_error'),
+    path('testy/delete/<int:error_id>/', delete_test_error, name='delete_test_error'),
+
 
     # Invoice management
     path('ucetnictvi/', accounting_dashboard, name='accounting_dashboard'),

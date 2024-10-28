@@ -2,7 +2,7 @@
 
 from django import forms
 from django.contrib.auth.models import User
-from fdk_cz.models import category, milestone, project, role, task
+from fdk_cz.models import category, document, milestone, project, role, task, User
 
 
 
@@ -19,18 +19,22 @@ class project_form(forms.ModelForm):
             'url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL projektu'}),
         }
 
-class add_user_form(forms.Form):
-    user = forms.ModelChoiceField(queryset=User.objects.all(), label='Uživatel', widget=forms.Select(attrs={'class': 'form-control'}))
-    role = forms.ModelChoiceField(queryset=role.objects.all(), label='Role', widget=forms.Select(attrs={'class': 'form-control'}))
 
-class category_form(forms.ModelForm):
-    class Meta:
-        model = category
-        fields = ['name', 'description'] 
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název kategorie'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis kategorie'}),
-        }
+
+class add_user_form(forms.Form):
+    user = forms.ModelChoiceField(
+        queryset=User.objects.all(), 
+        label='Uživatel', 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    role = forms.ModelChoiceField(
+        queryset=role.objects.all(),
+        label='Role',
+        required=True,  # Označení pole role jako povinného
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+
 
 class milestone_form(forms.ModelForm):
     class Meta:
@@ -43,6 +47,15 @@ class milestone_form(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
 
+def initialize_project_forms(post_data=None):
+    """
+    Vrací inicializované instance add_user_form a milestone_form,
+    připravené pro renderování nebo zpracování POST požadavků.
+    """
+    user_form = add_user_form(post_data)
+    milestone_form_instance = milestone_form(post_data)
+    return user_form, milestone_form_instance
+    
 
 class task_form(forms.ModelForm):
     class Meta:
@@ -65,5 +78,43 @@ class task_form(forms.ModelForm):
         else:
             self.fields['category'].queryset = category.objects.none()
         self.fields['category'].empty_label = "Vyberte kategorii"
+
+
+
+
+class category_form(forms.ModelForm):
+    class Meta:
+        model = category
+        fields = ['name', 'description'] 
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název kategorie'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis kategorie'}),
+        }
+
+
+
+class document_form(forms.ModelForm):
+    class Meta:
+        model = document
+        fields = ['title', 'document_type', 'category', 'description']
+        labels = {
+            'title': 'Název',
+            'document_type': 'Typ dokumentu (např. manuál, metodický pokyn, testování...)',
+            'category': 'Kategorie',
+            'description': 'Obsah'
+        }
+        widgets = {
+            'description': forms.Textarea(attrs={'id': 'summernote'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        project_id = kwargs.pop('project_id', None)
+        super().__init__(*args, **kwargs)
+        if project_id:
+            self.fields['category'].queryset = category.objects.filter(project_id=project_id)
+
+
+
+
 
 

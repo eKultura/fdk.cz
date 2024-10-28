@@ -3,18 +3,46 @@
 
 {% block title %}Detail kontaktu{% endblock %}
 
-
-
-    {% block meta %}
-    
-    
-    {% endblock %}
-
-
-
 {% block content %}
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Levý blok 2/3 - Detail kontaktu -->
+    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">{{ contact.first_name }} {{ contact.last_name }}</h2>
 
-<!-- -->
+        <p class="text-gray-600"><strong>{% trans "Email" %}:</strong> {{ contact.email|default:"-" }}</p>
+        <p class="text-gray-600"><strong>{% trans "Telefon" %}:</strong> {{ contact.phone|default:"-" }}</p>
+        <p class="text-gray-600"><strong>{% trans "Spoleènost" %}:</strong> {{ contact.company|default:"-" }}</p>
+        <p class="text-gray-600"><strong>{% trans "Popis" %}:</strong> {{ contact.description|default:"-" }}</p>
+        <p class="text-gray-600"><strong>{% trans "Projekt" %}:</strong> 
+            {% if contact.project %}{{ contact.project.name }}{% else %}–{% endif %}
+        </p>
+        <p class="text-gray-600"><strong>{% trans "Typ kontaktu" %}:</strong> 
+            {% if contact.is_private %}{% trans "Soukromý" %}{% else %}{% trans "Veøejný" %}{% endif %}
+        </p>
 
+        <!-- Tlaèítka pro akce -->
+        <div class="mt-6 flex gap-3">
+            <a href="{% url 'edit_contact' contact.contact_id %}" class="py-2 px-4 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600">
+                {% trans "Upravit" %}
+            </a>
+            <a href="{% url 'delete_contact' contact.contact_id %}" class="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700" onclick="return confirm('{% trans "Opravdu chcete smazat tento kontakt?" %}');">
+                {% trans "Smazat" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Pravý blok 1/3 - Pomocník s informacemi -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md text-center">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Pomocník" %}</h2>
+        <p class="text-gray-600 mb-4">{% trans "Na této stránce vidíte podrobné informace o kontaktu." %}</p>
+        <p class="text-gray-600">{% trans "Mùžete kontakt upravit nebo smazat podle potøeby." %}</p>
+
+        <!-- FDK.cz v šedé barvì -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
-

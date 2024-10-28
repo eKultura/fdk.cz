@@ -1,122 +1,118 @@
 {% extends 'user/base.html' %}
 {% load i18n %}
 
-{% block title %}Registrace{% endblock %}
+{% block title %}{% trans "Registrace" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 400px;">
-    <h2 class="mb-4 text-center" style="font-weight: bold; color: #333;">Registrace</h2>
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    {% if user.is_authenticated %}
-        <p class="alert alert-success text-center">Přihlášen jako {{ user.username }}</p>
-        <p class="alert alert-success text-center"><a href="/odhlaseni/">Odhlásit</a></p>
-    {% else %}
+    <!-- Levý blok - Registrační formulář (2/3 šířka) -->
+    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-center mb-6 font-semibold text-gray-800">{% trans "Registrace" %}</h2>
 
-        <!-- Zobrazení obecných chyb formuláře -->
-        {% if form.errors %}
-            <div class="alert alert-danger text-center" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 6px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;">
-                <ul style="list-style-type: none; padding: 0;">
-                    {% for field in form %}
-                        {% for error in field.errors %}
+        {% if user.is_authenticated %}
+            <p class="alert alert-success text-center">{{ user.username }} {% trans "je již přihlášen." %}</p>
+            <p class="text-center"><a href="{% url 'logout' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a></p>
+        {% else %}
+
+            <!-- Zobrazení obecných chyb formuláře -->
+            {% if form.errors %}
+                <div class="alert alert-danger text-center mb-4 p-3 rounded bg-red-100 text-red-800">
+                    <ul class="list-none p-0">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="POST" class="p-6 border rounded-lg shadow-md bg-gray-50">
+                {% csrf_token %}
+
+                <!-- Uživatelské jméno -->
+                <div class="mb-4">
+                    <label for="id_username" class="font-semibold text-gray-600">{% trans "Uživatelské jméno" %}</label>
+                    <input type="text" name="username" id="id_username" placeholder="{% trans 'Zadejte uživatelské jméno' %}" 
+                           value="{{ form.username.value|default_if_none:'' }}" required class="w-full p-2 border border-gray-300 rounded-lg">
+                    {% if form.username.errors %}
+                        <div class="text-red-600 mt-1">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="id_email" class="font-semibold text-gray-600">{% trans "Email" %}</label>
+                    <input type="email" name="email" id="id_email" placeholder="{% trans 'Zadejte email' %}" 
+                           value="{{ form.email.value|default_if_none:'' }}" required class="w-full p-2 border border-gray-300 rounded-lg">
+                    {% if form.email.errors %}
+                        <div class="text-red-600 mt-1">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Heslo -->
+                <div class="mb-4">
+                    <label for="id_password1" class="font-semibold text-gray-600">{% trans "Heslo" %}</label>
+                    <div class="relative">
+                        <input type="password" name="password1" id="id_password1" placeholder="{% trans 'Zadejte heslo' %}" 
+                               required class="w-full p-2 border border-gray-300 rounded-lg pr-10">
+                        <button type="button" onclick="togglePassword('id_password1')" 
+                                class="absolute inset-y-0 right-0 px-3 text-gray-500">
+                            <i class="material-icons" id="password-icon1">visibility</i>
+                        </button>
+                    </div>
+                    <small class="text-gray-500">{% trans "Heslo musí mít alespoň 8 znaků a obsahovat číslo." %}</small>
+                    {% if form.password1.errors %}
+                        <div class="text-red-600 mt-1">{{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Potvrzení hesla -->
+                <div class="mb-4">
+                    <label for="id_password2" class="font-semibold text-gray-600">{% trans "Potvrzení hesla" %}</label>
+                    <div class="relative">
+                        <input type="password" name="password2" id="id_password2" placeholder="{% trans 'Potvrďte heslo' %}" 
+                               required class="w-full p-2 border border-gray-300 rounded-lg pr-10">
+                        <button type="button" onclick="togglePassword('id_password2')" 
+                                class="absolute inset-y-0 right-0 px-3 text-gray-500">
+                            <i class="material-icons" id="password-icon2">visibility</i>
+                        </button>
+                    </div>
+                    {% if form.password2.errors %}
+                        <div class="text-red-600 mt-1">{{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="w-full py-2 mt-4 text-white bg-blue-600 rounded-lg font-bold hover:bg-blue-700">
+                    {% trans "Registrovat se" %}
+                </button>
+            </form>
+
+            <p class="mt-4 text-center text-gray-600">
+                {% trans "Již máte účet?" %} <a href="{% url 'login_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Přihlaste se zde" %}</a>
+            </p>
         {% endif %}
+    </div>
 
-        <form method="POST" class="p-4 border rounded shadow-sm" style="background-color: #f0f4f8; border: 1px solid #d1d5db; border-radius: 8px;">
-            {% csrf_token %}
+    <!-- Pravý blok - Pomocník (1/3 šířka) -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
+        <p class="text-gray-600 mb-4">{% trans "Vyplňte formulář pro vytvoření nového účtu a přístup k projektům." %}</p>
+        <p class="text-gray-600">{% trans "Zadejte bezpečné heslo, které obsahuje čísla i písmena." %}</p>
 
-            <!-- Uživatelské jméno -->
-            <div class="mb-4">
-                <label for="id_username" class="form-label" style="font-weight: 600; color: #555;">Uživatelské jméno</label>
-                <input type="text" name="username" id="id_username" class="form-control" placeholder="Zadejte uživatelské jméno" value="{{ form.username.value|default_if_none:'' }}" required 
-                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); width: 100%;">
-                {% if form.username.errors %}
-                    <div class="text-danger">
-                        {% for error in form.username.errors %}
-                            <small>{{ error }}</small><br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+        <!-- FDK.cz v šedé barvě -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="/">FDK.cz</a></p>
+        </div>
+    </div>
 
-            <!-- Email -->
-            <div class="mb-4">
-                <label for="id_email" class="form-label" style="font-weight: 600; color: #555;">Email</label>
-                <input type="email" name="email" id="id_email" class="form-control" placeholder="Zadejte email" value="{{ form.email.value|default_if_none:'' }}" required 
-                       style="padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); width: 100%;">
-                {% if form.email.errors %}
-                    <div class="text-danger">
-                        {% for error in form.email.errors %}
-                            <small>{{ error }}</small><br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Heslo -->
-            <div class="mb-4">
-                <label for="id_password1" class="form-label" style="font-weight: 600; color: #555;">Heslo</label>
-
-
-<div class="input-group" style="display: flex; align-items: stretch;">
-    <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Zadejte heslo" required 
-           style="padding: 10px; border-radius: 6px 0 0 6px; border: 1px solid #cbd5e0; background-color: #fff; width: 100%; height: 40px;">
-    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('id_password1')" 
-            style="height: 40px; width: 45px; border-radius: 0 6px 6px 0; border: 1px solid #cbd5e0; border-left: none; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center;">
-        <i class="material-icons" id="password-icon1" style="font-size: 20px;">visibility</i>
-    </button>
 </div>
 
-
-
-                <small class="form-text text-muted">
-                    Heslo musí mít alespoň 8 znaků a obsahovat číslo. Nesmí obsahovat jednoduché sekvence jako "123456".
-                </small>
-                {% if form.password1.errors %}
-                    <div class="text-danger">
-                        {% for error in form.password1.errors %}
-                            <small>{{ error }}</small><br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Potvrzení hesla -->
-            <div class="mb-4">
-                <label for="id_password2" class="form-label" style="font-weight: 600; color: #555;">Potvrzení hesla</label>
-
-
-<div class="input-group" style="display: flex; align-items: stretch;">
-    <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Zadejte heslo" required 
-           style="padding: 10px; border-radius: 6px 0 0 6px; border: 1px solid #cbd5e0; background-color: #fff; width: 100%; height: 40px;">
-    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('id_password2')" 
-            style="height: 40px; width: 45px; border-radius: 0 6px 6px 0; border: 1px solid #cbd5e0; border-left: none; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center;">
-        <i class="material-icons" id="password-icon1" style="font-size: 20px;">visibility</i>
-    </button>
-</div>
-
-                {% if form.password2.errors %}
-                    <div class="text-danger">
-                        {% for error in form.password2.errors %}
-                            <small>{{ error }}</small><br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mt-3" style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">Registrovat se</button>
-        </form>
-        
-        <p class="mt-4 text-center" style="color: #555;">Již máte účet? <a href="{% url 'login_cs' %}" style="color: #4a90e2; font-weight: bold; text-decoration: none;">Přihlaste se zde</a></p>
-    {% endif %}
-</div>
-
+<!-- Skript pro přepínání zobrazení hesla -->
 <script>
     function togglePassword(fieldId) {
         var passwordField = document.getElementById(fieldId);
@@ -130,4 +126,5 @@
         }
     }
 </script>
+
 {% endblock %}

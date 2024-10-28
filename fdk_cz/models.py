@@ -46,6 +46,8 @@ class category(models.Model):
     project = models.ForeignKey(project, on_delete=models.SET_NULL, null=True, related_name='categories', db_column='project_id')
     language = models.CharField(max_length=2, null=True, blank=True, db_column='language')
 
+    def __str__(self):
+        return self.name
     class Meta:
         db_table = 'FDK_categories'
 
@@ -173,13 +175,15 @@ class document(models.Model):
     document_id = models.AutoField(primary_key=True, db_column='document_id')
     project = models.ForeignKey(project, on_delete=models.CASCADE, related_name='documents', db_column='project_id')
     document_type = models.CharField(max_length=255, db_column='document_type')
+    category = models.ForeignKey(category, on_delete=models.SET_NULL, db_column='category', null=True, blank=True)
     title = models.CharField(max_length=255, db_column='title')
     url = models.CharField(max_length=255, db_column='url')
     description = models.TextField(null=True, blank=True, db_column='description')
     file_path = models.CharField(max_length=255, db_column='file_path')
     uploaded_by = models.ForeignKey(user, on_delete=models.SET_NULL, null=True, related_name='uploaded_documents', db_column='uploaded_by')
     uploaded_at = models.DateTimeField(auto_now_add=True, db_column='uploaded_at')
-
+    def __str__(self):
+        return self.title
     class Meta:
         db_table = 'FDK_documents'
 

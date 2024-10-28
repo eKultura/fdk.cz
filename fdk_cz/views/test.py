@@ -27,6 +27,16 @@ def get_test_results(request, project_id):
 
 
 
+@login_required
+def delete_test_error(request, error_id):
+    error_instance = get_object_or_404(test_error, pk=error_id)
+    project_id = error_instance.project.project_id  # Získání ID projektu pro přesměrování
+    if request.method == 'POST':
+        error_instance.delete()
+        return redirect('detail_project', project_id=project_id)  # Přesměrování na detail projektu
+    return render(request, 'test/delete_test_error.html', {'error': error_instance})
+
+
 
 # Typy testů - výpis
 @login_required
@@ -152,13 +162,18 @@ def list_test_errors(request):
 
 
 # Přidání nové chyby
+# Přidání nové chyby
 @login_required
 def create_test_error(request):
     form = test_error_form(request.POST or None, user=request.user)
     if request.method == 'POST' and form.is_valid():
-        form.save()
-        return redirect('list_test_errors')
+        new_error = form.save(commit=False)
+        new_error.created_by = request.user  # pokud je potřeba přiřadit autora
+        new_error.save()
+        # Získání ID projektu z nově vytvořené chyby a přesměrování na detail projektu
+        return redirect('detail_project', project_id=new_error.project.project_id)
     return render(request, 'test/create_test_error.html', {'form': form})
+
 
 
 

@@ -38,25 +38,25 @@
         <div class="bg-white p-6 rounded-lg shadow-md relative">
             <h2 class="text-lg font-semibold text-gray-700">Celkem projektů</h2>
             <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
-            <a href="{% url 'index_project_cs' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/projekty/</a>
+            <!--<a href="{% url 'index_project_cs' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/projekty/</a>-->
         </div>
         <!-- Dlaždice Úkolů -->
         <div class="bg-white p-6 rounded-lg shadow-md relative">
             <h2 class="text-lg font-semibold text-gray-700">Otevřených úkolů</h2>
             <p class="mt-2 text-3xl font-bold text-gray-900">{{ open_tasks_count }}</p>
-            <a href="{% url 'list_tests' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/ukoly/</a>
+            <!--<a href="{% url 'list_tests' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/ukoly/</a>-->
         </div>
         <!-- Dlaždice Testů -->
         <div class="bg-white p-6 rounded-lg shadow-md relative">
             <h2 class="text-lg font-semibold text-gray-700">Celkem testů</h2>
             <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_test_results }}</p>
-            <a href="/testy/" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/testy/</a>
+            <!--<a href="/testy/" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/testy/</a>-->
         </div>
         <!-- Dlaždice Uživatelů -->
         <div class="bg-white p-6 rounded-lg shadow-md relative">
             <h2 class="text-lg font-semibold text-gray-700">Uživatelé</h2>
             <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_users }}</p>
-            <a href="{% url 'user_profile' %}" class="absolute bottom-2 right-2 text-sm text-blue-600 hover:text-blue-800">/uzivatele/</a>
+            <!--<a href="{% url 'user_profile' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/uzivatele/</a>-->
         </div>
     </div>
 
@@ -64,44 +64,117 @@
 
 
 
-
-
-
-    <!-- Tabulka Uživatelů Modul -->
-    <!-- Přehled uživatelů -->
+    <!-- Přehled modulů -->
     <div class="mt-8">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Přehled Uživatelů</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Přehled Modulů</h2>
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
             <table class="min-w-full bg-white">
                 <thead>
                     <tr class="w-full bg-gray-100">
-                        <th class="py-2 px-4 text-left text-gray-700">ID Uživatele</th>
-                        <th class="py-2 px-4 text-left text-gray-700">Jméno</th>
-                        <th class="py-2 px-4 text-left text-gray-700">Email</th>
-                        <th class="py-2 px-4 text-left text-gray-700">Role</th>
-                        <th class="py-2 px-4 text-left text-gray-700">Stav</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Název</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Popis</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="py-2 px-4 text-gray-600">1</td>
-                        <td class="py-2 px-4 text-gray-600">Jan Novák</td>
-                        <td class="py-2 px-4 text-gray-600">jan@example.com</td>
-                        <td class="py-2 px-4 text-gray-600">Admin</td>
-                        <td class="py-2 px-4 text-green-600">Aktivní</td>
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/projekty/" class="text-blue-500 hover:text-blue-700 underline font-semibold">
+                            Projektový Management</a><br>
+                            <span style="font-size:90%; color: #555;">(Project Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Plánování a sledování projektů</td>
+                        <td class="py-2 px-4 text-green-600 font-semibold">Aktivní</td>
                     </tr>
-                    <!-- Další řádky -->
                     <tr class="bg-gray-50">
-                        <td class="py-2 px-4 text-gray-600">2</td>
-                        <td class="py-2 px-4 text-gray-600">Petr Svoboda</td>
-                        <td class="py-2 px-4 text-gray-600">petr@example.com</td>
-                        <td class="py-2 px-4 text-gray-600">Manažer</td>
-                        <td class="py-2 px-4 text-red-600">Neaktivní</td>
+                        <td class="py-2 px-4 text-gray-600">
+                            Test Management<br>
+                            <span style="font-size:90%; color: #555;">(Test Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Řízení a správa testů</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V přípravě</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Financí<br>
+                            <span style="font-size:90%; color: #555;">(Finance Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa financí, účtů, generování faktur</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V přípravě</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Kontraktů<br>
+                            <span style="font-size:90%; color: #555;">(Contract Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa kontraktů a dodavatelských vztahů</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Dotační Management<br>
+                            <span style="font-size:90%; color: #555;">(Grant Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa a řízení dotačních procesů</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Úkolů<br>
+                            <span style="font-size:90%; color: #555;">(Task Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Přidělování a sledování úkolů</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Lidských Zdrojů<br>
+                            <span style="font-size:90%; color: #555;">(HR Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Řízení a správa zaměstnanců</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Řízení Rizik<br>
+                            <span style="font-size:90%; color: #555;">(Risk Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Identifikace a řízení rizik</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa IT Infrastruktury<br>
+                            <span style="font-size:90%; color: #555;">(IT Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa IT a technické podpory</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Aktiv<br>
+                            <span style="font-size:90%; color: #555;">(Asset Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Evidence a správa aktiv a majetku</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/kontakty/" class="text-blue-500 hover:text-blue-700 underline font-semibold">
+                            Správa kontaktů</a><br>
+                            <span style="font-size:90%; color: #555;">(Contact Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Kontakty u projektu nebo u seznamu</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V přípravě</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+
+
+
 </div>
 
 

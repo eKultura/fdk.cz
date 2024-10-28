@@ -1,57 +1,99 @@
-{% extends "test/base.html" %}
+{% extends "project/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Přidat nový test" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Přidat nový test</h1>
-    
-    <form method="POST" class="needs-validation" novalidate>
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
+    <h1 class="text-center mb-6 font-semibold text-gray-800">{% trans "Přidat nový test" %}</h1>
+    <form method="POST" class="needs-validation">
         {% csrf_token %}
-        
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_project" class="form-label">Projekt</label>
-                {{ form.project }}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Levý blok - Formulář -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Formulář testu" %}</h2>
+
+                <!-- Projekt -->
+                <div class="mb-4">
+                    <label for="id_project" class="block font-semibold text-gray-600 mb-1">{% trans "Projekt" %}</label>
+                    {{ form.project }}
+                </div>
+
+                <!-- Typ testu -->
+                <div class="mb-4">
+                    <label for="id_test_type" class="block font-semibold text-gray-600 mb-1">
+                        {% trans "Typ testu" %} 
+                        <small>(<a href="/testy/typy/novy/" class="text-blue-500 hover:text-blue-700 underline font-semibold">{% trans "Nový typ testování" %}</a>)</small>
+                    </label>
+                    <select name="test_type" id="id_test_type" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
+                        <option value="">{% trans "Vyberte typ testu" %}</option>
+                        {% for test_type in form.test_type.field.queryset %}
+                            <option value="{{ test_type.pk }}" {% if form.test_type.value == test_type.pk %}selected{% endif %}>
+                                {{ test_type.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.test_type.errors %}
+                        <div class="text-red-600 mt-1">{{ form.test_type.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Název testu -->
+                <div class="mb-4">
+                    <label for="id_name" class="block font-semibold text-gray-600 mb-1">{% trans "Název testu" %}</label>
+                    <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}"
+                           class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
+                    {% if form.name.errors %}
+                        <div class="text-red-600 mt-1">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Popis testu -->
+                <div class="mb-4">
+                    <label for="id_description" class="block font-semibold text-gray-600 mb-1">{% trans "Popis testu" %}</label>
+                    <textarea name="description" id="id_description" rows="4"
+                              class="w-full p-2 border border-gray-300 rounded-lg bg-white">{{ form.description.value|default_if_none:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="text-red-600 mt-1">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Mřížka umístění -->
+                <div class="mb-4">
+                    <label for="id_grid_location" class="block font-semibold text-gray-600 mb-1">{% trans "Mřížka (umístění)" %}</label>
+                    {{ form.grid_location }}
+                </div>
+
+                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded font-semibold w-full mt-3">
+                    {% trans "Přidat test" %}
+                </button>
             </div>
 
-            <div class="col-md-6">
-                <label for="id_test_type" class="form-label">Typ testu</label>
-                {{ form.test_type }}
-            </div>
+    <!-- Pravý blok - Pomocník (1/3 šířka) -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
+
+            <p class="text-gray-600 mb-4">{% trans "Mřížka umístění" %}</p>
+                <table class="table table-bordered text-center" style="width:100%">
+                    <tr>
+                        <td>A1</td><td>A2</td><td>A3</td>
+                    </tr>
+                    <tr>
+                        <td>B1</td><td>B2</td><td>B3</td>
+                    </tr>
+                    <tr>
+                        <td>C1</td><td>C2</td><td>C3</td>
+                    </tr>
+                </table>
+        <!-- FDK.cz v šedé barvě -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
         </div>
-
-        <div class="mb-3">
-            <label for="id_name" class="form-label">Název testu</label>
-            {{ form.name }}
-        </div>
-
-        <div class="mb-3">
-            <label for="id_description" class="form-label">Popis testu</label>
-            {{ form.description }}
-        </div>
-
-        <!-- Dropdown pro výběr mřížky -->
-        <div class="mb-3">
-            <label for="id_grid_location" class="form-label">Mřížka (umístění)</label>
-            {{ form.grid_location }}
-        </div>
-
-        <button type="submit" class="btn btn-primary">Přidat</button>
-    </form>
-
-    <!-- Zobrazení mřížky vedle roletky -->
-    <div class="grid mt-4">
-        <table class="table table-bordered text-center">
-            <tr>
-                <td>A1</td><td>A2</td><td>A3</td>
-            </tr>
-            <tr>
-                <td>B1</td><td>B2</td><td>B3</td>
-            </tr>
-            <tr>
-                <td>C1</td><td>C2</td><td>C3</td>
-            </tr>
-        </table>
     </div>
+
+        </div>
+    </form>
 </div>
 
 <script>
@@ -59,7 +101,8 @@ document.getElementById('id_project').addEventListener('change', function() {
     var projectId = this.value;
     var testTypeSelect = document.getElementById('id_test_type');
 
-    testTypeSelect.innerHTML = '<option value="">--- Vyberte typ testu ---</option>';
+    // Přidejte 'test_types' místo 'test_result' v JSON datu pro správné přiřazení
+    testTypeSelect.innerHTML = '<option value="">{% trans "Vyberte typ testu" %}</option>';
 
     if (projectId) {
         fetch(`/testy/get_test_types/${projectId}/`)
@@ -71,8 +114,10 @@ document.getElementById('id_project').addEventListener('change', function() {
                     option.text = testType.name;
                     testTypeSelect.add(option);
                 });
-            });
+            })
+            .catch(error => console.error('Error:', error));
     }
 });
+
 </script>
 {% endblock %}

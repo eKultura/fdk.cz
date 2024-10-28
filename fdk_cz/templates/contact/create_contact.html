@@ -1,105 +1,99 @@
 {% extends 'contact/base.html' %}
 {% load i18n %}
 
-{% block title %}Nový kontakt{% endblock %}
-
-{% block meta %}
-{% endblock %}
+{% block title %}{% trans "Nový kontakt" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">Nový kontakt</h1>
-    <form method="POST" class="needs-validation" novalidate>
-        {% csrf_token %}
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Levý blok 2/3 - Formulář pro vytvoření kontaktu -->
+        <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">{% trans "Nový kontakt" %}</h2>
+            <form method="POST">
+                {% csrf_token %}
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_first_name" class="form-label">Jméno</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}
-                    <div class="text-danger">
-                        {{ form.first_name.errors }}
+                <!-- Jméno a příjmení -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="id_first_name" class="font-semibold text-gray-600 block mb-1">{% trans "Jméno" %}</label>
+                        <input type="text" name="first_name" id="id_first_name" class="w-full p-2 border border-gray-300 rounded-lg bg-white" value="{{ form.first_name.value|default_if_none:'' }}">
+                        {% if form.first_name.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.first_name.errors|join:", " }}</p>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
-
-            <div class="col-md-6">
-                <label for="id_last_name" class="form-label">Příjmení</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}
-                    <div class="text-danger">
-                        {{ form.last_name.errors }}
+                    <div>
+                        <label for="id_last_name" class="font-semibold text-gray-600 block mb-1">{% trans "Příjmení" %}</label>
+                        <input type="text" name="last_name" id="id_last_name" class="w-full p-2 border border-gray-300 rounded-lg bg-white" value="{{ form.last_name.value|default_if_none:'' }}">
+                        {% if form.last_name.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.last_name.errors|join:", " }}</p>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_phone" class="form-label">Telefon</label>
-                {{ form.phone }}
-                {% if form.phone.errors %}
-                    <div class="text-danger">
-                        {{ form.phone.errors }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="col-md-6">
-                <label for="id_email" class="form-label">Email</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <div class="text-danger">
-                        {{ form.email.errors }}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="id_company" class="form-label">Firma</label>
-                {{ form.company }}
-                {% if form.company.errors %}
-                    <div class="text-danger">
-                        {{ form.company.errors }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="col-md-6">
-                <label for="id_project" class="form-label">Projekt</label>
-                {{ form.project }}
-                {% if form.project.errors %}
-                    <div class="text-danger">
-                        {{ form.project.errors }}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="id_description" class="form-label">Poznámka</label>
-            {{ form.description }}
-            {% if form.description.errors %}
-                <div class="text-danger">
-                    {{ form.description.errors }}
                 </div>
-            {% endif %}
+
+                <!-- Telefon a Email -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="id_phone" class="font-semibold text-gray-600 block mb-1">{% trans "Telefon" %}</label>
+                        <input type="text" name="phone" id="id_phone" class="w-full p-2 border border-gray-300 rounded-lg bg-white" value="{{ form.phone.value|default_if_none:'' }}">
+                        {% if form.phone.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.phone.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="id_email" class="font-semibold text-gray-600 block mb-1">{% trans "Email" %}</label>
+                        <input type="email" name="email" id="id_email" class="w-full p-2 border border-gray-300 rounded-lg bg-white" value="{{ form.email.value|default_if_none:'' }}">
+                        {% if form.email.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.email.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Firma a Projekt -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="id_company" class="font-semibold text-gray-600 block mb-1">{% trans "Firma" %}</label>
+                        <input type="text" name="company" id="id_company" class="w-full p-2 border border-gray-300 rounded-lg bg-white" value="{{ form.company.value|default_if_none:'' }}">
+                        {% if form.company.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.company.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="id_project" class="font-semibold text-gray-600 block mb-1">{% trans "Projekt" %}</label>
+                        {{ form.project }}
+                        {% if form.project.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.project.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Poznámka -->
+                <div class="mb-4">
+                    <label for="id_description" class="font-semibold text-gray-600 block mb-1">{% trans "Poznámka" %}</label>
+                    <textarea name="description" id="id_description" class="w-full p-2 border border-gray-300 rounded-lg bg-white" rows="4">{{ form.description.value|default_if_none:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Soukromý kontakt a tlačítko pro přidání -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="is_private" id="id_is_private" class="mr-2" {% if form.is_private.value %}checked{% endif %}>
+                        <label for="id_is_private" class="font-semibold text-gray-600">{% trans "Soukromý kontakt" %}</label>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg font-bold hover:bg-blue-700">
+                        {% trans "Přidat kontakt" %}
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="form-check form-switch">
-                {{ form.is_private }}
-                <label for="id_is_private" class="form-check-label">Soukromý kontakt</label>
-                {% if form.is_private.errors %}
-                    <div class="text-danger">
-                        {{ form.is_private.errors }}
-                    </div>
-                {% endif %}
-            </div>
-            <button type="submit" class="btn btn-primary">Přidat kontakt</button>
+        <!-- Pravý blok 1/3 - Informace o kontaktech -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
+            <h1 class="text-2xl font-bold text-gray-700 mb-2">FDK.cz</h1>
+            <p class="text-lg font-semibold text-gray-600">{% trans "Správa kontaktů" %}</p>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}
