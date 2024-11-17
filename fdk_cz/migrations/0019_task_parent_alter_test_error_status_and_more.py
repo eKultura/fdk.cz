@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='test_error',
             name='test_result',
-            field=models.ForeignKey(db_column='test_result_id', default=0, on_delete=django.db.models.deletion.CASCADE, related_name='errors', to='fdk_cz.test_result'),
-            preserve_default=False,
+            field=models.ForeignKey(db_column='test_result_id', default=0, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='errors', to='fdk_cz.test_result'),
+            preserve_default=True,
         ),
     ]

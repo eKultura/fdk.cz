@@ -13,7 +13,7 @@ from fdk_cz.models import test_type, test, test_result, test_error, project
 @login_required
 def get_test_types(request, project_id):
     test_types = test_type.objects.filter(project_id=project_id)
-    data = {'test_results': [{'id': result.test_result_id, 'name': result.test.name} for result in test_results]}
+    data = {'test_types': [{'id': test_type.test_type_id, 'name': test_type.name} for test_type in test_types]}
     return JsonResponse(data)
 @login_required
 def get_test_results(request, project_id):
