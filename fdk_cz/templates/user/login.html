@@ -13,7 +13,7 @@
         {% if user.is_authenticated %}
             <p class="alert alert-success text-center">{% trans "Přihlášen jako" %} {{ user.username }}</p>
             <p class="text-center">
-                <a href="{% url 'odhlaseni' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a>
+                <a href="{% url 'logout_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a>
             </p>
         {% else %}
 

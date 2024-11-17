@@ -4,8 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 
+from django.db.models import Count
+
+from django.utils import timezone
+
+
 from fdk_cz.forms.project import add_user_form, document_form, category_form, initialize_project_forms, milestone_form, project_form, task_form,  User
-from fdk_cz.models import category, document, milestone, project, project_user, role, task, test_error
+from fdk_cz.models import category, comment, document, milestone, project, project_user, role, task, test_error
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -56,9 +61,27 @@ def detail_project(request, project_id):
     members = project_user.objects.filter(project=proj)
     milestones = proj.milestones.all()
     documents = proj.documents.all()
+    all_lists = proj.lists.all()
 
     # Zavolání funkce, která inicializuje formuláře
     form, milestone_form_instance = initialize_project_forms(request.POST if request.method == 'POST' else None)
+
+
+    # Statistika úkolů dle statusu pro konkrétní projekt
+    task_status_counts = proj.tasks.values('status').annotate(count=Count('status'))
+    project_status_counts = {
+        'Nezahájeno': 0,
+        'Probíhá': 0,
+        'Hotovo': 0,
+    }
+    # Přiřazení počtů k jednotlivým statusům
+    for item in task_status_counts:
+        status = item['status']
+        if status in project_status_counts:
+            project_status_counts[status] = item['count']
+    # Celkový počet úkolů v projektu
+    project_total_tasks = sum(project_status_counts.values())
+
 
     # Zpracování POST požadavků na přidání uživatele nebo milníku
     if request.method == 'POST' and form.is_valid():
@@ -75,13 +98,14 @@ def detail_project(request, project_id):
         new_milestone.save()
         return redirect('detail_project', project_id=project_id)
 
+    tasks_to_do = proj.tasks.exclude(priority='Nice to have').exclude(status='Hotovo')
     # Další logika pro detaily projektu
     tasks_by_status = {
-        'Ke zpracování': proj.tasks.filter(status='Ke zpracování'),
+        'Ke zpracování': proj.tasks.filter(status='Nezahájeno'),
         'Probíhá': proj.tasks.filter(status='Probíhá'),
         'Hotovo': proj.tasks.filter(status='Hotovo')
     }
-    nice_to_have_tasks = proj.tasks.filter(status='Nice to have')
+    nice_to_have_tasks = proj.tasks.filter(priority='Nice to have')
     can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
 
     # Přenesení inicializovaných formulářů do šablony
@@ -91,11 +115,15 @@ def detail_project(request, project_id):
         'milestones': milestones,
         'milestone_form': milestone_form_instance,
         'documents': documents,
+        'all_lists': all_lists,
         'tasks_by_status': tasks_by_status,
+        'tasks_to_do': tasks_to_do,
         'nice_to_have_tasks': nice_to_have_tasks,
         'can_view_contacts': can_view_contacts,
         'members': members,
-        'form': form
+        'form': form, 
+        'project_status_counts': project_status_counts, 
+        'project_total_tasks': project_total_tasks, 
     })
 
 
@@ -119,7 +147,7 @@ def delete_project(request, project_id):
 
 
 
-# View for editing an existing project
+# View for editing an existing project 
 def edit_project(request, project_id):
     # Načtěte projekt, který se má upravit
     project_instance = get_object_or_404(project, pk=project_id)
@@ -226,6 +254,7 @@ def create_task(request, project_id):
             task = form.save(commit=False)
             task.project = proj
             task.creator = request.user.username
+            task.created = timezone.now()
             task.save()
             return redirect('detail_project', project_id=project_id)
     else:
@@ -241,7 +270,20 @@ def create_task(request, project_id):
 def detail_task(request, task_id):
     task_obj = get_object_or_404(task, pk=task_id)
     project = task.project
-    return render(request, 'project/detail_task.html', {'task': task_obj, 'project': project})
+    comments = task_obj.comments.order_by('-posted')  # Načte komentáře pro úkol
+
+    if request.method == 'POST' and 'comment' in request.POST:
+        new_comment = comment()
+        new_comment.task = task_obj
+        new_comment.user = request.user
+        new_comment.project = task_obj.project  # Zajistí, že nastavujeme instanci projektu
+        new_comment.comment = request.POST.get('comment')
+        new_comment.posted = timezone.now()
+        new_comment.save()
+        return redirect('detail_task', task_id=task_id)
+
+    return render(request, 'project/detail_task.html', {'task': task_obj, 'project': project, 'comments': comments})
+
 
 
 
@@ -280,10 +322,11 @@ def delete_task(request, task_id):
 
 @login_required
 def update_task_status(request, task_id, status):
-    task = get_object_or_404(Task, pk=task_id)
-    task.status = status
-    task.save()
-    return redirect('detail_project', project_id=task.project.project_id)
+    selected_task = get_object_or_404(task, pk=task_id)  # Načte úkol podle ID
+    selected_task.status = status  # Nastaví nový stav
+    selected_task.save()  # Uloží změny
+    return redirect('detail_project', project_id=selected_task.project.project_id)  
+
 
 
 
@@ -300,11 +343,43 @@ def create_milestone(request, project_id):
             new_milestone.save()
             return redirect('detail_project', project_id=proj.project_id)
         else:
-            print("Form errors:", form.errors)  # Debugging
+            # Výpis chyb formuláře pro ladění
+            print("Form errors:", form.errors)
     else:
         form = milestone_form()
     
-    return render(request, 'project/create_milestone.html', {'form': form, 'project': proj})
+    return render(request, 'project/create_milestone.html', {
+        'form': form,
+        'project': proj
+    })
+
+
+
+@login_required
+def edit_milestone(request, project_id, milestone_id):
+    milestone_instance = get_object_or_404(milestone, pk=milestone_id, project_id=project_id)
+    
+    if request.method == 'POST':
+        form = milestone_form(request.POST, instance=milestone_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('detail_project', project_id=project_id)
+    else:
+        form = milestone_form(instance=milestone_instance)
+    
+    return render(request, 'project/edit_milestone.html', {'form': form, 'project_id': project_id, 'milestone': milestone_instance})
+
+
+
+@login_required
+def delete_milestone(request, project_id, milestone_id):
+    milestone = get_object_or_404(milestone, pk=milestone_id, project_id=project_id)
+
+    if request.method == 'POST':
+        milestone.delete()
+        return redirect('detail_project', project_id=project_id)
+    
+    return render(request, 'project/delete_milestone.html', {'milestone': milestone, 'project_id': project_id})
 
 
 
@@ -327,6 +402,7 @@ def create_category(request, project_id):
     return render(request, 'project/create_category.html', {'form': form, 'project': proj})
 
 
+
 @login_required
 def edit_category(request, category_id):
     cat = get_object_or_404(category, pk=category_id)
@@ -340,6 +416,7 @@ def edit_category(request, category_id):
         form = category_form(instance=cat)
     
     return render(request, 'project/edit_category.html', {'form': form, 'category': cat})
+
 
 
 @login_required

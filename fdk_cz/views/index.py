@@ -2,12 +2,30 @@
 
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.db.models import Count
+
 from fdk_cz.models import  contact, project, task, test, test_result, user
+from django.shortcuts import render
+
 
 
 
 def index(request):
+    # Načítání počtů pro úkoly dle statusů
+    task_status_counts = task.objects.values('status').annotate(count=Count('status'))
+    status_counts = {
+        'Nezahájeno': 0,
+        'Probíhá': 0,
+        'Hotovo': 0,
+    }
+    # Přiřazení počtů k jednotlivým statusům
+    for item in task_status_counts:
+        status = item['status']
+        if status in status_counts:
+            status_counts[status] = item['count']
+
+    total_tasks = sum(status_counts.values())
+
     # Načtení počtů pro různé typy dat
     total_projects = project.objects.count()
     open_tasks_count = task.objects.count()
@@ -20,6 +38,8 @@ def index(request):
     user_contacts = contact.objects.filter(account=request.user).distinct()[:5] if request.user.is_authenticated else None
 
     return render(request, 'index.html', {
+        'status_counts': status_counts,
+        'total_tasks': total_tasks, 
         'total_projects': total_projects,
         'open_tasks_count': open_tasks_count,
         'total_test_results': total_test_results,

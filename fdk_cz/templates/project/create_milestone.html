@@ -39,6 +39,19 @@
                 {% endif %}
             </div>
 
+            <!-- Status milníku -->
+            <div class="mb-4">
+                <label for="id_status" class="block font-semibold text-gray-600 mb-1">{% trans "Status" %}</label>
+                <select name="status" id="id_status" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    <option value="not_started">{% trans "Nezačato" %}</option>
+                    <option value="in_progress">{% trans "Probíhá" %}</option>
+                    <option value="completed">{% trans "Dokončeno" %}</option>
+                </select>
+                {% if form.status.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.status.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
             <div class="flex gap-4 mt-6">
                 <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
                     {% trans "Vytvořit milník" %}

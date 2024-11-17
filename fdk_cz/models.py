@@ -1,7 +1,6 @@
 ### fdk_cz.models
 
 
-
 from django.db import models
 from django.contrib.auth.models import User 
 
@@ -288,6 +287,10 @@ class transaction(models.Model):
         return f"{self.transaction_type} - {self.item.name} ({self.quantity})"
     class Meta:
         db_table = 'FDK_warehouse_transaction'
+
+# kategorie - cena (historie)
+
+
 
 
 # # # # # # # # #

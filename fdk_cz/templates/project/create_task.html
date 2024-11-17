@@ -51,9 +51,10 @@
             <div class="mb-4">
                 <label for="id_priority" class="block font-semibold text-gray-600 mb-1">{% trans "Priorita" %}</label>
                 <select name="priority" id="id_priority" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    <option value="Normální">{% trans "Normální" %}</option>
+                    <option value="Nízká">{% trans "Nízká" %}</option>
                     <option value="Střední">{% trans "Střední" %}</option>
                     <option value="Vysoká">{% trans "Vysoká" %}</option>
+                    <option value="Nice to have">{% trans "Nice to have" %}</option>
                 </select>
                 {% if form.priority.errors %}
                     <div class="text-red-600 mt-1">{{ form.priority.errors }}</div>
@@ -64,10 +65,9 @@
             <div class="mb-4">
                 <label for="id_status" class="block font-semibold text-gray-600 mb-1">{% trans "Status" %}</label>
                 <select name="status" id="id_status" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    <option value="Ke zpracování">{% trans "Ke zpracování" %}</option>
+                    <option value="Nezahájeno">{% trans "Nezahájeno" %}</option>
                     <option value="Probíhá">{% trans "Probíhá" %}</option>
                     <option value="Hotovo">{% trans "Hotovo" %}</option>
-                    <option value="Nice to have">{% trans "Nice to have" %}</option>
                 </select>
                 {% if form.status.errors %}
                     <div class="text-red-600 mt-1">{{ form.status.errors }}</div>

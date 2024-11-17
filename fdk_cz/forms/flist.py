@@ -12,20 +12,18 @@ class list_form(forms.ModelForm):
     class Meta:
         model = flist
         fields = ['name', 'description', 'is_private', 'project']
+        labels = {
+            'name': 'Název seznamu',
+            'description': 'Popis',
+            'is_private': 'Soukromý seznam',
+            'project': 'Projekt',
+        }
 
     def __init__(self, *args, **kwargs):
-        # Předání uživatele přes kwargs
         user = kwargs.pop('user', None)
-        super(list_form, self).__init__(*args, **kwargs)
-
-        self.fields['name'].widget.attrs.update({'class': 'form-control'})
-        self.fields['description'].widget.attrs.update({'class': 'form-control'})
-        self.fields['is_private'].widget.attrs.update({'class': 'form-check-input'})
-        self.fields['project'].widget.attrs.update({'class': 'form-control'})
-        self.fields['project'].required = False  # Projekt není povinný
-
+        super().__init__(*args, **kwargs)
         if user:
-            # Získáme projekty přiřazené uživateli
+            # Zobrazí pouze projekty, kde je uživatel členem
             user_projects = project_user.objects.filter(user=user).values_list('project', flat=True)
             self.fields['project'].queryset = project.objects.filter(pk__in=user_projects)
 

@@ -12,6 +12,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from fdk_cz.forms.flist import list_form, list_item_form
 from fdk_cz.models import flist, list_item, project
 
+import logging
+
 
 
 
@@ -52,19 +54,20 @@ def create_list(request):
 def edit_list(request, list_id):
     flist_instance = get_object_or_404(flist, pk=list_id)
 
-    # Ověření, že uživatel je vlastníkem seznamu
     if flist_instance.owner != request.user:
-        return redirect('detail_list', list_id=list_id)  # Přesměrování zpět na detail seznamu
+        return redirect('detail_list', list_id=list_id)
 
     if request.method == 'POST':
-        form = list_form(request.POST, instance=flist_instance)
+        form = list_form(request.POST, instance=flist_instance, user=request.user)
         if form.is_valid():
-            form.save()
+            form.save()  # Zde se nyní správně uloží projekt, pokud je vyplněn
             return redirect('detail_list', list_id=list_id)
     else:
-        form = list_form(instance=flist_instance)
+        form = list_form(instance=flist_instance, user=request.user)
 
     return render(request, 'list/edit_list.html', {'form': form, 'list_id': list_id})
+
+
 
 
 

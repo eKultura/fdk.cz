@@ -194,10 +194,6 @@ def edit_test_error(request, test_error_id):
 
 @login_required
 def detail_test_error(request, test_error_id):
-    # Načteme chybu podle ID, nebo vrátíme 404, pokud neexistuje
-    test_error_instance = get_object_or_404(test_error, pk=test_error_id)
-    
-    # Předáme instanci chyby do šablony
-    return render(request, 'test/detail_test_error.html', {'test_error': test_error_instance})
-
+    error = get_object_or_404(test_error, pk=test_error_id)
+    return render(request, 'test/detail_test_error.html', {'error': error})
 

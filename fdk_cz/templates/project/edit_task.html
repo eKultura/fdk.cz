@@ -35,10 +35,9 @@
             <div class="mb-4">
                 <label for="id_status" class="font-semibold text-gray-600 block mb-1">{% trans "Status" %}</label>
                 <select name="status" id="id_status" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                    <option value="Ke zpracování" {% if task.status == "Ke zpracování" %}selected{% endif %}>{% trans "Ke zpracování" %}</option>
-                    <option value="V procesu" {% if task.status == "V procesu" %}selected{% endif %}>{% trans "V procesu" %}</option>
+                    <option value="Nezahájeno" {% if task.status == "Nezahájeno" %}selected{% endif %}>{% trans "Nezahájeno" %}</option>
+                    <option value="Probíhá" {% if task.status == "Probíhá" %}selected{% endif %}>{% trans "Probíhá" %}</option>
                     <option value="Hotovo" {% if task.status == "Hotovo" %}selected{% endif %}>{% trans "Hotovo" %}</option>
-                    <option value="Nice to have" {% if task.status == "Nice to have" %}selected{% endif %}>{% trans "Nice to have" %}</option>
                 </select>
                 {% if form.status.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ form.status.errors|join:", " }}</p>
@@ -66,9 +65,10 @@
             <div class="mb-4">
                 <label for="id_priority" class="font-semibold text-gray-600 block mb-1">{% trans "Priorita" %}</label>
                 <select name="priority" id="id_priority" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    <option value="Normální" {% if task.priority == "Normální" %}selected{% endif %}>{% trans "Normální" %}</option>
+                    <option value="Nízká" {% if task.priority == "Nízká" %}selected{% endif %}>{% trans "Nízká" %}</option>
                     <option value="Střední" {% if task.priority == "Střední" %}selected{% endif %}>{% trans "Střední" %}</option>
                     <option value="Vysoká" {% if task.priority == "Vysoká" %}selected{% endif %}>{% trans "Vysoká" %}</option>
+                    <option value="Nice to have" {% if task.status == "Nice to have" %}selected{% endif %}>{% trans "Nice to have" %}</option>
                 </select>
                 {% if form.priority.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ form.priority.errors|join:", " }}</p>
