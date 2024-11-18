@@ -14,11 +14,15 @@ from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, new_project, manage_project_users, remove_project_user, update_task_status
 from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings
+from django.urls import path, include
 
 urlpatterns = (
 
     path('', index, name='index'),
     path('dashboard', dashboard, name='dashboard'),
+
+    # Summer notes for text edit
+    path('summernote/', include('django_summernote.urls')),
 
     # Auth paths
     path('prihlaseni/', login, name='login_cs'),

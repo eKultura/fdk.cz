@@ -3,7 +3,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from fdk_cz.models import category, document, milestone, project, role, task, User
-
+from django_summernote.widgets import SummernoteWidget
 
 
 class project_form(forms.ModelForm):
@@ -104,7 +104,7 @@ class document_form(forms.ModelForm):
             'description': 'Obsah'
         }
         widgets = {
-            'description': forms.Textarea(attrs={'id': 'summernote'}),
+            'description': SummernoteWidget(),
         }
 
     def __init__(self, *args, **kwargs):
