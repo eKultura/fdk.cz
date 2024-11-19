@@ -1,0 +1,30 @@
+[
+    {
+        "model": "fdk_cz.role",
+        "pk": 1,
+        "fields": {
+            "role_name": "Owner"
+        }
+    },
+    {
+        "model": "fdk_cz.role",
+        "pk": 2,
+        "fields": {
+            "role_name": "Administrator"
+        }
+    },
+    {
+        "model": "fdk_cz.role",
+        "pk": 3,
+        "fields": {
+            "role_name": "Editor"
+        }
+    },
+    {
+        "model": "fdk_cz.role",
+        "pk": 4,
+        "fields": {
+            "role_name": "Viewer"
+        }
+    }
+]
