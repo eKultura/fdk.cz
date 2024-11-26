@@ -12,7 +12,7 @@
 
         {% if user.is_authenticated %}
             <p class="alert alert-success text-center">{{ user.username }} {% trans "je již přihlášen." %}</p>
-            <p class="text-center"><a href="{% url 'logout' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a></p>
+            <p class="text-center"><a href="{% url 'logout_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a></p>
         {% else %}
 
             <!-- Zobrazení obecných chyb formuláře -->

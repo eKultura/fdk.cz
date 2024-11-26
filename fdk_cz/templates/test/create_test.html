@@ -27,12 +27,8 @@
                         <small>(<a href="/testy/typy/novy/" class="text-blue-500 hover:text-blue-700 underline font-semibold">{% trans "Nový typ testování" %}</a>)</small>
                     </label>
                     <select name="test_type" id="id_test_type" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                        <option value="">{% trans "Vyberte typ testu" %}</option>
-                        {% for test_type in form.test_type.field.queryset %}
-                            <option value="{{ test_type.pk }}" {% if form.test_type.value == test_type.pk %}selected{% endif %}>
-                                {{ test_type.name }}
-                            </option>
-                        {% endfor %}
+
+                      <option value="">{% trans "Vyberte typ testu" %}</option>
                     </select>
                     {% if form.test_type.errors %}
                         <div class="text-red-600 mt-1">{{ form.test_type.errors }}</div>

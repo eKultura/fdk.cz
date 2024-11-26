@@ -1,0 +1,97 @@
+{% extends 'warehouse/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Skladové hospodářství" %} |  FDK.cz{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{% trans 'Seznam všech skladů dostupných uživateli.' %}">
+{% endblock %}
+
+
+{% block nav1 %}FDK.cz{% endblock %}
+{% block nav2 %}Sklady{% endblock %}
+
+{% block content %}
+
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Sklad </h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+
+
+<!-- Skladové položky -->
+<div class="container-fluid py-4">
+    <div class="card">
+        <div class="card-header pb-0">
+            <h6>{% trans "Seznam skladových položek" %}</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Název" %}</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">{% trans "Popis" %}</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Množství" %}</th>
+                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Cena za jednotku" %}</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">{% trans "Lokalita" %}</th>
+                            <th class="text-secondary opacity-7"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <h6 class="mb-0 text-sm">{{ item.name }}</h6>
+                                    <p class="text-xs text-secondary mb-0">{{ item.code }}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <p class="text-xs text-secondary mb-0">{{ item.description }}</p>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                                <span class="text-xs font-weight-bold">{{ item.quantity }}</span>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                                <span class="text-xs font-weight-bold">{{ item.unit_price }} Kč</span>
+                            </td>
+                            <td>
+                                <p class="text-xs font-weight-bold mb-0">{{ item.location }}</p>
+                            </td>
+                            <td class="align-middle">
+                                <a href="{% url 'edit_item' item.id %}" class="text-secondary font-weight-bold text-xs">{% trans "Editovat" %}</a> |
+                                <a href="{% url 'delete_item' item.id %}" class="text-danger font-weight-bold text-xs">{% trans "Smazat" %}</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-gray-500">
+                                {% trans "Žádné skladové položky nenalezeny." %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <a class="btn bg-gradient-dark mb-0 mt-2" href="javascript:;"><i class="material-symbols-rounded text-sm">add</i>&nbsp;&nbsp;Přidat novou položku</a>
+</div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+{% endblock %}

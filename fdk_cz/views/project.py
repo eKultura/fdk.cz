@@ -10,7 +10,7 @@ from django.utils import timezone
 
 
 from fdk_cz.forms.project import add_user_form, document_form, category_form, initialize_project_forms, milestone_form, project_form, task_form,  User
-from fdk_cz.models import category, comment, document, milestone, project, project_user, role, task, test_error
+from fdk_cz.models import category, comment, company, document, milestone, project, project_user, role, task, test_error
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -253,7 +253,7 @@ def create_task(request, project_id):
         if form.is_valid():
             task = form.save(commit=False)
             task.project = proj
-            task.creator = request.user.username
+            task.creator = request.user
             task.created = timezone.now()
             task.save()
             return redirect('detail_project', project_id=project_id)
@@ -326,6 +326,36 @@ def update_task_status(request, task_id, status):
     selected_task.status = status  # Nastaví nový stav
     selected_task.save()  # Uloží změny
     return redirect('detail_project', project_id=selected_task.project.project_id)  
+
+
+
+
+@login_required
+def task_management(request):
+    user = request.user
+    user_tasks = task.objects.filter(assigned=user).order_by('priority', '-status') 
+
+
+    user_organizations = user.companies.all()
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        if not user_organizations.exists():
+            messages.error(request, "Musíte být součástí organizace, abyste mohli vytvořit úkol mimo projekt.")
+        else:
+            # Create task without a project
+            task.objects.create(
+                title=title,
+                description=description,
+                creator=user,
+                assigned=user,
+                organization=user_organizations.first()  # Assign the first organization as a default
+            )
+            messages.success(request, "Úkol byl úspěšně vytvořen.")
+            return redirect('task_management')
+
+    return render(request, 'project/task_management.html', {'tasks': user_tasks})
 
 
 
@@ -433,8 +463,6 @@ def delete_category(request, category_id):
 
 
 #  D O C U M E N T
-
-
 @login_required
 def create_document(request, project_id):
     proj = get_object_or_404(project, pk=project_id)

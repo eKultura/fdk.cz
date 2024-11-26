@@ -1,5 +1,272 @@
+<!--VERZE 2-->
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FDK.cz Dashboard</title>
+
+    {% include "inc/head.html" %}
+</head>
+<body class="bg-gray-100">
+
+                        {% if user.is_authenticated %}
+                            {% if user.is_superuser or user.is_staff %}
+                            {% else %}
+                            {% endif %}
+                        <!-- pøihlášen -->
+                        {% else %}
+                        <!-- nepøihlášen-->
+                        {% endif %}
+
+    <!-- Horní lišta -->
+    {% include "inc/topnav.html" %}
 
 
+<!-- Obsah Dashboardu Modul -->
+<!-- Hlavní obsah dashboardu -->
+<div class="container mx-auto px-4 py-8">
+    <!-- Titulek dashboardu -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-semibold text-gray-800">Pøehled Dashboardu</h1>
+    </div>
+
+    <!-- Pøehledové karty Modul -->
+    <!-- Karty pøehledu -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Dlaždice Projektù -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Celkem projektù</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_projects }}</p>
+            <!--<a href="{% url 'index_project_cs' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/projekty/</a>-->
+        </div>
+        <!-- Dlaždice Úkolù -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Celkem úkolù</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ open_tasks_count }}</p>
+            <!--<a href="{% url 'list_tests' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/ukoly/</a>-->
+        </div>
+        <!-- Dlaždice Testù -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Celkem testù</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_test_results }}</p>
+            <!--<a href="/testy/" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/testy/</a>-->
+        </div>
+        <!-- Dlaždice Uživatelù -->
+        <div class="bg-white p-6 rounded-lg shadow-md relative">
+            <h2 class="text-lg font-semibold text-gray-700">Uživatelé</h2>
+            <p class="mt-2 text-3xl font-bold text-gray-900">{{ total_users }}</p>
+            <!--<a href="{% url 'user_profile' %}" class="absolute bottom-2 left-2 text-sm text-blue-600 hover:text-blue-800">/uzivatele/</a>-->
+        </div>
+    </div>
+
+
+
+    <div class="mt-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">FDK.cz</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        
+        <p style="padding:15px">Projekt pro potøeby neziskové organizace <a href="https://ekultura.eu">eKultura</a>. <br>
+        Pokud máte zájem o využití komplexního nástroje pro správu organizací napište na media@ekultura.eu</p>
+        
+        </div>
+    </div>
+
+    <!-- Pøehled modulù 
+    <div class="mt-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pøehled Modulù</h2>
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="w-full bg-gray-100">
+                        <th class="py-2 px-4 text-left text-gray-700">Název</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Popis</th>
+                        <th class="py-2 px-4 text-left text-gray-700">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/projekty/" class="text-blue-500 hover:text-blue-700 underline font-semibold">
+                            Projektový Management</a><br>
+                            <span style="font-size:90%; color: #555;">(Project Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Plánování a sledování projektù</td>
+                        <td class="py-2 px-4 text-green-600 font-semibold">Aktivní</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/testy/" class="text-blue-500 hover:text-blue-700 underline font-semibold">Test Management</a><br>
+                            <span style="font-size:90%; color: #555;">(Test Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Øízení a správa testù</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V pøípravì</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Financí<br>
+                            <span style="font-size:90%; color: #555;">(Finance Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa financí, úètù, generování faktur</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V pøípravì</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Kontraktù<br>
+                            <span style="font-size:90%; color: #555;">(Contract Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa kontraktù a dodavatelských vztahù</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Dotaèní Management<br>
+                            <span style="font-size:90%; color: #555;">(Grant Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa a øízení dotaèních procesù</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/spravce-ukolu/" class="text-blue-500 hover:text-blue-700 underline font-semibold">Správa Úkolù</a><br>
+                            <span style="font-size:90%; color: #555;">(Task Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Pøidìlování a sledování úkolù</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Lidských Zdrojù<br>
+                            <span style="font-size:90%; color: #555;">(HR Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Øízení a správa zamìstnancù</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Øízení Rizik<br>
+                            <span style="font-size:90%; color: #555;">(Risk Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Identifikace a øízení rizik</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa IT Infrastruktury<br>
+                            <span style="font-size:90%; color: #555;">(IT Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Správa IT a technické podpory</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="py-2 px-4 text-gray-600">
+                            Správa Aktiv<br>
+                            <span style="font-size:90%; color: #555;">(Asset Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Evidence a správa aktiv a majetku</td>
+                        <td class="py-2 px-4 text-gray-500 font-semibold">V plánu</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 text-gray-600">
+                            <a href="/kontakty/" class="text-blue-500 hover:text-blue-700 underline font-semibold">
+                            Správa kontaktù</a><br>
+                            <span style="font-size:90%; color: #555;">(Contact Management)</span>
+                        </td>
+                        <td class="py-2 px-4 text-gray-600">Kontakty u projektu nebo u seznamu</td>
+                        <td class="py-2 px-4 text-orange-600 font-semibold">V pøípravì</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>-->
+
+
+
+
+</div>
+
+
+
+
+
+
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Blok Seznamu -->
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Seznam úkolù</h2>
+            <ul class="list-disc pl-5">
+                {% if user.is_authenticated %}
+                    <!-- pøihlášen -->
+                    {% if user_tasks %}
+                        {% for task in user_tasks %}
+                            <li class="text-gray-600">
+                                <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:text-blue-800">{{ task.title }}</a>
+                                - <small>{{ task.due_date|date:"d.m.Y" }}</small>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="text-gray-600">Nemáte žádné pøidìlené úkoly</li>
+                    {% endif %}
+                {% else %}
+                    <!-- nepøihlášen-->
+                    <li class="text-gray-600">Úkol 1: <a href="/prihlaseni/">Pøihlášení</a> | <a href="/registrace/">Registrace</a></li>
+                    <li class="text-gray-600">Úkol 2: Pøidat se k projektu</li>
+                    <li class="text-gray-600">Úkol 3: Vytvoøit úkol</li>
+                    <li class="text-gray-600">Úkol 4: Dokonèit projekt</li>
+                {% endif %}
+            </ul>
+        </div>
+
+
+        <!-- Blok s kruhovým grafem (s pevnou výškou) -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Statistika úkolù <small>(Celkem: {{ total_tasks }})</small></h2>
+            <div class="relative" style="height: 300px;">
+                <canvas id="myPieChart"></canvas>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Skript pro zobrazení kruhového grafu -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
+            datasets: [{
+                label: 'Statistika projektù',
+                data: [
+                    {{ status_counts.Nezahájeno|default:0 }},
+                    {{ status_counts.Probíhá|default:0 }},
+                    {{ status_counts.Hotovo|default:0 }}
+                ],
+                backgroundColor: ['#F44336', '#FFC107', '#4CAF50'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+
+
+{% include "inc/footer.html" %}
+
+</body>
+</html>
+
+
+
+<!-- ==================== VERZE 1 ============= -->
 {% extends 'base.html' %}
 {% load i18n %}
 

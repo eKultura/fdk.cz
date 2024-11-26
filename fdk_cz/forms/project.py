@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from fdk_cz.models import category, document, milestone, project, role, task, User
 
 
-
 class project_form(forms.ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), required=False)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), required=False)
@@ -97,15 +96,7 @@ class document_form(forms.ModelForm):
     class Meta:
         model = document
         fields = ['title', 'document_type', 'category', 'description']
-        labels = {
-            'title': 'Název',
-            'document_type': 'Typ dokumentu (např. manuál, metodický pokyn, testování...)',
-            'category': 'Kategorie',
-            'description': 'Obsah'
-        }
-        widgets = {
-            'description': forms.Textarea(attrs={'id': 'summernote'}),
-        }
+
 
     def __init__(self, *args, **kwargs):
         project_id = kwargs.pop('project_id', None)

@@ -67,3 +67,8 @@ def dashboard(request):
         'user_projects': user_projects,
         'user_contacts': user_contacts,
     })
+
+
+
+
+

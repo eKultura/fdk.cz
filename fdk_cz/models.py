@@ -21,6 +21,36 @@ class user(models.Model):
         db_table = 'FDK_users'
 
 
+
+
+
+
+class company(models.Model):
+    company_id = models.AutoField(primary_key=True, db_column='company_id')
+    name = models.CharField(max_length=255, db_column='name')
+    # struktura pro adresu
+    street = models.CharField(max_length=128, db_column='street')  # Ulice
+    street_number = models.CharField(max_length=10, db_column='street_number')  # Číslo ulice
+    city = models.CharField(max_length=128, db_column='city')  # Město
+    postal_code = models.CharField(max_length=20, db_column='postal_code')  # PSČ
+    state = models.CharField(max_length=128, db_column='state')  # Stát
+  
+    ico = models.CharField(max_length=20, unique=True, db_column='ico')  # IČO
+    dic = models.CharField(max_length=20, blank=True, null=True, db_column='dic')  # DIČ (volitelně)
+    phone = models.CharField(max_length=15, blank=True, null=True, db_column='phone')
+    email = models.EmailField(blank=True, null=True, db_column='email')
+    is_vat_payer = models.BooleanField(default=False, db_column='is_vat_payer')  # Plátce DPH
+    users = models.ManyToManyField(User, related_name='companies', db_column='users')  # Uživatelé propojení s firmou
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+
+    class Meta:
+        db_table = 'FDK_company'
+
+    def __str__(self):
+        return self.name
+
+
+
 class project(models.Model):
     project_id = models.AutoField(primary_key=True, db_column='project_id')
     name = models.CharField(max_length=255, db_column='name')
@@ -126,9 +156,10 @@ class task(models.Model):
     category = models.ForeignKey(category, on_delete=models.CASCADE, null=True, related_name='tasks', db_column='category_id')
     priority = models.CharField(max_length=16, null=True, blank=True, db_column='priority')
     status = models.CharField(max_length=50, null=True, blank=True, db_column='status')
-    creator = models.CharField(max_length=50, null=True, blank=True, db_column='creator')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks', db_column='creator_id')
     assigned = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_tasks', db_column='assigned_id')
     project = models.ForeignKey(project, on_delete=models.SET_NULL, null=True, related_name='tasks', db_column='project_id')
+    organization = models.ForeignKey(company, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks', db_column='organization_id')
     due_date = models.DateField(null=True, blank=True, db_column='due_date')
     created = models.DateTimeField(null=True, blank=True, db_column='created')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks', db_column='parent_id')
@@ -360,7 +391,7 @@ class test_error(models.Model):
         ('in_progress', 'V procesu'),
     ]
     test_error_id = models.AutoField(primary_key=True, db_column='test_error_id')
-    test_result = models.ForeignKey(test_result, on_delete=models.CASCADE, related_name='errors', db_column='test_result_id')
+    test_result = models.ForeignKey(test_result, db_column='test_result_id', on_delete=models.CASCADE, related_name='errors')
     project = models.ForeignKey('project', on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
     error_title = models.CharField(max_length=255, db_column='error_title')
     description = models.TextField(null=True, blank=True, db_column='description')
@@ -377,31 +408,8 @@ class test_error(models.Model):
 
 
 
+
 # # # F A K T U R Y # # #
-class company(models.Model):
-    company_id = models.AutoField(primary_key=True, db_column='company_id')
-    name = models.CharField(max_length=255, db_column='name')
-    # struktura pro adresu
-    street = models.CharField(max_length=128, db_column='street')  # Ulice
-    street_number = models.CharField(max_length=10, db_column='street_number')  # Číslo ulice
-    city = models.CharField(max_length=128, db_column='city')  # Město
-    postal_code = models.CharField(max_length=20, db_column='postal_code')  # PSČ
-    state = models.CharField(max_length=128, db_column='state')  # Stát
-  
-    ico = models.CharField(max_length=20, unique=True, db_column='ico')  # IČO
-    dic = models.CharField(max_length=20, blank=True, null=True, db_column='dic')  # DIČ (volitelně)
-    phone = models.CharField(max_length=15, blank=True, null=True, db_column='phone')
-    email = models.EmailField(blank=True, null=True, db_column='email')
-    is_vat_payer = models.BooleanField(default=False, db_column='is_vat_payer')  # Plátce DPH
-    users = models.ManyToManyField(User, related_name='companies', db_column='users')  # Uživatelé propojení s firmou
-    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
-
-    class Meta:
-        db_table = 'FDK_company'
-
-    def __str__(self):
-        return self.name
-
 
 class invoice(models.Model):
     invoice_id = models.AutoField(primary_key=True, db_column='invoice_id')
