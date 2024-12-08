@@ -1,11 +1,26 @@
 msgid "Create New Project"
-msgstr "Vytvoøit nový projekt"
+msgstr "Vytvoï¿½it novï¿½ projekt"
 
 msgid "Project Name"
-msgstr "Název projektu"
+msgstr "Nï¿½zev projektu"
 
 msgid "Project Description"
 msgstr "Popis projektu"
 
 msgid "Project URL"
 msgstr "URL projektu"
+
+msgid  "Did you forget your password?"
+msgstr "Zapomneli jste heslo?"
+
+msgid "Password renewal"
+msgstr "ObnovenÃ­ hesla"
+
+msgid "Send"
+msgstr "Odeslat"
+
+msgid "Email address"
+msgstr "EmailovÃ¡ adresa"
+
+msgid "Enter email"
+msgstr "Zadejte emailovou adresu"

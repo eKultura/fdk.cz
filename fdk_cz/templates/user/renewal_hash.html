@@ -1,0 +1,92 @@
+{% extends 'user/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Přihlášení" %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Levý blok - Přihlašovací formulář (2/3 šířka) -->
+    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Přihlášení" %}</h1>
+
+        {% if user.is_authenticated %}
+            <p class="alert alert-success text-center">{% trans "Přihlášen jako" %} {{ user.username }}</p>
+            <p class="text-center">
+                <a href="{% url 'logout_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a>
+            </p>
+        {% else %}
+
+            <!-- Chybová zpráva -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger text-center mb-4 p-3 rounded bg-red-100 text-red-800">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" class="p-6 border rounded-lg shadow bg-gray-50">
+                {% csrf_token %}
+
+                <!-- Heslo -->
+                <div class="mb-4">
+                    <label for="id_password" class="block font-semibold text-gray-600 mb-1">{% trans "Nove heslo" %}</label>
+                    <div class="relative">
+                        <input type="password1" name="password1" id="id_password" placeholder="{% trans 'Zadejte heslo' %}" required
+                               class="w-full p-2 border border-gray-300 rounded-lg pr-10">
+                        <button type="button" onclick="togglePassword('id_password')" 
+                                class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                            <i class="material-icons" id="password-icon">visibility</i>
+                        </button>
+                    </div>
+                    <small class="text-gray-500">{% trans "Heslo musí mít alespoň 8 znaků a obsahovat číslo." %}</small>
+                    {% if form.password1.errors %}
+                        <div class="text-red-600 mt-1">{{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="w-full py-2 mt-4 text-white bg-blue-600 rounded-lg font-bold">
+                    {% trans "Nastavit" %}
+                </button>
+            </form>
+
+            <p class="mt-4 text-center text-gray-600">
+                <a href="{% url 'password_renewal_en' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Zapomneli jste heslo?" %}</a> anebo {% trans "Nemáte účet?" %} <a href="{% url 'registration_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Registrujte se zde" %}</a>
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Pravý blok - Pomocný obsah (1/3 šířka) -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
+        <p class="text-gray-600 mb-4">
+            {% trans "Po přihlášení můžete spravovat své úkoly, projekty, testování a hlášení chyb." %}
+        </p>
+        <p class="text-gray-600 mb-4">
+            {% trans "Získejte přístup k nástrojům pro řízení projektů a týmové spolupráce." %}
+        </p>
+        <!-- FDK.cz v šedé barvě -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="/">FDK.cz</a></p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Skript pro přepínání zobrazení hesla s Material Icons -->
+<script>
+    function togglePassword(fieldId) {
+        var passwordField = document.getElementById(fieldId);
+        var icon = document.getElementById("password-icon");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.textContent = "visibility_off"; // Změna na ikonu skrytí
+        } else {
+            passwordField.type = "password";
+            icon.textContent = "visibility"; // Změna na ikonu zobrazení
+        }
+    }
+</script>
+
+{% endblock %}
