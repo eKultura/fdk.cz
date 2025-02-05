@@ -96,7 +96,9 @@ class document_form(forms.ModelForm):
     class Meta:
         model = document
         fields = ['title', 'document_type', 'category', 'description']
-
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'summernote'}),
+        }
 
     def __init__(self, *args, **kwargs):
         project_id = kwargs.pop('project_id', None)

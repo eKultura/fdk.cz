@@ -360,7 +360,9 @@
                             </tr>
                         </thead>
                         <tbody>
-
+                {% if not user.is_authenticated %}
+                    <div style="margin: 5px 5px 5px 20px;padding:5px"><a href="/prihlaseni/">Přihlaste se pro zobrazení projektů</a></div>
+                {% endif %}
                             {% for project in user_projects %}
                             <tr>
                                 <td>
@@ -414,21 +416,26 @@
             </div>
             <div class="card-body p-3">
                 <div class="timeline timeline-one-side">
+                {% if not user.is_authenticated %}
+                    <p><a href="/prihlaseni/">Přihlaste se pro zobrazení úkolů</a></p>
+                {% endif %}
+                {% if user_tasks %}
                     {% for task in user_tasks %}
                     <div class="timeline-block mb-3">
                         <span class="timeline-step">
                             <i class="material-symbols-rounded text-info text-gradient">task</i>
                         </span>
                         <div class="timeline-content">
-                            <h6 class="text-dark text-sm font-weight-bold mb-0">{{ task.name }}</h6>
+                            <h6 class="text-dark text-sm font-weight-bold mb-0"><a href="/projekt/ukol/{{ task.task_id }}/">{{ task.title }}</a></h6>
                             <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                 Deadline: {{ task.due_date|date:"d.m.Y" }}
                             </p>
                         </div>
                     </div>
-                    {% empty %}
-                    <p>Nemáte žádné úkoly.</p>
                     {% endfor %}
+                {% else %}
+                    <p>Nemáte žádné úkoly.</p>
+                {% endif %}
                 </div>
             </div>
         </div>
@@ -464,7 +471,7 @@
         <div class="col-lg-4 col-md-6 mt-4 mb-4">
           <div class="card ">
             <div class="card-body">
-              <h6 class="mb-0 "> - </h6>
+              <h6 class="mb-0 "> Prediktivní analýza </h6>
               <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) . </p>
               <div class="pe-2">
                 <div class="chart">
