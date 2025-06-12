@@ -1,0 +1,124 @@
+{% extends 'project/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Nový úkol" %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Levý blok 2/3 - Formulář pro vytvoření úkolu -->
+    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">{% trans "Vytvořit nový úkol" %}</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Název úkolu -->
+            <div class="mb-4">
+                <label for="id_title" class="block font-semibold text-gray-600 mb-1">{% trans "Název úkolu" %}</label>
+                <input type="text" name="title" id="id_title" value="{{ form.title.value|default_if_none:'' }}" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
+                {% if form.title.errors %}
+                    <div class="text-red-600 mt-1">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Popis úkolu -->
+            <div class="mb-4">
+                <label for="id_description" class="block font-semibold text-gray-600 mb-1">{% trans "Popis" %}</label>
+                <textarea name="description" id="id_description" rows="4" class="w-full p-2 border border-gray-300 rounded-lg bg-white">{{ form.description.value|default_if_none:'' }}</textarea>
+                {% if form.description.errors %}
+                    <div class="text-red-600 mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Kategorie -->
+            <div class="mb-4">
+                <label for="id_category" class="block font-semibold text-gray-600 mb-1">{% trans "Kategorie" %}</label>
+                <select name="category" id="id_category" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
+                    <option value="">{% trans "Vyberte kategorii" %}</option>
+                    {% for category in form.category.field.queryset %}
+                        <option value="{{ category.pk }}" {% if form.category.value == category.pk %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.category.errors %}
+                    <div class="text-red-600 mt-1">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Volitelné informace -->
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 mt-6">{% trans "Volitelné informace" %}</h3>
+
+            <!-- Priorita -->
+            <div class="mb-4">
+                <label for="id_priority" class="block font-semibold text-gray-600 mb-1">{% trans "Priorita" %}</label>
+                <select name="priority" id="id_priority" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    <option value="Nízká">{% trans "Nízká" %}</option>
+                    <option value="Střední">{% trans "Střední" %}</option>
+                    <option value="Vysoká">{% trans "Vysoká" %}</option>
+                    <option value="Nice to have">{% trans "Nice to have" %}</option>
+                </select>
+                {% if form.priority.errors %}
+                    <div class="text-red-600 mt-1">{{ form.priority.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4">
+                <label for="id_status" class="block font-semibold text-gray-600 mb-1">{% trans "Status" %}</label>
+                <select name="status" id="id_status" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    <option value="Nezahájeno">{% trans "Nezahájeno" %}</option>
+                    <option value="Probíhá">{% trans "Probíhá" %}</option>
+                    <option value="Hotovo">{% trans "Hotovo" %}</option>
+                </select>
+                {% if form.status.errors %}
+                    <div class="text-red-600 mt-1">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Datum dokončení -->
+            <div class="mb-4">
+                <label for="id_due_date" class="block font-semibold text-gray-600 mb-1">{% trans "Datum dokončení" %}</label>
+                <input type="date" name="due_date" id="id_due_date" value="{{ form.due_date.value|default_if_none:'' }}" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                {% if form.due_date.errors %}
+                    <div class="text-red-600 mt-1">{{ form.due_date.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Přiděleno -->
+            <div class="mb-4">
+                <label for="id_assigned" class="block font-semibold text-gray-600 mb-1">{% trans "Přiděleno" %}</label>
+                <select name="assigned" id="id_assigned" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                    {% for member in project.project_users.all %}
+                        <option value="{{ member.user.id }}">{{ member.user.username }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.assigned.errors %}
+                    <div class="text-red-600 mt-1">{{ form.assigned.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Tlačítka pro odeslání a návrat -->
+            <div class="flex gap-4 mt-6">
+                <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
+                    {% trans "Vytvořit úkol" %}
+                </button>
+                <a href="{% url 'detail_project' project.project_id %}" class="w-full py-2 px-4 bg-gray-600 text-white font-bold rounded-lg text-center hover:bg-gray-700">
+                    {% trans "Zpět" %}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Pravý blok 1/3 - Pomocník s informacemi -->
+    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
+        <p class="text-gray-600 mb-4">{% trans "Vytvoření nového úkolu vám umožní spravovat pracovní zátěž a stanovit priority." %}</p>
+        <p class="text-gray-600">{% trans "Zadejte název, popis a volitelné parametry jako kategorii, prioritu a přiřazenou osobu." %}</p>
+
+        <!-- FDK.cz v šedé barvě -->
+        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
+            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
