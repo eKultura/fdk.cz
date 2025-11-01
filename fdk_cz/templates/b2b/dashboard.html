@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}B2B Management | FDK.cz{% endblock %}
+{% block header_title %}🤝 B2B Management{% endblock %}
+{% block header_subtitle %}Správa B2B vztahů a obchodních příležitostí{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Statistika -->
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">Aktivní klienti</h3>
+      <p class="text-3xl font-bold text-blue-600">0</p>
+    </div>
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">Příležitosti</h3>
+      <p class="text-3xl font-bold text-green-600">0</p>
+    </div>
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">Obrat (měsíc)</h3>
+      <p class="text-3xl font-bold text-purple-600">0 Kč</p>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="text-center py-12">
+      <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">🚧 Modul v přípravě</h2>
+      <p class="text-gray-600 mb-6">
+        B2B Management je momentálně ve vývoji.<br>
+        Zde budete moci spravovat klienty, příležitosti a obchodní vztahy.
+      </p>
+      <a href="{% url 'index' %}" class="btn btn-outline">← Zpět na domů</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

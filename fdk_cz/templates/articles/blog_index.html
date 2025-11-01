@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Blog | FDK.cz{% endblock %}
+{% block header_title %}Blogové články{% endblock %}
+
+{% block content %}
+<div class="content-section">
+  <h2 class="section-title">Blogové příspěvky</h2>
+
+  {% if user.is_authenticated %}
+  <div style="text-align: right; margin-bottom: 1rem;">
+    <a href="/clanek/pridat" class="btn btn-primary">✍️ Nový článek</a>
+  </div>
+  {% endif %}
+
+  {% if articles %}
+  <div class="cards-grid">
+    {% for article in articles %}
+      <div class="card article-card">
+        <h3><a href="/{{ article.slug }}">{{ article.title }}</a></h3>
+        <p>{{ article.summary|default:article.content|truncatewords:25 }}</p>
+        <small>
+          🕒 {{ article.created_at|date:"j.n.Y" }}
+          {% if article.author %} • ✍️ {{ article.author.username }}{% endif %}
+        </small>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p>Žádné články zatím nejsou k dispozici.</p>
+  {% endif %}
+</div>
+{% endblock %}

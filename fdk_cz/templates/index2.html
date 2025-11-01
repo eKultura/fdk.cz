@@ -1,0 +1,447 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>
+    {% if user.is_authenticated %}
+      Dashboard | FDK.cz - Komplexní řízení organizací
+    {% else %}
+      FDK.cz - Komplexní řízení organizací
+    {% endif %}
+  </title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+</head>
+
+<body>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      {% if user.is_authenticated %}
+      <h1 class="page-title">
+        Vítejte, {{ user.first_name|default:user.username }}!
+      </h1>
+      <p class="page-subtitle">
+        {% if user.organizace %}
+          {{ user.organizace.nazev }} - IČO: {{ user.organizace.ico }}
+        {% else %}
+          Dokončete nastavení své organizace pro plný přístup k funkcím
+        {% endif %}
+      </p>
+      {% else %}
+      <h1 class="page-title">FDK.cz - Komplexní řízení organizací</h1>
+      <p class="page-subtitle">
+        Moderní platforma pro efektivní správu organizací, projektů a AI právních nástrojů
+      </p>
+      {% endif %}
+    </div>
+
+
+  <!-- Messages Block - jednotný pro všechny stránky -->
+  {% if messages %}
+  <div style="position: fixed; top: 110px; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+    <!-- AI Právo výstupy - zobrazuje se všem, ale jiný obsah pro nepřihlášené -->
+    {% if user.is_authenticated and ai_outputs %}
+    <div class="ai-outputs-section">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;">
+        <div style="font-size: 1.5rem;">&#9889;</div>
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Nejnovější AI Právo výstupy</h2>
+          <p style="color: #64748b; margin: 0;">Poslední analýzy a dokumenty z AI systému</p>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        {% for output in ai_outputs|slice:":3" %}
+        <div class="ai-output-item">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+            <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">{{ output.typ }}</span>
+            <strong style="font-size: 0.9rem;">{{ output.nazev }}</strong>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">{{ output.popis|truncatewords:15 }}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">{{ output.created_at|timesince }} zpět</div>
+            <a href="" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">Zobrazit</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <a href="/pravo/" class="btn btn-primary">
+          Zobrazit všechny AI výstupy &#8594;
+        </a>
+      </div>
+    </div>
+    {% elif not user.is_authenticated %}
+    <!-- Demo AI výstupy pro nepřihlášené uživatele -->
+    <div class="ai-outputs-section">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;">
+        <div style="font-size: 1.5rem;">&#9889;</div>
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">AI Právo - Ukázka možností</h2>
+          <p style="color: #64748b; margin: 0;">Příklady analýz a dokumentů generovaných AI systémem</p>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        <div class="ai-output-item">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+            <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Analýza smlouvy</span>
+            <strong style="font-size: 0.9rem;">Kupní smlouva - rizikové klauzule</strong>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">AI identifikovalo 3 potenciální rizika a navrhlo 5 úprav pro lepší právní ochranu.</p>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Před 15 minutami</div>
+            <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+          </div>
+        </div>
+        
+        <div class="ai-output-item">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+            <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Právní precedent</span>
+            <strong style="font-size: 0.9rem;">Rozsudek NSS - správní řízení</strong>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">Nalezen relevantní rozsudek NSS 4 Ads 45/2023 vztahující se k problematice správního řízení.</p>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Před 1 hodinou</div>
+            <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+          </div>
+        </div>
+        
+        <div class="ai-output-item">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+            <span style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Generování dokumentu</span>
+            <strong style="font-size: 0.9rem;">Žaloba - vymáhání pohledávky</strong>
+          </div>
+          <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">Vygenerována žaloba dle § 142 OSŘ s automatickým výpočtem úroků a nákladů řízení.</p>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.75rem; color: #94a3b8;">Před 2 hodinami</div>
+            <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <a href="/prihlaseni/" class="btn btn-primary">
+          &#128273; Přihlásit se pro plný přístup k AI Právo &#8594;
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Organizace není nastavena - pouze pro přihlášené -->
+    {% if user.is_authenticated and not user.organizace %}
+    <div class="org-setup-card">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">&#127970;</div>
+      <h3 style="margin-bottom: 1rem;">Založte svoji organizaci</h3>
+      <p style="margin-bottom: 1.5rem; color: #64748b;">
+        Pro plný přístup k funkcím FDK.cz je nutné založit organizaci s IČO. 
+        Každá organizace má jedinečné IČO, které slouží jako unikátní identifikátor.
+      </p>
+      <a href="" class="btn btn-success">
+        &#127970; Založit organizaci
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Stats Grid - zobrazuje se všem, ale různé hodnoty -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Aktivní projekty</div>
+            <div class="stat-value">
+              {% if user.is_authenticated %}
+                {{ total_projects|default:0 }}
+              {% else %}
+                1,247
+              {% endif %}
+            </div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              {% if user.is_authenticated %}
+                {{ completed_projects|default:0 }} dokončených
+              {% else %}
+                89 dokončených
+              {% endif %}
+            </div>
+          </div>
+          <div class="stat-icon primary">&#128193;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">AI Dotazy</div>
+            <div class="stat-value">
+              {% if user.is_authenticated %}
+                {{ ai_queries_count|default:0 }}
+              {% else %}
+                15,632
+              {% endif %}
+            </div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              {% if user.is_authenticated %}
+                {{ ai_queries_today|default:0 }} dnes
+              {% else %}
+                247 dnes
+              {% endif %}
+            </div>
+          </div>
+          <div class="stat-icon info">&#9889;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Organizace</div>
+            <div class="stat-value">
+              {% if user.is_authenticated %}
+                {{ total_contacts|default:0 }}
+              {% else %}
+                3,456
+              {% endif %}
+            </div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              {% if user.is_authenticated %}
+                {{ new_contacts_month|default:0 }} nových
+              {% else %}
+                78 aktivních
+              {% endif %}
+            </div>
+          </div>
+          <div class="stat-icon success">&#127970;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Uživatelé</div>
+            <div class="stat-value">
+              {% if user.is_authenticated %}
+                {{ pending_tasks|default:0 }}
+              {% else %}
+                892
+              {% endif %}
+            </div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              {% if user.is_authenticated %}
+                aktivních úkolů
+              {% else %}
+                registrovaných
+              {% endif %}
+            </div>
+          </div>
+          <div class="stat-icon warning">&#128101;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Grid - pouze pro přihlášené uživatele -->
+    {% if user.is_authenticated %}
+    <div class="content-grid">
+      <!-- Projekty -->
+      <div class="content-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3>Moje projekty ({{ user_projects|length|default:0 }})</h3>
+          <a href="/projekt/novy-projekt" class="btn btn-primary">&#10133; Nový projekt</a>
+        </div>
+        
+        {% if user_projects %}
+        <ul class="item-list">
+          {% for project in user_projects|slice:":5" %}
+          <li class="item">
+            <div class="item-header">
+              <a href="{% url 'project_detail' project.id %}" class="item-title">{{ project.nazev }}</a>
+              <span class="item-meta">{{ project.rozpocet|default:'N/A' }}</span>
+            </div>
+            <div class="item-meta">{{ project.popis|truncatewords:15 }}</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: {{ project.progress|default:0 }}%"></div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">&#128193;</div>
+          <p>Zatím nemáte žádné projekty</p>
+          <a href="/projekt/novy-projekt" class="btn btn-primary">Vytvořit první projekt</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Úkoly -->
+      <div class="content-card">
+        <h3>Přiřazené úkoly ({{ user_tasks|length|default:0 }})</h3>
+        
+        {% if user_tasks %}
+        <ul class="item-list">
+          {% for task in user_tasks|slice:":5" %}
+          <li class="item">
+            <div class="item-header">
+              <a href="{% url 'ukol_detail' task.id %}" class="item-title">{{ task.nazev }}</a>
+              <span class="item-meta {% if task.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}negative{% endif %}">
+                {{ task.due_date|date:"d.m.Y" }}
+              </span>
+            </div>
+            <div class="item-meta">{{ task.popis|truncatewords:10 }}</div>
+          </li>
+          {% endfor %}
+        </ul>
+        
+        {% if user_tasks|length > 5 %}
+        <div style="text-align: center; margin-top: 1rem;">
+          <a href="/spravce-ukolu/" class="btn btn-outline">Zobrazit všechny úkoly</a>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">&#128221;</div>
+          <p>Nemáte žádné přiřazené úkoly</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <!-- Call to action pro nepřihlášené uživatele -->
+    <div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; border: 1px solid #e2e8f0;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">&#128640;</div>
+      <h3 style="margin-bottom: 1rem; color: #1e293b;">Připojte se k FDK.cz</h3>
+      <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Získejte přístup k pokročilým AI nástrojům pro právní analýzy, komplexnímu projektovému managementu 
+        a všem funkcím pro efektivní řízení vaší organizace.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/prihlaseni/" class="btn btn-primary">
+          &#128221; Zaregistrovat se
+        </a>
+        <a href="/registrace/" class="btn btn-outline">
+          &#128273; Přihlásit se
+        </a>
+      </div>
+    </div>
+
+    <!-- Features pro nepřihlášené uživatele -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#9889;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">AI Právní nástroje</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Pokročilé AI pro analýzu smluv, hledání precedentů a generování právních dokumentů
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128202;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Projektový management</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Komplexní řízení projektů s úkoly, deadliny a sledováním pokroku
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128176;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Účetnictví a finance</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Správa financí, fakturace a kompletní účetní evidence
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128101;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Správa kontaktů</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          CRM systém pro správu klientů a obchodních partnerů
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128196;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Správa smluv</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Sledování smluv, automatické upomínky a evidence dokumentů
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128230;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Skladové hospodářství</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Kompletní správa skladových zásob a inventury
+        </p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; {% now "Y" %} FDK.cz - Komplexní řízení organizací | 
+         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          console.log('Searching for:', searchTerm);
+        });
+      }
+
+      // Auto-hide messages after 5 seconds
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+
+      // Add hover effects to cards
+      document.querySelectorAll('.stat-card, .content-card, .feature-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

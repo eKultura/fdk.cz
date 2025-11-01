@@ -1,19 +1,25 @@
-# VIEWS.TEST.PY
-
-
+# -------------------------------------------------------------------
+#                    VIEWS.TEST.PY
+# -------------------------------------------------------------------
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from fdk_cz.forms.test import test_type_form, test_form, test_result_form, test_error_form
-from fdk_cz.models import test_type, test, test_result, test_error, project
+from fdk_cz.models import TestType, Test, TestResult, TestError, Project
 
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 @login_required
 def get_test_types(request, project_id):
-    test_types = test_type.objects.filter(project_id=project_id)
-    data = {'test_types': [{'id': test_type.test_type_id, 'name': test_type.name} for test_type in test_types]}
+    test_types = test_type.objects.filter(Project_id=project_id)
+    data = {'test_types': [{'id': TestType.test_type_id, 'name': TestType.name} for test_type in test_types]}
     return JsonResponse(data)
 @login_required
 def get_test_results(request, project_id):
@@ -41,7 +47,7 @@ def delete_test_error(request, error_id):
 # Typy testů - výpis
 @login_required
 def list_test_types(request):
-    user_projects = project.objects.filter(project_users__user=request.user)
+    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
     test_types = test_type.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_types.html', {'test_types': test_types, 'projects': user_projects})
 
@@ -80,7 +86,7 @@ def edit_test_type(request, test_type_id):
 # Výpis testů
 @login_required
 def list_tests(request):
-    user_projects = project.objects.filter(project_users__user=request.user)
+    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
     tests = test.objects.filter(project__in=user_projects)
     test_types = test_type.objects.filter(project__in=user_projects)
     test_errors = test_error.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
@@ -130,7 +136,7 @@ def edit_test(request, test_id):
 # Výpis výsledků testů
 @login_required
 def list_test_results(request):
-    user_projects = project.objects.filter(project_users__user=request.user)
+    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
     test_results = test_result.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_results.html', {'test_results': test_results, 'projects': user_projects})
 
@@ -151,8 +157,8 @@ def create_test_result(request):
 # Výpis chyb
 @login_required
 def list_test_errors(request):
-    user_projects = project.objects.filter(project_users__user=request.user)
-    test_errors = test_error.objects.filter(project__in=user_projects).order_by('-date_created')[:10]  # Posledních 10 chyb
+    user_projects = Project.objects.filter(project_users__user=request.user)
+    test_errors = TestError.objects.filter(project__in=user_projects).order_by('-date_created')[:10]  # Posledních 10 chyb
     return render(request, 'test/list_test_errors.html', {
         'test_errors': test_errors,
         'projects': user_projects
@@ -194,6 +200,6 @@ def edit_test_error(request, test_error_id):
 
 @login_required
 def detail_test_error(request, test_error_id):
-    error = get_object_or_404(test_error, pk=test_error_id)
+    error = get_object_or_404(TestError, pk=test_error_id)
     return render(request, 'test/detail_test_error.html', {'error': error})
 

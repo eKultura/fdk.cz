@@ -1,0 +1,131 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>{% block title %}FDK.cz{% endblock %}</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+  
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+  <!-- Messages Block - jednotný pro všechny stránky -->
+  {% if messages %}
+  <div style="position: fixed; top: {% block messages_top %}90px{% endblock %}; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Header -->
+  <header class="header {% block header_class %}{% endblock %}">
+    <a href="{% url 'index' %}" class="logo">
+      <div class="logo-icon">&#9873;</div>
+      FDK.cz
+    </a>
+
+    {% block navigation %}
+    <nav class="top-nav">
+      <a href="{% url 'index' %}" class="nav-link">
+        &#128202; Dashboard
+      </a>
+      <div class="dropdown">
+        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
+        <div class="dropdown-menu">
+          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
+          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
+          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
+          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
+          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
+          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
+          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
+          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
+          <a href="{% url 'list_grants' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
+        </div>
+      </div>
+      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">
+        &#9889; Právo AI
+      </a>
+    </nav>
+    {% endblock %}
+
+    <div class="{% block user_menu_class %}user-menu{% endblock %}">
+      {% if user.is_authenticated %}
+        {% block authenticated_user_menu %}
+        <div class="search-box">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" placeholder="Vyhledávání..." id="search-input">
+        </div>
+        <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
+          {{ user.first_name|first|default:user.username|first|upper }}
+        </a>
+        <a href="{% url 'user_profile' %}" class="user-name">
+          {{ user.first_name|default:user.username }}
+        </a>
+        {% endblock %}
+      {% else %}
+        {% block anonymous_user_menu %}
+        <a href="{% url 'login_cs' %}" class="btn btn-primary">
+          &#128273; Přihlásit se
+        </a>
+        {% endblock %}
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content {% block main_class %}{% endblock %}">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer {% block footer_class %}{% endblock %}">
+    {% block footer_content %}
+    <p>
+      &copy; {% now "Y" %} Vyrobeno s &#10084;&#65039; pro hladké procesy v 
+      <a href="https://ekultura.eu" target="_blank">eKultura</a>
+      | 
+      <a href="{% url 'index' %}">O nás</a>
+      | 
+      <a href="{% url 'index' %}">Ochrana osobních údajů</a>
+      | 
+      <a href="{% url 'index' %}">Kontakt</a>
+    </p>
+    {% endblock %}
+  </footer>
+
+  <!-- Base JavaScript -->
+  <script>
+    // Auto-hide messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+    });
+    
+    {% block extra_js %}{% endblock %}
+  </script>
+</body>
+</html>

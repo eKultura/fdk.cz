@@ -1,0 +1,364 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>AI Právo Dashboard | FDK.cz</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+</head>
+
+<body>
+  <!-- Messages Block -->
+  {% if messages %}
+  <div style="position: fixed; top: 90px; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Header -->
+  <header class="header">
+    <a href="{% url 'index' %}" class="logo">
+      <div class="logo-icon">&#9873;</div>
+      FDK.cz
+    </a>
+
+    <nav class="top-nav">
+      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai active">&#9889; Právo AI</a>
+      <div class="dropdown">
+        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
+        <div class="dropdown-menu">
+          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
+          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
+          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
+          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
+          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
+          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
+          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
+          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
+          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
+        </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128196;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Generování dokumentů</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Automatické vytváření smluv, žalob a dalších právních dokumentů na míru
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#129302;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">AI Právní asistent</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Interaktivní chat pro okamžité odpovědi na právní otázky
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128214;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Právní databáze</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Kompletní přístup k aktuálním zákonům, vyhláškám a právním předpisům
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#9878;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Compliance monitoring</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Automatické sledování změn v legislativě a upozornění na důležité novinky
+        </p>
+      </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; {% now "Y" %} FDK.cz - AI Právo | 
+         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Auto-hide messages
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+
+      // Enhanced search for legal content
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          
+          // Add search suggestions for legal terms
+          if (searchTerm.length > 2) {
+            console.log('Searching legal database for:', searchTerm);
+            // Here you could implement real-time search suggestions
+          }
+        });
+      }
+
+      // Add hover effects to feature cards and stats
+      document.querySelectorAll('.stat-card, .feature-card, .content-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+
+      // Add pulse animation to AI button
+      const aiButton = document.querySelector('.law-ai');
+      if (aiButton) {
+        setInterval(() => {
+          aiButton.style.boxShadow = '0 0 20px rgba(59, 130, 246, 0.5)';
+          setTimeout(() => {
+            aiButton.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+          }, 500);
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
+      </div>
+      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+    </nav>
+
+    <div class="user-menu">
+      {% if user.is_authenticated %}
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Vyhledávání v právních předpisech..." id="search-input">
+      </div>
+      <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
+        {{ user.first_name|first|default:user.username|first|upper }}
+      </a>
+      <a href="{% url 'user_profile' %}" class="user-name">
+        {{ user.first_name|default:user.username }}
+      </a>
+      {% else %}
+      <a href="{% url 'login_cs' %}" class="btn btn-primary">
+        &#128273; Přihlásit se
+      </a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">&#9889; AI Právo Dashboard</h1>
+      <p class="page-subtitle">
+        Pokročilé nástroje pro právní analýzy, generování dokumentů a právní poradenství
+      </p>
+    </div>
+
+    <!-- Quick Actions for AI Law -->
+    {% if user.is_authenticated %}
+    <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="font-size: 2rem;">&#9889;</div>
+        <div>
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Rychlé akce</h2>
+          <p style="color: #64748b; margin: 0;">Nejčastěji používané AI nástroje</p>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <a href="{% url 'law_query' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+          &#128293; Nový AI dotaz
+        </a>
+        <a href="{% url 'law_ai_assistant' %}" class="btn btn-success" style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+          &#129302; AI Asistent
+        </a>
+        <a href="{% url 'law_contracts' %}" class="btn btn-outline" style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+          &#128196; Šablony smluv
+        </a>
+        <a href="{% url 'law_list' %}" class="btn btn-outline" style="display: flex; align-items: center; gap: 8px; justify-content: center;">
+          &#128214; Zákony a předpisy
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">AI Dotazy</div>
+            <div class="stat-value">{{ total_queries }}</div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              {{ completed_queries }} dokončených
+            </div>
+          </div>
+          <div class="stat-icon info">&#128293;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Čekající dotazy</div>
+            <div class="stat-value">{{ pending_queries }}</div>
+            <div class="stat-change {% if pending_queries > 5 %}negative{% else %}positive{% endif %}">
+              <span>{% if pending_queries > 5 %}&#8595;{% else %}&#8599;{% endif %}</span>
+              zpracovává se
+            </div>
+          </div>
+          <div class="stat-icon warning">&#8987;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Dokumenty</div>
+            <div class="stat-value">{{ total_documents }}</div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              uložených
+            </div>
+          </div>
+          <div class="stat-icon success">&#128196;</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div class="stat-title">Úspěšnost AI</div>
+            <div class="stat-value">97%</div>
+            <div class="stat-change positive">
+              <span>&#8599;</span>
+              přesnost analýz
+            </div>
+          </div>
+          <div class="stat-icon primary">&#129302;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Grid for authenticated users -->
+    {% if user.is_authenticated %}
+    <div class="content-grid">
+      <!-- Recent Queries -->
+      <div class="content-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3>&#128293; Nejnovější dotazy</h3>
+          <a href="{% url 'law_query' %}" class="btn btn-primary">+ Nový dotaz</a>
+        </div>
+        
+        {% if recent_queries %}
+        <ul class="item-list">
+          {% for query in recent_queries %}
+          <li class="item">
+            <div class="item-header">
+              <a href="{% url 'law_query_detail' query.id %}" class="item-title">{{ query.title }}</a>
+              <span class="item-meta {% if query.status == 'completed' %}positive{% elif query.status == 'processing' %}warning{% else %}negative{% endif %}">
+                {% if query.status == 'completed' %}&#9989; Dokončeno{% elif query.status == 'processing' %}&#8987; Zpracovává se{% else %}&#8987; Čeká{% endif %}
+              </span>
+            </div>
+            <div class="item-meta">{{ query.created_at|timesince }} zpět</div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">&#128293;</div>
+          <p>Zatím nemáte žádné AI dotazy</p>
+          <a href="{% url 'law_query' %}" class="btn btn-primary">Vytvořit první dotaz</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Recent Documents -->
+      <div class="content-card">
+        <h3>&#128196; Nedávné dokumenty</h3>
+        
+        {% if recent_documents %}
+        <ul class="item-list">
+          {% for doc in recent_documents %}
+          <li class="item">
+            <div class="item-header">
+              <a href="{% url 'law_documents' %}" class="item-title">{{ doc.title }}</a>
+              <span class="item-meta">
+                {% if doc.document_type == 'contract' %}&#128196; Smlouva{% elif doc.document_type == 'analysis' %}&#128270; Analýza{% else %}&#128221; Dokument{% endif %}
+              </span>
+            </div>
+            <div class="item-meta">{{ doc.created_at|timesince }} zpět</div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">&#128196;</div>
+          <p>Zatím nemáte žádné dokumenty</p>
+          <a href="{% url 'law_contracts' %}" class="btn btn-outline">Procházet šablony</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% else %}
+    <!-- Demo content for non-authenticated users -->
+    <div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">&#9889;</div>
+      <h3 style="margin-bottom: 1rem; color: #1e293b;">Začněte používat AI Právo</h3>
+      <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Získejte přístup k pokročilým AI nástrojům pro právní analýzy, automatické generování smluv, 
+        hledání precedentů a komplexní právní poradenství.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'registration_cs' %}" class="btn btn-primary">
+          &#128221; Zaregistrovat se
+        </a>
+        <a href="{% url 'login_cs' %}" class="btn btn-outline">
+          &#128273; Přihlásit se
+        </a>
+      </div>
+    </div>
+
+    <!-- Demo Features -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128293;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">AI Analýza smluv</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Automatická identifikace rizikových klauzulí, kontrola souladu s právními předpisy
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">&#128270;</div>
+        <h4 style="margin-bottom: 1rem; color: #1e293b;">Hledání precedentů</h4>
+        <p style="color: #64748b; font-size: 0.9rem;">
+          Rychlé vyhledávání relevantních soudních rozhodnutí a právních precedentů
+        </p>

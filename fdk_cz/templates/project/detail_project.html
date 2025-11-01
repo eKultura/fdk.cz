@@ -1,431 +1,222 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{{ project.name }} - Detail{% endblock %}
+{% block title %}{{ project.name }} | FDK.cz{% endblock %}
+{% block header_title %}{{ project.name }}{% endblock %}
+{% block header_subtitle %}
+Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ project.tasks.count }} úkolů
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
-    <h1 class="text-lg font-semibold text-gray-700 mb-4">{{ project.name }} <sub> <a href="edit">upravit</a></sub></h1>
-    <!--<p><strong>{% trans "Popis" %}:</strong> {{ project.description }}</p>
-    <p><strong>{% trans "Vlastník" %}:</strong> {{ project.owner.username }}</p>-->
+<div class="max-w-6xl mx-auto space-y-8">
 
-    <!-- Úkoly - přepínání mezi zobrazeními -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <button id="toggleView" class="btn btn-info mb-4">{% trans "Přepnout zobrazení" %}</button>
-
-        <!-- Sloupcové zobrazení úkolů -->
-        <div id="task_columns" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
-<!-- Uvnitř `task_columns` divu -->
-        {% for status, tasks in tasks_by_status.items %}
-            <div class="bg-gray-50 p-4 rounded-lg shadow-md">
-                <h3 class="font-semibold text-gray-700 mb-2">{{ status }}</h3>
-                {% for task in tasks|slice:":10" %}
-                    <div class="p-3 border rounded mb-3 bg-white shadow">
-                <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-lg mb-1 block text-gray-700 hover:text-blue-600">
-                    {{ task.title }}
-                </a>
-                        <!-- Priorita s barevným označením -->
-                        <p class="text-sm font-semibold 
-                                   {% if task.priority == 'Vysoká' %}text-red-600{% elif task.priority == 'Střední' %}text-orange-500{% else %}text-green-500{% endif %}">
-                            {{ task.priority }} - {{ task.category.name|default:"N/A" }}
-                        </p>
-                        
-                        <!-- Status a uživatel na jedné řádce -->
-                        <p class="text-sm text-gray-600">
-                            {{ task.status }} - {{ task.assigned.username|default:"N/A" }}
-                        </p>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        </div>
-
-<!-- Tabulkové zobrazení úkolů -->
-<div id="task_table">
-    <h2 class="text-lg font-semibold text-gray-700">{% trans "Úkoly" %} <sub><a href="novy-ukol/">nový úkol</a></sub></h2>
-    <table class="w-full bg-white border mt-3">
-        <thead class="bg-gray-100">
-            <tr>
-                <th class="py-2 px-4">{% trans "Název úkolu" %}</th>
-                <th class="py-2 px-4 hidden md:table-cell">{% trans "Priorita" %}</th>
-                <th class="py-2 px-4">{% trans "Přiřazeno" %}</th>
-                <th class="py-2 px-4 hidden md:table-cell">{% trans "Kategorie" %}</th>
-                <th class="py-2 px-4">{% trans "Vytvořil" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks_to_do %}
-                <tr>
-                    <td class="py-2 px-4"><a href="{% url 'detail_task' task.task_id %}" class="text-blue-500 hover:text-blue-700 underline font-semibold">{{ task.title }}</a></td>
-                    <td class="py-2 px-4 hidden md:table-cell text-center">{{ task.priority }}</td>
-                    <td class="py-2 px-4 text-center">{{ task.assigned.username|default:"N/A" }}</td>
-                    <td class="py-2 px-4 hidden md:table-cell text-center">{{ task.category.name|default:"N/A" }}</td>
-                    <td class="py-2 px-4 text-center">{{ task.creator }}<br><small>({{ task.created|date:"j. n. Y" }})</small></td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="py-4 text-center text-gray-600">{% trans "Žádné úkoly k zobrazení" %}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="novy-ukol" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">
-    Přidat nový úkol
-    </a>
-</div>
-
+  <!-- Sekce: Úkoly -->
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-xl font-semibold text-gray-800">Úkoly</h2>
+      <div class="flex gap-3">
+        <a href="novy-ukol/" class="btn btn-primary">＋ Nový úkol</a>
+        <button id="toggleView" class="btn btn-outline">Přepnout zobrazení</button>
+      </div>
     </div>
 
-
-
-
-
-
-    <!-- Sekce pro testy a chyby -->
-<div class="bg-white p-6 rounded-lg shadow-md mt-6">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Přehled chyb" %}</h2>
-
-
-<table class="w-full bg-white border">
-    <thead class="bg-gray-100">
-        <tr>
-            <th class="py-2 px-4 text-left">{% trans "Název chyby" %}</th>
-            <th class="py-2 px-4 text-left">{% trans "Status" %}</th>
-            <th class="py-2 px-4 text-right">{% trans "Akce" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for error in all_errors %}
-            <tr>
-                <td class="py-2 px-4">{{ error.error_title }}</td>
-                <td class="py-2 px-4">{{ error.status|default:"Neurčeno" }}</td>
-                <td class="py-2 px-4 text-right">
-                    <a href="{% url 'edit_test_error' error.pk %}" class="text-blue-600 hover:underline">{% trans "Upravit" %}</a>
-                    <a href="{% url 'delete_test_error' error.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
-                </td>
-            </tr>
+    <!-- Sloupcové zobrazení -->
+    <div id="task_columns" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+      {% for status, tasks in tasks_by_status.items %}
+      <div class="bg-gray-50 border rounded-lg p-4">
+        <h3 class="font-semibold text-gray-700 mb-3">{{ status }}</h3>
+        {% for task in tasks|slice:":10" %}
+        <div class="border rounded p-3 mb-3 bg-white hover:bg-gray-50 transition">
+          <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">
+            {{ task.title }}
+          </a>
+          <div class="text-sm text-gray-600">
+            {{ task.priority }} · {{ task.assigned.username|default:"–" }}
+          </div>
+        </div>
         {% empty %}
-            <tr>
-                <td colspan="3" class="py-4 text-center text-gray-600">{% trans "Žádné chyby nebyly nalezeny." %}</td>
-            </tr>
+        <p class="text-gray-400 text-sm">Žádné úkoly</p>
         {% endfor %}
-    </tbody>
-</table>
+      </div>
+      {% endfor %}
+    </div>
 
-    <!-- Odkazy na vytvoření nového testu a chyby -->
-    <!--<a href="{% url 'create_test' %}" class="text-blue-600 hover:text-blue-800 underline font-semibold mr-4 mt-5">Založit nový test</a> | --> 
-    <a href="{% url 'create_test_error' %}" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Založit novou chybu</a>
+    <!-- Tabulkové zobrazení -->
+    <div id="task_table">
+      <table class="w-full text-sm border-collapse">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="p-2 text-left">Název</th>
+            <th class="p-2 text-left hidden md:table-cell">Priorita</th>
+            <th class="p-2 text-left">Přiřazeno</th>
+            <th class="p-2 text-left hidden md:table-cell">Kategorie</th>
+            <th class="p-2 text-left hidden md:table-cell">Vytvořil</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks_to_do %}
+          <tr class="border-t hover:bg-gray-50">
+            <td class="p-2">
+              <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline">{{ task.title }}</a>
+            </td>
+            <td class="p-2 hidden md:table-cell">{{ task.priority }}</td>
+            <td class="p-2">{{ task.assigned.username|default:"–" }}</td>
+            <td class="p-2 hidden md:table-cell">{{ task.category.name|default:"–" }}</td>
+            <td class="p-2 hidden md:table-cell">{{ task.creator }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="p-3 text-center text-gray-500">Žádné úkoly k zobrazení</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sekce: Statistika úkolů -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-3">Statistika úkolů</h2>
+    <div class="flex flex-col md:flex-row items-start gap-6">
+      <div class="flex-1">
+        <canvas id="projectTaskPieChart" height="260"></canvas>
+      </div>
+      <div class="flex-1">
+        <ul class="space-y-2 text-gray-700">
+          <li>Nezahájeno: <strong>{{ project_status_counts.Nezahájeno }}</strong></li>
+          <li>Probíhá: <strong>{{ project_status_counts.Probíhá }}</strong></li>
+          <li>Hotovo: <strong>{{ project_status_counts.Hotovo }}</strong></li>
+          <li>Celkem: <strong>{{ project_total_tasks }}</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sekce: Milníky -->
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-xl font-semibold text-gray-800">Milníky</h2>
+      <a href="novy-milnik/" class="btn btn-primary">＋ Přidat</a>
+    </div>
+    <table class="w-full text-sm border-collapse">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="p-2 text-left">Název</th>
+          <th class="p-2 text-left">Termín</th>
+          <th class="p-2 text-right">Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for milestone in project.milestones.all %}
+        <tr class="border-t hover:bg-gray-50">
+          <td class="p-2">{{ milestone.title }}</td>
+          <td class="p-2">{{ milestone.due_date|date:"d.m.Y" }}</td>
+          <td class="p-2 text-right">
+            <a href="{% url 'edit_milestone' project.project_id milestone.pk %}" class="text-blue-600 hover:underline">Upravit</a>
+            <a href="{% url 'delete_milestone' project.project_id milestone.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="p-3 text-center text-gray-500">Žádné milníky</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sekce: Dokumenty -->
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-xl font-semibold text-gray-800">Dokumenty</h2>
+      <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat</a>
+    </div>
+    <table class="w-full text-sm border-collapse">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="p-2 text-left">Název</th>
+          <th class="p-2 text-left hidden md:table-cell">Kategorie</th>
+          <th class="p-2 text-left hidden md:table-cell">Typ</th>
+          <th class="p-2 text-center">Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for document in project.documents.all %}
+        <tr class="border-t hover:bg-gray-50">
+          <td class="p-2"><a href="{% url 'detail_document' document.pk %}" class="text-blue-600 hover:underline">{{ document.title }}</a></td>
+          <td class="p-2 hidden md:table-cell">{{ document.category|default:"–" }}</td>
+          <td class="p-2 hidden md:table-cell">{{ document.document_type|default:"–" }}</td>
+          <td class="p-2 text-center">
+            <a href="{% url 'edit_document' document.pk %}" class="text-blue-600 hover:underline">✎</a>
+            <a href="{% url 'delete_document' document.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="p-3 text-center text-gray-500">Žádné dokumenty</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sekce: Tým a kategorie -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="content-card">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-semibold text-gray-800">Členové týmu</h2>
+        <a href="uzivatele/" class="btn btn-outline">Spravovat</a>
+      </div>
+      <ul class="divide-y divide-gray-200">
+        {% for member in members %}
+        <li class="py-2 flex justify-between items-center">
+          <span>{{ member.user.username }}</span>
+          <a href="{% url 'remove_project_user' project.project_id member.user.pk %}" class="text-red-600 hover:underline">✖</a>
+        </li>
+        {% empty %}
+        <li class="py-2 text-gray-500 text-center">Žádní členové</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="content-card">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Kategorie projektu</h2>
+      <ul class="divide-y divide-gray-200">
+        {% for category in project.categories.all %}
+        <li class="py-2 flex justify-between items-center">
+          <span>{{ category.name }}</span>
+          <a href="{% url 'edit_category' category.category_id %}" class="text-blue-600 hover:underline">Upravit</a>
+        </li>
+        {% empty %}
+        <li class="py-2 text-gray-500 text-center">Žádné kategorie</li>
+        {% endfor %}
+      </ul>
+      <div class="text-right mt-3">
+        <a href="{% url 'create_category' project.project_id %}" class="btn btn-outline">＋ Přidat kategorii</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-
-
-
-
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        
-        <!-- Členové týmu -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Členové týmu" %}</h2>
-            <table class="min-w-full bg-white">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Jméno" %}</th>
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Akce" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for member in members %}
-                        <tr class="border-b">
-                            <td class="py-3 px-4">{{ member.user.username }}</td>
-                            <td class="py-3 px-4">
-                                <a href="{% url 'remove_project_user' project.project_id member.user.pk %}" class="text-red-600 hover:underline">✖</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        <a href="uzivatele/" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Spravovat uživatele</a>
-        </div>
-
-        
-        <!-- Pravý blok - Kategorie projektu -->
-        <div class="bg-white p-6 rounded-lg shadow-md col-span-1 w-full" id="kategorie">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Statistika úkolů" %}</h2>
-                <p>Celkem: {{ project_total_tasks }}</p>
-                <div class="relative" style="height: 300px;">
-                    <canvas id="projectTaskPieChart"></canvas>
-                </div>
-        </div>
-
-</div>
-
-<!-- Skript pro zobrazení kruhového grafu s dynamickými daty -->
+<!-- Script: Chart.js + Toggle -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('projectTaskPieChart').getContext('2d');
-    const projectTaskPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
-            datasets: [{
-                label: 'Statistika úkolů',
-                data: [
-                    {{ project_status_counts.Nezahájeno }},
-                    {{ project_status_counts.Probíhá }},
-                    {{ project_status_counts.Hotovo }}
-                ],
-                backgroundColor: ['#F44336', '#FFC107', '#4CAF50'],
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-        }
-    });
-</script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('projectTaskPieChart');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
+      datasets: [{
+        data: [{{ project_status_counts.Nezahájeno }}, {{ project_status_counts.Probíhá }}, {{ project_status_counts.Hotovo }}],
+        backgroundColor: ['#f87171', '#facc15', '#4ade80']
+      }]
+    },
+    options: {responsive: true, maintainAspectRatio: false}
+  });
 
-
-
-
-
-
-
-
-
-<!-- Milníky sekce -->
-<div class="bg-white p-6 rounded-lg shadow-md mt-6">
-    <h2 class="text-lg font-semibold text-gray-700">{% trans "Milníky" %}</h2>
-
-    <table class="w-full bg-white border mt-3">
-        <thead class="bg-gray-100">
-            <tr>
-                <th class="py-2 px-4">{% trans "Název milníku" %}</th>
-                <th class="py-2 px-4">{% trans "Termín" %}</th>
-                <th class="py-2 px-4 text-right">{% trans "Akce" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for milestone in project.milestones.all %}
-                <tr>
-                    <td class="py-2 px-4">{{ milestone.title }}</td>
-                    <td class="py-2 px-4">{{ milestone.due_date }}</td>
-                    <td class="py-2 px-4 text-right">
-                        <a href="{% url 'edit_milestone' project.project_id milestone.pk %}" class="text-blue-600 hover:underline">{% trans "Upravit" %}</a>
-                        <a href="{% url 'delete_milestone' project.project_id milestone.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
-                    </td>
-                </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4" class="py-4 text-center text-gray-600">{% trans "Žádné milníky k dispozici" %}</td>
-                    </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="novy-milnik/" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Přidat milník</a>
-
-</div>
-
-
-
-
-    <!-- Sekce Dokumentů -->
-    <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-        <h2 class="text-lg font-semibold text-gray-700">{% trans "Dokumenty" %}</h2>
-    
-        <!-- Tabulka dokumentů -->
-        <table class="w-full bg-white border mt-3">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2 px-4">{% trans "Název" %}</th>
-                    <th class="py-2 px-4 hidden md:table-cell">{% trans "Kategorie" %}</th>
-                    <th class="py-2 px-4 hidden md:table-cell">{% trans "Typ" %}</th>
-                    <th class="py-2 px-4 text-center">{% trans "Akce" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for document in project.documents.all %}
-                    <tr>
-                        <td class="py-2 px-4"><a href="{% url 'detail_document' document.pk %}" class="text-blue-600 hover:underline">{{ document.title }}</a></td>
-                        <td class="py-2 px-4 hidden md:table-cell">{{ document.category|default:"-" }}</td>
-                        <td class="py-2 px-4 hidden md:table-cell">{{ document.document_type|default:"-" }}</td>
-                        <td class="py-2 px-4 text-center">
-                            <a href="{% url 'edit_document' document.pk %}" class="text-blue-600 hover:underline">✎</a>
-                            <a href="{% url 'delete_document' document.pk %}" class="text-red-600 hover:underline">✖</a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4" class="py-4 text-center text-gray-600">{% trans "Žádné dokumenty k dispozici" %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    
-        <!-- Formulář pro přidání dokumentu -->
-    <a href="vytvorit-dokument/" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Vytvořit dokument</a>
-    </div>
-
-
-
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        
-        <!-- Levý blok - Statistiky -->
-        <div class="bg-white p-6 rounded-lg shadow-md col-span-1 w-full">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Statistiky" %}</h2>
-            <ul class="space-y-2">
-                <li class="flex justify-between">
-                    <span class="font-semibold text-gray-600">{% trans "Počet členů" %}:</span>
-                    <span class="text-gray-800">{{ members.count }}</span>
-                </li>
-                <li class="flex justify-between">
-                    <span class="font-semibold text-gray-600">{% trans "Počet úkolů" %}:</span>
-                    <span class="text-gray-800">{{ project.tasks.count }}</span>
-                </li>
-                <li class="flex justify-between">
-                    <span class="font-semibold text-gray-600">{% trans "Počet milníků" %}:</span>
-                    <span class="text-gray-800">{{ project.milestones.count }}</span>
-                </li>
-                <li class="flex justify-between">
-                    <span class="font-semibold text-gray-600">{% trans "Počet dokumentů" %}:</span>
-                    <span class="text-gray-800">{{ project.documents.count }}</span>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Pravý blok - Kategorie projektu -->
-        <div class="bg-white p-6 rounded-lg shadow-md col-span-1 w-full" id="kategorie">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Kategorie projektu" %}</h2>
-            <ul class="space-y-2">
-                {% for category in project.categories.all %}
-                    <li class="flex justify-between items-center">
-                        <span class="text-gray-800">{{ category.name }}</span>
-                        <a href="{% url 'edit_category' category.category_id %}" class="text-blue-600 hover:underline">{% trans "Upravit" %}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-            <div class="text-center mt-4">
-                <a href="{% url 'create_category' project.project_id %}" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">{% trans "Přidat novou kategorii" %}</a>
-            </div>
-        </div>
-
-</div>
-
-
-
-
-
-
-    <!-- Sekce Kontakty a Tým v dvou sloupcích -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <!-- Kontakty -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Kontakty" %}</h2>
-            <table class="min-w-full bg-white">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Jméno" %}</th>
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Akce" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for contact in project.contacts.all %}
-                        <tr class="border-b">
-                            <td class="py-3 px-4">{{ contact.first_name|default_if_none:"" }} {{ contact.last_name|default_if_none:"" }}</td>
-                            <td class="py-3 px-4">
-                                <a href="{% url 'edit_contact' contact.pk %}" class="text-blue-600 hover:underline">✎</a>
-                                <a href="{% url 'delete_contact' contact.pk %}" class="text-red-600 hover:underline">✖</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a href="/kontakt/novy/" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Přidat nový kontakt</a>
-        </div>
-
-        <!-- Členové týmu -->
-        <!-- Seznamy -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Seznamy" %}</h2>
-            <table class="min-w-full bg-white">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Název seznamu" %}</th>
-                        <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Popis" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for list in all_lists %}
-                        <tr class="border-b">
-                            <td class="py-3 px-4"><a href="/seznam/{{ list.list_id	}}">{{ list.name }}</a></td>
-                            <td class="py-3 px-4">{{ list.description|default:"Žádný popis." }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="2" class="py-3 px-4 text-center text-gray-500">{% trans "Žádné seznamy k dispozici." %}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a href="https://fdk.cz/seznamy/novy-seznam/" class="mt-5 inline-block py-2 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold shadow hover:bg-gray-100">Přidat nový seznam</a>
-        </div>
-
-
-    </div>
-
-
-
-
-
-    <!-- Sekce "Nice to have" úkoly -->
-    <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-        <h2 class="text-lg font-semibold text-gray-700">{% trans "Nice to have" %}</h2>
-        
-        <table class="w-full bg-white border mt-3">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="py-2 px-4">{% trans "Název úkolu" %}</th>
-                    <th class="py-2 px-4">{% trans "Kategorie" %}</th>
-                    <th class="py-2 px-4">{% trans "Vytvořil" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in nice_to_have_tasks %}
-                    <tr>
-                        <td class="py-2 px-4"><a href="{% url 'detail_task' task.task_id %}">{{ task.title }}</a></td>
-                        <td class="py-2 px-4 text-center">{{ task.category.name|default:"N/A" }}</td>
-                        <td class="py-2 px-4 text-center">{{ task.creator|default:"N/A" }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4" class="py-4 text-center text-gray-600">{% trans "Žádné Nice to have k dispozici" %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-
-
-
-
-</div>
-
-<!-- Script for toggle view -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var toggleButton = document.getElementById('toggleView');
-        var taskColumns = document.getElementById('task_columns');
-        var taskTable = document.getElementById('task_table');
-
-        toggleButton.addEventListener('click', function() {
-            taskTable.classList.toggle('hidden');
-            taskColumns.classList.toggle('hidden');
-        });
-    });
+  const toggleBtn = document.getElementById('toggleView');
+  const taskColumns = document.getElementById('task_columns');
+  const taskTable = document.getElementById('task_table');
+  toggleBtn.addEventListener('click', () => {
+    taskTable.classList.toggle('hidden');
+    taskColumns.classList.toggle('hidden');
+  });
+});
 </script>
 {% endblock %}

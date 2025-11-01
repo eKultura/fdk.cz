@@ -1,1215 +1,806 @@
-<!--
-=========================================================
-* Material Dashboard 3 - v3.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard
-* Copyright 2024 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
   <title>
-    Komplexní řízení organizací | FDK.cz
+    {% if user.is_authenticated %}
+      Dashboard | FDK.cz - Komplexní řízení organizací
+    {% else %}
+      FDK.cz - Komplexní řízení organizací
+    {% endif %}
   </title>
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
-  <!-- Nucleo Icons -->
-  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-  <!-- Material Icons -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
 </head>
 
-<body class="g-sidenav-show  bg-gray-100">
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2" id="sidenav-main">
-    <div class="sidenav-header">
-      <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand px-4 py-3 m-0" href=" https://fdk.cz " target="_blank">
-        <img src="../assets/img/site/logo_tactic.png" class="navbar-brand-img" width="26" height="26" alt="main_logo">
-        <span class="ms-1 text-sm text-dark">FDK.cz</span>
-      </a>
+<body>
+  <!-- Messages Block -->
+  {% if messages %}
+  <div class="messages" id="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
     </div>
-    <hr class="horizontal dark mt-0 mb-2">
-    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active bg-gradient-dark text-white" href="/dashboard">
-            <i class="material-symbols-rounded opacity-5">dashboard</i>
-            <span class="nav-link-text ms-1">Dashboard</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/projekty/">
-            <i class="material-symbols-rounded opacity-5">table_view</i>
-            <span class="nav-link-text ms-1">Projektový management</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/spravce-ukolu/">
-            <i class="material-symbols-rounded opacity-5">receipt_long</i>
-            <span class="nav-link-text ms-1">Úkoly</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/sklady/">
-            <i class="material-symbols-rounded opacity-5">view_in_ar</i>
-            <span class="nav-link-text ms-1">Skladové hospodářství</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/kontakty/">
-            <i class="material-symbols-rounded opacity-5">format_textdirection_r_to_l</i>
-            <span class="nav-link-text ms-1">Správa kontaktů</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="">
-            <i class="material-symbols-rounded opacity-5">notifications</i>
-            <span class="nav-link-text ms-1">Notifikace</span>
-          </a>
-        </li>
-        <li class="nav-item mt-3">
-          <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">PROFIL</h6>
-        </li>
+    {% endfor %}
+  </div>
+  {% endif %}
 
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/profil/">
-            <i class="material-symbols-rounded opacity-5">person</i>
-            <span class="nav-link-text ms-1">Profil</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/odhlaseni/">
-            <i class="material-symbols-rounded opacity-5">assignment</i>
-            <span class="nav-link-text ms-1">Odhlášení</span>
-          </a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="/prihlaseni/">
-            <i class="material-symbols-rounded opacity-5">login</i>
-            <span class="nav-link-text ms-1">Přihlášení</span>
-          </a>
-        </li>
-        {% endif %}
-
-      </ul>
-    </div>
-    <div class="sidenav-footer position-absolute w-100 bottom-0 ">
-      <div class="mx-3">
-        <a class="btn btn-outline-dark mt-4 w-100" href="" type="button">Dokumentace</a>
-        <a class="btn bg-gradient-dark w-100" href="/" type="button">Hlavní strana</a>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{% url 'index' %}" class="logo">
+          <div class="logo-icon">&#9889;</div>
+          FDK.cz
+        </a>
       </div>
-    </div>
-  </aside>
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-    <!-- Navbar -->
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
-      <div class="container-fluid py-1 px-3">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">FDK.cz</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Dashboard</li>
-          </ol>
-        </nav>
-        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-            <div class="input-group input-group-outline">
-              <label class="form-label">Vyhledávání</label>
-              <input type="text" class="form-control">
+
+      <nav class="sidebar-nav">
+        <!-- Hlavní -->
+        <div class="nav-section">
+          <div class="nav-section-title">Hlavní</div>
+          <a href="{% url 'index' %}" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <span class="nav-icon">&#127968;</span>
+            Domů
+          </a>
+          <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="nav-icon">&#128202;</span>
+            Dashboard
+          </a>
+          <a href="{% url 'pravo_ai' %}" class="nav-item {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#9889;</span>
+            Právo AI
+          </a>
+        </div>
+
+        <!-- Management -->
+        <div class="nav-section">
+          <div class="nav-section-title">Management</div>
+          <a href="{% url 'index_project_cs' %}" class="nav-item {% if 'project' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128295;</span>
+            Správa projektů
+          </a>
+          <a href="{% url 'task_management' %}" class="nav-item {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#10004;</span>
+            Správa úkolů
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">&#129309;</span>
+            Správa B2B
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">&#128188;</span>
+            HR Management
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">&#9888;</span>
+            Správa rizik
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">&#128187;</span>
+            Správa IT
+          </a>
+          <a href="#" class="nav-item">
+            <span class="nav-icon">&#128203;</span>
+            Správa majetku
+          </a>
+        </div>
+
+        <!-- Business -->
+        <div class="nav-section">
+          <div class="nav-section-title">Business</div>
+          <a href="{% url 'list_contracts' %}" class="nav-item {% if 'contract' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128196;</span>
+            Správa smluv
+          </a>
+          <a href="{% url 'grant_list' %}" class="nav-item {% if 'grant' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128176;</span>
+            Granty &amp; Dotace
+          </a>
+          <a href="{% url 'my_contacts' %}" class="nav-item {% if 'contact' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128100;</span>
+            Správa kontaktů
+          </a>
+          <a href="{% url 'accounting_dashboard' %}" class="nav-item {% if 'accounting' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128202;</span>
+            Účetnictví
+          </a>
+        </div>
+
+        <!-- Nástroje -->
+        <div class="nav-section">
+          <div class="nav-section-title">Nástroje</div>
+          <a href="{% url 'index_list' %}" class="nav-item {% if 'list' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128221;</span>
+            Seznamy
+          </a>
+          <a href="{% url 'list_tests' %}" class="nav-item {% if 'test' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#129514;</span>
+            Testování
+          </a>
+          <a href="{% url 'all_stores' %}" class="nav-item {% if 'store' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128230;</span>
+            Sklad
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-left">
+            <div class="mobile-header-left">
+              <button class="mobile-menu-toggle" onclick="openMobileSidebar()">
+                <div class="hamburger">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </button>
+
+              <a href="{% url 'index' %}" class="mobile-logo">
+                <div class="mobile-logo-icon">&#9889;</div>
+                FDK.cz
+              </a>
+            </div>
+
+            <nav class="breadcrumb">
+              <a href="{% url 'index' %}" class="breadcrumb-item">Domů</a>
+              <span class="breadcrumb-separator">/</span>
+              <span class="breadcrumb-item active">Dashboard</span>
+            </nav>
+          </div>
+
+          <div class="header-right">
+            <!-- Search -->
+            <div class="search-container">
+              <div class="search-box">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" placeholder="Vyhledávání..." class="search-input" id="search-input">
+              </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+              <button class="action-btn" title="Notifikace">
+                &#128276;
+              </button>
+              
+              <button class="language-toggle" onclick="toggleLanguage()">
+                <span class="lang-flag">&#127464;&#127487;</span>
+                <span class="lang-text">CS</span>
+                <span style="color: #94a3b8; font-size: 0.75rem;">&#9660;</span>
+              </button>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+              {% if user.is_authenticated %}
+              <!-- Pro přihlášené -->
+              <button class="user-trigger" onclick="toggleUserMenu()">
+                <div class="user-avatar">{{ user.first_name|first|default:user.username|first|upper }}</div>
+                <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                <span style="color: #94a3b8; font-size: 0.75rem;">&#9660;</span>
+              </button>
+              
+              <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="{% url 'user_profile' %}" class="dropdown-item">
+                  &#128100; Můj profil
+                </a>
+                <a href="{% url 'index_project_cs' %}" class="dropdown-item">
+                  &#128203; Moje projekty
+                </a>
+                <a href="{% url 'user_settings' %}" class="dropdown-item">
+                  &#9881; Nastavení
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'logout_cs' %}" class="dropdown-item">
+                  &#128682; Odhlásit se
+                </a>
+              </div>
+              {% else %}
+              <!-- Pro nepřihlášené -->
+              <div class="auth-buttons">
+                <a href="{% url 'login_cs' %}" class="btn btn-outline">
+                  &#128273; Přihlásit
+                </a>
+                <a href="{% url 'registration_cs' %}" class="btn btn-primary">
+                  &#128221; Registrace
+                </a>
+              </div>
+              {% endif %}
             </div>
           </div>
-          <ul class="navbar-nav d-flex align-items-center  justify-content-end">
-            <li class="nav-item d-flex align-items-center">
+        </div>
+      </header>
 
-            </li>
-            <li class="mt-1">
-              <!-- I -->
-            </li>
-            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                <div class="sidenav-toggler-inner">
-                  <i class="sidenav-toggler-line"></i>
-                  <i class="sidenav-toggler-line"></i>
-                  <i class="sidenav-toggler-line"></i>
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header">
+          {% if user.is_authenticated %}
+          <h1 class="page-title">
+            Vítejte, {{ user.first_name|default:user.username }}!
+          </h1>
+          <p class="page-subtitle">
+            {% if user.companies.first %}
+              {{ user.companies.first.name }} - IČO: {{ user.companies.first.ico }}
+            {% else %}
+              Dokončete nastavení své organizace pro plný přístup k funkcím
+            {% endif %}
+          </p>
+          {% else %}
+          <h1 class="page-title">FDK.cz - Komplexní řízení organizací</h1>
+          <p class="page-subtitle">
+            Moderní platforma pro efektivní správu organizací, projektů a AI právních nástrojů
+          </p>
+          {% endif %}
+        </div>
+
+        <!-- AI Právo výstupy -->
+        {% if user.is_authenticated and ai_outputs %}
+        <div class="ai-outputs-section">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;">
+            <div style="font-size: 1.5rem;">&#9889;</div>
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Nejnovější AI Právo výstupy</h2>
+              <p style="color: #64748b; margin: 0;">Poslední analýzy a dokumenty z AI systému</p>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            {% for output in ai_outputs|slice:":3" %}
+            <div class="ai-output-item">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+                <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">{{ output.typ }}</span>
+                <strong style="font-size: 0.9rem;">{{ output.nazev }}</strong>
+              </div>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">{{ output.popis|truncatewords:15 }}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;">{{ output.created_at|timesince }} zpět</div>
+                <a href="" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">Zobrazit</a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          
+          <div style="margin-top: 1.5rem; text-align: center;">
+            <a href="{% url 'pravo_ai' %}" class="btn btn-primary">
+              Zobrazit všechny AI výstupy &#8594;
+            </a>
+          </div>
+        </div>
+        {% elif not user.is_authenticated %}
+        <!-- Demo AI výstupy pro nepřihlášené uživatele -->
+        <div class="ai-outputs-section">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;">
+            <div style="font-size: 1.5rem;">&#9889;</div>
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0;">AI Právo - Ukázka možností</h2>
+              <p style="color: #64748b; margin: 0;">Příklady analýz a dokumentů generovaných AI systémem</p>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            <div class="ai-output-item">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+                <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Analýza smlouvy</span>
+                <strong style="font-size: 0.9rem;">Kupní smlouva - rizikové klauzule</strong>
+              </div>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">AI identifikovalo 3 potenciální rizika a navrhlo 5 úprav pro lepší právní ochranu.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;">Před 15 minutami</div>
+                <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+              </div>
+            </div>
+            
+            <div class="ai-output-item">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+                <span style="background: #059669; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Právní precedent</span>
+                <strong style="font-size: 0.9rem;">Rozsudek NSS - správní řízení</strong>
+              </div>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">Nalezen relevantní rozsudek NSS 4 Ads 45/2023 vztahující se k problematice správního řízení.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;">Před 1 hodinou</div>
+                <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+              </div>
+            </div>
+            
+            <div class="ai-output-item">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem;">
+                <span style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Generování dokumentu</span>
+                <strong style="font-size: 0.9rem;">Žaloba - vymáhání pohledávky</strong>
+              </div>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0.5rem 0;">Vygenerována žaloba dle § 142 OSŘ s automatickým výpočtem úroků a nákladů řízení.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.75rem; color: #94a3b8;">Před 2 hodinami</div>
+                <span style="background: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">Demo</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 1.5rem; text-align: center;">
+            <a href="{% url 'login_cs' %}" class="btn btn-primary">
+              &#128273; Přihlásit se pro plný přístup k AI Právo &#8594;
+            </a>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="stat-title">Aktivní projekty</div>
+                <div class="stat-value">
+                  {% if user.is_authenticated %}
+                    {{ total_projects|default:0 }}
+                  {% else %}
+                    1,247
+                  {% endif %}
                 </div>
-              </a>
-            </li>
-            <li class="nav-item px-3 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0">
-                <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
-              </a>
-            </li>
-            <li class="nav-item dropdown pe-3 d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="material-symbols-rounded">notifications</i>
-              </a>
-              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">Nová zpráva</span> od Lucie
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          13 minut zpět
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                </li>
-                <li class="mb-2">
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="my-auto">
-                        <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          <span class="font-weight-bold">Nevý projekt</span> od Petra
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          1 den
-                        </p>
-                      </div>
-                    </div>
+                <div class="stat-change positive">
+                  <span>&#8599;</span>
+                  {% if user.is_authenticated %}
+                    {{ completed_projects|default:0 }} dokončených
+                  {% else %}
+                    89 dokončených
+                  {% endif %}
+                </div>
+              </div>
+              <div class="stat-icon primary">&#128193;</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="stat-title">AI Dotazy</div>
+                <div class="stat-value">
+                  {% if user.is_authenticated %}
+                    {{ ai_queries_count|default:0 }}
+                  {% else %}
+                    15,632
+                  {% endif %}
+                </div>
+                <div class="stat-change positive">
+                  <span>&#8599;</span>
+                  {% if user.is_authenticated %}
+                    {{ ai_queries_today|default:0 }} dnes
+                  {% else %}
+                    247 dnes
+                  {% endif %}
+                </div>
+              </div>
+              <div class="stat-icon info">&#9889;</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="stat-title">Organizace</div>
+                <div class="stat-value">
+                  {% if user.is_authenticated %}
+                    {{ total_contacts|default:0 }}
+                  {% else %}
+                    3,456
+                  {% endif %}
+                </div>
+                <div class="stat-change positive">
+                  <span>&#8599;</span>
+                  {% if user.is_authenticated %}
+                    {{ new_contacts_month|default:0 }} nových
+                  {% else %}
+                    78 aktivních
+                  {% endif %}
+                </div>
+              </div>
+              <div class="stat-icon success">&#127970;</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div class="stat-title">Uživatelé</div>
+                <div class="stat-value">
+                  {% if user.is_authenticated %}
+                    {{ pending_tasks|default:0 }}
+                  {% else %}
+                    892
+                  {% endif %}
+                </div>
+                <div class="stat-change positive">
+                  <span>&#8599;</span>
+                  {% if user.is_authenticated %}
+                    aktivních úkolů
+                  {% else %}
+                    registrovaných
+                  {% endif %}
+                </div>
+              </div>
+              <div class="stat-icon warning">&#128101;</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Grid - pouze pro přihlášené uživatele -->
+        {% if user.is_authenticated %}
+        <div class="content-grid">
+          <!-- Projekty -->
+          <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3>Moje projekty ({{ user_projects|length|default:0 }})</h3>
+              <a href="{% url 'index_project_cs' %}" class="btn btn-primary">&#10133; Nový projekt</a>
+            </div>
+            
+            {% if user_projects %}
+            <ul class="item-list">
+              {% for project in user_projects|slice:":5" %}
+              <li class="item">
+                <div class="item-header">
+                  <a href="{% url 'detail_project' project.project_id %}" class="item-title">{{ project.name }}</a>
+                  <span class="item-meta">{{ project.budget|default:'N/A' }}</span>
+                </div>
+                <div class="item-meta">{{ project.description|truncatewords:15 }}</div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" style="width: {{ project.progress|default:0 }}%"></div>
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-state">
+              <div class="empty-state-icon">&#128193;</div>
+              <p>Zatím nemáte žádné projekty</p>
+              <a href="{% url 'index_project_cs' %}" class="btn btn-primary">Vytvořit první projekt</a>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Úkoly -->
+          <div class="content-card">
+            <h3>Přiřazené úkoly ({{ user_tasks|length|default:0 }})</h3>
+            
+            {% if user_tasks %}
+            <ul class="item-list">
+              {% for task in user_tasks|slice:":5" %}
+              <li class="item">
+                <div class="item-header">
+                  <a href="{% url 'detail_task' task.task_id %}" class="item-title">{{ task.title }}</a>
+                  <span class="item-meta {% if task.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}negative{% endif %}">
+                    {{ task.due_date|date:"d.m.Y" }}
+                  </span>
+                </div>
+                <div class="item-meta">{{ task.description|truncatewords:10 }}</div>
+              </li>
+              {% endfor %}
+            </ul>
+            
+            {% if user_tasks|length > 5 %}
+            <div style="text-align: center; margin-top: 1rem;">
+              <a href="{% url 'dashboard' %}" class="btn btn-outline">Zobrazit všechny úkoly</a>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="empty-state">
+              <div class="empty-state-icon">&#128221;</div>
+              <p>Nemáte žádné přiřazené úkoly</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% else %}
+        <!-- Call to action pro nepřihlášené uživatele -->
+        <div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">&#128640;</div>
+          <h3 style="margin-bottom: 1rem; color: #1e293b;">Připojte se k FDK.cz</h3>
+          <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Získejte přístup k pokročilým AI nástrojům pro právní analýzy, komplexnímu projektovému managementu 
+            a všem funkcím pro efektivní řízení vaší organizace.
+          </p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'registration_cs' %}" class="btn btn-primary">
+              &#128221; Zaregistrovat se
+            </a>
+            <a href="{% url 'login_cs' %}" class="btn btn-outline">
+              &#128273; Přihlásit se
+            </a>
+          </div>
+        </div>
+
+        <!-- Features pro nepřihlášené uživatele -->
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">&#9889;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">AI Právní nástroje</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              Pokročilé AI pro analýzu smluv, hledání precedentů a generování právních dokumentů
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">&#128202;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">Projektový management</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              Komplexní řízení projektů s úkoly, deadliny a sledováním pokroku
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">&#128176;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">Účetnictví a finance</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              Správa financí, fakturace a kompletní účetní evidence
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">&#128101;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">Správa kontaktů</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              CRM systém pro správu klientů a obchodních partnerů
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">&#128196;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">Správa smluv</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              Sledování smluv, automatické upomínky a evidence dokumentů
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">&#128230;</div>
+            <h4 style="margin-bottom: 1rem; color: #1e293b;">Skladové hospodářství</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">
+              Kompletní správa skladových zásob a inventury
+            </p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-grid">
+            <!-- O nás -->
+            <div class="footer-section">
+              <h3>O FDK.cz</h3>
+              <p>Moderní platforma pro komplexní řízení organizací, projektů a AI právních nástrojů. Navrženo pro efektivní správu podnikání a organizace práce.</p>
+            </div>
+
+            <!-- Navigace -->
+            <div class="footer-section">
+              <h3>Navigace</h3>
+              <ul class="footer-link-list">
+                <li>
+                  <a href="{% url 'index' %}" class="footer-link">
+                    <span class="material-icons footer-icon">home</span>
+                    <span>Hlavní strana</span>
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item border-radius-md" href="javascript:;">
-                    <div class="d-flex py-1">
-                      <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                          <title>credit-card</title>
-                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                              <g transform="translate(1716.000000, 291.000000)">
-                                <g transform="translate(453.000000, 454.000000)">
-                                  <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743"></path>
-                                  <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"></path>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </svg>
-                      </div>
-                      <div class="d-flex flex-column justify-content-center">
-                        <h6 class="text-sm font-weight-normal mb-1">
-                          Platba proběhla úspěšně
-                        </h6>
-                        <p class="text-xs text-secondary mb-0">
-                          <i class="fa fa-clock me-1"></i>
-                          2 dny
-                        </p>
-                      </div>
-                    </div>
+                  <a href="{% url 'index_project_cs' %}" class="footer-link">
+                    <span class="material-icons footer-icon">folder</span>
+                    <span>Projekty</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'task_management' %}" class="footer-link">
+                    <span class="material-icons footer-icon">check_circle</span>
+                    <span>Úkoly</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'accounting_dashboard' %}" class="footer-link">
+                    <span class="material-icons footer-icon">account_balance</span>
+                    <span>Účetnictví</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'my_contacts' %}" class="footer-link">
+                    <span class="material-icons footer-icon">people</span>
+                    <span>Kontakty</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'pravo_ai' %}" class="footer-link">
+                    <span class="material-icons footer-icon">gavel</span>
+                    <span>Právo AI</span>
                   </a>
                 </li>
               </ul>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a href="/prihlaseni/" class="nav-link text-body font-weight-bold px-0">
-                <i class="material-symbols-rounded">account_circle</i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!-- End Navbar -->
-    <div class="container-fluid py-2">
-      <div class="row">
-        <div class="ms-3">
-          <h3 class="mb-0 h4 font-weight-bolder">Dashboard</h3>
-          <p class="mb-4">
-            Projekt pro potřeby neziskové organizace eKultura.
-          </p>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-header p-2 ps-3">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <p class="text-sm mb-0 text-capitalize">Projektů</p>
-                  <h4 class="mb-0">{{ total_projects }}</h4>
-                </div>
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                  <i class="material-symbols-rounded opacity-10">weekend</i>
-                </div>
-              </div>
             </div>
-            <hr class="dark horizontal my-0">
-            <div class="card-footer p-2 ps-3">
-              <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">3 </span>dokončených</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-header p-2 ps-3">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <p class="text-sm mb-0 text-capitalize">Uživatelů</p>
-                  <h4 class="mb-0">28</h4>
-                </div>
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                  <i class="material-symbols-rounded opacity-10">person</i>
-                </div>
-              </div>
-            </div>
-            <hr class="dark horizontal my-0">
-            <div class="card-footer p-2 ps-3">
-              <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+3 </span>za poslední měsíc</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-header p-2 ps-3">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <p class="text-sm mb-0 text-capitalize">Celkem testů</p>
-                  <h4 class="mb-0">8</h4>
-                </div>
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                  <i class="material-symbols-rounded opacity-10">leaderboard</i>
-                </div>
-              </div>
-            </div>
-            <hr class="dark horizontal my-0">
-            <div class="card-footer p-2 ps-3">
-              <p class="mb-0 text-sm"><span class="text-danger font-weight-bolder">+2 </span> od minulého měsíce</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6">
-          <div class="card">
-            <div class="card-header p-2 ps-3">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <p class="text-sm mb-0 text-capitalize">Skladových položek</p>
-                  <h4 class="mb-0">103,430</h4>
-                </div>
-                <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                  <i class="material-symbols-rounded opacity-10">weekend</i>
-                </div>
-              </div>
-            </div>
-            <hr class="dark horizontal my-0">
-            <div class="card-footer p-2 ps-3">
-              <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+5% </span>od včera</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-
-
-<!-- MOJE PROJEKTY-->
-
-
-
-<div class="row mt-4">
-    <!-- Levá část s projekty -->
-    <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
-        <div class="card">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div class="col-lg-6 col-7">
-                        <h6>Projekty</h6>
-                        <p class="text-sm mb-0">
-                            <i class="fa fa-check text-info" aria-hidden="true"></i>
-                            <span class="font-weight-bold ms-1">{{ user_projects|length }} projektů</span> ve správě
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-                <div class="table-responsive">
-                    <table class="table align-items-center mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Projekt</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Popis</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rozpočet</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stav</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                {% if not user.is_authenticated %}
-                    <div style="margin: 5px 5px 5px 20px;padding:5px"><a href="/prihlaseni/">Přihlaste se pro zobrazení projektů</a></div>
-                {% endif %}
-                            {% for project in user_projects %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex px-2 py-1">
-                                        <div>
-                                            <img src="/static/assets/img/small-logos/devto.svg" class="avatar avatar-sm me-3" alt="xd">
-                                        </div>
-                                        <div class="d-flex flex-column justify-content-center">
-                                            <h6 class="mb-0 text-sm">
-                                                <a href="{% url 'detail_project' project.project_id %}">{{ project.name }}</a>
-                                            </h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="text-xs font-weight-bold">{{ project.description|truncatewords:10 }}</span>
-                                </td>
-                                <td class="align-middle text-center text-sm">
-                                    <span class="text-xs font-weight-bold">{{ project.budget|default:'N/A' }}</span>
-                                </td>
-                                <td class="align-middle">
-                                    <div class="progress-wrapper w-75 mx-auto">
-                                        <div class="progress-info">
-                                            <div class="progress-percentage">
-                                                <span class="text-xs font-weight-bold">{{ project.progress }}%</span>
-                                            </div>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-gradient-info w-{{ project.progress }}" role="progressbar" aria-valuenow="{{ project.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Pravá část s úkoly -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <h6>Úkoly</h6>
-                <p class="text-sm">
-                    <i class="fa fa-tasks text-success" aria-hidden="true"></i>
-                    <span class="font-weight-bold">{{ user_tasks|length }}</span> aktuální
-                </p>
-            </div>
-            <div class="card-body p-3">
-                <div class="timeline timeline-one-side">
-                {% if not user.is_authenticated %}
-                    <p><a href="/prihlaseni/">Přihlaste se pro zobrazení úkolů</a></p>
-                {% endif %}
-                {% if user_tasks %}
-                    {% for task in user_tasks %}
-                    <div class="timeline-block mb-3">
-                        <span class="timeline-step">
-                            <i class="material-symbols-rounded text-info text-gradient">task</i>
-                        </span>
-                        <div class="timeline-content">
-                            <h6 class="text-dark text-sm font-weight-bold mb-0"><a href="/projekt/ukol/{{ task.task_id }}/">{{ task.title }}</a></h6>
-                            <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                                Deadline: {{ task.due_date|date:"d.m.Y" }}
-                            </p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p>Nemáte žádné úkoly.</p>
-                {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-<!-- / MOJE PROJEKTY -->
-
-
-
-      <div class="row">
-        <div class="col-lg-4 col-md-6 mt-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h6 class="mb-0 ">Návštěvnost stránky</h6>
-              <p class="text-sm ">Výkon za poslední týden </p>
-              <div class="pe-2">
-                <div class="chart">
-                  <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
-                </div>
-              </div>
-              <hr class="dark horizontal">
-              <div class="d-flex ">
-                <i class="material-symbols-rounded text-sm my-auto me-1">schedule</i>
-                <p class="mb-0 text-sm"> data za poslední měsíc</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 mt-4 mb-4">
-          <div class="card ">
-            <div class="card-body">
-              <h6 class="mb-0 "> Prediktivní analýza </h6>
-              <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) . </p>
-              <div class="pe-2">
-                <div class="chart">
-                  <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
-                </div>
-              </div>
-              <hr class="dark horizontal">
-              <div class="d-flex ">
-                <i class="material-symbols-rounded text-sm my-auto me-1">schedule</i>
-                <p class="mb-0 text-sm"> aktualizace včera </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 mt-4 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <h6 class="mb-0 ">Hotových úkolů</h6>
-              <p class="text-sm ">Výkon 3 posledních projektů</p>
-              <div class="pe-2">
-                <div class="chart">
-                  <canvas id="chart-line-tasks" class="chart-canvas" height="170"></canvas>
-                </div>
-              </div>
-              <hr class="dark horizontal">
-              <div class="d-flex ">
-                <i class="material-symbols-rounded text-sm my-auto me-1">schedule</i>
-                <p class="mb-0 text-sm">právě aktualizováno</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mb-4">
-        <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
-          <div class="card">
-            <div class="card-header pb-0">
-              <div class="row">
-                <div class="col-lg-6 col-7">
-                  <h6>Projekty</h6>
-                  <p class="text-sm mb-0">
-                    <i class="fa fa-check text-info" aria-hidden="true"></i>
-                    <span class="font-weight-bold ms-1">3 hotových</span> za poslední rok
-                  </p>
-                </div>
-                <div class="col-lg-6 col-5 my-auto text-end">
-                  <div class="dropdown float-lg-end pe-4">
-                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fa fa-ellipsis-v text-secondary"></i>
-                    </a>
-                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Akce</a></li>
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Další akce</a></li>
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">..</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Projekt</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">vývojáři</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rozpočet</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stav</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-xd.svg" class="avatar avatar-sm me-3" alt="xd">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Digitální muzeum</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Martin">
-                            <img src="../assets/img/team-1.jpg" alt="team1">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Pavla">
-                            <img src="../assets/img/team-2.jpg" alt="team2">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Petr">
-                            <img src="../assets/img/team-3.jpg" alt="team3">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jirka">
-                            <img src="../assets/img/team-4.jpg" alt="team4">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 14,000 </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">60%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-info w-60" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-atlassian.svg" class="avatar avatar-sm me-3" alt="atlassian">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Neuronové sítě</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jitka">
-                            <img src="../assets/img/team-2.jpg" alt="team5">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Katka">
-                            <img src="../assets/img/team-4.jpg" alt="team6">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 3,000 </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">10%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-info w-10" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-slack.svg" class="avatar avatar-sm me-3" alt="team7">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Extrakce entit</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Lenka">
-                            <img src="../assets/img/team-3.jpg" alt="team8">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Zuzka">
-                            <img src="../assets/img/team-1.jpg" alt="team9">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> Nenastaveno </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">100%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm me-3" alt="spotify">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Etický maják</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Martin">
-                            <img src="../assets/img/team-4.jpg" alt="user1">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Juraj">
-                            <img src="../assets/img/team-3.jpg" alt="user2">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Alexa">
-                            <img src="../assets/img/team-4.jpg" alt="user3">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Klára">
-                            <img src="../assets/img/team-1.jpg" alt="user4">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 20,500 </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">100%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-success w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-jira.svg" class="avatar avatar-sm me-3" alt="jira">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Mediační platforma</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Martin">
-                            <img src="../assets/img/team-4.jpg" alt="user5">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 500 </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">25%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-info w-25" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="25"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div>
-                            <img src="../assets/img/small-logos/logo-invision.svg" class="avatar avatar-sm me-3" alt="invision">
-                          </div>
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">Digitální cesty</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Martin">
-                            <img src="../assets/img/team-1.jpg" alt="user6">
-                          </a>
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Jitka">
-                            <img src="../assets/img/team-4.jpg" alt="user7">
-                          </a>
-                        </div>
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 2,000 </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">40%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-info w-40" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="40"></div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100">
-            <div class="card-header pb-0">
-              <h6>Novinky</h6>
-              <p class="text-sm">
-                <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
-                <span class="font-weight-bold">24</span> za rok 2024
-              </p>
-            </div>
-            <div class="card-body p-3">
-              <div class="timeline timeline-one-side">
-                <div class="timeline-block mb-3">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-success text-gradient">notifications</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">Změna designu</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 LIS 7:20 PM</p>
-                  </div>
-                </div>
-                <div class="timeline-block mb-3">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-danger text-gradient">code</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">faktra #1832412</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 LIS 11 PM</p>
-                  </div>
-                </div>
-                <div class="timeline-block mb-3">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-info text-gradient">shopping_cart</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">Platba za server</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 LIS 9:34 PM</p>
-                  </div>
-                </div>
-                <div class="timeline-block mb-3">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-warning text-gradient">credit_card</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">Task #439</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">20 ŘÍJ 2:20 AM</p>
-                  </div>
-                </div>
-                <div class="timeline-block mb-3">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-primary text-gradient">key</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">Sekce 28</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">18 ŘÍJ 4:54 AM</p>
-                  </div>
-                </div>
-                <div class="timeline-block">
-                  <span class="timeline-step">
-                    <i class="material-symbols-rounded text-dark text-gradient">payments</i>
-                  </span>
-                  <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">Task #95</h6>
-                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">17 ŘÍJ</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <footer class="footer py-4  ">
-        <div class="container-fluid">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-lg-6 mb-lg-0 mb-4">
-              <div class="copyright text-center text-sm text-muted text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                vyrobeno pro <i class="fa fa-heart"></i> s 
-                <a href="https://ekultura.eu" class="font-weight-bold">eKultura</a>
-                a hladké procesy.
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                <li class="nav-item">
-                  <a href="/" class="nav-link text-muted" target="_blank">Podmínky použití</a>
+            <!-- Provozovatel -->
+            <div class="footer-section">
+              <h3>Provozovatel</h3>
+              <ul class="footer-link-list">
+                <li class="footer-link">
+                  <span class="material-icons footer-icon">business</span>
+                  <span>eKultura, z.s.</span>
                 </li>
-                <li class="nav-item">
-                  <a href="/" class="nav-link text-muted" target="_blank">O nás</a>
+                <li class="footer-link">
+                  <span class="material-icons footer-icon">badge</span>
+                  <span>IČO: 21682305</span>
                 </li>
-                <li class="nav-item">
-                  <a href="/" class="nav-link text-muted" target="_blank">Ochrana osobních údajů</a>
+                <li>
+                  <a href="mailto:media@ekultura.eu" class="footer-link">
+                    <span class="material-icons footer-icon">email</span>
+                    <span>media@ekultura.eu</span>
+                  </a>
                 </li>
-                <li class="nav-item">
-                  <a href="/" class="nav-link pe-0 text-muted" target="_blank">Kontakt</a>
+                <li class="footer-link">
+                  <span class="material-icons footer-icon">location_on</span>
+                  <span>Zenklova 24/54, Praha</span>
+                </li>
+                <li>
+                  <a href="https://ekultura.eu" class="footer-link">
+                    <span class="material-icons footer-icon">language</span>
+                    <span>ekultura.eu</span>
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- Sociální média a další -->
+            <div class="footer-section">
+              <h3>Spojení</h3>
+              <div class="footer-social">
+
+
+<a href="#" class="social-link">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.762 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.967 0-1.75-.784-1.75-1.75s.783-1.75 1.75-1.75 1.75.784 1.75 1.75-.783 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.336-.027-3.058-1.862-3.058-1.864 0-2.149 1.457-2.149 2.961v5.701h-3v-10h2.879v1.367h.041c.401-.757 1.379-1.555 2.838-1.555 3.037 0 3.6 2.001 3.6 4.602v5.586z"/>
+  </svg>
+  <span>LinkedIn</span>
+</a>
+
+
+                <a href="#" class="social-link">
+                  <span class="material-icons">facebook</span>
+                  <span>Facebook</span>
+                </a>
+
+
+                <a href="#" class="social-link">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.206.055 2.005.24 2.47.405a4.92 4.92 0 011.633.975c.455.455.774.968.975 1.633.166.465.35 1.264.405 2.47.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.055 1.206-.24 2.005-.405 2.47a4.919 4.919 0 01-.975 1.633 4.919 4.919 0 01-1.633.975c-.465.166-1.264.35-2.47.405-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.206-.055-2.005-.24-2.47-.405a4.92 4.92 0 01-1.633-.975 4.92 4.92 0 01-.975-1.633c-.166-.465-.35-1.264-.405-2.47C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.055-1.206.24-2.005.405-2.47a4.919 4.919 0 01.975-1.633A4.919 4.919 0 016.065 2.6c.465-.166 1.264-.35 2.47-.405C8.416 2.175 8.796 2.163 12 2.163zm0 1.837c-3.178 0-3.558.011-4.812.07-1.003.046-1.545.215-1.907.36-.471.18-.806.39-1.16.745-.354.354-.565.69-.745 1.16-.145.362-.314.904-.36 1.907-.058 1.254-.07 1.634-.07 4.812s.011 3.558.07 4.812c.046 1.003.215 1.545.36 1.907.18.471.39.806.745 1.16.354.354.69.565 1.16.745.362.145.904.314 1.907.36 1.254.058 1.634.07 4.812.07s3.558-.011 4.812-.07c1.003-.046 1.545-.215 1.907-.36.471-.18.806-.39 1.16-.745.354-.354.565-.69.745-1.16.145-.362.314-.904.36-1.907.058-1.254.07-1.634.07-4.812s-.011-3.558-.07-4.812c-.046-1.003-.215-1.545-.36-1.907-.18-.471-.39-.806-.745-1.16-.354-.354-.69-.565-1.16-.745-.362-.145-.904-.314-1.907-.36-1.254-.058-1.634-.07-4.812-.07zM12 5.838a6.162 6.162 0 016.162 6.162A6.162 6.162 0 0112 18.162a6.162 6.162 0 01-6.162-6.162A6.162 6.162 0 0112 5.838zm0 1.837a4.325 4.325 0 100 8.65 4.325 4.325 0 000-8.65zm6.406-.955a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
+                  </svg>
+                  <span>Instagram</span>
+                </a>
+                <a href="#" class="social-link">
+                  <span class="material-icons">help</span>
+                  <span>Nápověda</span>
+                </a>
+                <a href="#" class="social-link">
+                  <span class="material-icons">policy</span>
+                  <span>Podmínky užití</span>
+                </a>
+                <a href="#" class="social-link">
+                  <span class="material-icons">privacy_tip</span>
+                  <span>Zásady ochrany</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dolní část patičky -->
+          <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} FDK.cz - Komplexní řízení organizací | 
+               Projekt <a href="https://ekultura.eu/">eKultura</a> | 
+               Vytvořeno s &#10084;&#65039; pro moderní organizace</p>
           </div>
         </div>
       </footer>
-    </div>
-  </main>
-  <div class="fixed-plugin">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-      <i class="material-symbols-rounded py-2">settings</i>
-    </a>
-    <div class="card shadow-lg">
-      <div class="card-header pb-0 pt-3">
-        <div class="float-start">
-          <h5 class="mt-3 mb-0">Konfigurace FDK.cz</h5>
-          <p>Možnosti nastavení FDK.cz</p>
-        </div>
-        <div class="float-end mt-4">
-          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
-            <i class="material-symbols-rounded">clear</i>
-          </button>
-        </div>
-        <!-- End Toggle Button -->
-      </div>
-      <hr class="horizontal dark my-1">
-      <div class="card-body pt-sm-3 pt-0">
-        <!-- Sidebar Backgrounds -->
-        <div>
-          <h6 class="mb-0">Barvy aktivní položky v levém menu</h6>
-        </div>
-        <a href="javascript:void(0)" class="switch-trigger background-color">
-          <div class="badge-colors my-2 text-start">
-            <span class="badge filter bg-gradient-primary" data-color="primary" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-dark active" data-color="dark" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
-            <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
-          </div>
-        </a>
-        <!-- Sidenav Type -->
-        <div class="mt-3">
-          <h6 class="mb-0">Nastavení levého menu</h6>
-          <p class="text-sm">Choose between different sidenav types.</p>
-        </div>
-        <div class="d-flex">
-          <button class="btn bg-gradient-dark px-3 mb-2" data-class="bg-gradient-dark" onclick="sidebarType(this)">Tmavý</button>
-          <button class="btn bg-gradient-dark px-3 mb-2 ms-2" data-class="bg-transparent" onclick="sidebarType(this)">Průhledný</button>
-          <button class="btn bg-gradient-dark px-3 mb-2  active ms-2" data-class="bg-white" onclick="sidebarType(this)">Bílý</button>
-        </div>
-        <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
-        <!-- Navbar Fixed -->
-        <div class="mt-3 d-flex">
-          <h6 class="mb-0">Fixovaná lišta</h6>
-          <div class="form-check form-switch ps-0 ms-auto my-auto">
-            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
-          </div>
-        </div>
-        <hr class="horizontal dark my-3">
-        <div class="mt-2 d-flex">
-          <h6 class="mb-0">Světlý / Tmavý</h6>
-          <div class="form-check form-switch ps-0 ms-auto my-auto">
-            <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
-          </div>
-        </div>
-        <hr class="horizontal dark my-sm-4">
-        <a class="btn bg-gradient-info w-100" href="https://fdk.cz">FDK.cz</a>
-        <a class="btn btn-outline-dark w-100" href="">Dokumentace</a>
-        <div class="w-100 text-center">
-          <a class="github-button" href="https://github.com/eKultura" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star eKultura GitHub">Star</a>
-          <h6 class="mt-3">Thank you for sharing!</h6>
-          <a href="https://twitter.com/intent/tweet?text=Všemocný%20%23nástroj%20%23FDK.cz&amp;url=https%3A%2F%2Ffdk.cz" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-          </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u=https://fdk.cz" class="btn btn-dark mb-0 me-2" target="_blank">
-            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-          </a>
-        </div>
-      </div>
-    </div>
+    </main>
   </div>
-  <!--   Core JS Files   -->
-  <script src="../assets/js/core/popper.min.js"></script>
-  <script src="../assets/js/core/bootstrap.min.js"></script>
-  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
-  <script src="../assets/js/plugins/chartjs.min.js"></script>
+
   <script>
-    var ctx = document.getElementById("chart-bars").getContext("2d");
-
-    new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["M", "T", "W", "T", "F", "S", "S"],
-        datasets: [{
-          label: "Views",
-          tension: 0.4,
-          borderWidth: 0,
-          borderRadius: 4,
-          borderSkipped: false,
-          backgroundColor: "#43A047",
-          data: [50, 45, 22, 28, 50, 60, 76],
-          barThickness: 'flex'
-        }, ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5],
-              color: '#e5e5e5'
-            },
-            ticks: {
-              suggestedMin: 0,
-              suggestedMax: 500,
-              beginAtZero: true,
-              padding: 10,
-              font: {
-                size: 14,
-                lineHeight: 2
-              },
-              color: "#737373"
-            },
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#737373',
-              padding: 10,
-              font: {
-                size: 14,
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-
-
-    var ctx2 = document.getElementById("chart-line").getContext("2d");
-
-    new Chart(ctx2, {
-      type: "line",
-      data: {
-        labels: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
-        datasets: [{
-          label: "Sales",
-          tension: 0,
-          borderWidth: 2,
-          pointRadius: 3,
-          pointBackgroundColor: "#43A047",
-          pointBorderColor: "transparent",
-          borderColor: "#43A047",
-          backgroundColor: "transparent",
-          fill: true,
-          data: [120, 230, 130, 440, 250, 360, 270, 180, 90, 300, 310, 220],
-          maxBarThickness: 6
-
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-          tooltip: {
-            callbacks: {
-              title: function(context) {
-                const fullMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                return fullMonths[context[0].dataIndex];
-              }
-            }
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [4, 4],
-              color: '#e5e5e5'
-            },
-            ticks: {
-              display: true,
-              color: '#737373',
-              padding: 10,
-              font: {
-                size: 12,
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#737373',
-              padding: 10,
-              font: {
-                size: 12,
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-
-    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
-
-    new Chart(ctx3, {
-      type: "line",
-      data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [{
-          label: "Tasks",
-          tension: 0,
-          borderWidth: 2,
-          pointRadius: 3,
-          pointBackgroundColor: "#43A047",
-          pointBorderColor: "transparent",
-          borderColor: "#43A047",
-          backgroundColor: "transparent",
-          fill: true,
-          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-          maxBarThickness: 6
-
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [4, 4],
-              color: '#e5e5e5'
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#737373',
-              font: {
-                size: 14,
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [4, 4]
-            },
-            ticks: {
-              display: true,
-              color: '#737373',
-              padding: 10,
-              font: {
-                size: 14,
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-  </script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+    function openMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      
+      sidebar.classList.add('mobile-open');
+      overlay.classList.add('active');
     }
-  </script>
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="../assets/js/material-dashboard.min.js?v=3.2.0"></script>
-</body>
 
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+    }
+
+    function toggleUserMenu() {
+      const menu = document.getElementById('userDropdownMenu');
+      menu.classList.toggle('active');
+    }
+
+    function toggleLanguage() {
+      const languages = [
+        { flag: '&#127464;&#127487;', code: 'CS' }, // 🇨🇿
+        { flag: '&#127482;&#127480;', code: 'EN' }, // 🇺🇸  
+        { flag: '&#127465;&#127466;', code: 'DE' }, // 🇩🇪
+        { flag: '&#127467;&#127479;', code: 'FR' }, // 🇫🇷
+        { flag: '&#127466;&#127480;', code: 'ES' }, // 🇪🇸
+        { flag: '&#127470;&#127481;', code: 'IT' }  // 🇮🇹
+      ];
+      
+      const flagEl = document.querySelector('.lang-flag');
+      const textEl = document.querySelector('.lang-text');
+      
+      if (flagEl && textEl) {
+        const currentCode = textEl.textContent.trim();
+        const currentIndex = languages.findIndex(lang => lang.code === currentCode);
+        const nextIndex = (currentIndex + 1) % languages.length;
+        const nextLang = languages[nextIndex];
+        
+        flagEl.innerHTML = nextLang.flag;
+        textEl.textContent = nextLang.code;
+      }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      const userMenu = document.getElementById('userDropdownMenu');
+      const userTrigger = document.querySelector('.user-trigger');
+      
+      if (userTrigger && !userTrigger.contains(e.target)) {
+        userMenu.classList.remove('active');
+      }
+    });
+
+    // Auto-hide messages
+    setTimeout(function() {
+      const messages = document.getElementById('messages');
+      if (messages) {
+        messages.style.transform = 'translateX(100%)';
+        messages.style.opacity = '0';
+      }
+    }, 5000);
+
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          console.log('Searching for:', searchTerm);
+        });
+      }
+    });
+
+
+    // Automaticky zavři menu při změně šířky okna
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        closeMobileSidebar();
+      }
+    });
+
+  </script>
+</body>
 </html>

@@ -1,0 +1,584 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  Kalendář výzev {{ year }} | Granty a Dotace | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.calendar-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.calendar-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.calendar-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.calendar-header p {
+  opacity: 0.9;
+  margin: 0;
+}
+
+.year-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.year-nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.year-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0;
+}
+
+.calendar-months {
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.calendar-month {
+  padding: 1rem 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #475569;
+  border-right: 1px solid #e2e8f0;
+}
+
+.calendar-month:last-child {
+  border-right: none;
+}
+
+.timeline-container {
+  padding: 1.5rem;
+}
+
+.timeline-item {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  background: #fefefe;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s;
+}
+
+.timeline-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.timeline-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.grant-title {
+  font-weight: 600;
+  color: #1e293b;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.grant-title:hover {
+  color: #3b82f6;
+}
+
+.grant-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.grant-provider {
+  background: #e2e8f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.grant-type {
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.timeline-bars {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1px;
+  padding: 0;
+}
+
+.timeline-bar {
+  height: 40px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timeline-bar.active {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.timeline-bar.start {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.timeline-bar.end {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.timeline-bar.single {
+  border-radius: 4px;
+}
+
+.timeline-bar:hover {
+  opacity: 0.8;
+  transform: scaleY(1.1);
+}
+
+.timeline-bar.today::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: calc(100% + 4px);
+  background: #ef4444;
+  border-radius: 2px;
+}
+
+.calendar-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.calendar-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .calendar-month {
+    font-size: 0.75rem;
+    padding: 0.75rem 0.25rem;
+  }
+  
+  .timeline-bars {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .calendar-legend {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .grant-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .timeline-bars {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na granty
+    </a>
+  </nav>
+  
+  <h1 class="page-title">
+    Kalendář výzev
+  </h1>
+  <p class="page-subtitle">
+    Časová mapa grantů a dotací pro rok {{ year }}
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Statistiky -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ grants|length }}</div>
+    <div class="stat-label">Celkem výzev</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">
+      {% widthratio grants|length|add:0 1 1 %}{% comment %}Simulace aktivních{% endcomment %}
+      {{ grants|length|floatformat:0 }}
+    </div>
+    <div class="stat-label">Aktivních výzev</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">
+      {% widthratio grants|length 3 1 %}
+    </div>
+    <div class="stat-label">Končí tento měsíc</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ year }}</div>
+    <div class="stat-label">Zobrazený rok</div>
+  </div>
+</div>
+
+<!-- Filtry -->
+<div class="filters">
+  <div class="filter-group">
+    <label for="provider-filter" style="font-size: 0.875rem; font-weight: 500;">Poskytovatel:</label>
+    <select id="provider-filter" class="filter-select" onchange="filterGrants()">
+      <option value="">Všichni</option>
+      <option value="MKČR">MKČR</option>
+      <option value="EU">Evropská unie</option>
+      <option value="GAČR">GAČR</option>
+      <option value="TAČR">TAČR</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <label for="type-filter" style="font-size: 0.875rem; font-weight: 500;">Typ:</label>
+    <select id="type-filter" class="filter-select" onchange="filterGrants()">
+      <option value="">Všechny typy</option>
+      <option value="dotace">Dotace</option>
+      <option value="grant">Grant</option>
+      <option value="stipendium">Stipendium</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <button class="btn btn-outline" onclick="resetFilters()">
+      ↻ Obnovit filtry
+    </button>
+  </div>
+</div>
+
+<!-- Kalendář -->
+<div class="calendar-container">
+  <!-- Header s navigací -->
+  <div class="calendar-header">
+    <div class="year-navigation">
+      <a href="?year={{ year|add:-1 }}" class="year-nav-btn">
+        ← {{ year|add:-1 }}
+      </a>
+      <div>
+        <h1>{{ year }}</h1>
+        <p>Kalendář grantů a dotací</p>
+      </div>
+      <a href="?year={{ year|add:1 }}" class="year-nav-btn">
+        {{ year|add:1 }} →
+      </a>
+    </div>
+  </div>
+
+  <!-- Legenda -->
+  <div class="calendar-legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"></div>
+      <span>Období výzvy</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #ef4444;"></div>
+      <span>Aktuální měsíc</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #22c55e;"></div>
+      <span>Aktivní výzvy</span>
+    </div>
+  </div>
+
+  <!-- Názvy měsíců -->
+  <div class="calendar-grid calendar-months">
+    {% for month in months %}
+      <div class="calendar-month">{{ month }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Timeline s granty -->
+  <div class="timeline-container">
+    {% if grants %}
+      {% for grant in grants %}
+        <div class="timeline-item" data-provider="{{ grant.provider|default:'Neznámý' }}" data-type="{{ grant.type|default:'dotace' }}">
+          <div class="timeline-label">
+            <div>
+              <a href="{% url 'detail_grant' grant.grant_id %}" class="grant-title">
+                {{ grant.title }}
+              </a>
+              <div class="grant-meta">
+                <span class="grant-provider">{{ grant.provider|default:'Neznámý poskytovatel' }}</span>
+                <span class="grant-type">{{ grant.type|default:'dotace'|capfirst }}</span>
+                {% if grant.start_date and grant.end_date %}
+                <span>📅 {{ grant.start_date|date:"d.m" }} - {{ grant.end_date|date:"d.m.Y" }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <div class="timeline-bars">
+            {% for m in range %}
+              {% if grant.start_month <= m and m <= grant.end_month %}
+                <div class="timeline-bar active {% if grant.start_month == m %}start{% endif %} {% if grant.end_month == m %}end{% endif %} {% if grant.start_month == grant.end_month %}single{% endif %} {% now 'm'|add:0 as current_month %}{% if m == current_month %}today{% endif %}" 
+                     title="{{ grant.title }} - {% if grant.start_date %}{{ grant.start_date|date:'d.m.Y' }}{% endif %}{% if grant.end_date %} až {{ grant.end_date|date:'d.m.Y' }}{% endif %}"
+                     onclick="window.location.href='{% url 'detail_grant' grant.grant_id %}'">
+                </div>
+              {% else %}
+                <div class="timeline-bar"></div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="calendar-empty">
+        <div class="calendar-empty-icon">📅</div>
+        <h3>Žádné výzvy pro rok {{ year }}</h3>
+        <p>V tomto roce nejsou evidovány žádné granty nebo dotace.</p>
+        <a href="{% url 'create_grant' %}" class="btn btn-primary" style="margin-top: 1rem;">
+          ➕ Přidat novou výzvu
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Rychlé akce -->
+<div style="text-align: center; margin-top: 2rem;">
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="{% url 'grant_list' %}" class="btn btn-outline">
+      📋 Seznam všech výzev
+    </a>
+    <a href="{% url 'create_grant' %}" class="btn btn-primary">
+      ➕ Přidat výzvu
+    </a>
+    <a href="#" class="btn btn-outline" onclick="exportCalendar()">
+      📥 Export kalendáře
+    </a>
+    <a href="#" class="btn btn-outline" onclick="printCalendar()">
+      🖨️ Vytisknout
+    </a>
+  </div>
+</div>
+
+<script>
+// Filtrace grantů
+function filterGrants() {
+  const providerFilter = document.getElementById('provider-filter').value.toLowerCase();
+  const typeFilter = document.getElementById('type-filter').value.toLowerCase();
+  const timelineItems = document.querySelectorAll('.timeline-item');
+  
+  let visibleCount = 0;
+  
+  timelineItems.forEach(item => {
+    const provider = item.dataset.provider.toLowerCase();
+    const type = item.dataset.type.toLowerCase();
+    
+    const showProvider = !providerFilter || provider.includes(providerFilter);
+    const showType = !typeFilter || type === typeFilter;
+    
+    if (showProvider && showType) {
+      item.style.display = '';
+      visibleCount++;
+    } else {
+      item.style.display = 'none';
+    }
+  });
+  
+  // Aktualizace statistik
+  updateStats(visibleCount);
+}
+
+function resetFilters() {
+  document.getElementById('provider-filter').value = '';
+  document.getElementById('type-filter').value = '';
+  filterGrants();
+}
+
+function updateStats(visibleCount) {
+  const statCards = document.querySelectorAll('.stat-card .stat-value');
+  if (statCards[0]) {
+    statCards[0].textContent = visibleCount;
+  }
+}
+
+function exportCalendar() {
+  // Simulace exportu
+  alert('Export kalendáře do PDF bude brzy k dispozici!');
+}
+
+function printCalendar() {
+  window.print();
+}
+
+// Zvýraznění aktuálního měsíce
+document.addEventListener('DOMContentLoaded', function() {
+  const currentMonth = new Date().getMonth() + 1;
+  const monthHeaders = document.querySelectorAll('.calendar-month');
+  
+  if (monthHeaders[currentMonth - 1]) {
+    monthHeaders[currentMonth - 1].style.background = '#3b82f6';
+    monthHeaders[currentMonth - 1].style.color = 'white';
+  }
+  
+  // Tooltip pro timeline bary
+  const timelineBars = document.querySelectorAll('.timeline-bar.active');
+  timelineBars.forEach(bar => {
+    bar.addEventListener('mouseenter', function() {
+      this.style.transform = 'scaleY(1.1)';
+      this.style.zIndex = '10';
+    });
+    
+    bar.addEventListener('mouseleave', function() {
+      this.style.transform = 'scaleY(1)';
+      this.style.zIndex = '1';
+    });
+  });
+});
+
+// Klávesové zkratky
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key) {
+      case 'f':
+        e.preventDefault();
+        document.getElementById('provider-filter').focus();
+        break;
+      case 'p':
+        e.preventDefault();
+        printCalendar();
+        break;
+    }
+  }
+});
+</script>
+
+{% endblock %}

@@ -1,34 +1,228 @@
-{% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>{% trans "Odhlášení" %} | FDK.cz</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+</head>
 
-{% block title %}Odhlášení{% endblock %}
-
-{% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-    <!-- Levý blok - Odhlášení potvrzení (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-center mb-4 font-semibold text-gray-800">{% trans "Odhlášení" %}</h2>
-        <p class="text-center text-gray-600 mb-6">{% trans "Opravdu se chcete odhlásit?" %}</p>
-
-        <form method="POST" class="flex justify-center gap-4">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded font-bold">{% trans "Odhlásit se" %}</button>
-            <a href="{% url 'dashboard' %}" class="bg-gray-600 text-white py-2 px-4 rounded font-bold">{% trans "Zpět na nástěnku" %}</a>
-        </form>
+<body>
+  <!-- Messages Block -->
+  {% if messages %}
+  <div style="position: fixed; top: 90px; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
     </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <!-- Pravý blok - Pomocný obsah (1/3 šířka) -->
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Pomocník" %}</h2>
-        <p class="text-sm text-gray-600 mb-4">
-            {% trans "Po odhlášení budou vaše data bezpečně uložena a příště se budete muset znovu přihlásit pro přístup k projektům, úkolům a testům." %}
-        </p>
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 w-full rounded">
-            <p class="font-semibold text-gray-700">FDK.cz</p>
+  <!-- Header -->
+  <header class="header">
+    <a href="{% url 'index' %}" class="logo">
+      <div class="logo-icon">&#9873;</div>
+      FDK.cz
+    </a>
+
+    <nav class="top-nav">
+      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai">&#9889; Právo AI</a>
+      <div class="dropdown">
+        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
+        <div class="dropdown-menu">
+          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
+          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
+          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
+          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
+          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
+          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
+          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
+          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
+          <a href="{% url 'list_grants' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
         </div>
+      </div>
+      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+    </nav>
+
+    <div class="user-menu">
+      {% if user.is_authenticated %}
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Vyhledávání..." id="search-input">
+      </div>
+      <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
+        {{ user.first_name|first|default:user.username|first|upper }}
+      </a>
+      <a href="{% url 'user_profile' %}" class="user-name">
+        {{ user.first_name|default:user.username }}
+      </a>
+      {% else %}
+      <a href="{% url 'login_cs' %}" class="btn btn-primary">
+        &#128273; Přihlásit se
+      </a>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header text-center">
+      <h1 class="page-title">&#128682; {% trans "Odhlášení" %}</h1>
+      <p class="page-subtitle">
+        Ukončete svou relaci bezpečně
+      </p>
     </div>
 
-</div>
-{% endblock %}
+    <!-- Logout Content Grid -->
+    <div class="content-grid">
+      <!-- Main Logout Form (2/3 width) -->
+      <div class="content-card text-center" style="grid-column: span 2;">
+        <div style="font-size: 3rem; margin-bottom: 2rem;">&#128682;</div>
+        
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+          {% trans "Odhlášení" %}
+        </h2>
+        
+        <p style="color: #64748b; margin-bottom: 2rem; font-size: 1.1rem;">
+          {% trans "Opravdu se chcete odhlásit?" %}
+        </p>
+        
+        <form method="POST" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          {% csrf_token %}
+          
+          <button type="submit" style="background: #dc2626; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+            &#128682; {% trans "Odhlásit se" %}
+          </button>
+          
+          <a href="{% url 'dashboard' %}" class="btn btn-outline" style="display: flex; align-items: center; gap: 8px;">
+            &#8592; {% trans "Zpět na nástěnku" %}
+          </a>
+        </form>
+
+        <!-- Additional Actions -->
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0;">
+          <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+            Nebo si můžete přepnout účet:
+          </p>
+          <a href="{% url 'login_cs' %}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+            &#128100; Přihlásit jiný účet
+          </a>
+        </div>
+      </div>
+
+      <!-- Helper Sidebar (1/3 width) -->
+      <div class="content-card" style="background: #f8fafc;">
+        <h3>&#128161; {% trans "Pomocník" %}</h3>
+        
+        <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 0.9rem;">
+          {% trans "Po odhlášení budou vaše data bezpečně uložena a příště se budete muset znovu přihlásit pro přístup k projektům, úkolům a testům." %}
+        </p>
+
+        <!-- Security Info -->
+        <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b;">&#128274; Bezpečnost</h4>
+          <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #64748b;">
+            <li style="padding: 0.25rem 0;">&#8226; Relace bude ukončena</li>
+            <li style="padding: 0.25rem 0;">&#8226; Data zůstanou uložena</li>
+            <li style="padding: 0.25rem 0;">&#8226; Cookies budou vymazány</li>
+          </ul>
+        </div>
+
+        <!-- Quick Stats -->
+        {% if user.is_authenticated %}
+        <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b;">&#128202; Vaše aktivity</h4>
+          <div style="font-size: 0.875rem; color: #64748b;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span>Posledně přihlášen:</span>
+              <span>{{ user.last_login|date:"d.m.Y H:i"|default:"Neznámo" }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Členem od:</span>
+              <span>{{ user.date_joined|date:"d.m.Y"|default:"Neznámo" }}</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- FDK.cz Branding -->
+        <div style="text-align: center; background: #e2e8f0; padding: 1rem; border-radius: 8px;">
+          <p style="font-weight: 600; color: #64748b; margin: 0;">
+            <a href="https://fdk.cz" style="color: #64748b; text-decoration: none;">FDK.cz</a>
+          </p>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin: 0.25rem 0 0;">
+            Bezpečné odhlášení
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; {% now "Y" %} FDK.cz - Komplexní řízení organizací | 
+         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Auto-hide messages
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+
+      // Add hover effect to logout button
+      const logoutBtn = document.querySelector('button[type="submit"]');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('mouseenter', function() {
+          this.style.background = '#b91c1c';
+          this.style.transform = 'translateY(-1px)';
+        });
+        
+        logoutBtn.addEventListener('mouseleave', function() {
+          this.style.background = '#dc2626';
+          this.style.transform = 'translateY(0)';
+        });
+      }
+
+      // Countdown timer (optional)
+      let countdown = 60;
+      const countdownElement = document.createElement('p');
+      countdownElement.style.cssText = 'color: #94a3b8; font-size: 0.8rem; margin-top: 1rem;';
+      
+      const updateCountdown = () => {
+        if (countdown > 0) {
+          countdownElement.textContent = `Automatické odhlášení za ${countdown} sekund`;
+          countdown--;
+          setTimeout(updateCountdown, 1000);
+        } else {
+          // Auto logout after 60 seconds of inactivity
+          // window.location.href = "{% url 'login_cs' %}";
+        }
+      };
+      
+      // Uncomment to enable auto-logout countdown
+      // document.querySelector('.content-card').appendChild(countdownElement);
+      // updateCountdown();
+    });
+  </script>
+</body>
+</html>

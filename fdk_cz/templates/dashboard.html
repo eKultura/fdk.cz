@@ -1,795 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel= "stylesheet" href= "https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css" >
-    <link rel="stylesheet" href="/static/css/fdkHome.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FDK.cz - správce úkolů</title>
-</head>
-<body>
-    <input type="checkbox" id="nav-toggle">
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h2>
-                <ion-icon name="library-outline"></ion-icon>
-                <span>FDK</span>
-            </h2>
-        </div>
-        <div class="sidebar-menu" id="nav-menu">
-            <ul>
-                <li class="dropdown-item">
-                    <div class=" nav-link nav-link-option">
-                        <ion-icon name="home-outline" class="icon-li"></ion-icon>
-                        <a href="./fdkHome.html">
-                            <span class="nav_link-span" style="font-size: 1.1rem;">Domů</span>
-                        </a>
-                    </div>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="newspaper-outline" class="icon-li"></ion-icon>
-                        <span class="nav_link-span">Projekty</span>
-                        <ion-icon name="chevron-down-outline" class="dropdown-arrow"></ion-icon>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="./mojeprojekty.html" class="dropdown-link ">Moje projekty</a>
-                        </li>
-                        <li>
-                            <a href="./vytvoreniprojektu.html" class="dropdown-link">Vytvořít Projekt</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="clipboard-outline" class="icon-li"></ion-icon>
-                        <span class="nav_link-span">Úkoly</span>
-                        <ion-icon name="chevron-down-outline" class="dropdown-arrow"></ion-icon>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="./mojeUkoly.html" class="dropdown-link">Moje úkoly</a>
-                        </li>
-                        <li>
-                            <a href="./vytvoritUkol.html" class="dropdown-link">Vytvořit úkol</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="file-tray-full-outline" class="icon-li"></ion-icon>
-                        <span class="nav_link-span">Seznamy</span>
-                        <ion-icon name="chevron-down-outline" class="dropdown-arrow"></ion-icon>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="#" class="dropdown-link">Moje seznamy</a>
-                        </li>
-                        <li>
-                            <a href="#" class="dropdown-link">Vytvořit seznam</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="settings-outline" class="icon-li"></ion-icon>
-                        <a href="#">
-                            <span class="nav_link-span" style="font-size: 1.1rem;">Nastavení</span>
-                        </a>
-                    </div>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="call-outline" class="icon-li"></ion-icon>
-                        <a href="#">
-                            <span class="nav_link-span" style="font-size: 1.1rem;">Kontakty</span>
-                        </a>
-                    </div>
-                </li>
-                <li class="dropdown-item">
-                    <div class="nav-link nav-link-option">
-                        <ion-icon name="log-in-outline" class="icon-li"></ion-icon>
-                        <a href="">
-                            <span class="nav_link-span" style="font-size: 1.1rem;">Odhlášení</span>
-                        </a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="main-content">
-        <header>
-            <h2 class="headerName">
-                <label for="nav-toggle">
-                    <span class="las la-bars"></span>
-                </label>
-                Hlavní stránka
-            </h2>
-            <div class="search-wrapper">
-                <span class="las la-search">
-                </span>
-                <input type="search" placeholder="Hledat zde">
-            </div>
-            <div class="user-wrapper">
-                <img src="./img/person3.jpeg" width="40px" height="40px" alt="">
-                <div class="">
-                    <h4>Klara Lepez</h4>
-                    <small>Super admin</small>
-                </div>
-            </div>
-        </header>
-        <main>
-            <div class="cards">
-                <div class="card-single">
-                    <div class="">
-                        <h1>54</h1>
-                        <span>Front-end</span>
-                    </div>
-                    <div>
-                        <span class="las la-users"></span>
-                    </div>
-                </div>
-                <div class="card-single">
-                    <div class="">
-                        <h1>79</h1>
-                        <span>Back-end</span>
-                    </div>
-                    <div>
-                        <span class="las la-clipboard"></span>
-                    </div>
-                </div>
-                <div class="card-single">
-                    <div class="">
-                        <h1>124</h1>
-                        <span>Designer</span>
-                    </div>
-                    <div>
-                        <span class="las la-shopping-bag"></span>
-                    </div>
-                </div>
-                <div class="card-single">
-                    <div class="">
-                        <h1>54</h1>
-                        <span>Testers</span>
-                    </div>
-                    <div>
-                        <span class="las la-users"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="recent-grid">
-                <div class="projects">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3> Projekty</h3>
-                            <button class="toggleTasksButton">
-                                Zobrazit vše
-                                <span class="las la-arrow-right">
-                                </span>
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="taskTable" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <td>
-                                                Název projektu
-                                            </td>
-                                            <td>
-                                                Oddělení
-                                            </td>
-                                            <td>
-                                                Jméno
-                                            </td>
-                                            <td>
-                                                Stav
-                                            </td>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="taskTableBody">
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Lenka</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Aleš</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Ionno</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Barča</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Wendy</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Martin</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Lenka</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Wendy</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Ionno</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr></tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Lenka</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Aleš</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Ionno</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Barča</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Wendy</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Martin</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>Lenka</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>Wendy</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>Ionno</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="customers">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3> Kolegové </h3>
-                            <button class="toggle-button">
-                                Zobrazit vše
-                                <span class="las la-arrow-right"></span>
-                            </button>
-                        </div>
-                        <div class="card-body customer-list">
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person1.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Lenka</h4>
-                                        <small>Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person4.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Martin</h4>
-                                        <small>FE - Desinger - BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person1.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Barča</h4>
-                                        <small>Tester - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person6.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Ionno</h4>
-                                        <small>BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person6.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Ionno</h4>
-                                        <small>BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="projects">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3> Ukoly</h3>
-                            <button class="toggleTasksButton">
-                                Zobrazit vše
-                                <span class="las la-arrow-right">
+{% extends "base.html" %}
+{% block title %}Dashboard | FDK.cz{% endblock %}
+{% block breadcrumb %}Přehled aktivit{% endblock %}
 
-                                </span>
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="taskTable" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <td>
-                                                Název projektu
-                                            </td>
-                                            <td>
-                                                Oddělení
-                                            </td>
-                                            <td>
-                                                Stav
-                                            </td>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="taskTableBody">
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>UI/UX Design</td>
-                                            <td>UI Team</td>
-                                            <td>
-                                                <span class="status purple"></span>
-                                                testing
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Web develop</td>
-                                            <td>Front-end</td>
-                                            <td>
-                                                <span class="status pink"></span>
-                                                v progresu
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Server develop</td>
-                                            <td>Back-end</td>
-                                            <td>
-                                                <span class="status orange"></span>
-                                                zastaveno
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="customers">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3> Seznamy </h3>
-                            <button class="toggle-button">
-                                Zobrazit vše
-                                <span class="las la-arrow-right"></span>
-                            </button>
-                        </div>
-                        <div class="card-body customer-list">
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person1.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Lenka</h4>
-                                        <small>Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person4.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Martin</h4>
-                                        <small>FE - Desinger - BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person1.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Barča</h4>
-                                        <small>Tester - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person6.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Ionno</h4>
-                                        <small>BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person6.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Ionno</h4>
-                                        <small>BE</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                            <div class="customer">
-                                <div class="info">
-                                    <img src="./img/person2.jpeg" width="40px" height="40px" alt="">
-                                    <div>
-                                        <h4>Aleš Dudek</h4>
-                                        <small>FE - Desinger</small>
-                                    </div>
-                                </div>
-                                <div class="contact">
-                                    <span class="las la-user-circle"></span>
-                                    <span class="las la-comment"></span>
-                                    <span class="las la-phone"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+{% block content %}
+<!-- Statistiky -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="stat-title">Front-end</div>
+        <div class="stat-value">54</div>
+        <div class="stat-change positive"><span>&#8599;</span> +4 dnes</div>
+      </div>
+      <div class="stat-icon info">&#128187;</div>
     </div>
-    <script src="/static/js/fdkHome.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-</body>
-</html>
+  </div>
+
+  <div class="stat-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="stat-title">Back-end</div>
+        <div class="stat-value">79</div>
+        <div class="stat-change positive"><span>&#8599;</span> +2 dnes</div>
+      </div>
+      <div class="stat-icon primary">&#128295;</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="stat-title">Design</div>
+        <div class="stat-value">124</div>
+        <div class="stat-change positive"><span>&#8599;</span> +9 dnes</div>
+      </div>
+      <div class="stat-icon success">&#127912;</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="stat-title">Testers</div>
+        <div class="stat-value">54</div>
+        <div class="stat-change neutral"><span>&#10134;</span> beze změny</div>
+      </div>
+      <div class="stat-icon warning">&#128295;</div>
+    </div>
+  </div>
+</div>
+
+<!-- Hlavní obsah -->
+<div class="content-grid">
+  <!-- Projekty -->
+  <div class="content-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3>Aktivní projekty</h3>
+      <a href="{% url 'index_project_cs' %}" class="btn btn-outline">
+        Zobrazit vše &#8594;
+      </a>
+    </div>
+    <table class="table-modern">
+      <thead>
+        <tr>
+          <th>Název projektu</th>
+          <th>Oddělení</th>
+          <th>Vedoucí</th>
+          <th>Stav</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AI Kultura</td>
+          <td>Výzkum</td>
+          <td>Martin</td>
+          <td><span class="badge badge-pink">V progresu</span></td>
+        </tr>
+        <tr>
+          <td>Grantový portál EU</td>
+          <td>Back-end</td>
+          <td>Lucie</td>
+          <td><span class="badge badge-purple">Testing</span></td>
+        </tr>
+        <tr>
+          <td>eKultura CMS</td>
+          <td>Front-end</td>
+          <td>Jana</td>
+          <td><span class="badge badge-orange">Zastaveno</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Kolegové -->
+  <div class="content-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3>Kolegové</h3>
+      <a href="#" class="btn btn-outline">Zobrazit vše &#8594;</a>
+    </div>
+
+    <div class="list-grid">
+      <div class="list-item">
+        <img src="https://div.cz/static/img/creator/noperson.svg" class="avatar" alt="">
+        <div>
+          <div class="list-title">Lenka</div>
+          <div class="list-sub">Designér</div>
+        </div>
+      </div>
+
+      <div class="list-item">
+        <img src="https://div.cz/static/img/creator/noperson.svg" class="avatar" alt="">
+        <div>
+          <div class="list-title">Martin</div>
+          <div class="list-sub">Back-end</div>
+        </div>
+      </div>
+
+      <div class="list-item">
+        <img src="https://div.cz/static/img/creator/noperson.svg" class="avatar" alt="">
+        <div>
+          <div class="list-title">Lucie</div>
+          <div class="list-sub">Projektová manažerka</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

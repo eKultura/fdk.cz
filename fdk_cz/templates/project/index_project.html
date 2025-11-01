@@ -1,68 +1,64 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Projekty" %}{% endblock %}
+{% block title %}{% trans "Projekty | FDK.cz" %}{% endblock %}
+{% block header_title %}{% trans "Projekty" %}{% endblock %}
+{% block header_subtitle %}{% trans "Spravujte své projekty přehledně a efektivně" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <!-- Levý blok - Seznam projektů (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Projekty" %}</h2>
+  <!-- Seznam projektů -->
+  <div class="lg:col-span-2">
+    <div class="content-card">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">{% trans "Seznam projektů" %}</h3>
+        <a href="{% url 'new_project_cs' %}" class="btn btn-primary text-sm">&#10133; {% trans "Přidat projekt" %}</a>
+      </div>
 
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6 hidden md:table-cell">{% trans "ID" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Název projektu" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Popis" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6 hidden md:table-cell">{% trans "Datum vytvoření" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6 hidden md:table-cell">{% trans "Akce" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for project in user_projects %}
-                <tr class="border-b">
-                    <td class="py-3 px-4 text-gray-600 hidden md:table-cell">{{ project.project_id }}</td>
-                    <td class="py-3 px-4 text-gray-600">
-                        <a href="{% url 'detail_project' project.project_id %}" class="text-blue-500 hover:text-blue-700 underline font-semibold">{{ project.name }}</a>
-                    </td>
-                    <td class="py-3 px-4 text-gray-600">{{ project.description|default:"Žádný popis." }}</td>
-                    <td class="py-3 px-4 text-gray-600 hidden md:table-cell">{{ project.created|date:"d.m.Y" }}</td>
-                    <td class="py-3 px-4 text-blue-600 hover:text-blue-800 hidden md:table-cell">
-                        <a href="{% url 'detail_project' project.project_id %}" class="mr-2">{% trans "Detail" %}</a>
-                        <a href="{% url 'edit_project' project.project_id %}" class="text-yellow-600 hover:text-yellow-800">{% trans "Upravit" %}</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="py-3 px-4 text-center text-gray-500">
-                        {% trans "Nemáte žádné projekty." %} :-( <br>
-                        {% trans "Založte si projekt nebo požádejte o přidání do existujícího projektu." %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+      {% if user_projects %}
+      <div style="overflow-x:auto;">
+        <table class="data-table" style="width:100%;border-collapse:collapse;">
+          <thead style="background:#f9fafb;">
+            <tr>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold w-1/6">ID</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Název projektu" %}</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Popis" %}</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Datum vytvoření" %}</th>
+              <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in user_projects %}
+            <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+              <td class="px-4 py-2 text-gray-700">{{ project.project_id }}</td>
+              <td class="px-4 py-2 text-gray-800 font-medium">
+                <a href="{% url 'detail_project' project.project_id %}" class="text-blue-600 hover:underline">
+                  {{ project.name }}
+                </a>
+              </td>
+              <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ project.description|default:"–" }}</td>
+              <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ project.created|date:"d.m.Y" }}</td>
+              <td class="px-4 py-2 text-center">
+                <a href="{% url 'detail_project' project.project_id %}" class="text-blue-600 hover:text-blue-800 text-sm mr-2">{% trans "Detail" %}</a>
+                <a href="{% url 'edit_project' project.project_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">{% trans "Upravit" %}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
-
-        <div class="mt-3">
-            <a href="{% url 'new_project_cs' %}" class="text-blue-600 hover:text-blue-800 font-semibold">{% trans "Přidat nový projekt" %}</a>
-        </div>
+      </div>
+      {% else %}
+      <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+        <div style="font-size:2rem;">🗂️</div>
+        <p style="margin-top:0.5rem;">{% trans "Zatím nemáte žádné projekty." %}</p>
+        <a href="{% url 'new_project_cs' %}" class="btn btn-outline" style="margin-top:1rem;">➕ {% trans "Založit nový projekt" %}</a>
+      </div>
+      {% endif %}
     </div>
+  </div>
 
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "Tento přehled vám umožňuje spravovat vaše projekty. Kliknutím na název projektu přejdete do detailu, kde můžete provádět změny." %}
-        </p>
-        <p class="text-gray-600">{% trans "Pro přidání nového projektu použijte odkaz pod tabulkou." %}</p>
 
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
-        </div>
-    </div>
 
 </div>
 {% endblock %}

@@ -1,46 +1,241 @@
-{% load static %}{% load i18n %}
-<!doctype html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>{% block title %}FDK.cz - Komplexní řízení organizací{% endblock %}</title>
 
-    <title>{% block title %}FDK.cz Dashboard{% endblock %}</title>
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
 
-{% block meta %}{% endblock %}
-
-    {% include "inc/head.html" %}
-
+  {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-100">
 
-                        {% if user.is_authenticated %}
-                            {% if user.is_superuser or user.is_staff %}
-                            {% else %}
-                            {% endif %}
-                        <!-- přihlášen -->
-                        {% else %}
-                        <!-- nepřihlášen-->
-                        {% endif %}
+<body>
+  <!-- Messages Block -->
+  {% if messages %}
+  <div class="messages" id="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <!-- Horní lišta -->
-    {% include "inc/topnav.html" %}
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="{% url 'index' %}" class="logo">
+          <div class="logo-icon">&#9889;</div>
+          FDK.cz
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Hlavní</div>
+          <a href="{% url 'index' %}" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <span class="nav-icon">&#127968;</span> Domů
+          </a>
+          <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="nav-icon">&#128202;</span> Dashboard
+          </a>
+          <a href="{% url 'pravo_ai' %}" class="nav-item {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#9889;</span> Právo AI
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Management</div>
+          <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
+          <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
+          <a href="#" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
+          <a href="#" class="nav-item"><span class="nav-icon">&#128188;</span> HR Management</a>
+          <a href="#" class="nav-item"><span class="nav-icon">&#9888;</span> Správa rizik</a>
+          <a href="#" class="nav-item"><span class="nav-icon">&#128187;</span> Správa IT</a>
+          <a href="#" class="nav-item"><span class="nav-icon">&#128203;</span> Správa majetku</a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Business</div>
+          <a href="{% url 'list_contracts' %}" class="nav-item"><span class="nav-icon">&#128196;</span> Smlouvy</a>
+          <a href="{% url 'grant_list' %}" class="nav-item"><span class="nav-icon">&#128176;</span> Granty &amp; Dotace</a>
+          <a href="{% url 'my_contacts' %}" class="nav-item"><span class="nav-icon">&#128100;</span> Kontakty</a>
+          <a href="{% url 'accounting_dashboard' %}" class="nav-item"><span class="nav-icon">&#128202;</span> Účetnictví</a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Nástroje</div>
+          <a href="{% url 'index_list' %}" class="nav-item"><span class="nav-icon">&#128221;</span> Seznamy</a>
+          <a href="{% url 'list_tests' %}" class="nav-item"><span class="nav-icon">&#129514;</span> Testování</a>
+          <a href="{% url 'all_stores' %}" class="nav-item"><span class="nav-icon">&#128230;</span> Sklad</a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-container">
+          <div class="header-left">
+            <button class="mobile-menu-toggle" onclick="openMobileSidebar()">
+              <div class="hamburger"><span></span><span></span><span></span></div>
+            </button>
+
+            <nav class="breadcrumb">
+              <a href="{% url 'index' %}" class="breadcrumb-item">Domů</a>
+              <span class="breadcrumb-separator">/</span>
+              <span class="breadcrumb-item active">{% block breadcrumb %}Dashboard{% endblock %}</span>
+            </nav>
+          </div>
+
+          <div class="header-right">
+            <div class="search-container">
+              <div class="search-box">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" placeholder="Vyhledávání..." class="search-input" id="search-input">
+              </div>
+            </div>
+
+            <div class="user-menu">
+              {% if user.is_authenticated %}
+              <button class="user-trigger" onclick="toggleUserMenu()">
+                <div class="user-avatar">{{ user.first_name|first|default:user.username|first|upper }}</div>
+                <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                <span style="color: #94a3b8; font-size: 0.75rem;">&#9660;</span>
+              </button>
+              <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="{% url 'user_profile' %}" class="dropdown-item">&#128100; Profil</a>
+                <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128203; Projekty</a>
+                <a href="{% url 'user_settings' %}" class="dropdown-item">&#9881; Nastavení</a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'logout_cs' %}" class="dropdown-item">&#128682; Odhlásit se</a>
+              </div>
+              {% else %}
+              <div class="auth-buttons">
+                <a href="{% url 'login_cs' %}" class="btn btn-outline">&#128273; Přihlásit</a>
+                <a href="{% url 'registration_cs' %}" class="btn btn-primary">&#128221; Registrace</a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </header>
+
+<!-- Obsah stránky -->
+<div class="page-content">
+
+  <!-- Modulový header -->
+  <div class="page-header" style="margin-bottom: 1.5rem;">
+
+  <h1 class="page-title">{% block header_title %}{% endblock %}</h1>
+  <p class="page-subtitle">{% block header_subtitle %}{% endblock %}</p>
+
+  </div>
+
+  <!-- Vlastní obsah stránky -->
+  {% block content %}{% endblock %}
+
+</div><!-- // page content -->
 
 
-<!-- Hlavní obsah dashboardu -->
-<div class="container mx-auto px-4 py-8">
 
 
-                {% block content %}
-                {% endblock %}
+<!-- Footer -->
+<footer class="footer-minimal">
+  <div class="footer-minimal-container">
+    <div class="footer-minimal-left">
+      <span>&copy; {% now "Y" %} FDK.cz</span>
+      <span class="footer-divider">|</span>
+      <span>Provozuje <a href="https://ekultura.eu/" class="footer-link-inline">eKultura z.s.</a></span>
+      <span class="footer-divider">|</span>
+      <span>IČO: 21682305</span>
+    </div>
+    <div class="footer-minimal-right">
+      <a href="/podminky-pouziti" class="footer-link-inline">Podmínky použití</a>
+      <span class="footer-divider">|</span>
+      <a href="/ochrana-osobnich-udaju" class="footer-link-inline">Ochrana osobních údajů</a>
+      <span class="footer-divider">|</span>
+      <a href="/napoveda/" class="footer-link-inline">Nápověda</a>
+      <span class="footer-divider">|</span>
+      <a href="/kontakt" class="footer-link-inline">Kontakt</a>
+    </div>
+  </div>
+</footer>
 
+<!--
+      <footer class="footer">
+        <div class="footer-container">
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3>O FDK.cz</h3>
+              <p>Moderní platforma pro komplexní řízení organizací, projektů a AI právních nástrojů.</p>
+            </div>
+            <div class="footer-section">
+              <h3>Navigace</h3>
+              <ul class="footer-link-list">
+                <li><a href="{% url 'index' %}" class="footer-link"><span class="material-icons footer-icon">home</span> Hlavní strana</a></li>
+                <li><a href="{% url 'index_project_cs' %}" class="footer-link"><span class="material-icons footer-icon">folder</span> Projekty</a></li>
+                <li><a href="{% url 'task_management' %}" class="footer-link"><span class="material-icons footer-icon">check_circle</span> Úkoly</a></li>
+                <li><a href="{% url 'accounting_dashboard' %}" class="footer-link"><span class="material-icons footer-icon">account_balance</span> Účetnictví</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h3>Provozovatel</h3>
+              <ul class="footer-link-list">
+                <li class="footer-link"><span class="material-icons footer-icon">business</span> eKultura, z.s.</li>
+                <li class="footer-link"><span class="material-icons footer-icon">badge</span> IČO: 21682305</li>
+                <li><a href="mailto:media@ekultura.eu" class="footer-link"><span class="material-icons footer-icon">email</span> media@ekultura.eu</a></li>
+              </ul>
+            </div>
+            <div class="footer-section">
+              <h3>Spojení</h3>
+              <div class="footer-social">
+                <a href="#" class="social-link"><span class="material-icons">facebook</span> Facebook</a>
+                <a href="#" class="social-link"><span class="material-icons">gavel</span> LinkedIn</a>
+                <a href="#" class="social-link"><span class="material-icons">help</span> Nápověda</a>
+              </div>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} FDK.cz | Projekt <a href="https://ekultura.eu/">eKultura</a></p>
+          </div>
+        </div>
+      </footer>-->
+    </main>
+  </div>
 
-</div>
-
-
-
-    {% include "inc/footer.html" %}
-
+  <!-- Skripty -->
+  <script>
+    function openMobileSidebar() {
+      document.getElementById('sidebar').classList.add('mobile-open');
+      document.getElementById('sidebarOverlay').classList.add('active');
+    }
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+    function toggleUserMenu() {
+      document.getElementById('userDropdownMenu').classList.toggle('active');
+    }
+    document.addEventListener('click', e => {
+      const userMenu = document.getElementById('userDropdownMenu');
+      const userTrigger = document.querySelector('.user-trigger');
+      if (userTrigger && !userTrigger.contains(e.target)) userMenu.classList.remove('active');
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

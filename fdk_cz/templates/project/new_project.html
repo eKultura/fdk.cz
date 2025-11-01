@@ -1,82 +1,68 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Vytvořit nový projekt" %}{% endblock %}
+{% block title %}Nový projekt | FDK.cz{% endblock %}
+{% block header_title %}Nový projekt{% endblock %}
+{% block header_subtitle %}Založte nový projekt a vyplňte základní informace{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="max-w-3xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
 
-    <!-- Levý blok - Formulář pro vytvoření projektu (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Vytvořit nový projekt" %}</h1>
-        <form method="post">
-            {% csrf_token %}
-            
-            <!-- Název projektu -->
-            <div class="mb-4">
-                <label for="id_name" class="form-label font-semibold text-gray-700">{% trans "Název projektu" %}<span class="text-red-600">*</span></label>
-                <input type="text" class="form-control" id="id_name" name="name" value="{{ form.name.value|default_if_none:'' }}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                {% if form.name.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Název -->
+      <div class="form-group mb-4">
+        <label for="id_name" class="block text-sm font-medium text-gray-700">
+          Název projektu <span class="text-red-600">*</span>
+        </label>
+        <input type="text" id="id_name" name="name" required
+               value="{{ form.name.value|default_if_none:'' }}"
+               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        {% if form.name.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+      </div>
 
-            <!-- Popis projektu -->
-            <div class="mb-4">
-                <label for="id_description" class="form-label font-semibold text-gray-700">{% trans "Popis projektu" %}</label>
-                <textarea class="form-control" id="id_description" name="description" rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">{{ form.description.value|default_if_none:'' }}</textarea>
-                {% if form.description.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Popis -->
+      <div class="form-group mb-4">
+        <label for="id_description" class="block text-sm font-medium text-gray-700">Popis projektu</label>
+        <textarea id="id_description" name="description" rows="4"
+                  class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default_if_none:'' }}</textarea>
+      </div>
 
-            <!-- URL projektu -->
-            <div class="mb-4">
-                <label for="id_url" class="form-label font-semibold text-gray-700">{% trans "URL projektu" %} <span style="color:#999">(nepovinné)</label>
-                <input type="url" class="form-control" id="id_url" name="url" value="{{ form.url.value|default_if_none:'' }}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                {% if form.url.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.url.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- URL -->
+      <div class="form-group mb-4">
+        <label for="id_url" class="block text-sm font-medium text-gray-700">
+          URL projektu <span class="text-gray-400">(nepovinné)</span>
+        </label>
+        <input type="url" id="id_url" name="url"
+               value="{{ form.url.value|default_if_none:'' }}"
+               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+      </div>
 
-            <!-- Datum začátku a konce -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="id_start_date" class="form-label font-semibold text-gray-700">{% trans "Datum začátku" %}</label>
-                    <input type="date" class="form-control" id="id_start_date" name="start_date" value="{{ form.start_date.value|default_if_none:'' }}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                    {% if form.start_date.errors %}
-                        <p class="text-red-600 text-sm mt-1">{{ form.start_date.errors|join:", " }}</p>
-                    {% endif %}
-                </div>
-                <div>
-                    <label for="id_end_date" class="form-label font-semibold text-gray-700">{% trans "Datum konce" %}</label>
-                    <input type="date" class="form-control" id="id_end_date" name="end_date" value="{{ form.end_date.value|default_if_none:'' }}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                    {% if form.end_date.errors %}
-                        <p class="text-red-600 text-sm mt-1">{{ form.end_date.errors|join:", " }}</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Tlačítko pro odeslání -->
-            <div class="text-right">
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded font-semibold hover:bg-blue-700">{% trans "Vytvořit projekt" %}</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md"  style="gap: 8px;">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "Zadejte základní informace o projektu, jako je název a popis. URL projektu a datum začátku a konce jsou volitelné." %}
-        </p>
-        <p class="text-gray-600">{% trans "Po vytvoření projektu budete moci přidávat další členy a upravovat projektové detaily." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+      <!-- Data -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label for="id_start_date" class="block text-sm font-medium text-gray-700">Datum začátku</label>
+          <input type="date" id="id_start_date" name="start_date"
+                 value="{{ form.start_date.value|default_if_none:'' }}"
+                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
         </div>
-    </div>
+        <div>
+          <label for="id_end_date" class="block text-sm font-medium text-gray-700">Datum konce</label>
+          <input type="date" id="id_end_date" name="end_date"
+                 value="{{ form.end_date.value|default_if_none:'' }}"
+                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
 
+      <!-- Akce -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'index_project_cs' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Vytvořit projekt</button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

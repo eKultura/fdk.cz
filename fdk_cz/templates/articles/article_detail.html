@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} | FDK.cz{% endblock %}
+
+
+{% block extra_head %}
+<style>
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d1d5db, transparent);
+    margin: 2rem 0;
+  }
+
+  /* Hlavní článkové nadpisy */
+  .article-content h2 {
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    font-size: 1.35rem;
+    line-height: 1.4;
+  }
+
+  /* Menší podnadpisy */
+  .article-content h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.15rem;
+    line-height: 1.5;
+  }
+
+  /* Odstavce a seznamy */
+  .article-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .article-content ul {
+    margin-top: 0.25rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .article-content li {
+    margin-bottom: 0.4rem;
+  }
+
+  /* Karty, seznamy apod. */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .article-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .article-card h3 {
+    margin-top: 0;
+  }
+
+  .help-list, .page-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .help-list li, .page-list li {
+    margin-bottom: .5rem;
+  }
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+<article class="article-detail" style="max-width: 900px; margin: auto;">
+  {% if article.summary %}
+  <p class="article-summary" style="font-style: italic; color: #666;">{{ article.summary }}</p>
+  {% endif %}
+
+  <div class="article-content">
+    {{ article.content|safe }}
+  </div>
+
+  <div class="article-meta" style="margin-top: 2rem; color: #777;">
+    <small>
+      🕒 Publikováno {{ article.created_at|date:"j.n.Y" }}
+      {% if article.author %} | ✍️ {{ article.author.username }}{% endif %}
+    </small>
+  </div>
+
+{% if user.is_authenticated %}
+  {% if user == article.author or user.is_staff %}
+  <div style="margin-top: 1.5rem;">
+    <a href="/upravit/{{ article.slug }}" class="btn btn-outline">✏️ Upravit</a>
+  </div>
+  {% endif %}
+{% endif %}
+
+
+</article>
+{% endblock %}

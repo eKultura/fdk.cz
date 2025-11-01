@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | FDK.cz{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-container" style="max-width: 800px; margin: auto;">
+  <form method="POST">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        <ul style="margin: 0; padding-left: 1rem;">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    
+    {% for field in form %}
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <small style="color: #6b7280;">{{ field.help_text }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+      <a href="/clanky/" class="btn btn-outline">↩️ Zpět</a>
+      <button type="submit" class="btn btn-primary">
+        {% if 'Upravit' in title %}💾 Uložit změny{% else %}➕ Přidat článek{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

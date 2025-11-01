@@ -1,13 +1,18 @@
-
-# VIEWS.CONTACT.py
-
-
+# -------------------------------------------------------------------
+#                    VIEWS.CONTRACT.PY
+# -------------------------------------------------------------------
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from fdk_cz.models import contract, project, User
+from fdk_cz.models import Contract, Project, User
 from fdk_cz.forms.contract import contract_form
 
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 
 @login_required

@@ -4,13 +4,13 @@
 from django import forms
 from django.utils import timezone
 
-from fdk_cz.models import flist, list_item, project, project_user
+from fdk_cz.models import Flist, ListItem, Project, ProjectUser
 
 
 
 class list_form(forms.ModelForm):
     class Meta:
-        model = flist
+        model = Flist
         fields = ['name', 'description', 'is_private', 'project']
         labels = {
             'name': 'Název seznamu',
@@ -33,7 +33,7 @@ class list_form(forms.ModelForm):
 
 class list_item_form(forms.ModelForm):
     class Meta:
-        model = list_item
+        model = ListItem
         fields = ['content', 'item_order']
 
     def __init__(self, *args, **kwargs):

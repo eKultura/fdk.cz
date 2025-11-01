@@ -7,7 +7,7 @@ from django.forms import formset_factory
 from django.forms.models import modelformset_factory
 from django.utils import timezone
 
-from fdk_cz.models import invoice, invoice_item
+from fdk_cz.models import Invoice, InvoiceItem
 
 
 class FreeInvoiceForm(forms.Form):
@@ -59,7 +59,7 @@ class FreeInvoiceForm(forms.Form):
 
 class InvoiceItemForm(forms.ModelForm):
     class Meta:
-        model = invoice_item
+        model = InvoiceItem
         fields = ['description', 'quantity', 'unit_price', 'total_price']
         widgets = {
             'description': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Popis položky'}),
@@ -79,7 +79,7 @@ class InvoiceItemForm(forms.ModelForm):
 
 # Formset pro více položek
 InvoiceItemFormSet = modelformset_factory(
-    invoice_item,
+    InvoiceItem,
     form=InvoiceItemForm,
     extra=1,
     can_delete=True
@@ -105,28 +105,41 @@ class InvoiceForm(forms.ModelForm):
 
     vat_rate = forms.DecimalField(
         widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        required=False,  # Standardně není povinné
+        required=False,
         label="DPH (%)",
         min_value=0,
-        initial=21  # Výchozí hodnota je 21 %
+        initial=21
     )
 
+    def __init__(self, *args, **kwargs):
+        # Zachytí argument `user` z view, pokud je poslán
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        # Pokud chceš například filtrovat firemní nabídku podle uživatele:
+        if self.user and hasattr(self.user, 'companies'):
+            try:
+                self.fields['company'].queryset = self.user.companies.all()
+            except KeyError:
+                # Pokud pole 'company' v modelu není povinné, ignoruj
+                pass
+
     class Meta:
-        model = invoice
+        model = Invoice
         fields = ['issue_date', 'due_date', 'vat_rate', 'is_vat_payer', 'is_paid']
 
-        def clean(self):
-            cleaned_data = super().clean()
-            is_vat_payer = cleaned_data.get('is_vat_payer', False)
-            
-            # Pokud není uživatel plátcem DPH, vymaž hodnotu DPH
-            if not is_vat_payer:
-                cleaned_data['vat_rate'] = None
-            elif is_vat_payer and not cleaned_data.get('vat_rate'):
-                # Uživatel je plátcem, ale nevyplnil DPH
-                self.add_error('vat_rate', 'Toto pole je třeba vyplnit.')
-                
-            return cleaned_data
+    def clean(self):
+        cleaned_data = super().clean()
+        is_vat_payer = cleaned_data.get('is_vat_payer', False)
+
+        # Pokud není plátcem DPH → nulová sazba
+        if not is_vat_payer:
+            cleaned_data['vat_rate'] = None
+        elif is_vat_payer and not cleaned_data.get('vat_rate'):
+            self.add_error('vat_rate', 'Toto pole je třeba vyplnit.')
+
+        return cleaned_data
+
 
 
 

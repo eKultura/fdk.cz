@@ -1,0 +1,511 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ grant.title }} | Granty a Dotace | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.grant-detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.grant-info-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.grant-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 2rem;
+}
+
+.grant-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.grant-type-dotace {
+  background: rgba(59, 130, 246, 0.2);
+  color: #dbeafe;
+}
+
+.grant-type-grant {
+  background: rgba(16, 185, 129, 0.2);
+  color: #d1fae5;
+}
+
+.grant-type-stipendium {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fef3c7;
+}
+
+.grant-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.grant-provider {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.grant-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.grant-content {
+  padding: 2rem;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.info-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.sidebar-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  height: fit-content;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.applications-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.applications-table th {
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.applications-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+.status-submitted { background: #dbeafe; color: #1e40af; }
+.status-draft { background: #f3f4f6; color: #374151; }
+.status-in_progress { background: #fef3c7; color: #92400e; }
+
+@media (max-width: 768px) {
+  .grant-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .grant-header {
+    padding: 1.5rem;
+  }
+  
+  .grant-title {
+    font-size: 1.5rem;
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na seznam grantů
+    </a>
+  </nav>
+  
+  {% if user.is_authenticated %}
+  <h1 class="page-title">
+    Detail grantu
+  </h1>
+  <p class="page-subtitle">
+    Kompletní informace o výzvě a možnosti podání žádosti
+  </p>
+  {% else %}
+  <h1 class="page-title">Detail grantu - {{ grant.title|truncatechars:50 }}</h1>
+  <p class="page-subtitle">
+    Přihlaste se pro podání žádosti a sledování statusu
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="grant-detail-grid">
+  <!-- Hlavní obsah -->
+  <div>
+    <!-- Grant info card -->
+    <div class="grant-info-card">
+      <div class="grant-header">
+        <div class="grant-type-badge grant-type-{{ grant.type }}">
+          {{ grant.get_type_display|default:grant.type|capfirst }}
+        </div>
+        <h1 class="grant-title">{{ grant.title }}</h1>
+        <div class="grant-provider">{{ grant.provider }}</div>
+        <div class="grant-deadline">
+          <span>📅</span>
+          Deadline: {{ grant.end_date|date:"d.m.Y" }}
+          <span style="margin-left: 0.5rem; opacity: 0.8;">
+            ({{ grant.end_date|timeuntil }})
+          </span>
+        </div>
+      </div>
+
+      <div class="grant-content">
+        <!-- Základní informace -->
+        <div class="info-section">
+          <h3>Základní informace</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Poskytovatel</div>
+              <div class="info-value">{{ grant.provider }}</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Typ výzvy</div>
+              <div class="info-value">{{ grant.get_type_display|default:grant.type|capfirst }}</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Začátek příjmu žádostí</div>
+              <div class="info-value">
+                {% if grant.start_date %}
+                  {{ grant.start_date|date:"d.m.Y" }}
+                {% else %}
+                  Není specifikováno
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Konec příjmu žádostí</div>
+              <div class="info-value">
+                {{ grant.end_date|date:"d.m.Y" }}
+              </div>
+            </div>
+            
+            {% if grant.category %}
+            <div class="info-item">
+              <div class="info-label">Kategorie</div>
+              <div class="info-value">{{ grant.category.name }}</div>
+            </div>
+            {% endif %}
+            
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div class="info-value">
+                {% if grant.is_active %}
+                  <span style="color: #059669; font-weight: 600;">✓ Aktivní</span>
+                {% else %}
+                  <span style="color: #dc2626; font-weight: 600;">✗ Neaktivní</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popis -->
+        {% if grant.description %}
+        <div class="info-section">
+          <h3>Popis výzvy</h3>
+          <div style="line-height: 1.6; color: #374151;">
+            {{ grant.description|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Žádosti o dotaci -->
+        {% if user.is_authenticated %}
+        <div class="info-section">
+          <h3>Podané žádosti ({{ applications|length }})</h3>
+          
+          {% if applications %}
+          <div style="overflow-x: auto;">
+            <table class="applications-table">
+              <thead>
+                <tr>
+                  <th>Projekt</th>
+                  <th>Žadatel</th>
+                  <th>Požadovaná částka</th>
+                  <th>Status</th>
+                  <th>Podáno</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for app in applications %}
+                <tr>
+                  <td>
+                    <strong>{{ app.project.name|default:"--" }}</strong>
+                    {% if app.project.description %}
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                      {{ app.project.description|truncatechars:60 }}
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td style="color: #6b7280;">
+                    {{ app.applicant.get_full_name|default:app.applicant.username }}
+                  </td>
+                  <td style="font-weight: 500;">
+                    {% if app.requested_amount %}
+                      {{ app.requested_amount|floatformat:0 }} Kč
+                    {% else %}
+                      --
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="status-badge status-{{ app.status }}">
+                      {% if app.status == 'approved' %}Schváleno
+                      {% elif app.status == 'rejected' %}Zamítnuto
+                      {% elif app.status == 'submitted' %}Odesláno
+                      {% elif app.status == 'in_progress' %}V procesu
+                      {% else %}Koncept{% endif %}
+                    </span>
+                  </td>
+                  <td style="color: #6b7280;">
+                    {{ app.submission_date|date:"d.m.Y"|default:"--" }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state" style="text-align: center; padding: 2rem; color: #6b7280;">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">📋</div>
+            <p>Zatím nebyla podána žádná žádost k této výzvě</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+              Buďte první, kdo podá žádost o tento grant
+            </p>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <!-- Akční tlačítka -->
+    <div class="sidebar-card">
+      <h3 style="margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600;">Akce</h3>
+      
+      <div class="action-buttons">
+        {% if user.is_authenticated %}
+          {% if grant.is_active and grant.end_date|date:'Y-m-d' >= today|date:'Y-m-d' %}
+          <a href="{% url 'create_application' grant.grant_id %}" class="btn btn-primary">
+            📝 Podat žádost
+          </a>
+          {% else %}
+          <button class="btn btn-outline" disabled style="opacity: 0.6; cursor: not-allowed;">
+            📝 Výzva uzavřena
+          </button>
+          {% endif %}
+          
+          <a href="{% url 'calendar_grants' %}" class="btn btn-outline">
+            📅 Kalendář výzev
+          </a>
+          
+          <a href="{% url 'grant_list' %}" class="btn btn-outline">
+            📋 Všechny výzvy
+          </a>
+        {% else %}
+        <a href="{% url 'login_cs' %}?next={{ request.get_full_path }}" class="btn btn-primary">
+          🔐 Přihlásit se pro žádost
+        </a>
+        
+        <a href="{% url 'registration_cs' %}" class="btn btn-outline">
+          📝 Registrovat se
+        </a>
+        {% endif %}
+
+        {% if grant.url %}
+        <a href="{{ grant.url }}" target="_blank" class="btn btn-outline">
+          🌐 Oficiální stránka
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Důležité termíny -->
+    <div class="sidebar-card">
+      <h3 style="margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600;">Důležité termíny</h3>
+      
+      <div style="space-y: 1rem;">
+        {% if grant.start_date %}
+        <div style="margin-bottom: 1rem;">
+          <div class="info-label">Začátek příjmu žádostí</div>
+          <div class="info-value">{{ grant.start_date|date:"d.m.Y" }}</div>
+          <div style="font-size: 0.75rem; color: #6b7280;">
+            {{ grant.start_date|timesince }} zpět
+          </div>
+        </div>
+        {% endif %}
+        
+        <div style="margin-bottom: 1rem;">
+          <div class="info-label">Deadline</div>
+          <div class="info-value" style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %};">
+            {{ grant.end_date|date:"d.m.Y" }}
+          </div>
+          <div style="font-size: 0.75rem; color: #6b7280;">
+            {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}
+              Uzavřeno před {{ grant.end_date|timesince }}
+            {% else %}
+              {{ grant.end_date|timeuntil }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiky -->
+    {% if user.is_authenticated %}
+    <div class="sidebar-card">
+      <h3 style="margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600;">Statistiky</h3>
+      
+      <div style="space-y: 1rem;">
+        <div style="margin-bottom: 1rem;">
+          <div class="info-label">Celkem žádostí</div>
+          <div class="info-value">{{ applications|length }}</div>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <div class="info-label">Schválené žádosti</div>
+          <div class="info-value" style="color: #059669;">
+            {{ applications|length }} <!-- Zde by měl být filtr pro approved -->
+          </div>
+        </div>
+        
+        <div>
+          <div class="info-label">Průměrná úspěšnost</div>
+          <div class="info-value">--% <!-- Výpočet úspěšnosti --></div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Související výzvy -->
+    {% if related_grants %}
+    <div class="sidebar-card">
+      <h3 style="margin-bottom: 1rem; font-size: 1.125rem; font-weight: 600;">Související výzvy</h3>
+      
+      {% for related_grant in related_grants|slice:":3" %}
+      <div style="margin-bottom: 1rem; padding-bottom: 1rem; {% if not forloop.last %}border-bottom: 1px solid #f3f4f6;{% endif %}">
+        <a href="{% url 'detail_grant' related_grant.grant_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 0.875rem;">
+          {{ related_grant.title|truncatechars:50 }}
+        </a>
+        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+          {{ related_grant.provider }} • {{ related_grant.end_date|date:"d.m.Y" }}
+        </div>
+      </div>
+      {% endfor %}
+      
+      <a href="{% url 'grant_list' %}" style="color: #3b82f6; text-decoration: none; font-size: 0.875rem;">
+        Zobrazit všechny výzvy →
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if not user.is_authenticated %}
+<!-- Call to action pro nepřihlášené -->
+<div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; border: 1px solid #e2e8f0; margin-top: 2rem;">
+  <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+  <h3 style="margin-bottom: 1rem; color: #1e293b;">Přihlaste se pro podání žádosti</h3>
+  <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+    Pro podání žádosti o grant nebo dotaci se musíte přihlásit. Budete moci sledovat status všech svých žádostí a dostávat upozornění na nové výzvy.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="{% url 'login_cs' %}?next={{ request.get_full_path }}" class="btn btn-primary">
+      🔐 Přihlásit se
+    </a>
+    <a href="{% url 'registration_cs' %}" class="btn btn-outline">
+      📝 Registrovat se
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

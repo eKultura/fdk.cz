@@ -1,84 +1,118 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
+{% block title %}Správa úkolů | FDK.cz{% endblock %}
+{% block header_title %}Správa úkolů{% endblock %}
+{% block header_subtitle %}Přehled a správa osobních, projektových a organizačních úkolů{% endblock %}
+
 {% block content %}
-<div class="container mx-auto mt-5">
-    <h1 class="text-2xl font-bold mb-4">Správa úkolů</h1>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-{% if messages %}
-    {% for message in messages %}
-        <style>.alert-error {color:red;font-weight:bold;}</style>
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-{% endif %}
+  <!-- Seznam úkolů -->
+  <div class="lg:col-span-2">
+    <div class="content-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-weight:600;font-size:1.1rem;">Aktuální úkoly</h3>
+      </div>
 
-<h2 class="text-center mb-4 font-semibold text-gray-800">Task Management</h2>
-
-
-
-<!-- Task List in Table Format -->
-<div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow rounded-lg">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+      {% if tasks %}
+      <div style="overflow-x:auto;">
+        <table class="data-table" style="width:100%;border-collapse:collapse;">
+          <thead style="background:#f9fafb;">
             <tr>
-                <th class="py-3 px-6 text-left">Title</th>
-                <th class="py-3 px-6 text-left">Project</th>
-                <th class="py-3 px-6 text-left">Priority</th>
-                <th class="py-3 px-6 text-left hidden md:table-cell">Status</th>
-                <th class="py-3 px-6 text-left hidden md:table-cell">Due Date</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold">Název</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold">Projekt</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Priorita</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Stav</th>
+              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Termín</th>
             </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-light">
+          </thead>
+          <tbody>
             {% for task in tasks|slice:":100" %}
-            <tr class="border-b border-gray-200 hover:bg-gray-100">
-                <td class="py-3 px-6">
-                    <a href="{% url 'detail_task' task.task_id %}" class="text-blue-500 hover:underline">{{ task.title }}</a>
-                </td>
-                <td class="py-3 px-6">
-                    {% if task.project %}
-                        <a href="{% url 'detail_project' task.project.project_id %}" class="text-blue-500 hover:underline">
-                            {{ task.project.name }}
-                        </a>
-                    {% else %}
-                        <span class="text-gray-500 italic">Bez projektu</span>
-                    {% endif %}
-                </td>
-                <td class="py-3 px-6">{{ task.priority|default:"N/A" }}</td>
-                <td class="py-3 px-6 hidden md:table-cell">{{ task.status|default:"N/A" }}</td>
-                <td class="py-3 px-6 hidden md:table-cell">{{ task.due_date|date:"d.m.Y"|default:"N/A" }}</td>
+            <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+              <td class="px-4 py-2">
+                <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline font-medium">
+                  {{ task.title }}
+                </a>
+              </td>
+              <td class="px-4 py-2">
+                {% if task.project %}
+                  <a href="{% url 'detail_project' task.project.project_id %}" class="text-blue-600 hover:underline">
+                    {{ task.project.name }}
+                  </a>
+                {% elif task.organization %}
+                  <span class="text-gray-700">🏢 {{ task.organization.name }}</span>
+                {% else %}
+                  <span class="text-gray-500 italic">Osobní</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-2 hidden md:table-cell text-gray-600">{{ task.priority|default:"—" }}</td>
+              <td class="px-4 py-2 hidden md:table-cell">
+                <span class="px-2 py-1 rounded text-sm font-medium
+                  {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+                  {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ task.status|default:"Nezahájeno" }}
+                </span>
+              </td>
+              <td class="px-4 py-2 hidden md:table-cell text-gray-500">
+                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              </td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+        <div style="font-size:2rem;">📝</div>
+        <p style="margin-top:0.5rem;">Zatím nemáte přiřazené žádné úkoly.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 
+  <!-- Formulář pro vytvoření úkolu -->
+  <div>
+    <div class="content-card" style="background:#f9fafb;border:1px solid #e5e7eb;">
+      <h4 style="font-weight:600;color:#1f2937;margin-bottom:1rem;">➕ Nový úkol</h4>
 
-    <h2 class="text-xl mt-5 mb-3">Vytvořit nový úkol</h2>
-    <!--<form method="POST">
+      <form method="POST">
         {% csrf_token %}
-        <input type="text" name="title" placeholder="Název úkolu" 
-        required class="border p-2 rounded mb-2 w-full">
-        <textarea name="description" placeholder="Popis" class="border p-2 rounded mb-2 w-full"></textarea>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Vytvořit úkol</button>
-    </form>-->
+        <div class="form-group mb-3">
+          <label for="title" class="block text-sm font-medium text-gray-700">Název úkolu</label>
+          <input type="text" id="title" name="title" required
+                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        </div>
 
+        <div class="form-group mb-3">
+          <label for="description" class="block text-sm font-medium text-gray-700">Popis</label>
+          <textarea id="description" name="description"
+                    class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
 
+        <!-- Kontext úkolu -->
+        <div class="form-group mb-3">
+          <label class="block text-sm font-medium text-gray-700">Typ úkolu</label>
+          <div class="flex gap-3 mt-1">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="context" value="project" checked class="text-blue-600 focus:ring-blue-500">
+              <span>V projektu</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="context" value="organization" class="text-blue-600 focus:ring-blue-500">
+              <span>V organizaci</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="context" value="personal" class="text-blue-600 focus:ring-blue-500">
+              <span>Osobní</span>
+            </label>
+          </div>
+        </div>
 
-<!-- Form for Creating New Tasks -->
-<form method="POST" class="mb-5 p-4 border rounded bg-gray-50 shadow">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label for="title" class="block text-gray-600 font-medium">Název úkolu:</label>
-        <input type="text" id="title" name="title" class="w-full p-2 border border-gray-300 rounded" required>
+        <button type="submit" class="btn btn-primary w-full">💾 Uložit úkol</button>
+      </form>
     </div>
-    <div class="mb-3">
-        <label for="description" class="block text-gray-600 font-medium">Popis:</label>
-        <textarea id="description" name="description" class="w-full p-2 border border-gray-300 rounded"></textarea>
-    </div>
-    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded">Vytvořit úkol</button>
-</form>
-
-    <p class="text-gray-500 mt-5">Musíte být součástí organizace, abyste mohli vytvořit úkol mimo projekt.</p>
-
+  </div>
 </div>
 {% endblock %}

@@ -1,6 +1,6 @@
-# VIEWS.FLIST.py
-
-
+# -------------------------------------------------------------------
+#                    VIEWS.FLIST.PY
+# -------------------------------------------------------------------
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -10,11 +10,17 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 
 from fdk_cz.forms.flist import list_form, list_item_form
-from fdk_cz.models import flist, list_item, project
+from fdk_cz.models import Flist, ListItem, Project
 
 import logging
 
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 
 

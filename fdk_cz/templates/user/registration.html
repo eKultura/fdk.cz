@@ -1,130 +1,354 @@
-{% extends 'user/base.html' %}
+{% load static %}
 {% load i18n %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>{% trans "Registrace" %} | FDK.cz</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+</head>
 
-{% block title %}{% trans "Registrace" %}{% endblock %}
-
-{% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-    <!-- Levý blok - Registrační formulář (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-center mb-6 font-semibold text-gray-800">{% trans "Registrace" %}</h2>
-
-        {% if user.is_authenticated %}
-            <p class="alert alert-success text-center">{{ user.username }} {% trans "je již přihlášen." %}</p>
-            <p class="text-center"><a href="{% url 'logout_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Odhlásit" %}</a></p>
-        {% else %}
-
-            <!-- Zobrazení obecných chyb formuláře -->
-            {% if form.errors %}
-                <div class="alert alert-danger text-center mb-4 p-3 rounded bg-red-100 text-red-800">
-                    <ul class="list-none p-0">
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            <form method="POST" class="p-6 border rounded-lg shadow-md bg-gray-50">
-                {% csrf_token %}
-
-                <!-- Uživatelské jméno -->
-                <div class="mb-4">
-                    <label for="id_username" class="font-semibold text-gray-600">{% trans "Uživatelské jméno" %}</label>
-                    <input type="text" name="username" id="id_username" placeholder="{% trans 'Zadejte uživatelské jméno' %}" 
-                           value="{{ form.username.value|default_if_none:'' }}" required class="w-full p-2 border border-gray-300 rounded-lg">
-                    {% if form.username.errors %}
-                        <div class="text-red-600 mt-1">{{ form.username.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <!-- Email -->
-                <div class="mb-4">
-                    <label for="id_email" class="font-semibold text-gray-600">{% trans "Email" %}</label>
-                    <input type="email" name="email" id="id_email" placeholder="{% trans 'Zadejte email' %}" 
-                           value="{{ form.email.value|default_if_none:'' }}" required class="w-full p-2 border border-gray-300 rounded-lg">
-                    {% if form.email.errors %}
-                        <div class="text-red-600 mt-1">{{ form.email.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <!-- Heslo -->
-                <div class="mb-4">
-                    <label for="id_password1" class="font-semibold text-gray-600">{% trans "Heslo" %}</label>
-                    <div class="relative">
-                        <input type="password" name="password1" id="id_password1" placeholder="{% trans 'Zadejte heslo' %}" 
-                               required class="w-full p-2 border border-gray-300 rounded-lg pr-10">
-                        <button type="button" onclick="togglePassword('id_password1')" 
-                                class="absolute inset-y-0 right-0 px-3 text-gray-500">
-                            <i class="material-icons" id="password-icon1">visibility</i>
-                        </button>
-                    </div>
-                    <small class="text-gray-500">{% trans "Heslo musí mít alespoň 8 znaků a obsahovat číslo." %}</small>
-                    {% if form.password1.errors %}
-                        <div class="text-red-600 mt-1">{{ form.password1.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <!-- Potvrzení hesla -->
-                <div class="mb-4">
-                    <label for="id_password2" class="font-semibold text-gray-600">{% trans "Potvrzení hesla" %}</label>
-                    <div class="relative">
-                        <input type="password" name="password2" id="id_password2" placeholder="{% trans 'Potvrďte heslo' %}" 
-                               required class="w-full p-2 border border-gray-300 rounded-lg pr-10">
-                        <button type="button" onclick="togglePassword('id_password2')" 
-                                class="absolute inset-y-0 right-0 px-3 text-gray-500">
-                            <i class="material-icons" id="password-icon2">visibility</i>
-                        </button>
-                    </div>
-                    {% if form.password2.errors %}
-                        <div class="text-red-600 mt-1">{{ form.password2.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <button type="submit" class="w-full py-2 mt-4 text-white bg-blue-600 rounded-lg font-bold hover:bg-blue-700">
-                    {% trans "Registrovat se" %}
-                </button>
-            </form>
-
-            <p class="mt-4 text-center text-gray-600">
-                {% trans "Již máte účet?" %} <a href="{% url 'login_cs' %}" class="text-blue-500 font-semibold hover:underline">{% trans "Přihlaste se zde" %}</a>
-            </p>
-        {% endif %}
+<body class="login-background">
+  <!-- Messages Block -->
+  {% if messages %}
+  <div style="position: fixed; top: 110px; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
     </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">{% trans "Vyplňte formulář pro vytvoření nového účtu a přístup k projektům." %}</p>
-        <p class="text-gray-600">{% trans "Zadejte bezpečné heslo, které obsahuje čísla i písmena." %}</p>
+  <!-- Header -->
+  <header class="header floating">
+    <a href="{% url 'index' %}" class="logo">
+      <div class="logo-icon">&#9873;</div>
+      FDK.cz
+    </a>
 
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="/">FDK.cz</a></p>
+    <nav class="top-nav">
+      <a href="{% url 'index' %}" class="nav-link">
+        &#128202; Dashboard
+      </a>
+      <a href="{% url 'user_profile' %}" class="nav-link">
+        &#128100; Profil
+      </a>
+      <a href="{% url 'registration_cs' %}" class="nav-link active">
+        &#128221; Registrace
+      </a>
+      <a href="{% url 'login_cs' %}" class="nav-link">
+        &#128273; Přihlášení
+      </a>
+    </nav>
+
+    <div>
+      <a href="https://ekultura.eu" class="btn btn-outline login-style" target="_blank">
+        eKultura
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content with-floating-header">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <h1 class="login-title">{% trans "Registrace" %}</h1>
+          <p class="login-subtitle">Vytvořte si účet na FDK.cz</p>
+          
+          <div class="social-buttons">
+            
+              &#128279;
+            
+              &nbsp;&nbsp;&nbsp;
+            
+              &#128187;
+              
+              &nbsp;&nbsp;&nbsp;
+            
+            
+              &#128269;
+            
+          </div>
         </div>
+
+        <div class="login-body">
+          {% if user.is_authenticated %}
+          <!-- Already logged in state -->
+          <div class="logged-in-card">
+            <div class="user-avatar large">
+              {{ user.first_name|first|default:user.username|first|upper }}
+            </div>
+            <div class="alert alert-success">
+              {{ user.username }} {% trans "je již přihlášen." %}
+            </div>
+            <p class="login-footer">
+              <a href="{% url 'logout_cs' %}">{% trans "Odhlásit" %}</a> 
+              nebo 
+              <a href="{% url 'index' %}">přejít na Dashboard</a>
+            </p>
+          </div>
+          
+          {% else %}
+          <!-- Registration form errors -->
+          {% if form.errors %}
+          <div class="alert alert-danger" style="margin-bottom: 1.5rem;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          <!-- Registration form -->
+          <form method="POST" action="{% url 'registration_cs' %}">
+            {% csrf_token %}
+            
+            <!-- Username -->
+            <div class="form-group">
+              <label for="id_username" class="form-label">
+                &#128100; {% trans "Uživatelské jméno" %}
+              </label>
+              <input 
+                type="text" 
+                name="username" 
+                id="id_username" 
+                value="{{ form.username.value|default_if_none:'' }}" 
+                required 
+                class="form-control"
+                placeholder="Zadejte uživatelské jméno"
+              >
+              {% if form.username.errors %}
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                  {{ form.username.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="id_email" class="form-label">
+                &#128231; {% trans "Email" %}
+              </label>
+              <input 
+                type="email" 
+                name="email" 
+                id="id_email" 
+                value="{{ form.email.value|default_if_none:'' }}" 
+                required 
+                class="form-control"
+                placeholder="Zadejte email"
+              >
+              {% if form.email.errors %}
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                  {{ form.email.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+              <label for="id_password1" class="form-label">
+                &#128274; {% trans "Heslo" %}
+              </label>
+              <div class="password-toggle">
+                <input 
+                  type="password" 
+                  name="password1" 
+                  id="id_password1" 
+                  required 
+                  class="form-control"
+                  placeholder="Zadejte heslo"
+                >
+                <button 
+                  type="button" 
+                  class="password-toggle-btn" 
+                  onclick="togglePassword('id_password1')"
+                  title="Zobrazit/skrýt heslo"
+                >
+                  <span id="password-icon1">&#128065;</span>
+                </button>
+              </div>
+              {% if form.password1.errors %}
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                  {{ form.password1.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Password Confirmation -->
+            <div class="form-group">
+              <label for="id_password2" class="form-label">
+                &#128274; {% trans "Potvrzení hesla" %}
+              </label>
+              <div class="password-toggle">
+                <input 
+                  type="password" 
+                  name="password2" 
+                  id="id_password2" 
+                  required 
+                  class="form-control"
+                  placeholder="Potvrďte heslo"
+                >
+                <button 
+                  type="button" 
+                  class="password-toggle-btn" 
+                  onclick="togglePassword('id_password2')"
+                  title="Zobrazit/skrýt heslo"
+                >
+                  <span id="password-icon2">&#128065;</span>
+                </button>
+              </div>
+              {% if form.password2.errors %}
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                  {{ form.password2.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="login-btn">
+              &#128221; {% trans "Zaregistrovat se" %}
+            </button>
+
+            <div class="login-footer">
+              {% trans "Already have an account?" %}
+              <a href="{% url 'login_cs' %}">{% trans "Sign in" %}</a>
+            </div>
+          </form>
+          {% endif %}
+        </div>
+      </div>
     </div>
+  </main>
 
-</div>
+  <!-- Footer -->
+  <footer class="footer login-footer">
+    <p>
+      &copy; {% now "Y" %} Vytvořeno s &#10084;&#65039; pro hladké procesy v 
+      <a href="https://ekultura.eu" target="_blank">eKultura</a>
+      | 
+      <a href="/ochrana-osobnich-udaju">Ochrana osobních údajů</a>
+      | 
+      <a href="/kontakt">Kontakt</a>
+    </p>
+  </footer>
 
-<!-- Skript pro přepínání zobrazení hesla -->
-<script>
+  <script>
+    // Toggle password visibility
     function togglePassword(fieldId) {
-        var passwordField = document.getElementById(fieldId);
-        var icon = document.getElementById("password-icon" + (fieldId === 'id_password1' ? '1' : '2'));
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            icon.textContent = "visibility_off";
-        } else {
-            passwordField.type = "password";
-            icon.textContent = "visibility";
-        }
+      const passwordField = document.getElementById(fieldId);
+      const iconId = fieldId === 'id_password1' ? 'password-icon1' : 'password-icon2';
+      const icon = document.getElementById(iconId);
+      
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.innerHTML = "&#128064;"; // Hide icon
+      } else {
+        passwordField.type = "password";
+        icon.innerHTML = "&#128065;"; // Show icon
+      }
     }
-</script>
 
-{% endblock %}
+    // Auto-hide messages and form enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+
+      // Password strength indicator
+      const password1 = document.getElementById('id_password1');
+      if (password1) {
+        password1.addEventListener('input', function() {
+          const password = this.value;
+          let strength = 0;
+          
+          // Check criteria
+          if (password.length >= 8) strength++;
+          if (/[A-Z]/.test(password)) strength++;
+          if (/[a-z]/.test(password)) strength++;
+          if (/[0-9]/.test(password)) strength++;
+          if (/[^A-Za-z0-9]/.test(password)) strength++;
+          
+          // Remove existing indicator
+          const existing = document.getElementById('password-strength');
+          if (existing) existing.remove();
+          
+          // Add new indicator
+          if (password.length > 0) {
+            const indicator = document.createElement('div');
+            indicator.id = 'password-strength';
+            indicator.style.cssText = 'margin-top: 0.5rem; font-size: 0.8rem;';
+            
+            if (strength <= 2) {
+              indicator.innerHTML = '<span style="color: #dc2626;">&#9888; Slabé heslo</span>';
+            } else if (strength <= 3) {
+              indicator.innerHTML = '<span style="color: #d97706;">&#9889; Střední heslo</span>';
+            } else {
+              indicator.innerHTML = '<span style="color: #059669;">&#9989; Silné heslo</span>';
+            }
+            
+            password1.parentNode.parentNode.appendChild(indicator);
+          }
+        });
+      }
+
+      // Form validation
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          const password1 = document.getElementById('id_password1').value;
+          const password2 = document.getElementById('id_password2').value;
+          
+          if (password1 !== password2) {
+            e.preventDefault();
+            alert('Hesla se neshodují!');
+            return false;
+          }
+          
+          if (password1.length < 8) {
+            e.preventDefault();
+            alert('Heslo musí mít alespoň 8 znaků!');
+            return false;
+          }
+        });
+      }
+
+      // Add animation to registration card
+      const loginCard = document.querySelector('.login-card');
+      if (loginCard) {
+        loginCard.style.opacity = '0';
+        loginCard.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          loginCard.style.transition = 'all 0.6s ease';
+          loginCard.style.opacity = '1';
+          loginCard.style.transform = 'translateY(0)';
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>

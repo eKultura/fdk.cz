@@ -1,9 +1,6 @@
-### views.user.py
-
-#from django.shortcuts import render
-
-# views.user.py
-
+# -------------------------------------------------------------------
+#                    VIEWS.USERS.PY
+# -------------------------------------------------------------------
 from django.contrib import messages
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -13,7 +10,13 @@ from fdk_cz.forms.user import user_registration_form, profile_edit_form
 
 from django.shortcuts import render, redirect
 
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 
 def login(request):

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Nápověda | FDK.cz{% endblock %}
+{% block header_title %}Nápověda a dokumentace{% endblock %}
+
+{% block content %}
+<div class="content-section">
+  <h2 class="section-title">Nápověda k systému FDK</h2>
+
+  <p>V této sekci najdete návody, postupy a popisy jednotlivých modulů. Klikněte na téma, které vás zajímá.</p>
+
+  {% if articles %}
+  <ul class="help-list">
+    {% for article in articles %}
+      <li>
+        <a href="/{{ article.slug }}">📘 {{ article.title }}</a>
+        <small style="color:#666;">– aktualizováno {{ article.updated_at|date:"j.n.Y" }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>Žádné nápovědy zatím nejsou k dispozici.</p>
+  {% endif %}
+</div>
+{% endblock %}

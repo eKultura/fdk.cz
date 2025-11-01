@@ -1,65 +1,325 @@
-{% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+  <title>{% trans "Úprava profilu" %} | FDK.cz</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- Unified CSS -->
+  <style>
+    {% include 'inc/style.css' %}
+  </style>
+</head>
 
-{% block title %}{% trans "Úprava profilu" %}{% endblock %}
-
-{% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-    <!-- Levý blok - Formulář pro úpravu profilu (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Úprava profilu" %}</h2>
-        <form method="POST">
-            {% csrf_token %}
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success text-center mb-4 p-2 rounded-lg bg-green-100 text-green-700 border border-green-200">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- Jméno -->
-            <div class="mb-4">
-                <label for="id_first_name" class="form-label font-semibold text-gray-600">{% trans "Jméno" %}</label>
-                <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default_if_none:'' }}" 
-                       class="w-full p-2 border border-gray-300 rounded-lg" placeholder="{% trans 'Zadejte jméno' %}">
-            </div>
-
-            <!-- Příjmení -->
-            <div class="mb-4">
-                <label for="id_last_name" class="form-label font-semibold text-gray-600">{% trans "Příjmení" %}</label>
-                <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default_if_none:'' }}" 
-                       class="w-full p-2 border border-gray-300 rounded-lg" placeholder="{% trans 'Zadejte příjmení' %}">
-            </div>
-
-            <!-- Email -->
-            <div class="mb-4">
-                <label for="id_email" class="form-label font-semibold text-gray-600">{% trans "Email" %}</label>
-                <input type="email" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" 
-                       class="w-full p-2 border border-gray-300 rounded-lg" placeholder="{% trans 'Zadejte email' %}">
-            </div>
-
-            <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 mt-3">
-                {% trans "Uložit změny" %}
-            </button>
-        </form>
+<body>
+  <!-- Messages Block -->
+  {% if messages %}
+  <div style="position: fixed; top: 90px; right: 20px; z-index: 1100; max-width: 400px;">
+    {% for message in messages %}
+    <div class="alert alert-success" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      {{ message }}
     </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "Zadejte své aktuální údaje do formuláře a uložte změny." %}
-        </p>
-        <p class="text-gray-600">{% trans "Ujistěte se, že máte aktuální email pro obnovu hesla nebo kontaktování podpory." %}</p>
+  <!-- Header -->
+  <header class="header">
+    <a href="{% url 'index' %}" class="logo">
+      <div class="logo-icon">&#9873;</div>
+      FDK.cz
+    </a>
 
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+    <nav class="top-nav">
+      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai">&#9889; Právo AI</a>
+      <div class="dropdown">
+        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
+        <div class="dropdown-menu">
+          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
+          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
+          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
+          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
+          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
+          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
+          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
+          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
+          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
         </div>
+      </div>
+      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+    </nav>
+
+    <div class="user-menu">
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Vyhledávání..." id="search-input">
+      </div>
+      <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
+        {{ user.first_name|first|default:user.username|first|upper }}
+      </a>
+      <a href="{% url 'user_profile' %}" class="user-name">
+        {{ user.first_name|default:user.username }}
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">&#9881; {% trans "Úprava profilu" %}</h1>
+      <p class="page-subtitle">
+        Upravte své osobní údaje a nastavení účtu
+      </p>
     </div>
 
-</div>
-{% endblock %}
+    <!-- Settings Content Grid -->
+    <div class="content-grid">
+      <!-- Main Form (2/3 width) -->
+      <div class="content-card" style="grid-column: span 2;">
+        <h3>&#128100; {% trans "Úprava profilu" %}</h3>
+        
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Profile Photo -->
+          <div class="form-group">
+            <label for="id_photo" class="form-label">&#128247; {% trans "Profilová fotografie" %}</label>
+            <input 
+              type="file" 
+              name="photo" 
+              id="id_photo" 
+              accept="image/*" 
+              class="form-control"
+            >
+            {% if profile_form.photo.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ profile_form.photo.errors }}
+              </div>
+            {% endif %}
+            {% if profile_form.instance.photo %}
+              <div style="margin-top: 1rem;">
+                <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">{% trans "Aktuální fotka:" %}</p>
+                <img 
+                  src="{{ profile_form.instance.photo.url }}" 
+                  alt="{% trans 'Profilová fotografie' %}" 
+                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e2e8f0;"
+                >
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- First Name -->
+          <div class="form-group">
+            <label for="id_first_name" class="form-label">&#128100; {% trans "Jméno" %}</label>
+            <input 
+              type="text" 
+              name="first_name" 
+              id="id_first_name" 
+              value="{{ user_form.first_name.value|default_if_none:'' }}" 
+              class="form-control" 
+              placeholder="{% trans 'Zadejte jméno' %}"
+            >
+            {% if user_form.first_name.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ user_form.first_name.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group">
+            <label for="id_last_name" class="form-label">&#128100; {% trans "Příjmení" %}</label>
+            <input 
+              type="text" 
+              name="last_name" 
+              id="id_last_name" 
+              value="{{ user_form.last_name.value|default_if_none:'' }}" 
+              class="form-control" 
+              placeholder="{% trans 'Zadejte příjmení' %}"
+            >
+            {% if user_form.last_name.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ user_form.last_name.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="id_email" class="form-label">&#128231; {% trans "Email" %}</label>
+            <input 
+              type="email" 
+              name="email" 
+              id="id_email" 
+              value="{{ user_form.email.value|default_if_none:'' }}" 
+              class="form-control" 
+              placeholder="{% trans 'Zadejte email' %}"
+            >
+            {% if user_form.email.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ user_form.email.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label for="id_phone_number" class="form-label">&#128222; {% trans "Telefonní číslo" %}</label>
+            <input 
+              type="tel" 
+              name="phone_number" 
+              id="id_phone_number" 
+              value="{{ profile_form.phone_number.value|default_if_none:'' }}"
+              class="form-control" 
+              placeholder="{% trans 'Zadejte telefonní číslo' %}"
+            >
+            {% if profile_form.phone_number.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ profile_form.phone_number.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label for="id_location" class="form-label">&#127759; {% trans "Lokace" %}</label>
+            <input 
+              type="text" 
+              name="location" 
+              id="id_location" 
+              value="{{ profile_form.location.value|default_if_none:'' }}"
+              class="form-control" 
+              placeholder="{% trans 'Zadejte lokaci' %}"
+            >
+            {% if profile_form.location.errors %}
+              <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">
+                {{ profile_form.location.errors }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            &#128190; {% trans "Uložit změny" %}
+          </button>
+        </form>
+      </div>
+
+      <!-- Helper Sidebar (1/3 width) -->
+      <div class="content-card" style="background: #f8fafc;">
+        <h3>&#128161; {% trans "Pomocník" %}</h3>
+        
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+          {% trans "Zadejte své aktuální údaje do formuláře a uložte změny." %}
+        </p>
+        
+        <p style="color: #64748b; margin-bottom: 2rem;">
+          {% trans "Ujistěte se, že máte aktuální email pro obnovu hesla nebo kontaktování podpory." %}
+        </p>
+
+        <!-- Tips Section -->
+        <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b;">&#9889; Tipy</h4>
+          <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #64748b;">
+            <li style="padding: 0.25rem 0;">&#8226; Používejte aktuální email</li>
+            <li style="padding: 0.25rem 0;">&#8226; Telefon pro 2FA ověření</li>
+            <li style="padding: 0.25rem 0;">&#8226; Lokace pro statistiky</li>
+          </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b;">&#128279; Rychlé odkazy</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{% url 'user_profile' %}" class="btn btn-outline" style="font-size: 0.875rem; padding: 8px 12px;">
+              &#128100; Zobrazit profil
+            </a>
+            <a href="#" class="btn btn-outline" style="font-size: 0.875rem; padding: 8px 12px;">
+              &#128273; Změna hesla
+            </a>
+          </div>
+        </div>
+
+        <!-- FDK.cz Branding -->
+        <div style="text-align: center; background: #e2e8f0; padding: 1rem; border-radius: 8px;">
+          <p style="font-weight: 600; color: #64748b; margin: 0;">
+            <a href="https://fdk.cz" style="color: #64748b; text-decoration: none;">FDK.cz</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; {% now "Y" %} FDK.cz - Komplexní řízení organizací | 
+         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Auto-hide messages
+    document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          alert.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            alert.remove();
+          }, 300);
+        }, 5000);
+      });
+
+      // Add form validation visual feedback
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+          if (this.value && this.checkValidity()) {
+            this.style.borderColor = '#059669';
+          } else if (!this.checkValidity()) {
+            this.style.borderColor = '#dc2626';
+          }
+        });
+        
+        input.addEventListener('input', function() {
+          this.style.borderColor = '#e5e7eb';
+        });
+      });
+
+      // File input preview
+      const photoInput = document.getElementById('id_photo');
+      if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              // Find existing preview or create new one
+              let preview = document.getElementById('photo-preview');
+              if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'photo-preview';
+                preview.style.cssText = 'margin-top: 1rem;';
+                photoInput.parentNode.appendChild(preview);
+              }
+              
+              preview.innerHTML = `
+                <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Náhled nové fotky:</p>
+                <img src="${e.target.result}" alt="Náhled" 
+                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #3b82f6;">
+              `;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,121 +1,91 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Upravit úkol" %}{% endblock %}
+{% block title %}Upravit úkol | FDK.cz{% endblock %}
+{% block header_title %}Upravit úkol{% endblock %}
+{% block header_subtitle %}Upravte detaily úkolu v projektu <strong>{{ project.name }}</strong>{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="max-w-3xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
 
-    <!-- Levý blok 2/3 - Formulář pro úpravu úkolu -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">{% trans "Upravit úkol" %}</h2>
-        <form method="post">
-            {% csrf_token %}
+      <!-- Název -->
+      <div class="form-group mb-4">
+        <label for="id_title" class="block text-sm font-medium text-gray-700">Název úkolu <span class="text-red-600">*</span></label>
+        <input type="text" id="id_title" name="title" required
+               value="{{ form.title.value|default:task.title }}"
+               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        {% if form.title.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
+        {% endif %}
+      </div>
 
-            <!-- Název úkolu -->
-            <div class="mb-4">
-                <label for="id_title" class="font-semibold text-gray-600 block mb-1">{% trans "Název" %}</label>
-                <input type="text" name="title" id="id_title" value="{{ task.title }}" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                {% if form.title.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Popis -->
+      <div class="form-group mb-4">
+        <label for="id_description" class="block text-sm font-medium text-gray-700">Popis</label>
+        <textarea id="id_description" name="description" rows="4"
+                  class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default:task.description }}</textarea>
+      </div>
 
-            <!-- Popis úkolu -->
-            <div class="mb-4">
-                <label for="id_description" class="font-semibold text-gray-600 block mb-1">{% trans "Popis" %}</label>
-                <textarea name="description" id="id_description" class="w-full p-2 border border-gray-300 rounded-lg bg-white">{{ task.description }}</textarea>
-                {% if form.description.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Status -->
+      <div class="form-group mb-4">
+        <label for="id_status" class="block text-sm font-medium text-gray-700">Stav</label>
+        <select id="id_status" name="status"
+                class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+          <option value="Nezahájeno" {% if task.status == "Nezahájeno" %}selected{% endif %}>Nezahájeno</option>
+          <option value="Probíhá" {% if task.status == "Probíhá" %}selected{% endif %}>Probíhá</option>
+          <option value="Hotovo" {% if task.status == "Hotovo" %}selected{% endif %}>Hotovo</option>
+        </select>
+      </div>
 
+      <!-- Kategorie -->
+      <div class="form-group mb-4">
+        <label for="id_category" class="block text-sm font-medium text-gray-700">Kategorie</label>
+        <select id="id_category" name="category"
+                class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+          {% for category in form.category.field.queryset %}
+          <option value="{{ category.pk }}"
+            {% if task.category and category.pk == task.category.pk %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
 
-            <!-- Status -->
-            <div class="mb-4">
-                <label for="id_status" class="font-semibold text-gray-600 block mb-1">{% trans "Status" %}</label>
-                <select name="status" id="id_status" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                    <option value="Nezahájeno" {% if task.status == "Nezahájeno" %}selected{% endif %}>{% trans "Nezahájeno" %}</option>
-                    <option value="Probíhá" {% if task.status == "Probíhá" %}selected{% endif %}>{% trans "Probíhá" %}</option>
-                    <option value="Hotovo" {% if task.status == "Hotovo" %}selected{% endif %}>{% trans "Hotovo" %}</option>
-                </select>
-                {% if form.status.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.status.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Priorita -->
+      <div class="form-group mb-4">
+        <label for="id_priority" class="block text-sm font-medium text-gray-700">Priorita</label>
+        <select id="id_priority" name="priority"
+                class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+          <option value="Nízká" {% if task.priority == "Nízká" %}selected{% endif %}>Nízká</option>
+          <option value="Střední" {% if task.priority == "Střední" %}selected{% endif %}>Střední</option>
+          <option value="Vysoká" {% if task.priority == "Vysoká" %}selected{% endif %}>Vysoká</option>
+          <option value="Nice to have" {% if task.priority == "Nice to have" %}selected{% endif %}>Nice to have</option>
+        </select>
+      </div>
 
+      <!-- Přiděleno -->
+      <div class="form-group mb-4">
+        <label for="id_assigned" class="block text-sm font-medium text-gray-700">Přiděleno</label>
+        <select id="id_assigned" name="assigned"
+                class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+          {% for member in project.project_users.all %}
+          <option value="{{ member.user.id }}"
+            {% if task.assigned and member.user.id == task.assigned.id %}selected{% endif %}>
+            {{ member.user.username }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
 
-
-            <!-- Kategorie -->
-            <div class="mb-4">
-                <label for="id_category" class="font-semibold text-gray-600 block mb-1">{% trans "Kategorie" %}</label>
-                <select name="category" id="id_category" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    {% for category in form.category.field.queryset %}
-                        <option value="{{ category.pk }}" {% if task.category and category.pk == task.category.pk %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                {% if form.category.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.category.errors|join:", " }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Priorita -->
-            <div class="mb-4">
-                <label for="id_priority" class="font-semibold text-gray-600 block mb-1">{% trans "Priorita" %}</label>
-                <select name="priority" id="id_priority" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    <option value="Nízká" {% if task.priority == "Nízká" %}selected{% endif %}>{% trans "Nízká" %}</option>
-                    <option value="Střední" {% if task.priority == "Střední" %}selected{% endif %}>{% trans "Střední" %}</option>
-                    <option value="Vysoká" {% if task.priority == "Vysoká" %}selected{% endif %}>{% trans "Vysoká" %}</option>
-                    <option value="Nice to have" {% if task.status == "Nice to have" %}selected{% endif %}>{% trans "Nice to have" %}</option>
-                </select>
-                {% if form.priority.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.priority.errors|join:", " }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Přiděleno -->
-            <div class="mb-4">
-                <label for="id_assigned" class="font-semibold text-gray-600 block mb-1">{% trans "Přiděleno" %}</label>
-                <select name="assigned" id="id_assigned" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    {% for user in project.project_users.all %}
-                        <option value="{{ user.user.id }}" {% if task.assigned and user.user.id == task.assigned.id %}selected{% endif %}>
-                            {{ user.user.username }}
-                        </option>
-                    {% endfor %}
-                </select>
-                {% if form.assigned.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.assigned.errors|join:", " }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Tlačítka pro uložení a návrat -->
-            <div class="flex gap-4 mt-6">
-                <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
-                    {% trans "Uložit změny" %}
-                </button>
-                <a href="{% url 'detail_project' task.project.project_id %}" class="w-full py-2 px-4 bg-gray-600 text-white font-bold rounded-lg text-center hover:bg-gray-700">
-                    {% trans "Zpět" %}
-                </a>
-            </div>
-        </form>
-    </div>
-
-    <!-- Pravý blok 1/3 - Pomocník s informacemi -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-        Projekt: {{ task.project.name }}<br><br>
-            {% trans "Úprava úkolu vám umožňuje měnit detaily úkolu, jako jsou název, popis, priorita a přiřazená osoba." %}
-        </p>
-        <p class="text-gray-600">{% trans "Přidělené úkoly se používají pro efektivní správu projektů na FDK.cz." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
-        </div>
-    </div>
-
+      <!-- Tlačítka -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

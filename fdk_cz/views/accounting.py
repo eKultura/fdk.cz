@@ -1,26 +1,38 @@
-# VIEWS.ACCOUNTING.PY
-
+# -------------------------------------------------------------------
+#                    VIEWS.ACCOUNTING.PY
+# -------------------------------------------------------------------
 from datetime import datetime, timedelta
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from fdk_cz.forms.accounting import FreeInvoiceForm, InvoiceForm, InvoiceItemForm, InvoiceItemFormSet
-from fdk_cz.models import invoice, invoice_item
+from fdk_cz.models import Invoice, InvoiceItem
 from urllib.parse import urlencode
 
-
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 def accounting_dashboard(request):
-    # Získání seznamu faktur pro přihlášeného uživatele
-    invoices = invoice.objects.filter(company__users=request.user)
+    if not request.user.is_authenticated:
+        context = {
+            'invoices': [],
+            'company': None,
+        }
+        return render(request, 'accounting/accounting_dashboard.html', context)
 
+    invoices = Invoice.objects.filter(company__users=request.user)
     context = {
         'invoices': invoices,
         'company': request.user.companies.first(),
     }
     return render(request, 'accounting/accounting_dashboard.html', context)
+
 
 
 
@@ -45,13 +57,13 @@ def create_invoice(request):
 
 
 def detail_invoice(request, invoice_id):
-    invoice = get_object_or_404(invoice, pk=invoice_id)
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
     return render(request, 'accounting/detail_invoice.html', {'invoice': invoice})
 
 
 @login_required
 def list_invoices(request):
-    invoices = invoice.objects.filter(company__users=request.user)
+    invoices = Invoice.objects.filter(company__users=request.user)
     return render(request, 'accounting/list_invoices.html', {'invoices': invoices})
 
 
@@ -74,7 +86,7 @@ def edit_invoice(request, invoice_id):
 
 @login_required
 def delete_invoice(request, invoice_id):
-    invoice_instance = get_object_or_404(invoice, pk=invoice_id)
+    invoice_instance = get_object_or_404(Invoice, pk=invoice_id)
     
     if request.method == 'POST':
         invoice_instance.delete()

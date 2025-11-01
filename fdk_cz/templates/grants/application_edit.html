@@ -1,0 +1,599 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  Editace žádosti | {{ application.grant.title }} | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.form-card, .info-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.status-draft { background: #f3f4f6; color: #374151; }
+.status-submitted { background: #dbeafe; color: #1d4ed8; }
+.status-in_progress { background: #fef3c7; color: #92400e; }
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+
+.grant-info-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.grant-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.grant-icon {
+  background: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1.25rem;
+}
+
+.grant-meta {
+  font-size: 0.875rem;
+  color: #6b7280;
+  display: flex;
+  gap: 1rem;
+}
+
+.version-history {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.currency-input {
+  position: relative;
+}
+
+.currency-input::before {
+  content: 'Kč';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.currency-input .form-input {
+  padding-right: 2.5rem;
+}
+
+.sidebar-info {
+  height: fit-content;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.info-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-section li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.info-section li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .grant-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .grant-meta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na granty
+    </a>
+    <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
+    <a href="{% url 'detail_grant' application.grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      {{ application.grant.title|truncatewords:5 }}
+    </a>
+  </nav>
+  
+  <h1 class="page-title">
+    Editace žádosti
+  </h1>
+  <p class="page-subtitle">
+    Upravte svou žádost o podporu
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Status žádosti -->
+<div class="status-indicator status-{{ application.status }}">
+  {% if application.status == 'draft' %}
+    📝 Koncept
+  {% elif application.status == 'submitted' %}
+    📤 Odesláno
+  {% elif application.status == 'in_progress' %}
+    ⏳ V procesu
+  {% elif application.status == 'approved' %}
+    ✅ Schváleno
+  {% elif application.status == 'rejected' %}
+    ❌ Zamítnuto
+  {% endif %}
+  - {{ application.get_status_display }}
+</div>
+
+<!-- Informace o grantu -->
+<div class="grant-info-card">
+  <div class="grant-header">
+    <div class="grant-icon">💰</div>
+    <div>
+      <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem 0;">
+        {{ application.grant.title }}
+      </h2>
+      <div class="grant-meta">
+        <span>🏢 {{ application.grant.provider }}</span>
+        <span>📊 {{ application.grant.get_type_display }}</span>
+        {% if application.grant.end_date %}
+        <span>📅 Deadline: {{ application.grant.end_date|date:"d.m.Y" }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Historie verzí -->
+<div class="version-history">
+  <strong>Historie změn:</strong> 
+  Vytvořeno {{ application.created_at|date:"d.m.Y H:i" }}{% if application.updated_at != application.created_at %}, 
+  naposledy upraveno {{ application.updated_at|date:"d.m.Y H:i" }}{% endif %}
+</div>
+
+<div class="form-grid">
+  <!-- Hlavní formulář -->
+  <div class="form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <!-- Základní údaje -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Základní údaje žádosti
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="project_id" class="form-label">
+              Projekt <span class="required">*</span>
+            </label>
+            <select id="project_id" name="project_id" class="form-select" required {% if application.status != 'draft' %}disabled{% endif %}>
+              <option value="">-- Vyberte projekt --</option>
+              {% for p in projects %}
+              <option value="{{ p.project_id }}" {% if p.project_id == application.project.project_id %}selected{% endif %}>
+                {{ p.name }}
+              </option>
+              {% endfor %}
+            </select>
+            {% if application.status != 'draft' %}
+            <div class="help-text">Projekt nelze změnit po odeslání žádosti</div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="company_id" class="form-label">
+              Organizace <span class="required">*</span>
+            </label>
+            <select id="company_id" name="company_id" class="form-select" required {% if application.status != 'draft' %}disabled{% endif %}>
+              <option value="">-- Vyberte organizaci --</option>
+              {% for c in companies %}
+              <option value="{{ c.company_id }}" {% if c.company_id == application.organization.company_id %}selected{% endif %}>
+                {{ c.name }} ({{ c.ico }})
+              </option>
+              {% endfor %}
+            </select>
+            {% if application.status != 'draft' %}
+            <div class="help-text">Organizaci nelze změnit po odeslání žádosti</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="requested_amount" class="form-label">
+            Požadovaná výše podpory
+          </label>
+          <div class="currency-input">
+            <input type="number" 
+                   id="requested_amount" 
+                   name="requested_amount" 
+                   class="form-input"
+                   value="{{ application.requested_amount|default:'' }}"
+                   placeholder="0"
+                   min="0"
+                   step="1000">
+          </div>
+          <div class="help-text">Uveďte požadovanou částku v českých korunách</div>
+        </div>
+
+        {% if application.granted_amount %}
+        <div class="form-group">
+          <label class="form-label">Schválená částka</label>
+          <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 6px; font-weight: 600; color: #065f46;">
+            {{ application.granted_amount|floatformat:0 }} Kč
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Popis projektu -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Popis projektu a odůvodnění
+        </h2>
+
+        <div class="form-group">
+          <label for="notes" class="form-label">Detailní popis projektu</label>
+          <textarea id="notes" 
+                    name="notes" 
+                    class="form-textarea" 
+                    placeholder="Popište váš projekt, jeho cíle, očekávané přínosy a zdůvodněte, proč žádáte o tuto podporu...">{{ application.notes|default:'' }}</textarea>
+          <div class="help-text">
+            {% if application.status == 'draft' %}
+            Detailní popis projektu, jeho přínosů a odůvodnění potřeby finanční podpory
+            {% else %}
+            Popis můžete upravovat i po odeslání žádosti
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Status informace -->
+      {% if application.status != 'draft' %}
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Informace o zpracování
+        </h2>
+
+        <div class="form-row">
+          {% if application.submission_date %}
+          <div class="form-group">
+            <label class="form-label">Datum podání</label>
+            <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+              {{ application.submission_date|date:"d.m.Y H:i" }}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if application.approval_date %}
+          <div class="form-group">
+            <label class="form-label">Datum rozhodnutí</label>
+            <div style="padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+              {{ application.approval_date|date:"d.m.Y H:i" }}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Akční tlačítka -->
+      <div class="form-actions">
+        {% if application.status == 'draft' %}
+          <button type="submit" name="action" value="save_draft" class="btn btn-outline">
+            💾 Uložit koncept
+          </button>
+          <button type="submit" name="action" value="submit" class="btn btn-primary">
+            📤 Odeslat žádost
+          </button>
+        {% else %}
+          <button type="submit" class="btn btn-primary">
+            💾 Uložit změny
+          </button>
+        {% endif %}
+        
+        <a href="{% url 'detail_grant' application.grant.grant_id %}" class="btn btn-outline">
+          ❌ Zrušit
+        </a>
+
+        {% if application.status == 'draft' %}
+          <a href="{% url 'delete_application' application.application_id %}" class="btn" style="background: #dc2626; color: white;">
+            🗑️ Smazat koncept
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Sidebar s informacemi -->
+  <div class="info-card sidebar-info">
+    <div class="info-section">
+      <h3>📊 Stav žádosti</h3>
+      <ul>
+        <li><strong>Status:</strong> {{ application.get_status_display }}</li>
+        <li><strong>Podáno:</strong> 
+          {% if application.submission_date %}
+            {{ application.submission_date|date:"d.m.Y" }}
+          {% else %}
+            Nepodáno (koncept)
+          {% endif %}
+        </li>
+        {% if application.requested_amount %}
+        <li><strong>Požadovaná částka:</strong> {{ application.requested_amount|floatformat:0 }} Kč</li>
+        {% endif %}
+        {% if application.granted_amount %}
+        <li><strong>Schválená částka:</strong> {{ application.granted_amount|floatformat:0 }} Kč</li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="info-section">
+      <h3>💡 Tipy pro úspěšnou žádost</h3>
+      <ul>
+        <li>Jasně definujte cíle projektu</li>
+        <li>Popište konkrétní přínosy a dopady</li>
+        <li>Uveďte realistický rozpočet</li>
+        <li>Dodržte všechny podmínky výzvy</li>
+        <li>Pravidelně ukládejte změny</li>
+      </ul>
+    </div>
+
+    <div class="info-section">
+      <h3>📋 Informace o výzvě</h3>
+      <ul>
+        <li><strong>Poskytovatel:</strong> {{ application.grant.provider }}</li>
+        <li><strong>Typ:</strong> {{ application.grant.get_type_display }}</li>
+        {% if application.grant.end_date %}
+        <li><strong>Deadline:</strong> {{ application.grant.end_date|date:"d.m.Y" }}</li>
+        {% endif %}
+        {% if application.grant.url %}
+        <li>
+          <a href="{{ application.grant.url }}" target="_blank" style="color: #3b82f6; text-decoration: none;">
+            🔗 Oficiální stránky
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="info-section">
+      <h3>📞 Potřebujete pomoc?</h3>
+      <ul>
+        <li>
+          <a href="mailto:podpora@fdk.cz" style="color: #3b82f6; text-decoration: none;">
+            📧 podpora@fdk.cz
+          </a>
+        </li>
+        <li>Tel: +420 123 456 789</li>
+        <li>Po-Pá 9:00-17:00</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  const notesTextarea = document.getElementById('notes');
+  const submitButtons = document.querySelectorAll('button[type="submit"]');
+
+  // Auto-resize textarea
+  notesTextarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+
+  // Potvrzení při odeslání žádosti
+  form.addEventListener('submit', function(e) {
+    const action = e.submitter?.value;
+    
+    if (action === 'submit') {
+      const confirmMsg = 'Opravdu chcete odeslat žádost?\n\n' +
+                        'Po odeslání už nebudete moci změnit projekt ani organizaci.\n' +
+                        'Popis projektu bude možné stále upravovat.';
+      
+      if (!confirm(confirmMsg)) {
+        e.preventDefault();
+        return false;
+      }
+    }
+  });
+
+  // Auto-save funkce pro koncepty
+  {% if application.status == 'draft' %}
+  let autoSaveTimeout;
+  const autoSaveDelay = 30000; // 30 sekund
+
+  function autoSave() {
+    const formData = new FormData(form);
+    formData.append('action', 'auto_save');
+    
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    }).then(response => {
+      if (response.ok) {
+        console.log('Žádost automaticky uložena');
+      }
+    }).catch(error => {
+      console.error('Chyba při automatickém ukládání:', error);
+    });
+  }
+
+  // Spustit auto-save při změnách
+  const inputs = form.querySelectorAll('input, select, textarea');
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(autoSave, autoSaveDelay);
+    });
+  });
+  {% endif %}
+
+  // Formátování částky
+  const amountInput = document.getElementById('requested_amount');
+  if (amountInput) {
+    amountInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    amountInput.addEventListener('blur', function() {
+      if (this.value) {
+        const formatted = parseInt(this.value).toLocaleString('cs-CZ');
+        console.log('Formátovaná částka: ' + formatted + ' Kč');
+      }
+    });
+  }
+
+  // Kontrola změn před odchodem ze stránky
+  let originalValues = {};
+  inputs.forEach(input => {
+    originalValues[input.name] = input.value;
+  });
+
+  window.addEventListener('beforeunload', function(e) {
+    let hasChanges = false;
+    inputs.forEach(input => {
+      if (originalValues[input.name] !== input.value) {
+        hasChanges = true;
+      }
+    });
+    
+    if (hasChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+</script>
+
+{% endblock %}

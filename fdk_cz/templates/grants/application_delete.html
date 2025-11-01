@@ -1,0 +1,284 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  Smazání žádosti | {{ application.grant.title }} | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.delete-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.warning-card {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.warning-icon {
+  font-size: 3rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.warning-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.warning-text {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.application-info {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.application-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.application-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.5rem;
+}
+
+.application-details h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.application-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-draft {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.grant-info {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.grant-info h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.grant-info p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.confirmation-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  border: 2px solid #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.info-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.info-box h4 {
+  color: #075985;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-box li {
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #075985;
+}
+
+.info-box a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.info-box a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .application-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .application-meta {
+    justify-content: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na granty
+    </a>
+    <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
+    <a href="{% url 'grant_detail' application.grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      {{ application.grant.title|truncatewords:5 }}
+    </a>
+  </nav>
+  
+  <h1 class="page-title">
+    Smazání žádosti
+  </h1>
+  <p class="page-subtitle">
+    Smazání konceptu žádosti je nevratné
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="delete-container">
+  <!-- Hlavní varování -->
+  <div class="warning-card">
+    <div class="warning-icon">🗑️</div>
+    <h2 class="warning-title">Smazat koncept žádosti?</h2>
+    <p class="warning-text">
+      Chystáte se trvale smazat svou žádost. Tato akce je <strong>nevratná</strong> 
+      a povede ke ztrátě všech vyplněných údajů.
+    </p>
+  </div>
+
+  <!-- Informace o žádosti -->
+  <div class="application-info">
+    <div class="application-header">
+      <div class="application-icon">📄</div>
+      <div class="application-details">
+        <h3>Žádost o podporu</h3>
+        <div class="application-meta">
+          <span class="status-badge status-{{ application.status }}">
+            📝 {{ application.get_status_display }}
+          </span>
+          <span>📅 Vytvořeno: {{ application.created_at|date:"d.m.Y H:i" }}</span>
+          {% if application.requested_amount %}
+          <span>💰 {{ application.requested_amount|floatformat:0 }} Kč</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <div class="grant-info">
+      <h4>Související výzva:</h4>
+      <p><strong>{{ application.grant.title }}</strong></p>
+      <p>{{ application.grant.provider }} • {{ application.grant.get_type_display }}</p>
+    </div>
+    
+    {% if application.notes %}
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f3f4f6;">
+      <h4 style="font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">
+        Poznámky:
+      </h4>
+      <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">
+        {{ application.notes|truncatewords:30 }}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Informace o důsledcích -->
+  <div class="info-box">
+    <h4>💡 Co se stane při smazání</h4>
+    <ul>
+      <li>❌ Všechny vyplněné údaje budou trvale ztraceny</li>
+      <li>❌ Nelze obnovit smazaný koncept žádosti</li>
+      <li>✅ Výzva zůstane dostupná pro novou žádost</li>
+      <li>✅ Můžete kdykoliv vytvořit novou žádost</li>
+    </ul>
+  </div>
+
+  {% if application.status == 'draft' %}
+  <!-- Potvrzení smazání -->
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="confirmation-section">
+      <h3 style="color: #dc2626; margin-bottom: 1

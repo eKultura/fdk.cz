@@ -1,24 +1,28 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Smazat úkol" %}{% endblock %}
+{% block title %}Smazat úkol | FDK.cz{% endblock %}
+{% block header_title %}Smazat úkol{% endblock %}
+{% block header_subtitle %}Potvrzení nevratné akce{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Opravdu chcete smazat tento úkol?" %}</h2>
-        
-        <p class="mb-6 text-gray-600">{% trans "Smazání úkolu je nevratné a odstraní všechny jeho související data." %}</p>
-        
-        <form method="post" class="flex justify-between">
-            {% csrf_token %}
-            <button type="submit" class="px-6 py-2 font-bold text-white bg-red-600 rounded-lg hover:bg-red-700">
-                {% trans "Smazat" %}
-            </button>
-            <a href="{% url 'detail_project' selected_task.project.project_id %}" class="px-6 py-2 font-bold text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50">
-                {% trans "Zpět" %}
-            </a>
-        </form>
+<div class="max-w-md mx-auto mt-10">
+  <div class="content-card text-center">
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">Opravdu chcete smazat tento úkol?</h2>
+      <p class="text-gray-600 mb-1">
+        <strong>{{ selected_task.title }}</strong>
+      </p>
+      <p class="text-gray-500 text-sm">
+        Tato akce je <strong>nevratná</strong> a odstraní veškerá související data (komentáře, vazby).
+      </p>
     </div>
+
+    <form method="post" class="flex flex-col sm:flex-row justify-center gap-3">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger w-full sm:w-auto">🗑️ Smazat</button>
+      <a href="{% url 'detail_project' selected_task.project.project_id %}" class="btn btn-outline w-full sm:w-auto">← Zpět</a>
+    </form>
+  </div>
 </div>
 {% endblock %}

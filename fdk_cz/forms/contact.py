@@ -1,19 +1,19 @@
 # FORMS.CONTACT.PY
 
 from django import forms
-from fdk_cz.models import contact, project
+from fdk_cz.models import Contact, Project
 
 
 """
 class contact_form(forms.ModelForm):
     class Meta:
-        model = contact
+        model = Contact
         fields = ['first_name', 'last_name', 'phone', 'email', 'company', 'description', 'is_private']
 """
 
 class contact_form(forms.ModelForm):
     class Meta:
-        model = contact
+        model = Contact
         fields = ['first_name', 'last_name', 'phone', 'email', 'company', 'description', 'is_private', 'project']
 
     def __init__(self, *args, **kwargs):
@@ -26,4 +26,4 @@ class contact_form(forms.ModelForm):
         self.fields['description'].widget.attrs.update({'class': 'form-control'})
         self.fields['is_private'].widget.attrs.update({'class': 'form-check-input'})
         self.fields['project'].widget.attrs.update({'class': 'form-control'})
-        self.fields['project'].queryset = project.objects.all() 
+        self.fields['project'].queryset = Project.objects.all() 

@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Editace výzvy | {{ grant.title }} | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.form-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-input {
+  width: auto;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sidebar-info {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  height: fit-content;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.info-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-section li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.info-section li:last-child {
+  border-bottom: none;
+}
+
+.danger-zone {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.danger-zone h3 {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.warning-box {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.warning-box h3 {
+  color: #92400e;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.version-info {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: #075985;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+
+
+{% block header_title %}Editace výzvy{% endblock %}
+{% block header_subtitle %}Upravte informace o grantu nebo dotaci{% endblock %}
+
+
+
+{% block content %}
+
+<nav style="margin-bottom: 1rem;">
+  <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+    ← Zpět na granty
+  </a>
+  <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
+  <a href="{% url 'detail_grant' grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+    {{ grant.title|truncatewords:5 }}
+  </a>
+</nav>
+
+<!-- Informace o verzi -->
+<div class="version-info">
+  <strong>Editace výzvy:</strong> {{ grant.title }}<br>
+  <strong>Vytvořeno:</strong> {{ grant.published_at|date:"d.m.Y H:i" }}{% if grant.created_by %} uživatelem {{ grant.created_by }}{% endif %}<br>
+  <strong>Poslední úprava:</strong> {% now "d.m.Y H:i" %}
+</div>
+
+{% if applications_count > 0 %}
+<div class="warning-box">
+  <h3>⚠️ Pozor při úpravách!</h3>
+  <p style="color: #92400e; font-size: 0.75rem; margin: 0;">
+    Na tuto výzvu již bylo podáno {{ applications_count }} žádostí. 
+    Změny podmínek mohou ovlivnit již podané žádosti.
+  </p>
+</div>
+{% endif %}
+
+<!-- Hlavní formulář + sidebar -->
+<div class="form-grid">
+
+  <!-- Formulář -->
+  <div class="form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <!-- Základní informace -->
+      <h2 class="section-title">Základní informace</h2>
+
+      <div class="form-group">
+        <label for="title" class="form-label">Název výzvy <span class="required">*</span></label>
+        <input type="text" id="title" name="title" class="form-input" required value="{{ grant.title }}" maxlength="255">
+        <div class="help-text">Stručný a výstižný název, který popisuje účel výzvy</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="provider" class="form-label">Poskytovatel <span class="required">*</span></label>
+          <input type="text" id="provider" name="provider" class="form-input" required value="{{ grant.provider }}" list="provider-suggestions">
+          <datalist id="provider-suggestions">
+            <option value="MKČR">
+            <option value="Evropská komise">
+            <option value="MPO ČR">
+            <option value="GAČR">
+            <option value="TAČR">
+            <option value="MAS">
+            <option value="Nadace Via">
+            <option value="Nadace OSF">
+          </datalist>
+        </div>
+
+        <div class="form-group">
+          <label for="type" class="form-label">Typ výzvy <span class="required">*</span></label>
+          <select id="type" name="type" class="form-select" required>
+            <option value="">-- Vyberte typ --</option>
+            <option value="dotace" {% if grant.type == 'dotace' %}selected{% endif %}>Dotace</option>
+            <option value="grant" {% if grant.type == 'grant' %}selected{% endif %}>Grant</option>
+            <option value="stipendium" {% if grant.type == 'stipendium' %}selected{% endif %}>Stipendium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="url" class="form-label">Oficiální URL</label>
+        <input type="url" id="url" name="url" class="form-input" value="{{ grant.url|default:'' }}" placeholder="https://www.example.com/výzva">
+        <div class="help-text">Odkaz na oficiální stránky výzvy s kompletními informacemi</div>
+      </div>
+
+      <!-- Termíny -->
+      <h2 class="section-title">Termíny a podmínky</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="start_date" class="form-label">Začátek příjmu žádostí</label>
+          <input type="date" id="start_date" name="start_date" class="form-input" value="{{ grant.start_date|date:'Y-m-d'|default:'' }}">
+        </div>
+
+        <div class="form-group">
+          <label for="end_date" class="form-label">Deadline <span class="required">*</span></label>
+          <input type="date" id="end_date" name="end_date" class="form-input" required value="{{ grant.end_date|date:'Y-m-d' }}">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="is_recurring" name="is_recurring" value="1" {% if grant.is_recurring %}checked{% endif %}>
+          <label for="is_recurring" class="form-label" style="margin-bottom: 0;">Opakovaná výzva</label>
+        </div>
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="is_active" name="is_active" value="1" {% if grant.is_active %}checked{% endif %}>
+          <label for="is_active" class="form-label" style="margin-bottom: 0;">Aktivní výzva</label>
+        </div>
+      </div>
+
+      <!-- Popis -->
+      <h2 class="section-title">Popis a podmínky</h2>
+      <div class="form-group">
+        <label for="description" class="form-label">Popis výzvy</label>
+        <textarea id="description" name="description" class="form-textarea">{{ grant.description|default:'' }}</textarea>
+      </div>
+
+      <!-- Akce -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+        <a href="{% url 'detail_grant' grant.grant_id %}" class="btn btn-outline">❌ Zrušit</a>
+        <button type="button" class="btn btn-outline" onclick="previewChanges()">👁️ Náhled</button>
+      </div>
+
+      <!-- Nebezpečná zóna -->
+      <div class="danger-zone">
+        <h3>🚨 Nebezpečná zóna</h3>
+        <p>Tyto akce nelze vrátit zpět. Postupujte opatrně.</p>
+        <div style="display:flex;gap:1rem;">
+          <a href="{% url 'delete_grant' grant.grant_id %}" class="btn" style="background:#dc2626;color:white;">🗑️ Smazat výzvu</a>
+          {% if grant.is_active %}
+          <button type="button" class="btn" style="background:#f59e0b;color:white;" onclick="archiveGrant()">📦 Archivovat</button>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <div class="sidebar-info">
+      <div class="info-section">
+        <h3>📊 Statistiky výzvy</h3>
+        <ul>
+          <li>Počet žádostí: {{ applications_count|default:0 }}</li>
+          <li>Zobrazení: {{ grant.views|default:0 }}</li>
+          <li>Vytvořeno: {{ grant.published_at|date:"d.m.Y" }}</li>
+          <li>Stav: {% if grant.is_active %}Aktivní{% else %}Neaktivní{% endif %}</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>💡 Tipy pro editaci</h3>
+        <ul>
+          <li>Zkontrolujte aktuálnost všech termínů</li>
+          <li>Aktualizujte popis při změně podmínek</li>
+          <li>Informujte žadatele o změnách</li>
+          <li>Zálohujte důležité změny</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewChanges() {
+  // Vytvoří náhled změn v novém okně
+  const form = document.querySelector('form');
+  const formData = new FormData(form);
+  
+  alert('Funkce náhledu bude brzy k dispozici!');
+}
+
+function archiveGrant() {
+  if (confirm('Opravdu chcete archivovat tuto výzvu? Stane se neaktivní, ale zůstane dostupná pro prohlížení.')) {
+    // AJAX volání pro archivaci
+    alert('Výzva byla archivována.');
+  }
+}
+
+function duplicateGrant() {
+  if (confirm('Chcete vytvořit kopii této výzvy?')) {
+    // Přesměrování na create s předvyplněnými daty
+    window.location.href = '{% url "create_grant" %}?duplicate={{ grant.grant_id }}';
+  }
+}
+
+function exportGrant() {
+  alert('Export výzvy do PDF bude brzy k dispozici!');
+}
+
+// Validace formuláře
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  const endDateInput = document.getElementById('end_date');
+  const startDateInput = document.getElementById('start_date');
+
+  startDateInput.addEventListener('change', function() {
+    if (this.value) {
+      endDateInput.min = this.value;
+    }
+  });
+
+  form.addEventListener('submit', function(e) {
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    
+    if (startDate && endDate && startDate > endDate) {
+      e.preventDefault();
+      alert('Začátek příjmu žádostí nemůže být později než deadline!');
+      return false;
+    }
+  });
+
+  // Auto-resize textarey
+  const textarea = document.getElementById('description');
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+
+  // Kontrola změn
+  let originalValues = {};
+  const inputs = form.querySelectorAll('input, select, textarea');
+  inputs.forEach(input => {
+    originalValues[input.name] = input.value;
+  });
+
+  window.addEventListener('beforeunload', function(e) {
+    let hasChanges = false;
+    inputs.forEach(input => {
+      if (originalValues[input.name] !== input.value) {
+        hasChanges = true;
+      }
+    });
+    
+    if (hasChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+</script>
+
+{% endblock %}

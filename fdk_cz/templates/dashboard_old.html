@@ -8,10 +8,10 @@
     <h2 class="mb-4">Dashboard</h2>
 
     <header>
-        <h1>Vítejte na Dashboardu</h1>
+        <h1>VÃŒtejte na Dashboardu</h1>
     </header>
     
-    <!-- Navigaèní menu -->
+    <!-- NavigaÃ‹nÃŒ menu -->
     <nav>
         <ul>
             <li><a href="{% url 'dashboard' %}">Home</a></li>
@@ -20,14 +20,14 @@
         </ul>
     </nav>
 
-    <!-- Sekce úkolù -->
-    <h3>Moje úkoly</h3>
+    <!-- Sekce Ë™kolË˜ -->
+    <h3>Moje Ë™koly</h3>
     <table class="table">
         <thead>
             <tr>
-                <th>Název úkolu</th>
+                <th>NÂ·zev Ë™kolu</th>
                 <th>Stav</th>
-                <th>Termín</th>
+                <th>TermÃŒn</th>
             </tr>
         </thead>
         <tbody>
@@ -40,19 +40,19 @@
                 </tr>
                 {% endfor %}
             {% else %}
-                <tr><td colspan="3">Žádné úkoly k zobrazení.</td></tr>
+                <tr><td colspan="3">Ã©Â·dnÃˆ Ë™koly k zobrazenÃŒ.</td></tr>
             {% endif %}
         </tbody>
     </table>
 
-    <!-- Sekce projektù -->
+    <!-- Sekce projektË˜ -->
     <h3>Moje projekty</h3>
     <table class="table">
         <thead>
             <tr>
-                <th>Název projektu</th>
+                <th>NÂ·zev projektu</th>
                 <th>Popis</th>
-                <th>Datum vytvoøení</th>
+                <th>Datum vytvoÂ¯enÃŒ</th>
             </tr>
         </thead>
         <tbody>
@@ -65,17 +65,17 @@
                 </tr>
                 {% endfor %}
             {% else %}
-                <tr><td colspan="3">Žádné projekty k zobrazení.</td></tr>
+                <tr><td colspan="3">Ã©Â·dnÃˆ projekty k zobrazenÃŒ.</td></tr>
             {% endif %}
         </tbody>
     </table>
 
-    <!-- Sekce kontaktù -->
+    <!-- Sekce kontaktË˜ -->
     <h3>Moje kontakty</h3>
     <table class="table">
         <thead>
             <tr>
-                <th>Jméno</th>
+                <th>JmÃˆno</th>
                 <th>Email</th>
                 <th>Telefon</th>
             </tr>
@@ -90,7 +90,7 @@
                 </tr>
                 {% endfor %}
             {% else %}
-                <tr><td colspan="3">Žádné kontakty k zobrazení.</td></tr>
+                <tr><td colspan="3">Ã©Â·dnÃˆ kontakty k zobrazenÃŒ.</td></tr>
             {% endif %}
         </tbody>
     </table>

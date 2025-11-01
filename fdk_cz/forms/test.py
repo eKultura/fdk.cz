@@ -2,13 +2,13 @@
  
  
 from django import forms
-from fdk_cz.models import test, project, project_user, test_error, test_result, test_type
+from fdk_cz.models import Test, Project, ProjectUser, TestError, TestResult, TestType
 
 
 
 class test_error_form(forms.ModelForm):
     class Meta:
-        model = test_error
+        model = TestError
         fields = ['project', 'test_result', 'error_title', 'description', 'steps_to_replicate', 'status']
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +52,7 @@ class test_form(forms.ModelForm):
     grid_location = forms.ChoiceField(choices=GRID_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
-        model = test
+        model = Test
         fields = ['project', 'test_type', 'name', 'description', 'grid_location']
 
     def __init__(self, *args, **kwargs):
@@ -86,7 +86,7 @@ class test_form(forms.ModelForm):
 
 class test_type_form(forms.ModelForm):
     class Meta:
-        model = test_type
+        model = TestType
         fields = ['project', 'name', 'description']
 
     def __init__(self, *args, **kwargs):
@@ -115,5 +115,5 @@ class test_type_form(forms.ModelForm):
 
 class test_result_form(forms.ModelForm):
     class Meta:
-        model = test_result
+        model = TestResult
         fields = ['project', 'test', 'executed_by', 'result']

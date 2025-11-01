@@ -1,5 +1,6 @@
-# views.project.py
-
+# -------------------------------------------------------------------
+#                    VIEWS.PROJECT.PY
+# -------------------------------------------------------------------
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -9,13 +10,30 @@ from django.db.models import Count
 from django.utils import timezone
 
 
-from fdk_cz.forms.project import add_user_form, document_form, category_form, initialize_project_forms, milestone_form, project_form, task_form,  User
-from fdk_cz.models import category, comment, company, document, milestone, project, project_user, role, task, test_error
+from fdk_cz.forms.project import add_user_form, document_form, category_form, initialize_project_forms, milestone_form, project_form, task_form
+
+from fdk_cz.models import (
+    ProjectCategory,
+    ProjectComment,
+    Company,
+    ProjectDocument,
+    ProjectMilestone,
+    Project,
+    ProjectUser,
+    ProjectRole,
+    ProjectTask,
+    TestError
+)
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-
-
+# -------------------------------------------------------------------
+#                    POZNÁMKY A TODO
+# -------------------------------------------------------------------
+# a
+# b
+# c
+# -------------------------------------------------------------------
 
 
 @login_required
@@ -28,8 +46,8 @@ def new_project(request):
             new_project.save()
 
             # Přiřadíme uživatele jako administrátora do tabulky project_user
-            admin_role = role.objects.get(role_name='Administrator')
-            project_user.objects.create(
+            admin_role = ProjectRole.objects.get(role_name='Administrator')
+            ProjectUser.objects.create(
                 project=new_project,
                 user=request.user,
                 role=admin_role
@@ -38,7 +56,7 @@ def new_project(request):
             # Přiřadíme základní kategorie (Frontend, Backend, etc.)
             basic_categories = ['Frontend', 'Backend', 'Database']
             for category_name in basic_categories:
-                category.objects.create(
+                ProjectCategory.objects.create(
                     name=category_name,
                     project=new_project,  # Specifické pro tento projekt
                     description=f'Základní kategorie: {category_name}'
@@ -56,9 +74,9 @@ def new_project(request):
 
 @login_required
 def detail_project(request, project_id):
-    proj = get_object_or_404(project, pk=project_id)
-    all_errors = test_error.objects.filter(project=proj)    
-    members = project_user.objects.filter(project=proj)
+    proj = get_object_or_404(Project, pk=project_id)
+    all_errors = TestError.objects.filter(project=proj)    
+    members = ProjectUser.objects.filter(project=proj)
     milestones = proj.milestones.all()
     documents = proj.documents.all()
     all_lists = proj.lists.all()
@@ -87,7 +105,7 @@ def detail_project(request, project_id):
     if request.method == 'POST' and form.is_valid():
         user = form.cleaned_data['user']
         role_instance = form.cleaned_data['role']
-        project_user_instance, created = project_user.objects.get_or_create(user=user, project=proj)
+        project_user_instance, created = ProjectUser.objects.get_or_create(user=user, project=proj)
         project_user_instance.role = role_instance
         project_user_instance.save()
         return redirect('detail_project', project_id=project_id)
@@ -132,17 +150,12 @@ def detail_project(request, project_id):
 
 
 
-
-
-
-
-
 # View for deleting a project
 def delete_project(request, project_id):
-    project = get_object_or_404(project, pk=project_id)
+    project = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         project.delete()
-        return redirect('project_list')
+        return redirect('index_project')
     return render(request, 'project/delete_project.html', {'project': project})
 
 
@@ -150,7 +163,7 @@ def delete_project(request, project_id):
 # View for editing an existing project 
 def edit_project(request, project_id):
     # Načtěte projekt, který se má upravit
-    project_instance = get_object_or_404(project, pk=project_id)
+    project_instance = get_object_or_404(Project, pk=project_id)
 
     if request.method == 'POST':
         form = project_form(request.POST, instance=project_instance)
@@ -171,10 +184,10 @@ def index_project(request):
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
     # Vyhledáme projekty, kde je aktuální uživatel vlastníkem
-    user_projects = project.objects.filter(
+    user_projects = Project.objects.filter(
         project_users__user=request.user
     ).distinct() 
-    assigned_tasks = task.objects.filter(assigned=request.user).order_by('-created')
+    assigned_tasks = ProjectTask.objects.filter(assigned=request.user).order_by('-created')
 
     return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})
 
@@ -186,14 +199,14 @@ def index_project(request):
 
 @login_required
 def manage_project_users(request, project_id):
-    project_instance = get_object_or_404(project, pk=project_id)
+    project_instance = get_object_or_404(Project, pk=project_id)
     members = project_instance.project_users.all()
 
     if request.method == 'POST':
         form = add_user_form(request.POST)
         
         if form.is_valid():
-            new_member = project_user(
+            new_member = ProjectUser(
                 project=project_instance,
                 user=form.cleaned_data['user'],
                 role=form.cleaned_data['role']
@@ -219,9 +232,9 @@ def manage_project_users(request, project_id):
 
 @login_required
 def remove_project_user(request, project_id, user_id):
-    project_instance = get_object_or_404(project, pk=project_id)
+    project_instance = get_object_or_404(Project, pk=project_id)
     user_instance = get_object_or_404(User, pk=user_id)
-    project_user_instance = get_object_or_404(project_user, project=project_instance, user=user_instance)
+    project_user_instance = get_object_or_404(ProjectUser, project=project_instance, user=user_instance)
     project_user_instance.delete()
     return redirect('manage_project_users', project_id=project_id)
 
@@ -246,8 +259,9 @@ def create_task(request, project_id):
     
     return render(request, 'project/create_task.html', {'form': form, 'project': proj})
 """
+@login_required
 def create_task(request, project_id):
-    proj = get_object_or_404(project, pk=project_id)
+    proj = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         form = task_form(request.POST, project=proj)
         if form.is_valid():
@@ -268,12 +282,12 @@ def create_task(request, project_id):
 
 @login_required
 def detail_task(request, task_id):
-    task_obj = get_object_or_404(task, pk=task_id)
-    project = task.project
+    task_obj = get_object_or_404(ProjectTask, pk=task_id)
+    project = task_obj.project
     comments = task_obj.comments.order_by('-posted')  # Načte komentáře pro úkol
 
     if request.method == 'POST' and 'comment' in request.POST:
-        new_comment = comment()
+        new_comment = ProjectComment()
         new_comment.task = task_obj
         new_comment.user = request.user
         new_comment.project = task_obj.project  # Zajistí, že nastavujeme instanci projektu
@@ -289,7 +303,7 @@ def detail_task(request, task_id):
 
 @login_required
 def edit_task(request, task_id):
-    task_obj = get_object_or_404(task, pk=task_id)
+    task_obj = get_object_or_404(ProjectTask, pk=task_id)
     project = task_obj.project  # Uložení projektu z úkolu
     if request.method == 'POST':
         form = task_form(request.POST, instance=task_obj, project=project)  # Přidání projektu při POST
@@ -307,7 +321,7 @@ def edit_task(request, task_id):
 @login_required
 def delete_task(request, task_id):
     # Načtení úkolu
-    selected_task = get_object_or_404(task, pk=task_id)
+    selected_task = get_object_or_404(ProjectTask, pk=task_id)
     project_id = selected_task.project.project_id  # Získání ID projektu pro přesměrování
 
     if request.method == 'POST':
@@ -322,7 +336,7 @@ def delete_task(request, task_id):
 
 @login_required
 def update_task_status(request, task_id, status):
-    selected_task = get_object_or_404(task, pk=task_id)  # Načte úkol podle ID
+    selected_task = get_object_or_404(ProjectTask, pk=task_id)  # Načte úkol podle ID
     selected_task.status = status  # Nastaví nový stav
     selected_task.save()  # Uloží změny
     return redirect('detail_project', project_id=selected_task.project.project_id)  
@@ -333,7 +347,7 @@ def update_task_status(request, task_id, status):
 @login_required
 def task_management(request):
     user = request.user
-    user_tasks = task.objects.filter(assigned=user).order_by('priority', '-status') 
+    user_tasks = ProjectTask.objects.filter(assigned=user).order_by('priority', '-status') 
 
 
     user_organizations = user.companies.all()
@@ -345,7 +359,7 @@ def task_management(request):
             messages.error(request, "Musíte být součástí organizace, abyste mohli vytvořit úkol mimo projekt.")
         else:
             # Create task without a project
-            task.objects.create(
+            ProjectTask.objects.create(
                 title=title,
                 description=description,
                 creator=user,
@@ -363,7 +377,7 @@ def task_management(request):
 # # # M i l e s t o n e s # # #@login_required
 @login_required
 def create_milestone(request, project_id):
-    proj = get_object_or_404(project, pk=project_id)
+    proj = get_object_or_404(Project, pk=project_id)
     
     if request.method == 'POST':
         form = milestone_form(request.POST)
@@ -387,7 +401,7 @@ def create_milestone(request, project_id):
 
 @login_required
 def edit_milestone(request, project_id, milestone_id):
-    milestone_instance = get_object_or_404(milestone, pk=milestone_id, project_id=project_id)
+    milestone_instance = get_object_or_404(ProjectMilestone, pk=milestone_id, project_id=project_id)
     
     if request.method == 'POST':
         form = milestone_form(request.POST, instance=milestone_instance)
@@ -403,7 +417,7 @@ def edit_milestone(request, project_id, milestone_id):
 
 @login_required
 def delete_milestone(request, project_id, milestone_id):
-    milestone = get_object_or_404(milestone, pk=milestone_id, project_id=project_id)
+    milestone = get_object_or_404(ProjectMilestone, pk=milestone_id, project_id=project_id)
 
     if request.method == 'POST':
         milestone.delete()
@@ -417,7 +431,7 @@ def delete_milestone(request, project_id, milestone_id):
 ### C A T E G O R Y ###
 @login_required
 def create_category(request, project_id):
-    proj = get_object_or_404(project, pk=project_id)
+    proj = get_object_or_404(Project, pk=project_id)
     
     if request.method == 'POST':
         form = category_form(request.POST)
@@ -435,7 +449,7 @@ def create_category(request, project_id):
 
 @login_required
 def edit_category(request, category_id):
-    cat = get_object_or_404(category, pk=category_id)
+    cat = get_object_or_404(ProjectCategory, pk=category_id)
     
     if request.method == 'POST':
         form = category_form(request.POST, instance=cat)
@@ -451,7 +465,7 @@ def edit_category(request, category_id):
 
 @login_required
 def delete_category(request, category_id):
-    cat = get_object_or_404(category, pk=category_id)
+    cat = get_object_or_404(ProjectCategory, pk=category_id)
     project_id = cat.project.project_id
     if request.method == 'POST':
         cat.delete()
@@ -465,7 +479,7 @@ def delete_category(request, category_id):
 #  D O C U M E N T
 @login_required
 def create_document(request, project_id):
-    proj = get_object_or_404(project, pk=project_id)
+    proj = get_object_or_404(Project, pk=project_id)
     if request.method == 'POST':
         form = document_form(request.POST, project_id=project_id)
         if form.is_valid():
@@ -484,7 +498,7 @@ def create_document(request, project_id):
 
 @login_required
 def edit_document(request, document_id):
-    doc = get_object_or_404(document, pk=document_id)
+    doc = get_object_or_404(ProjectDocument, pk=document_id)
     if request.method == 'POST':
         form = document_form(request.POST, request.FILES, instance=doc)
         if form.is_valid():
@@ -496,7 +510,7 @@ def edit_document(request, document_id):
 
 @login_required
 def delete_document(request, document_id):
-    doc = get_object_or_404(document, pk=document_id)
+    doc = get_object_or_404(ProjectDocument, pk=document_id)
     project_id = doc.project.project_id
     if request.method == 'POST':
         doc.delete()
@@ -505,6 +519,6 @@ def delete_document(request, document_id):
 
 @login_required
 def detail_document(request, document_id):
-    doc = get_object_or_404(document, pk=document_id)
+    doc = get_object_or_404(ProjectDocument, pk=document_id)
     return render(request, 'project/detail_document.html', {'document': doc})
 

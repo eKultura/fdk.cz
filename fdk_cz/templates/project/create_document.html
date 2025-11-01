@@ -1,118 +1,96 @@
-{% extends 'project/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Nový dokument" %}{% endblock %}
+{% block title %}Nový dokument | FDK.cz{% endblock %}
+{% block header_title %}Nový dokument{% endblock %}
+{% block header_subtitle %}Založení nového dokumentu v projektu{% endblock %}
 
 {% block meta %}
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="max-w-2xl mx-auto mt-8">
+  <div class="content-card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
 
-    <!-- Levý blok 2/3 - Formulář pro vytvoření dokumentu -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">{% trans "Vytvořit nový dokument" %}</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Základní informace</h2>
 
-            <!-- Název dokumentu -->
-            <div class="mb-4">
-                <label for="id_title" class="font-semibold text-gray-600 block mb-1">{% trans "Název" %} <sup class="text-red-600">*</sup></label>
-                <input type="text" name="title" id="id_title" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                {% if form.title.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Název -->
+      <div class="form-group mb-4">
+        <label for="id_title" class="block font-medium text-gray-700">Název dokumentu <span class="text-red-600">*</span></label>
+        <input type="text" name="title" id="id_title" required
+               value="{{ form.title.value|default_if_none:'' }}"
+               placeholder="Zadejte název dokumentu"
+               class="form-input w-full border border-gray-300 rounded-lg p-2">
+        {% if form.title.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
+        {% endif %}
+      </div>
 
-            <!-- Typ dokumentu -->
-            <div class="mb-4">
-                <label for="id_document_type" class="font-semibold text-gray-600 block mb-1">{% trans "Typ dokumentu" %} <sup class="text-red-600">*</sup></label>
-                <input type="text" name="document_type" id="id_document_type" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                {% if form.document_type.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.document_type.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Typ -->
+      <div class="form-group mb-4">
+        <label for="id_document_type" class="block font-medium text-gray-700">Typ dokumentu <span class="text-red-600">*</span></label>
+        <input type="text" name="document_type" id="id_document_type"
+               value="{{ form.document_type.value|default_if_none:'' }}"
+               placeholder="Např. zápis, smlouva, příloha…"
+               class="form-input w-full border border-gray-300 rounded-lg p-2">
+      </div>
 
-            <!-- Kategorie dokumentu -->
-            <div class="mb-4">
-                <label for="id_category" class="font-semibold text-gray-600 block mb-1">{% trans "Kategorie" %}</label>
-                <select name="category" id="id_category" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
-                    {% for category in form.category.field.queryset %}
-                        <option value="{{ category.pk }}" {% if form.category.value == category.pk %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                {% if form.category.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.category.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+      <!-- Kategorie -->
+      <div class="form-group mb-4">
+        <label for="id_category" class="block font-medium text-gray-700">Kategorie</label>
+        <select name="category" id="id_category" class="form-input w-full border border-gray-300 rounded-lg p-2">
+          <option value="">-- Vyberte kategorii --</option>
+          {% for category in form.category.field.queryset %}
+            <option value="{{ category.pk }}"
+                    {% if form.category.value == category.pk %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
 
+      <!-- Obsah -->
+      <div class="form-group mb-6">
+        <label for="id_description" class="block font-medium text-gray-700">Obsah dokumentu</label>
+        <textarea name="description" id="id_description"
+                  class="form-input w-full border border-gray-300 rounded-lg p-2"
+                  placeholder="Zadejte obsah dokumentu">{{ form.description.value|default_if_none:'' }}</textarea>
+      </div>
 
-
-            <!-- Obsah dokumentu (Summernote textarea) -->
-<div class="mb-4">
-    <label for="id_description" class="font-semibold text-gray-600 block mb-1">{% trans "Obsah" %}</label>
-    {{ form.description }}
-    {% if form.description.errors %}
-        <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
-    {% endif %}
-</div>
-
-
-
-            <div class="flex gap-4 mt-6">
-                <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
-                    {% trans "Uložit dokument" %}
-                </button>
-                <a href="{% url 'detail_project' project.project_id %}" class="w-full py-2 px-4 bg-gray-600 text-white font-bold rounded-lg text-center hover:bg-gray-700">
-                    {% trans "Zpět" %}
-                </a>
-            </div>
-        </form>
-    </div>
-
-    <!-- Pravý blok 1/3 - Pomocník s informacemi -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{{ project.name }}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "Vytváříte nový dokument, který lze připojit k projektu a sdílet s ostatními členy týmu." %}
-        </p>
-        <p class="text-gray-600">{% trans "Použijte pole k zadání názvu, typu a obsahu dokumentu." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
-        </div>
-    </div>
-
+      <!-- Akce -->
+      <div class="flex flex-col sm:flex-row gap-3 mt-6">
+        <button type="submit" class="btn btn-primary w-full sm:w-auto">
+          📄 Uložit dokument
+        </button>
+        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline w-full sm:w-auto">
+          ← Zpět
+        </a>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- Inicializace Summernote -->
-
 <script>
-    $(document).ready(function() {
-        $('#id_description').summernote({
-            placeholder: 'Zadejte obsah dokumentu',
-            tabsize: 2,
-            height: 200,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link']],
-                ['view', ['fullscreen']]
-            ]
-        });
+  $(document).ready(function() {
+    $('#id_description').summernote({
+      placeholder: 'Zadejte obsah dokumentu...',
+      tabsize: 2,
+      height: 250,
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['fontsize', 'color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'table']],
+        ['view', ['fullscreen']]
+      ]
     });
+  });
 </script>
 {% endblock %}

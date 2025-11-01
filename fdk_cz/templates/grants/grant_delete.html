@@ -1,0 +1,440 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  Smazání výzvy | {{ grant.title }} | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.delete-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.warning-card {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.warning-icon {
+  font-size: 4rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.warning-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.warning-text {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.grant-info {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.grant-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.grant-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.5rem;
+}
+
+.grant-details h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.grant-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.impact-warning {
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.impact-title {
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.impact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.impact-list li {
+  padding: 0.5rem 0;
+  color: #92400e;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirmation-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.confirmation-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #fecaca;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.confirmation-input:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  border: 2px solid #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.btn-danger:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.alternatives {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.alternatives h4 {
+  color: #075985;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alternatives ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alternatives li {
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #075985;
+}
+
+.alternatives a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.alternatives a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .grant-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .grant-meta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na granty
+    </a>
+    <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
+    <a href="{% url 'detail_grant' grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      {{ grant.title|truncatewords:5 }}
+    </a>
+  </nav>
+  
+  <h1 class="page-title">
+    Smazání výzvy
+  </h1>
+  <p class="page-subtitle">
+    Tato akce je nevratná. Postupujte opatrně.
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="delete-container">
+  <!-- Hlavní varování -->
+  <div class="warning-card">
+    <div class="warning-icon">🚨</div>
+    <h2 class="warning-title">Pozor! Nevratná akce</h2>
+    <p class="warning-text">
+      Chystáte se trvale smazat tuto výzvu. Tato akce je <strong>nevratná</strong> 
+      a povede ke ztrátě všech souvisejících dat.
+    </p>
+  </div>
+
+  <!-- Informace o grantu -->
+  <div class="grant-info">
+    <div class="grant-header">
+      <div class="grant-icon">💰</div>
+      <div class="grant-details">
+        <h3>{{ grant.title }}</h3>
+        <div class="grant-meta">
+          <span>🏢 {{ grant.provider }}</span>
+          <span>📊 {{ grant.get_type_display }}</span>
+          <span>📅 {{ grant.published_at|date:"d.m.Y" }}</span>
+        </div>
+      </div>
+    </div>
+    
+    {% if grant.description %}
+    <div style="padding-top: 1rem; border-top: 1px solid #f3f4f6;">
+      <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">
+        {{ grant.description|truncatewords:20 }}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Alternativy ke smazání -->
+  <div class="alternatives">
+    <h4>💡 Zvažte tyto alternativy</h4>
+    <ul>
+      <li>
+        🔒 <a href="{% url 'edit_grant' grant.grant_id %}">Deaktivovat výzvu</a> - skryje ji, ale zachová data
+      </li>
+      <li>
+        📦 <strong>Archivovat výzvu</strong> - přesune do archivu pro budoucí reference
+      </li>
+      <li>
+        ✏️ <a href="{% url 'edit_grant' grant.grant_id %}">Upravit výzvu</a> - změnit podmínky místo mazání
+      </li>
+      <li>
+        📥 <strong>Exportovat data</strong> před smazáním pro zálohu
+      </li>
+    </ul>
+  </div>
+
+  <!-- Dopad smazání -->
+  {% if applications_count > 0 or related_data %}
+  <div class="impact-warning">
+    <div class="impact-title">
+      ⚠️ Dopad smazání
+    </div>
+    <ul class="impact-list">
+      {% if applications_count > 0 %}
+      <li>❌ {{ applications_count }} podaných žádostí bude trvale smazáno</li>
+      {% endif %}
+      <li>❌ Všechna metadata a statistiky budou ztracena</li>
+      <li>❌ Související odkazy a reference přestanou fungovat</li>
+      <li>❌ Historie komunikace s žadateli bude smazána</li>
+      <li>❌ Tuto akci nelze vrátit zpět</li>
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Potvrzení smazání -->
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="confirmation-section">
+      <h3 style="color: #dc2626; margin-bottom: 1rem;">Potvrďte smazání</h3>
+      <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.875rem;">
+        Pro potvrzení smazání napište název výzvy: <strong>{{ grant.title }}</strong>
+      </p>
+      
+      <input type="text" 
+             id="confirmation" 
+             name="confirmation" 
+             class="confirmation-input"
+             placeholder="Napište název výzvy pro potvrzení..."
+             autocomplete="off"
+             required>
+      
+      <div style="font-size: 0.75rem; color: #6b7280;">
+        Název musí být přesně stejný (včetně velikosti písmen a diakritiky)
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" 
+              id="deleteBtn" 
+              class="btn btn-danger" 
+              disabled>
+        🗑️ Trvale smazat výzvu
+      </button>
+      
+      <a href="{% url 'detail_grant' grant.grant_id %}" class="btn btn-outline">
+        ❌ Zrušit
+      </a>
+      
+      <a href="{% url 'edit_grant' grant.grant_id %}" class="btn btn-primary">
+        ✏️ Raději upravit
+      </a>
+    </div>
+  </form>
+
+  <!-- Bezpečnostní informace -->
+  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; font-size: 0.875rem; color: #6b7280;">
+    <h4 style="color: #374151; margin-bottom: 1rem;">🔒 Bezpečnostní informace</h4>
+    <ul style="margin: 0; padding-left: 1.5rem;">
+      <li>Smazání bude zaznamenáno v audit logu systému</li>
+      <li>Správci systému budou o smazání informováni</li>
+      <li>Podle GDPR mohou být některá data archivována po zákonnou dobu</li>
+      <li>Pro obnovení smazané výzvy kontaktujte podporu do 30 dnů</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const confirmationInput = document.getElementById('confirmation');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const targetTitle = "{{ grant.title }}";
+  
+  confirmationInput.addEventListener('input', function() {
+    if (this.value === targetTitle) {
+      deleteBtn.disabled = false;
+      deleteBtn.style.opacity = '1';
+      this.style.borderColor = '#10b981';
+    } else {
+      deleteBtn.disabled = true;
+      deleteBtn.style.opacity = '0.5';
+      this.style.borderColor = '#fecaca';
+    }
+  });
+  
+  // Double confirm při submit
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const confirmMsg = `POSLEDNÍ VAROVÁNÍ!\n\nOpravdu chcete trvale smazat výzvu "${targetTitle}"?\n\n` +
+                      `Tím se:\n` +
+                      `• Smaže ${applications_count || 0} žádostí\n` +
+                      `• Ztratí všechna data\n` +
+                      `• Akce bude NEVRATNÁ\n\n` +
+                      `Pokračovat ve smazání?`;
+    
+    if (!confirm(confirmMsg)) {
+      e.preventDefault();
+      return false;
+    }
+    
+    // Final countdown
+    let countdown = 5;
+    const interval = setInterval(() => {
+      deleteBtn.textContent = `🗑️ Mazání za ${countdown}s...`;
+      countdown--;
+      
+      if (countdown < 0) {
+        clearInterval(interval);
+        deleteBtn.textContent = '🗑️ Mazání...';
+      }
+    }, 1000);
+    
+    // Disable form to prevent double submit
+    setTimeout(() => {
+      deleteBtn.disabled = true;
+      confirmationInput.disabled = true;
+    }, 100);
+  });
+  
+  // Prevence náhodného zavření stránky
+  window.addEventListener('beforeunload', function(e) {
+    if (confirmationInput.value.length > 0) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Focus na input
+  confirmationInput.focus();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  // Escape = cancel
+  if (e.key === 'Escape') {
+    window.location.href = '{% url "detail_grant" grant.grant_id %}';
+  }
+  
+  // Ctrl+E = edit instead
+  if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+    e.preventDefault();
+    window.location.href = '{% url "edit_grant" grant.grant_id %}';
+  }
+});
+</script>
+
+{% endblock %}

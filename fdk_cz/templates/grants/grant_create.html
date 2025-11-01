@@ -1,0 +1,422 @@
+{% extends 'grants/base.html' %}
+{% load static %}
+
+{% block title %}
+  Nový grant | Granty a Dotace | FDK.cz
+{% endblock %}
+
+{% block meta %}
+<style>
+.form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.form-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-input {
+  width: auto;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.sidebar-info {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  height: fit-content;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.info-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-section li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.info-section li:last-child {
+  border-bottom: none;
+}
+
+.provider-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.provider-tag {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.provider-tag:hover {
+  background: #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="page-header">
+  <nav style="margin-bottom: 1rem;">
+    <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+      ← Zpět na seznam grantů
+    </a>
+  </nav>
+  
+  <h1 class="page-title">
+    Přidat novou výzvu
+  </h1>
+  <p class="page-subtitle">
+    Vytvořte nový grant, dotaci nebo stipendium pro sdílení s ostatními
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="form-grid">
+  <!-- Hlavní formulář -->
+  <div class="form-card">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <!-- Základní informace -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Základní informace
+        </h2>
+
+        <div class="form-group">
+          <label for="title" class="form-label">
+            Název výzvy <span class="required">*</span>
+          </label>
+          <input type="text" 
+                 id="title" 
+                 name="title" 
+                 class="form-input" 
+                 required
+                 placeholder="Např. Podpora kulturních projektů 2025"
+                 maxlength="255">
+          <div class="help-text">Stručný a výstižný název, který popisuje účel výzvy</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="provider" class="form-label">
+              Poskytovatel <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="provider" 
+                   name="provider" 
+                   class="form-input" 
+                   required
+                   placeholder="Např. MKČR"
+                   list="provider-suggestions">
+            <datalist id="provider-suggestions">
+              <option value="MKČR">
+              <option value="Evropská komise">
+              <option value="MPO ČR">
+              <option value="GAČR">
+              <option value="TAČR">
+              <option value="MAS">
+              <option value="Nadace Via">
+              <option value="Nadace OSF">
+            </datalist>
+            <div class="provider-suggestions">
+              <span class="provider-tag" onclick="setProvider('MKČR')">MKČR</span>
+              <span class="provider-tag" onclick="setProvider('EU')">EU</span>
+              <span class="provider-tag" onclick="setProvider('GAČR')">GAČR</span>
+              <span class="provider-tag" onclick="setProvider('TAČR')">TAČR</span>
+              <span class="provider-tag" onclick="setProvider('MAS')">MAS</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="type" class="form-label">
+              Typ výzvy <span class="required">*</span>
+            </label>
+            <select id="type" name="type" class="form-select" required>
+              <option value="">-- Vyberte typ --</option>
+              <option value="dotace">Dotace</option>
+              <option value="grant">Grant</option>
+              <option value="stipendium">Stipendium</option>
+            </select>
+            <div class="help-text">Zvolte nejvhodnější kategorii pro tuto výzvu</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="url" class="form-label">Oficiální URL</label>
+          <input type="url" 
+                 id="url" 
+                 name="url" 
+                 class="form-input" 
+                 placeholder="https://www.example.com/vyzvа">
+          <div class="help-text">Odkaz na oficiální stránky výzvy s kompletními informacemi</div>
+        </div>
+      </div>
+
+      <!-- Termíny -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Termíny
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="start_date" class="form-label">Začátek příjmu žádostí</label>
+            <input type="date" 
+                   id="start_date" 
+                   name="start_date" 
+                   class="form-input">
+            <div class="help-text">Od kdy lze podávat žádosti</div>
+          </div>
+
+          <div class="form-group">
+            <label for="end_date" class="form-label">
+              Deadline <span class="required">*</span>
+            </label>
+            <input type="date" 
+                   id="end_date" 
+                   name="end_date" 
+                   class="form-input" 
+                   required>
+            <div class="help-text">Poslední termín pro podání žádostí</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" 
+                   id="is_recurring" 
+                   name="is_recurring" 
+                   class="checkbox-input" 
+                   value="1">
+            <label for="is_recurring" class="form-label" style="margin-bottom: 0;">
+              Opakovaná výzva
+            </label>
+          </div>
+          <div class="help-text">Zaškrtněte, pokud se výzva bude opakovat v budoucnu</div>
+        </div>
+      </div>
+
+      <!-- Popis -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;">
+          Popis a podmínky
+        </h2>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Popis výzvy</label>
+          <textarea id="description" 
+                    name="description" 
+                    class="form-textarea" 
+                    placeholder="Popište účel výzvy, cílovou skupinu, podmínky, maximální výši podpory a další důležité informace..."></textarea>
+          <div class="help-text">Detailní popis včetně podmínek, cílové skupiny a výše podpory</div>
+        </div>
+      </div>
+
+      <!-- Akční tlačítka -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          💾 Vytvořit výzvu
+        </button>
+        <a href="{% url 'grant_list' %}" class="btn btn-outline">
+          ❌ Zrušit
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sidebar s nápovědou -->
+  <div>
+    <div class="sidebar-info">
+      <div class="info-section">
+        <h3>💡 Tipy pro vytváření výzev</h3>
+        <ul>
+          <li>Použijte jasný a výstižný název</li>
+          <li>Vyplňte všechny důležité termíny</li>
+          <li>Přidejte odkaz na oficiální stránky</li>
+          <li>Popište podmínky a cílovou skupinu</li>
+          <li>Uveďte maximální výši podpory</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>📋 Nejčastější poskytovatelé</h3>
+        <ul>
+          <li>MKČR - Ministerstvo kultury ČR</li>
+          <li>EU - Evropské fondy</li>
+          <li>GAČR - Grantová agentura ČR</li>
+          <li>TAČR - Technologická agentura ČR</li>
+          <li>MAS - Místní akční skupiny</li>
+          <li>NPO - Neziskové organizace</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>🎯 Typy výzev</h3>
+        <ul>
+          <li><strong>Dotace:</strong> Státní nebo veřejné podpory</li>
+          <li><strong>Granty:</strong> Výzkumné a rozvojové projekty</li>
+          <li><strong>Stipendia:</strong> Podpora studentů a výzkumníků</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>⚠️ Důležité upozornění</h3>
+        <ul>
+          <li>Zkontrolujte všechny údaje před uložením</li>
+          <li>Výzva bude viditelná všem uživatelům</li>
+          <li>Můžete ji později upravit nebo smazat</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function setProvider(provider) {
+  document.getElementById('provider').value = provider;
+}
+
+// Validace formuláře
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  const endDateInput = document.getElementById('end_date');
+  const startDateInput = document.getElementById('start_date');
+
+  // Nastavit minimální datum na dnes
+  const today = new Date().toISOString().split('T')[0];
+  endDateInput.min = today;
+  
+  startDateInput.addEventListener('change', function() {
+    if (this.value) {
+      endDateInput.min = this.value;
+    }
+  });
+
+  form.addEventListener('submit', function(e) {
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+    
+    if (startDate && endDate && startDate > endDate) {
+      e.preventDefault();
+      alert('Začátek příjmu žádostí nemůže být později než deadline!');
+      return false;
+    }
+  });
+
+  // Auto-resize textarey
+  const textarea = document.getElementById('description');
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+});
+</script>
+
+{% endblock %}

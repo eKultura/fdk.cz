@@ -1,9 +1,9 @@
 from django import forms
-from fdk_cz.models import transaction, warehouse
+from fdk_cz.models import Warehouse, WarehouseItem, WarehouseTransaction
 
 class transaction_form(forms.ModelForm):
     class Meta:
-        model = transaction
+        model = WarehouseTransaction
         fields = ['transaction_type', 'quantity']
         labels = {
             'transaction_type': 'Typ transakce',

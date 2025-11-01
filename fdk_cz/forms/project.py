@@ -2,7 +2,7 @@
 
 from django import forms
 from django.contrib.auth.models import User
-from fdk_cz.models import category, document, milestone, project, role, task, User
+from fdk_cz.models import ProjectCategory, ProjectDocument, ProjectMilestone, Project, ProjectRole, ProjectTask, User
 
 
 class project_form(forms.ModelForm):
@@ -10,12 +10,12 @@ class project_form(forms.ModelForm):
     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), required=False)
 
     class Meta:
-        model = project
+        model = Project
         fields = ['name', 'description', 'url', 'start_date', 'end_date']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název projektu'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis projektu'}),
-            'url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL projektu'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Název projektu'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis projektu'}),
+            'url': forms.TextInput(attrs={'placeholder': 'URL projektu'}),
         }
 
 
@@ -27,7 +27,7 @@ class add_user_form(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     role = forms.ModelChoiceField(
-        queryset=role.objects.all(),
+        queryset=ProjectRole.objects.all(),
         label='Role',
         required=True,  # Označení pole role jako povinného
         widget=forms.Select(attrs={'class': 'form-control'})
@@ -37,13 +37,13 @@ class add_user_form(forms.Form):
 
 class milestone_form(forms.ModelForm):
     class Meta:
-        model = milestone
+        model = ProjectMilestone
         fields = ['title', 'description', 'due_date', 'status']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název milníku'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis milníku'}),
-            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'placeholder': 'Název milníku'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis milníku'}),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'status': forms.Select(attrs={}),
         }
 
 def initialize_project_forms(post_data=None):
@@ -58,24 +58,24 @@ def initialize_project_forms(post_data=None):
 
 class task_form(forms.ModelForm):
     class Meta:
-        model = task
+        model = ProjectTask
         fields = ['title', 'description', 'category', 'priority', 'status', 'due_date', 'assigned']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název úkolu'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis úkolu'}),
-            'priority': forms.Select(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'assigned': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'placeholder': 'Název úkolu'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis úkolu'}),
+            'priority': forms.Select(attrs={}),
+            'status': forms.Select(attrs={}),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'assigned': forms.Select(attrs={}),
         }
 
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
         super().__init__(*args, **kwargs)
         if project:
-            self.fields['category'].queryset = category.objects.filter(project=project)
+            self.fields['category'].queryset = ProjectCategory.objects.filter(project=project)
         else:
-            self.fields['category'].queryset = category.objects.none()
+            self.fields['category'].queryset = ProjectCategory.objects.none()
         self.fields['category'].empty_label = "Vyberte kategorii"
 
 
@@ -83,18 +83,18 @@ class task_form(forms.ModelForm):
 
 class category_form(forms.ModelForm):
     class Meta:
-        model = category
+        model = ProjectCategory
         fields = ['name', 'description'] 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název kategorie'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis kategorie'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Název kategorie'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis kategorie'}),
         }
 
 
 
 class document_form(forms.ModelForm):
     class Meta:
-        model = document
+        model = ProjectDocument
         fields = ['title', 'document_type', 'category', 'description']
         widgets = {
             'description': forms.Textarea(attrs={'class': 'summernote'}),

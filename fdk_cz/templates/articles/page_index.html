@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Stránky | FDK.cz{% endblock %}
+{% block header_title %}Přehled webových stránek{% endblock %}
+
+{% block content %}
+<div class="content-section">
+  <h2 class="section-title">Základní stránky webu</h2>
+  <ul class="page-list">
+    {% for article in articles %}
+      <li>
+        <a href="/{{ article.slug }}">📄 {{ article.title }}</a>
+      </li>
+    {% empty %}
+      <p>Žádné stránky nejsou k dispozici.</p>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
