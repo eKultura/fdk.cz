@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Zrušit předplatné - FDK.cz{% endblock %}
+
+{% block header_title %}Zrušit předplatné{% endblock %}
+{% block header_subtitle %}{{ subscription.module.display_name }}{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 500px; margin: 0 auto;">
+    <div style="border: 1px solid #ef4444; border-radius: 8px; padding: 2rem; background: #fef2f2;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <span style="font-size: 4rem;">⚠️</span>
+            <h2 style="margin: 1rem 0; color: #ef4444;">Opravdu chcete zrušit?</h2>
+            <p style="color: #64748b;">
+                Zrušujete předplatné modulu <strong>{{ subscription.module.display_name }}</strong>
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                    Proč rušíte? (volitelné)
+                </label>
+                <textarea name="reason" rows="4"
+                          style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 4px;"
+                          placeholder="Vaše zpětná vazba nám pomůže vylepšit služby..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'subscription_dashboard' %}"
+                   style="flex: 1; text-align: center; padding: 0.75rem; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">
+                    Zůstat
+                </a>
+                <button type="submit"
+                        style="flex: 1; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Zrušit předplatné
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

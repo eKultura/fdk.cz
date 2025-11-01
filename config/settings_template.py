@@ -67,6 +67,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+
+    # FDK.cz subscription system middleware
+    'fdk_cz.middleware.module_access.ModuleAccessMiddleware',
 ]
 
 
@@ -91,6 +94,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # FDK.cz context processors
+                'fdk_cz.context_processors.user_modules',
             ],
         },
     },
@@ -107,7 +113,7 @@ LOCALE_PATHS = [
 LANGUAGES = [
     ('cs', 'Czech'),
     ('en', 'English'),
-    # Pøidej další jazyky podle potøeby
+    # Pï¿½idej dalï¿½ï¿½ jazyky podle potï¿½eby
 ]
 
 

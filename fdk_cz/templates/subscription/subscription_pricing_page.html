@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Ceník modulů - FDK.cz{% endblock %}
+
+{% block header_title %}Ceník modulů{% endblock %}
+{% block header_subtitle %}Vyberte si moduly pro vaši organizaci{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 1200px; margin: 0 auto;">
+
+    <!-- FREE moduly -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="text-align: center; margin-bottom: 1rem;">🆓 Bezplatné moduly</h2>
+        <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
+            Tyto moduly jsou dostupné zdarma pro všechny uživatele
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            {% for module in modules %}
+                {% if module.is_free %}
+                <div style="border: 2px solid #10b981; border-radius: 8px; padding: 1.5rem; background: #f0fdf4;">
+                    <span style="font-size: 2.5rem; display: block; text-align: center; margin-bottom: 0.5rem;">{{ module.icon }}</span>
+                    <h3 style="text-align: center; margin: 0.5rem 0; font-size: 1.1rem;">{{ module.display_name }}</h3>
+                    <p style="color: #64748b; font-size: 0.875rem; text-align: center;">
+                        {{ module.short_description|default:"" }}
+                    </p>
+                    <p style="text-align: center; font-weight: bold; color: #10b981; margin-top: 1rem;">ZDARMA</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- PAID moduly -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="text-align: center; margin-bottom: 1rem;">💳 Placené moduly</h2>
+        <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
+            Profesionální moduly pro pokročilé řízení organizace
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+            {% for module in modules %}
+                {% if not module.is_free %}
+                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; background: white; position: relative;">
+                    {% if module.module_id in user_subscriptions %}
+                    <div style="position: absolute; top: 0.5rem; right: 0.5rem; background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">
+                        ✓ AKTIVNÍ
+                    </div>
+                    {% endif %}
+
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <span style="font-size: 3rem;">{{ module.icon }}</span>
+                        <h3 style="margin: 0.5rem 0; font-size: 1.2rem;">{{ module.display_name }}</h3>
+                    </div>
+
+                    <p style="color: #64748b; font-size: 0.875rem; min-height: 3rem; margin-bottom: 1rem;">
+                        {{ module.description|truncatewords:15 }}
+                    </p>
+
+                    <div style="background: #f9fafb; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.875rem;">Měsíčně:</span>
+                            <strong style="font-size: 1.1rem; color: #3b82f6;">{{ module.price_monthly }} Kč</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 0.875rem;">Ročně:</span>
+                            <strong style="font-size: 1.1rem; color: #10b981;">{{ module.price_yearly }} Kč</strong>
+                        </div>
+                        <p style="font-size: 0.75rem; color: #64748b; margin: 0.5rem 0 0 0; text-align: right;">
+                            Úspora {{ module.price_monthly|floatformat:0|add:"0"|add:"12"|add:"-"|add:module.price_yearly|floatformat:0 }} Kč/rok
+                        </p>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        {% if module.module_id in user_subscriptions %}
+                        <a href="{% url 'subscription_dashboard' %}"
+                           style="display: block; text-align: center; padding: 0.75rem; background: #64748b; color: white; text-decoration: none; border-radius: 4px;">
+                            Spravovat předplatné
+                        </a>
+                        {% else %}
+                        <a href="{% url 'subscribe_to_module' module.module_id %}"
+                           style="display: block; text-align: center; padding: 0.75rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px;">
+                            Zakoupit nyní
+                        </a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'login_cs' %}?next={% url 'subscription_pricing' %}"
+                       style="display: block; text-align: center; padding: 0.75rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px;">
+                        Přihlásit se
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- CTA -->
+    {% if user.is_authenticated %}
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{% url 'subscription_dashboard' %}"
+           style="display: inline-block; padding: 1rem 2rem; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-size: 1.1rem;">
+            🎯 Zobrazit moje předplatné
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -40,10 +40,20 @@ from fdk_cz.views.warehouse import (
     create_transaction,
     transaction_detail,
 )
+
+from fdk_cz.views import subscription
+
 urlpatterns = (
 
     path('', index, name='index'),
     path('dashboard', dashboard, name='dashboard'),
+
+    # Subscription URLs
+    path('predplatne/', subscription.subscription_dashboard, name='subscription_dashboard'),
+    path('ceny/', subscription.subscription_pricing, name='subscription_pricing'),
+    path('predplatne/modul/<int:module_id>/objednat/', subscription.subscribe_to_module, name='subscribe_to_module'),
+    path('predplatne/<int:subscription_id>/zrusit/', subscription.cancel_subscription, name='cancel_subscription'),
+    path('predplatne/<int:subscription_id>/obnovit/', subscription.renew_subscription, name='renew_subscription'),
 
     # Auth paths
     path('prihlaseni/', login, name='login_cs'),
