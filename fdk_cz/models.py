@@ -566,11 +566,102 @@ class GrantCall(models.Model):
     is_active = models.BooleanField(default=True, db_column='is_active')
     published_at = models.DateField(auto_now_add=True, db_column='published_at')
 
+    # ✅ NOVÉ: Zdroj dotace a externí integrace
+    source = models.CharField(
+        max_length=50,
+        choices=[
+            ('manual', 'Manuální'),
+            ('dotaceeu', 'DotaceEU'),
+            ('msmt', 'MŠMT'),
+            ('other_api', 'Jiné API')
+        ],
+        default='manual',
+        db_column='source'
+    )
+    external_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        unique=True,
+        db_column='external_id',
+        help_text='ID z externí databáze (dotaceEU, MŠMT)'
+    )
+    source_url = models.URLField(
+        null=True,
+        blank=True,
+        db_column='source_url',
+        help_text='Odkaz na dotaci v původním systému'
+    )
+    external_metadata = models.JSONField(
+        default=dict,
+        db_column='external_metadata',
+        help_text='Dodatečná data z externího API'
+    )
+    last_synced = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_column='last_synced'
+    )
+
+    # ✅ NOVÉ: Rozšířené informace
+    tags = models.CharField(
+        max_length=500,
+        null=True,
+        blank=True,
+        db_column='tags',
+        help_text='Tagy oddělené čárkami: startup,inovace,kultura'
+    )
+    min_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_column='min_amount'
+    )
+    max_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_column='max_amount'
+    )
+    priority = models.IntegerField(
+        default=0,
+        db_column='priority',
+        help_text='Vyšší číslo = vyšší priorita zobrazení'
+    )
+
     class Meta:
         db_table = 'FDK_grant_call'
+        indexes = [
+            models.Index(fields=['external_id']),
+            models.Index(fields=['source', 'is_active']),
+            models.Index(fields=['-priority', '-published_at']),
+            models.Index(fields=['status', 'end_date']),
+        ]
 
     def __str__(self):
         return self.title
+
+    def is_open_for_applications(self):
+        """Kontrola, zda je výzva otevřená pro podání žádostí"""
+        from datetime import date
+        today = date.today()
+        if not self.is_active or self.status != 'open':
+            return False
+        if self.start_date and self.start_date > today:
+            return False
+        if self.end_date and self.end_date < today:
+            return False
+        return True
+
+    def days_until_deadline(self):
+        """Počet dní do uzávěrky"""
+        from datetime import date
+        if not self.end_date:
+            return None
+        delta = self.end_date - date.today()
+        return delta.days if delta.days >= 0 else 0
 
 
 class GrantRequirement(models.Model):
@@ -617,8 +708,60 @@ class GrantApplication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
     updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
 
+    # ✅ NOVÉ: Fáze životního cyklu dotace
+    lifecycle_stage = models.CharField(
+        max_length=50,
+        choices=[
+            ('preparation', 'Příprava žádosti'),
+            ('submitted', 'Odesláno'),
+            ('under_review', 'Probíhá hodnocení'),
+            ('approved', 'Schváleno'),
+            ('rejected', 'Zamítnuto'),
+            ('in_progress', 'V realizaci'),
+            ('reporting', 'Reporting'),
+            ('completed', 'Ukončeno'),
+            ('archived', 'Archivováno')
+        ],
+        default='preparation',
+        db_column='lifecycle_stage'
+    )
+
+    # ✅ NOVÉ: Reporting a monitoring
+    report_deadline = models.DateField(
+        null=True,
+        blank=True,
+        db_column='report_deadline',
+        help_text='Termín odevzdání závěrečné zprávy'
+    )
+    last_report_submitted = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_column='last_report_submitted'
+    )
+
+    # ✅ NOVÉ: Skutečně získaná částka
+    actual_received_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_column='actual_received_amount',
+        help_text='Skutečně obdržená částka (může se lišit od schválené)'
+    )
+
+    # ✅ NOVÉ: Průběh realizace
+    completion_percentage = models.IntegerField(
+        default=0,
+        db_column='completion_percentage',
+        help_text='Stupeň dokončení projektu (0-100%)'
+    )
+
     class Meta:
         db_table = 'FDK_grant_application'
+        indexes = [
+            models.Index(fields=['lifecycle_stage', '-created_at']),
+            models.Index(fields=['report_deadline']),
+        ]
 
     def __str__(self):
         return f"{self.applicant} → {self.call}"
@@ -639,6 +782,71 @@ class GrantApplicationDocument(models.Model):
 
     def __str__(self):
         return f"Dokument {self.document_id} k žádosti {self.application_id}"
+
+
+class GrantOpportunityBookmark(models.Model):
+    """Uživatelé si mohou označit zajímavé dotační příležitosti"""
+    bookmark_id = models.AutoField(primary_key=True, db_column='bookmark_id')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grant_bookmarks', db_column='user_id')
+    call = models.ForeignKey(GrantCall, on_delete=models.CASCADE, related_name='bookmarks', db_column='call_id')
+
+    notes = models.TextField(null=True, blank=True, db_column='notes', help_text='Osobní poznámky k příležitosti')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+
+    class Meta:
+        db_table = 'FDK_grant_opportunity_bookmark'
+        unique_together = ('user', 'call')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.call.title}"
+
+
+class GrantDocumentTemplate(models.Model):
+    """Šablony dokumentů pro průvodce generováním"""
+    template_id = models.AutoField(primary_key=True, db_column='template_id')
+
+    name = models.CharField(max_length=255, db_column='name')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    document_type = models.CharField(
+        max_length=100,
+        choices=[
+            ('project_description', 'Popis projektu'),
+            ('budget', 'Rozpočet'),
+            ('timeline', 'Časový harmonogram'),
+            ('team', 'Složení týmu'),
+            ('motivation', 'Motivační dopis'),
+            ('references', 'Reference'),
+            ('other', 'Jiné')
+        ],
+        db_column='document_type'
+    )
+
+    # JSON schéma pro dynamická pole formuláře
+    fields_schema = models.JSONField(
+        default=list,
+        db_column='fields_schema',
+        help_text='JSON pole objektů: [{"name": "field_name", "type": "text", "label": "Label", "required": true}]'
+    )
+    # Příklad: [{"name": "project_name", "type": "text", "label": "Název projektu", "required": true}, ...]
+
+    # Markdown šablona s placeholdery
+    template_content = models.TextField(
+        db_column='template_content',
+        help_text='Markdown šablona s {{placeholders}}'
+    )
+    # Příklad: "# {{project_name}}\n\nPopis: {{description}}"
+
+    is_active = models.BooleanField(default=True, db_column='is_active')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, db_column='created_by')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+
+    class Meta:
+        db_table = 'FDK_grant_document_template'
+
+    def __str__(self):
+        return f"{self.name} ({self.document_type})"
 
 
 
@@ -684,39 +892,226 @@ class LawQuery(models.Model):
         db_table = 'FDK_law_query'
 
 # -------------------------------------------------------------------
-#                    MODULE
+#                    SUBSCRIPTION SYSTEM
 # -------------------------------------------------------------------
 
-"""
 class Module(models.Model):
-    module_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)  # 'warehouse', 'law_ai', 'project'
-    display_name = models.CharField(max_length=200)
-    description = models.TextField()
-    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    is_free = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    
+    """Model pro moduly FDK systému (Project Management, Granty, Sklad, atd.)"""
+    module_id = models.AutoField(primary_key=True, db_column='module_id')
+
+    # Identifikace modulu
+    name = models.CharField(max_length=100, unique=True, db_column='name')
+    # 'project_management', 'grants', 'warehouse', etc.
+
+    display_name = models.CharField(max_length=200, db_column='display_name')
+    # 'Správa projektů', 'Granty a dotace', etc.
+
+    display_name_en = models.CharField(max_length=200, null=True, blank=True, db_column='display_name_en')
+
+    # Popis
+    description = models.TextField(db_column='description')
+    short_description = models.CharField(max_length=255, null=True, blank=True, db_column='short_description')
+
+    # Ceny
+    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0, db_column='price_monthly')
+    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, default=0, db_column='price_yearly')
+
+    # Vlastnosti
+    is_free = models.BooleanField(default=False, db_column='is_free')
+    is_active = models.BooleanField(default=True, db_column='is_active')
+    requires_organization = models.BooleanField(default=False, db_column='requires_organization')
+
+    # URL routing (pro middleware kontrolu)
+    url_patterns = models.JSONField(default=list, db_column='url_patterns')
+    # ['grants/', 'grant_', '/dotace/']
+
+    # UI metadata
+    icon = models.CharField(max_length=50, null=True, blank=True, db_column='icon')  # emoji nebo Material Icon
+    color = models.CharField(max_length=7, default='#3b82f6', db_column='color')  # hex color
+    order = models.IntegerField(default=0, db_column='order')  # pořadí v menu
+
+    # Limity free verze
+    free_limit = models.IntegerField(null=True, blank=True, db_column='free_limit')
+    # Např. 10 seznamů zdarma
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_module'
+        ordering = ['order', 'display_name']
+
+    def __str__(self):
+        return f"{self.display_name} ({self.name})"
+
+
 class UserModuleSubscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    subscription_type = models.CharField(max_length=20, choices=[
+    """Předplatné uživatele na konkrétní modul"""
+    subscription_id = models.AutoField(primary_key=True, db_column='subscription_id')
+
+    # Vztahy
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_subscriptions', db_column='user_id')
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='user_subscriptions', db_column='module_id')
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='module_subscriptions', db_column='organization_id')
+
+    # Typ předplatného
+    SUBSCRIPTION_CHOICES = [
         ('free', 'Zdarma'),
         ('monthly', 'Měsíční'),
-        ('yearly', 'Roční')
-    ])
-    start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    
+        ('yearly', 'Roční'),
+        ('lifetime', 'Doživotní'),
+        ('trial', 'Zkušební')
+    ]
+    subscription_type = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES, db_column='subscription_type')
+
+    # Časové období
+    start_date = models.DateTimeField(auto_now_add=True, db_column='start_date')
+    end_date = models.DateTimeField(null=True, blank=True, db_column='end_date')
+    trial_end_date = models.DateTimeField(null=True, blank=True, db_column='trial_end_date')
+
+    # Status
+    is_active = models.BooleanField(default=True, db_column='is_active')
+    auto_renew = models.BooleanField(default=True, db_column='auto_renew')
+
+    # Platební informace
+    payment_method = models.CharField(max_length=50, null=True, blank=True, db_column='payment_method')
+    # 'stripe', 'gopay', 'invoice'
+    external_subscription_id = models.CharField(max_length=255, null=True, blank=True, db_column='external_subscription_id')
+    # ID z Stripe/GoPay
+
+    # Metadata
+    notes = models.TextField(null=True, blank=True, db_column='notes')
+    cancelled_at = models.DateTimeField(null=True, blank=True, db_column='cancelled_at')
+    cancellation_reason = models.TextField(null=True, blank=True, db_column='cancellation_reason')
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
     class Meta:
+        db_table = 'FDK_user_module_subscription'
         unique_together = ('user', 'module')
+        indexes = [
+            models.Index(fields=['user', 'is_active']),
+            models.Index(fields=['end_date']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.module.display_name} ({self.subscription_type})"
+
+    def is_expired(self):
+        """Kontrola, zda předplatné vypršelo"""
+        if self.end_date is None:
+            return False
+        return timezone.now() > self.end_date
+
+    def days_remaining(self):
+        """Počet dní do konce předplatného"""
+        if self.end_date is None:
+            return None
+        delta = self.end_date - timezone.now()
+        return max(0, delta.days)
+
+
+class ModuleBundle(models.Model):
+    """Balíčky modulů (Starter, Business, Enterprise)"""
+    bundle_id = models.AutoField(primary_key=True, db_column='bundle_id')
+
+    name = models.CharField(max_length=100, db_column='name')  # 'Starter', 'Business', 'Enterprise'
+    display_name = models.CharField(max_length=200, db_column='display_name')
+    description = models.TextField(db_column='description')
+
+    modules = models.ManyToManyField(Module, related_name='bundles')
+
+    # Ceny s discount
+    price_monthly = models.DecimalField(max_digits=10, decimal_places=2, db_column='price_monthly')
+    price_yearly = models.DecimalField(max_digits=10, decimal_places=2, db_column='price_yearly')
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0, db_column='discount_percentage')
+
+    is_active = models.BooleanField(default=True, db_column='is_active')
+    is_featured = models.BooleanField(default=False, db_column='is_featured')
+
+    icon = models.CharField(max_length=50, null=True, blank=True, db_column='icon')
+    color = models.CharField(max_length=7, default='#3b82f6', db_column='color')
+    order = models.IntegerField(default=0, db_column='order')
+
+    class Meta:
+        db_table = 'FDK_module_bundle'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.display_name
+
+
+class Payment(models.Model):
+    """Platby za předplatná"""
+    payment_id = models.AutoField(primary_key=True, db_column='payment_id')
+
+    # Vztahy
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments', db_column='user_id')
+    subscription = models.ForeignKey(UserModuleSubscription, on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='payments', db_column='subscription_id')
+
+    # Částka
+    amount = models.DecimalField(max_digits=10, decimal_places=2, db_column='amount')
+    currency = models.CharField(max_length=3, default='CZK', db_column='currency')
+
+    # Status
+    STATUS_CHOICES = [
+        ('pending', 'Čeká na zpracování'),
+        ('completed', 'Dokončeno'),
+        ('failed', 'Selhalo'),
+        ('refunded', 'Vráceno'),
+        ('cancelled', 'Zrušeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_column='status')
+
+    # Platební metoda
+    payment_method = models.CharField(max_length=50, db_column='payment_method')  # 'stripe', 'gopay', 'bank_transfer'
+    external_payment_id = models.CharField(max_length=255, null=True, blank=True, db_column='external_payment_id')
+
+    # Fakturace
+    invoice_number = models.CharField(max_length=50, null=True, blank=True, db_column='invoice_number')
+    invoice_url = models.URLField(null=True, blank=True, db_column='invoice_url')
+
+    # Metadata
+    description = models.TextField(null=True, blank=True, db_column='description')
+    metadata = models.JSONField(default=dict, db_column='metadata')
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    completed_at = models.DateTimeField(null=True, blank=True, db_column='completed_at')
+
+    class Meta:
+        db_table = 'FDK_payment'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Platba {self.payment_id} - {self.amount} {self.currency} ({self.status})"
+
 
 class ModuleUsage(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    action = models.CharField(max_length=100)  # 'ai_query', 'warehouse_transaction'
-    timestamp = models.DateTimeField(auto_now_add=True)
-    details = models.JSONField(null=True, blank=True)
-"""
+    """Využití modulů - pro analytics"""
+    usage_id = models.AutoField(primary_key=True, db_column='usage_id')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_usage', db_column='user_id')
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='usage_logs', db_column='module_id')
+
+    action = models.CharField(max_length=100, db_column='action')
+    # 'page_view', 'create_grant_application', 'warehouse_transaction', etc.
+
+    timestamp = models.DateTimeField(auto_now_add=True, db_column='timestamp')
+    details = models.JSONField(null=True, blank=True, db_column='details')
+
+    # IP a user agent pro analytics
+    ip_address = models.GenericIPAddressField(null=True, blank=True, db_column='ip_address')
+    user_agent = models.CharField(max_length=255, null=True, blank=True, db_column='user_agent')
+
+    class Meta:
+        db_table = 'FDK_module_usage'
+        indexes = [
+            models.Index(fields=['user', 'timestamp']),
+            models.Index(fields=['module', 'timestamp']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.module.name} - {self.action}"
