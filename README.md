@@ -2,6 +2,11 @@
 Powerfull task management
 
 
+cd /var/www/fdk.cz
+source env/bin/activate
+python manage.py init_roles
+
+python manage.py init_modules
 
 
 
