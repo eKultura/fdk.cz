@@ -23,7 +23,7 @@ def b2b_dashboard(request):
     """Dashboard pro správu B2B vztahů"""
     # Get user's organizations
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     # Get companies
@@ -70,7 +70,7 @@ def b2b_dashboard(request):
 def list_companies(request):
     """Seznam B2B firem"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     companies = B2BCompany.objects.filter(
@@ -177,7 +177,7 @@ def delete_company(request, company_id):
 def list_contracts(request):
     """Seznam B2B smluv"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     contracts = B2BContract.objects.filter(
@@ -281,7 +281,7 @@ def delete_contract(request, contract_id):
 def list_documents(request):
     """Seznam B2B dokumentů"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     documents = B2BDocument.objects.filter(

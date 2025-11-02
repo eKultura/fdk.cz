@@ -48,7 +48,7 @@ class EmployeeForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter departments based on selected organization
@@ -88,7 +88,7 @@ class DepartmentForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter parent departments based on selected organization

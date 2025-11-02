@@ -18,7 +18,7 @@ def asset_dashboard(request):
     """Dashboard pro správu majetku"""
     # Get user's organizations
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     # Get assets
@@ -59,7 +59,7 @@ def asset_dashboard(request):
 def list_assets(request):
     """Seznam majetku"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     assets = Asset.objects.filter(
@@ -166,7 +166,7 @@ def delete_asset(request, asset_id):
 def list_categories(request):
     """Seznam kategorií majetku"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     categories = AssetCategory.objects.filter(

@@ -42,7 +42,7 @@ class B2BCompanyForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
 
@@ -85,7 +85,7 @@ class B2BContractForm(forms.ModelForm):
 
             # Filter organizations
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter projects
@@ -130,5 +130,5 @@ class B2BDocumentForm(forms.ModelForm):
 
             # Filter organizations
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
