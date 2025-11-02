@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Moje předplatné - FDK.cz{% endblock %}
+
+{% block header_title %}Moje předplatné{% endblock %}
+{% block header_subtitle %}Přehled aktivních modulů a možnost upgradu{% endblock %}
+
+{% block content %}
+
+<!-- Expirující předplatná -->
+{% if expiring_soon %}
+<div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+    <strong>⚠️ Pozor:</strong> Některá předplatná brzy vyprší!
+    <ul style="margin: 0.5rem 0 0 1.5rem;">
+    {% for sub in expiring_soon %}
+        <li><strong>{{ sub.module.display_name }}</strong> - zbývá {{ sub.days_remaining }} dní</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Aktivní předplatná -->
+<div style="margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1rem;">✅ Aktivní moduly</h2>
+
+    {% if active_subscriptions %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for sub in active_subscriptions %}
+        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; background: white;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <span style="font-size: 2rem;">{{ sub.module.icon }}</span>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.1rem;">{{ sub.module.display_name }}</h3>
+                    <span style="color: #64748b; font-size: 0.875rem;">{{ sub.get_subscription_type_display }}</span>
+                </div>
+            </div>
+
+            <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">
+                {{ sub.module.short_description|default:"" }}
+            </p>
+
+            {% if sub.end_date %}
+            <p style="margin-bottom: 1rem; font-size: 0.875rem;">
+                <strong>Platné do:</strong> {{ sub.end_date|date:"d.m.Y" }}
+                {% if sub.days_remaining %}
+                    (zbývá {{ sub.days_remaining }} dní)
+                {% endif %}
+            </p>
+            {% endif %}
+
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'renew_subscription' sub.subscription_id %}"
+                   style="padding: 0.5rem 1rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px; font-size: 0.875rem;">
+                    Obnovit
+                </a>
+                <a href="{% url 'cancel_subscription' sub.subscription_id %}"
+                   style="padding: 0.5rem 1rem; background: #ef4444; color: white; text-decoration: none; border-radius: 4px; font-size: 0.875rem;">
+                    Zrušit
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #64748b;">Nemáte žádná aktivní placená předplatná.</p>
+    {% endif %}
+</div>
+
+<!-- FREE moduly -->
+<div style="margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1rem;">🆓 Bezplatné moduly</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+        {% for module in free_modules %}
+        <div style="border: 1px solid #e5e7eb; border-radius: 4px; padding: 1rem; background: #f9fafb;">
+            <span style="font-size: 1.5rem;">{{ module.icon }}</span>
+            <p style="margin: 0.5rem 0 0 0; font-weight: 500;">{{ module.display_name }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Dostupné moduly -->
+{% if available_modules %}
+<div>
+    <h2 style="margin-bottom: 1rem;">💳 Dostupné moduly k zakoupení</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for module in available_modules %}
+        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; background: white;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <span style="font-size: 2rem;">{{ module.icon }}</span>
+                <h3 style="margin: 0; font-size: 1.1rem;">{{ module.display_name }}</h3>
+            </div>
+
+            <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">
+                {{ module.short_description|default:"" }}
+            </p>
+
+            <div style="margin-bottom: 1rem;">
+                <p style="margin: 0.25rem 0; font-size: 0.875rem;">
+                    <strong>Měsíčně:</strong> {{ module.price_monthly }} Kč
+                </p>
+                <p style="margin: 0.25rem 0; font-size: 0.875rem;">
+                    <strong>Ročně:</strong> {{ module.price_yearly }} Kč
+                </p>
+            </div>
+
+            <a href="{% url 'subscribe_to_module' module.module_id %}"
+               style="display: inline-block; padding: 0.5rem 1.5rem; background: #10b981; color: white; text-decoration: none; border-radius: 4px; font-size: 0.875rem;">
+                Zakoupit
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'subscription_pricing' %}"
+       style="display: inline-block; padding: 0.75rem 2rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px;">
+        📋 Zobrazit kompletní ceník
+    </a>
+</div>
+
+{% endblock %}

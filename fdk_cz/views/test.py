@@ -47,7 +47,7 @@ def delete_test_error(request, error_id):
 # Typy testů - výpis
 @login_required
 def list_test_types(request):
-    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
+    user_projects = Project.objects.filter(project_users__user=request.user)
     test_types = test_type.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_types.html', {'test_types': test_types, 'projects': user_projects})
 
@@ -86,7 +86,7 @@ def edit_test_type(request, test_type_id):
 # Výpis testů
 @login_required
 def list_tests(request):
-    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
+    user_projects = Project.objects.filter(project_users__user=request.user)
     tests = test.objects.filter(project__in=user_projects)
     test_types = test_type.objects.filter(project__in=user_projects)
     test_errors = test_error.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
@@ -136,7 +136,7 @@ def edit_test(request, test_id):
 # Výpis výsledků testů
 @login_required
 def list_test_results(request):
-    user_projects = Project.objects.filter(ProjectUsers__user=request.user)
+    user_projects = Project.objects.filter(project_users__user=request.user)
     test_results = test_result.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_results.html', {'test_results': test_results, 'projects': user_projects})
 

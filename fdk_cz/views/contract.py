@@ -35,10 +35,17 @@ def create_contract(request, project_id):
 
 
 @login_required
-def list_contracts(request, project_id):
-    project_instance = get_object_or_404(project, pk=project_id)
-    contracts = contract.objects.filter(project=project_instance)
-    
+def list_contracts(request, project_id=None):
+    """Seznam smluv - buď všechny uživatele nebo pro konkrétní projekt"""
+    if project_id:
+        project_instance = get_object_or_404(Project, pk=project_id)
+        contracts = Contract.objects.filter(project=project_instance)
+    else:
+        # Všechny smlouvy uživatele napříč projekty kde je členem
+        user_projects = Project.objects.filter(owner=request.user) | Project.objects.filter(project_users__user=request.user)
+        contracts = Contract.objects.filter(project__in=user_projects).select_related('project')
+        project_instance = None
+
     return render(request, 'contract/list_contract.html', {'contracts': contracts, 'project': project_instance})
 
 

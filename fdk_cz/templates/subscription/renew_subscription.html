@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Obnovit předplatné - FDK.cz{% endblock %}
+
+{% block header_title %}Obnovit předplatné{% endblock %}
+{% block header_subtitle %}{{ subscription.module.display_name }}{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 500px; margin: 0 auto;">
+    <div style="border: 1px solid #10b981; border-radius: 8px; padding: 2rem; background: white;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <span style="font-size: 4rem;">{{ subscription.module.icon }}</span>
+            <h2 style="margin: 1rem 0;">{{ subscription.module.display_name }}</h2>
+            <p style="color: #64748b;">Obnovit předplatné</p>
+        </div>
+
+        <div style="background: #f9fafb; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem;">
+            <p style="margin: 0 0 0.5rem 0;"><strong>Typ:</strong> {{ subscription.get_subscription_type_display }}</p>
+            {% if subscription.end_date %}
+            <p style="margin: 0 0 0.5rem 0;"><strong>Platné do:</strong> {{ subscription.end_date|date:"d.m.Y" }}</p>
+            {% endif %}
+
+            {% if subscription.subscription_type == 'monthly' %}
+            <p style="margin: 1rem 0 0 0; font-size: 1.5rem; text-align: center; color: #3b82f6;">
+                <strong>{{ subscription.module.price_monthly }} Kč</strong>
+                <span style="font-size: 1rem; color: #64748b;">/měsíc</span>
+            </p>
+            {% else %}
+            <p style="margin: 1rem 0 0 0; font-size: 1.5rem; text-align: center; color: #10b981;">
+                <strong>{{ subscription.module.price_yearly }} Kč</strong>
+                <span style="font-size: 1rem; color: #64748b;">/rok</span>
+            </p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'subscription_dashboard' %}"
+                   style="flex: 1; text-align: center; padding: 0.75rem; background: #e5e7eb; color: #1e293b; text-decoration: none; border-radius: 4px;">
+                    Zpět
+                </a>
+                <button type="submit"
+                        style="flex: 2; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">
+                    ✓ Obnovit předplatné
+                </button>
+            </div>
+        </form>
+
+        <p style="margin-top: 1.5rem; font-size: 0.875rem; color: #64748b; text-align: center;">
+            💡 <strong>Demo režim:</strong> Předplatné bude obnoveno okamžitě bez platby.
+        </p>
+    </div>
+</div>
+
+{% endblock %}

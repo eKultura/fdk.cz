@@ -1115,3 +1115,527 @@ class ModuleUsage(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.module.name} - {self.action}"
+
+
+# -------------------------------------------------------------------
+#                    B2B MANAGEMENT
+# -------------------------------------------------------------------
+
+class B2BCompany(models.Model):
+    """Spolupracující firmy - externí organizace"""
+    company_id = models.AutoField(primary_key=True, db_column='company_id')
+
+    # Základní informace
+    name = models.CharField(max_length=255, db_column='name')
+    legal_name = models.CharField(max_length=255, null=True, blank=True, db_column='legal_name')
+    company_id_number = models.CharField(max_length=50, null=True, blank=True, db_column='company_id_number')  # IČO
+    tax_id = models.CharField(max_length=50, null=True, blank=True, db_column='tax_id')  # DIČ
+
+    # Kontaktní údaje
+    email = models.EmailField(null=True, blank=True, db_column='email')
+    phone = models.CharField(max_length=20, null=True, blank=True, db_column='phone')
+    website = models.URLField(null=True, blank=True, db_column='website')
+
+    # Adresa
+    street = models.CharField(max_length=255, null=True, blank=True, db_column='street')
+    city = models.CharField(max_length=100, null=True, blank=True, db_column='city')
+    postal_code = models.CharField(max_length=20, null=True, blank=True, db_column='postal_code')
+    country = models.CharField(max_length=100, default='Česká republika', db_column='country')
+
+    # Kategorizace
+    CATEGORY_CHOICES = [
+        ('supplier', 'Dodavatel'),
+        ('customer', 'Zákazník'),
+        ('partner', 'Partner'),
+        ('competitor', 'Konkurent'),
+        ('other', 'Jiné')
+    ]
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_column='category')
+    tags = models.CharField(max_length=500, null=True, blank=True, db_column='tags')  # klíčová slova oddělená čárkami
+
+    # Propojení
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='b2b_companies', db_column='organization_id')
+
+    # Metadata
+    notes = models.TextField(null=True, blank=True, db_column='notes')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name='created_b2b_companies', db_column='created_by_id')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_b2b_company'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class B2BContract(models.Model):
+    """Smlouvy s B2B firmami"""
+    contract_id = models.AutoField(primary_key=True, db_column='contract_id')
+
+    # Vztahy
+    company = models.ForeignKey(B2BCompany, on_delete=models.CASCADE, related_name='contracts', db_column='company_id')
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='b2b_contracts', db_column='organization_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='b2b_contracts', db_column='project_id')
+
+    # Základní údaje
+    contract_number = models.CharField(max_length=100, unique=True, db_column='contract_number')
+    title = models.CharField(max_length=255, db_column='title')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    # Finanční údaje
+    contract_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, db_column='contract_value')
+    currency = models.CharField(max_length=3, default='CZK', db_column='currency')
+
+    # Časové údaje
+    start_date = models.DateField(db_column='start_date')
+    end_date = models.DateField(null=True, blank=True, db_column='end_date')
+    signed_date = models.DateField(null=True, blank=True, db_column='signed_date')
+
+    # Status
+    STATUS_CHOICES = [
+        ('draft', 'Koncept'),
+        ('negotiation', 'V jednání'),
+        ('signed', 'Podepsáno'),
+        ('active', 'Aktivní'),
+        ('completed', 'Dokončeno'),
+        ('terminated', 'Ukončeno'),
+        ('cancelled', 'Zrušeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft', db_column='status')
+
+    # Kategorizace (propojení s DMS)
+    categories = models.CharField(max_length=500, null=True, blank=True, db_column='categories')
+    keywords = models.CharField(max_length=500, null=True, blank=True, db_column='keywords')
+
+    # Metadata
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name='created_b2b_contracts', db_column='created_by_id')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_b2b_contract'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.contract_number} - {self.title}"
+
+
+class B2BDocument(models.Model):
+    """Dokumenty propojené s B2B firmami a smlouvami (DMS integrace)"""
+    document_id = models.AutoField(primary_key=True, db_column='document_id')
+
+    # Vztahy
+    company = models.ForeignKey(B2BCompany, on_delete=models.CASCADE, null=True, blank=True,
+                               related_name='documents', db_column='company_id')
+    contract = models.ForeignKey(B2BContract, on_delete=models.CASCADE, null=True, blank=True,
+                                related_name='documents', db_column='contract_id')
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='b2b_documents', db_column='organization_id')
+
+    # Informace o dokumentu
+    title = models.CharField(max_length=255, db_column='title')
+    description = models.TextField(null=True, blank=True, db_column='description')
+    file_path = models.CharField(max_length=500, null=True, blank=True, db_column='file_path')
+    file_url = models.URLField(null=True, blank=True, db_column='file_url')
+    file_size = models.IntegerField(null=True, blank=True, db_column='file_size')  # v bajtech
+    mime_type = models.CharField(max_length=100, null=True, blank=True, db_column='mime_type')
+
+    # Kategorizace
+    document_type = models.CharField(max_length=100, db_column='document_type')  # 'contract', 'invoice', 'quote', etc.
+    categories = models.CharField(max_length=500, null=True, blank=True, db_column='categories')
+    keywords = models.CharField(max_length=500, null=True, blank=True, db_column='keywords')
+
+    # Verzování
+    version = models.CharField(max_length=20, default='1.0', db_column='version')
+    is_latest = models.BooleanField(default=True, db_column='is_latest')
+
+    # Metadata
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='uploaded_b2b_documents', db_column='uploaded_by_id')
+    uploaded_at = models.DateTimeField(auto_now_add=True, db_column='uploaded_at')
+
+    class Meta:
+        db_table = 'FDK_b2b_document'
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return self.title
+
+
+# -------------------------------------------------------------------
+#                    HR MANAGEMENT
+# -------------------------------------------------------------------
+
+class Department(models.Model):
+    """Oddělení v organizaci"""
+    department_id = models.AutoField(primary_key=True, db_column='department_id')
+
+    name = models.CharField(max_length=255, db_column='name')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    # Vztahy
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='departments', db_column='organization_id')
+    parent_department = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True,
+                                         related_name='sub_departments', db_column='parent_department_id')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='managed_departments', db_column='manager_id')
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_department'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Employee(models.Model):
+    """Zaměstnanci - může být propojený s účtem nebo bez účtu"""
+    employee_id = models.AutoField(primary_key=True, db_column='employee_id')
+
+    # Propojení s účtem (volitelné)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='employee_profile', db_column='user_id')
+
+    # Základní údaje
+    first_name = models.CharField(max_length=100, db_column='first_name')
+    last_name = models.CharField(max_length=100, db_column='last_name')
+    personal_id_number = models.CharField(max_length=20, null=True, blank=True, db_column='personal_id_number')  # rodné číslo
+
+    # Kontaktní údaje
+    email = models.EmailField(null=True, blank=True, db_column='email')
+    phone = models.CharField(max_length=20, null=True, blank=True, db_column='phone')
+
+    # Pracovní údaje
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='employees', db_column='organization_id')
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name='employees', db_column='department_id')
+    position = models.CharField(max_length=255, null=True, blank=True, db_column='position')
+    employee_number = models.CharField(max_length=50, null=True, blank=True, db_column='employee_number')
+
+    # Pracovní poměr
+    EMPLOYMENT_TYPE_CHOICES = [
+        ('full_time', 'Plný úvazek'),
+        ('part_time', 'Částečný úvazek'),
+        ('contract', 'Smlouva'),
+        ('temporary', 'Dočasný'),
+        ('intern', 'Stážista')
+    ]
+    employment_type = models.CharField(max_length=20, choices=EMPLOYMENT_TYPE_CHOICES, db_column='employment_type')
+
+    hire_date = models.DateField(null=True, blank=True, db_column='hire_date')
+    termination_date = models.DateField(null=True, blank=True, db_column='termination_date')
+
+    STATUS_CHOICES = [
+        ('active', 'Aktivní'),
+        ('on_leave', 'Na dovolené'),
+        ('suspended', 'Pozastaveno'),
+        ('terminated', 'Ukončeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', db_column='status')
+
+    # Mzda (pro propojení s účetnictvím)
+    salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, db_column='salary')
+    currency = models.CharField(max_length=3, default='CZK', db_column='currency')
+
+    # Metadata
+    notes = models.TextField(null=True, blank=True, db_column='notes')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_employee'
+        ordering = ['last_name', 'first_name']
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+# -------------------------------------------------------------------
+#                    RISK MANAGEMENT
+# -------------------------------------------------------------------
+
+class Risk(models.Model):
+    """Identifikované riziko"""
+    risk_id = models.AutoField(primary_key=True, db_column='risk_id')
+
+    # Základní údaje
+    title = models.CharField(max_length=255, db_column='title')
+    description = models.TextField(db_column='description')
+
+    # Vztahy
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, null=True, blank=True,
+                               related_name='risks', db_column='project_id')
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, null=True, blank=True,
+                                    related_name='risks', db_column='organization_id')
+
+    # Kategorizace
+    CATEGORY_CHOICES = [
+        ('technical', 'Technické'),
+        ('financial', 'Finanční'),
+        ('operational', 'Provozní'),
+        ('strategic', 'Strategické'),
+        ('legal', 'Právní'),
+        ('security', 'Bezpečnostní'),
+        ('other', 'Jiné')
+    ]
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_column='category')
+
+    # Hodnocení
+    PROBABILITY_CHOICES = [
+        (1, 'Velmi nízká'),
+        (2, 'Nízká'),
+        (3, 'Střední'),
+        (4, 'Vysoká'),
+        (5, 'Velmi vysoká')
+    ]
+    probability = models.IntegerField(choices=PROBABILITY_CHOICES, default=3, db_column='probability')
+
+    IMPACT_CHOICES = [
+        (1, 'Zanedbatelný'),
+        (2, 'Malý'),
+        (3, 'Střední'),
+        (4, 'Velký'),
+        (5, 'Kritický')
+    ]
+    impact = models.IntegerField(choices=IMPACT_CHOICES, default=3, db_column='impact')
+
+    # Skóre rizika (probability * impact)
+    risk_score = models.IntegerField(default=9, db_column='risk_score')
+
+    # Opatření
+    mitigation_strategy = models.TextField(null=True, blank=True, db_column='mitigation_strategy')
+    contingency_plan = models.TextField(null=True, blank=True, db_column='contingency_plan')
+
+    # Status
+    STATUS_CHOICES = [
+        ('identified', 'Identifikováno'),
+        ('assessed', 'Vyhodnoceno'),
+        ('mitigated', 'Zmírněno'),
+        ('accepted', 'Akceptováno'),
+        ('closed', 'Uzavřeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='identified', db_column='status')
+
+    # Zodpovědnost
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                             related_name='owned_risks', db_column='owner_id')
+
+    # Metadata
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                  related_name='created_risks', db_column='created_by_id')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_risk'
+        ordering = ['-risk_score', '-created_at']
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate risk score
+        self.risk_score = self.probability * self.impact
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
+# -------------------------------------------------------------------
+#                    IT MANAGEMENT
+# -------------------------------------------------------------------
+
+class ITAsset(models.Model):
+    """IT majetek a zařízení"""
+    asset_id = models.AutoField(primary_key=True, db_column='asset_id')
+
+    # Základní údaje
+    name = models.CharField(max_length=255, db_column='name')
+    asset_tag = models.CharField(max_length=100, unique=True, db_column='asset_tag')  # unikátní označení
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    # Kategorizace
+    ASSET_TYPE_CHOICES = [
+        ('server', 'Server'),
+        ('workstation', 'Pracovní stanice'),
+        ('laptop', 'Notebook'),
+        ('mobile', 'Mobilní zařízení'),
+        ('network', 'Síťové zařízení'),
+        ('storage', 'Úložiště'),
+        ('printer', 'Tiskárna'),
+        ('software', 'Software'),
+        ('license', 'Licence'),
+        ('other', 'Jiné')
+    ]
+    asset_type = models.CharField(max_length=20, choices=ASSET_TYPE_CHOICES, db_column='asset_type')
+
+    # Technické údaje
+    manufacturer = models.CharField(max_length=100, null=True, blank=True, db_column='manufacturer')
+    model = models.CharField(max_length=100, null=True, blank=True, db_column='model')
+    serial_number = models.CharField(max_length=100, null=True, blank=True, db_column='serial_number')
+
+    # Vztahy
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='it_assets', db_column='organization_id')
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='assigned_it_assets', db_column='assigned_to_id')
+
+    # Životní cyklus
+    purchase_date = models.DateField(null=True, blank=True, db_column='purchase_date')
+    purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, db_column='purchase_price')
+    warranty_expiry = models.DateField(null=True, blank=True, db_column='warranty_expiry')
+
+    STATUS_CHOICES = [
+        ('active', 'Aktivní'),
+        ('in_repair', 'V opravě'),
+        ('stored', 'Uskladněno'),
+        ('disposed', 'Vyřazeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', db_column='status')
+
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_it_asset'
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.asset_tag})"
+
+
+class ITIncident(models.Model):
+    """IT incidenty (ITIL Incident Management)"""
+    incident_id = models.AutoField(primary_key=True, db_column='incident_id')
+
+    # Základní údaje
+    title = models.CharField(max_length=255, db_column='title')
+    description = models.TextField(db_column='description')
+    incident_number = models.CharField(max_length=50, unique=True, db_column='incident_number')
+
+    # Vztahy
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='it_incidents', db_column='organization_id')
+    affected_asset = models.ForeignKey(ITAsset, on_delete=models.SET_NULL, null=True, blank=True,
+                                      related_name='incidents', db_column='affected_asset_id')
+    reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='reported_incidents', db_column='reported_by_id')
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='assigned_incidents', db_column='assigned_to_id')
+
+    # Priorita a závažnost
+    PRIORITY_CHOICES = [
+        ('low', 'Nízká'),
+        ('medium', 'Střední'),
+        ('high', 'Vysoká'),
+        ('critical', 'Kritická')
+    ]
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', db_column='priority')
+
+    # Status
+    STATUS_CHOICES = [
+        ('new', 'Nový'),
+        ('assigned', 'Přiřazeno'),
+        ('in_progress', 'Řešení'),
+        ('resolved', 'Vyřešeno'),
+        ('closed', 'Uzavřeno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', db_column='status')
+
+    # Časové údaje
+    reported_at = models.DateTimeField(auto_now_add=True, db_column='reported_at')
+    resolved_at = models.DateTimeField(null=True, blank=True, db_column='resolved_at')
+    closed_at = models.DateTimeField(null=True, blank=True, db_column='closed_at')
+
+    # Řešení
+    resolution_notes = models.TextField(null=True, blank=True, db_column='resolution_notes')
+
+    class Meta:
+        db_table = 'FDK_it_incident'
+        ordering = ['-reported_at']
+
+    def __str__(self):
+        return f"{self.incident_number} - {self.title}"
+
+
+# -------------------------------------------------------------------
+#                    ASSET MANAGEMENT
+# -------------------------------------------------------------------
+
+class AssetCategory(models.Model):
+    """Kategorie majetku"""
+    category_id = models.AutoField(primary_key=True, db_column='category_id')
+
+    name = models.CharField(max_length=255, db_column='name')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='asset_categories', db_column='organization_id')
+    parent_category = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name='sub_categories', db_column='parent_category_id')
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+
+    class Meta:
+        db_table = 'FDK_asset_category'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Asset(models.Model):
+    """Obecný majetek (ne IT)"""
+    asset_id = models.AutoField(primary_key=True, db_column='asset_id')
+
+    # Základní údaje
+    name = models.CharField(max_length=255, db_column='name')
+    asset_number = models.CharField(max_length=100, unique=True, db_column='asset_number')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    # Kategorizace
+    category = models.ForeignKey(AssetCategory, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='assets', db_column='category_id')
+
+    # Vztahy
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='assets', db_column='organization_id')
+    location = models.CharField(max_length=255, null=True, blank=True, db_column='location')
+    responsible_person = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
+                                          related_name='responsible_assets', db_column='responsible_person_id')
+
+    # Finanční údaje
+    purchase_date = models.DateField(null=True, blank=True, db_column='purchase_date')
+    purchase_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_column='purchase_price')
+    current_value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_column='current_value')
+    currency = models.CharField(max_length=3, default='CZK', db_column='currency')
+
+    # Status
+    STATUS_CHOICES = [
+        ('active', 'Aktivní'),
+        ('maintenance', 'Údržba'),
+        ('stored', 'Uskladněno'),
+        ('disposed', 'Vyřazeno'),
+        ('sold', 'Prodáno')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', db_column='status')
+
+    # Metadata
+    notes = models.TextField(null=True, blank=True, db_column='notes')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_asset'
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.name} ({self.asset_number})"
