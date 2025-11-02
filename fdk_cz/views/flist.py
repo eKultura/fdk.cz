@@ -29,10 +29,10 @@ def index_list(request):
     try:
         # Načteme uživatele explicitně podle jeho primárního klíče
         current_user = User.objects.get(pk=request.user.pk)
-        lists = flist.objects.filter(owner=current_user)
+        lists = Flist.objects.filter(owner=current_user)
     except User.DoesNotExist:
         lists = []
-    
+
     return render(request, 'list/index_list.html', {'lists': lists})
 
 

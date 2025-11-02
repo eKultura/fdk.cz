@@ -43,6 +43,43 @@ from fdk_cz.views.warehouse import (
 
 from fdk_cz.views import subscription
 
+# Import B2B views
+from fdk_cz.views.b2b import (
+    b2b_dashboard, list_companies, create_company, detail_company, edit_company, delete_company,
+    list_contracts as list_b2b_contracts, create_contract as create_b2b_contract,
+    detail_contract as detail_b2b_contract, edit_contract as edit_b2b_contract,
+    delete_contract as delete_b2b_contract,
+    list_documents as list_b2b_documents, create_document as create_b2b_document,
+    delete_document as delete_b2b_document
+)
+
+# Import HR views
+from fdk_cz.views.hr import (
+    hr_dashboard, list_employees, create_employee, detail_employee, edit_employee, delete_employee,
+    list_departments, create_department, detail_department, edit_department, delete_department
+)
+
+# Import Risk views
+from fdk_cz.views.risk import (
+    risk_dashboard, list_risks, create_risk, detail_risk, edit_risk, delete_risk, risk_matrix
+)
+
+# Import IT views
+from fdk_cz.views.it import (
+    it_dashboard, list_assets as list_it_assets, create_asset as create_it_asset,
+    detail_asset as detail_it_asset, edit_asset as edit_it_asset, delete_asset as delete_it_asset,
+    list_incidents as list_it_incidents, create_incident as create_it_incident,
+    detail_incident as detail_it_incident, edit_incident as edit_it_incident,
+    delete_incident as delete_it_incident
+)
+
+# Import Asset views
+from fdk_cz.views.asset import (
+    asset_dashboard, list_assets, create_asset, detail_asset, edit_asset, delete_asset,
+    list_categories as list_asset_categories, create_category as create_asset_category,
+    edit_category as edit_asset_category, delete_category as delete_asset_category
+)
+
 urlpatterns = (
 
     path('', index, name='index'),
@@ -229,6 +266,103 @@ urlpatterns = (
     path('ucetnictvi/faktura/<int:invoice_id>/edit/', edit_invoice, name='edit_invoice'),
     path('ucetnictvi/faktura/<int:invoice_id>/delete/', delete_invoice, name='delete_invoice'),
     path('ucetnictvi/faktura/<int:invoice_id>/', detail_invoice, name='detail_invoice'),
+
+
+    # ======================================================================
+    # B2B MANAGEMENT
+    # ======================================================================
+    path('b2b/', b2b_dashboard, name='b2b_dashboard'),
+
+    # B2B Companies
+    path('b2b/firmy/', list_companies, name='list_b2b_companies'),
+    path('b2b/firma/nova/', create_company, name='create_b2b_company'),
+    path('b2b/firma/<int:company_id>/', detail_company, name='detail_b2b_company'),
+    path('b2b/firma/<int:company_id>/upravit/', edit_company, name='edit_b2b_company'),
+    path('b2b/firma/<int:company_id>/smazat/', delete_company, name='delete_b2b_company'),
+
+    # B2B Contracts
+    path('b2b/smlouvy/', list_b2b_contracts, name='list_b2b_contracts'),
+    path('b2b/smlouva/nova/', create_b2b_contract, name='create_b2b_contract'),
+    path('b2b/smlouva/<int:contract_id>/', detail_b2b_contract, name='detail_b2b_contract'),
+    path('b2b/smlouva/<int:contract_id>/upravit/', edit_b2b_contract, name='edit_b2b_contract'),
+    path('b2b/smlouva/<int:contract_id>/smazat/', delete_b2b_contract, name='delete_b2b_contract'),
+
+    # B2B Documents
+    path('b2b/dokumenty/', list_b2b_documents, name='list_b2b_documents'),
+    path('b2b/dokument/novy/', create_b2b_document, name='create_b2b_document'),
+    path('b2b/dokument/<int:document_id>/smazat/', delete_b2b_document, name='delete_b2b_document'),
+
+
+    # ======================================================================
+    # HR MANAGEMENT
+    # ======================================================================
+    path('hr/', hr_dashboard, name='hr_dashboard'),
+
+    # Employees
+    path('hr/zamestnanci/', list_employees, name='list_employees'),
+    path('hr/zamestnanec/novy/', create_employee, name='create_employee'),
+    path('hr/zamestnanec/<int:employee_id>/', detail_employee, name='detail_employee'),
+    path('hr/zamestnanec/<int:employee_id>/upravit/', edit_employee, name='edit_employee'),
+    path('hr/zamestnanec/<int:employee_id>/smazat/', delete_employee, name='delete_employee'),
+
+    # Departments
+    path('hr/oddeleni/', list_departments, name='list_departments'),
+    path('hr/oddeleni/nove/', create_department, name='create_department'),
+    path('hr/oddeleni/<int:department_id>/', detail_department, name='detail_department'),
+    path('hr/oddeleni/<int:department_id>/upravit/', edit_department, name='edit_department'),
+    path('hr/oddeleni/<int:department_id>/smazat/', delete_department, name='delete_department'),
+
+
+    # ======================================================================
+    # RISK MANAGEMENT
+    # ======================================================================
+    path('rizika/', risk_dashboard, name='risk_dashboard'),
+    path('rizika/seznam/', list_risks, name='list_risks'),
+    path('rizika/nove/', create_risk, name='create_risk'),
+    path('rizika/<int:risk_id>/', detail_risk, name='detail_risk'),
+    path('rizika/<int:risk_id>/upravit/', edit_risk, name='edit_risk'),
+    path('rizika/<int:risk_id>/smazat/', delete_risk, name='delete_risk'),
+    path('rizika/matice/', risk_matrix, name='risk_matrix'),
+
+
+    # ======================================================================
+    # IT MANAGEMENT
+    # ======================================================================
+    path('it/', it_dashboard, name='it_dashboard'),
+
+    # IT Assets
+    path('it/aktiva/', list_it_assets, name='list_it_assets'),
+    path('it/aktivum/nove/', create_it_asset, name='create_it_asset'),
+    path('it/aktivum/<int:asset_id>/', detail_it_asset, name='detail_it_asset'),
+    path('it/aktivum/<int:asset_id>/upravit/', edit_it_asset, name='edit_it_asset'),
+    path('it/aktivum/<int:asset_id>/smazat/', delete_it_asset, name='delete_it_asset'),
+
+    # IT Incidents (ITIL)
+    path('it/incidenty/', list_it_incidents, name='list_it_incidents'),
+    path('it/incident/novy/', create_it_incident, name='create_it_incident'),
+    path('it/incident/<int:incident_id>/', detail_it_incident, name='detail_it_incident'),
+    path('it/incident/<int:incident_id>/upravit/', edit_it_incident, name='edit_it_incident'),
+    path('it/incident/<int:incident_id>/smazat/', delete_it_incident, name='delete_it_incident'),
+
+
+    # ======================================================================
+    # ASSET MANAGEMENT
+    # ======================================================================
+    path('majetek/', asset_dashboard, name='asset_dashboard'),
+
+    # Assets
+    path('majetek/seznam/', list_assets, name='list_assets'),
+    path('majetek/novy/', create_asset, name='create_asset'),
+    path('majetek/<int:asset_id>/', detail_asset, name='detail_asset'),
+    path('majetek/<int:asset_id>/upravit/', edit_asset, name='edit_asset'),
+    path('majetek/<int:asset_id>/smazat/', delete_asset, name='delete_asset'),
+
+    # Asset Categories
+    path('majetek/kategorie/', list_asset_categories, name='list_asset_categories'),
+    path('majetek/kategorie/nova/', create_asset_category, name='create_asset_category'),
+    path('majetek/kategorie/<int:category_id>/upravit/', edit_asset_category, name='edit_asset_category'),
+    path('majetek/kategorie/<int:category_id>/smazat/', delete_asset_category, name='delete_asset_category'),
+
 
     # Articles
     path('clanky/', article_blog_index, name='article_blog_index'),

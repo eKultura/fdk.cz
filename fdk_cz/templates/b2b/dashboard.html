@@ -1,39 +1,114 @@
 {% extends "base.html" %}
 {% block title %}B2B Management | FDK.cz{% endblock %}
 {% block header_title %}🤝 B2B Management{% endblock %}
-{% block header_subtitle %}Správa B2B vztahů a obchodních příležitostí{% endblock %}
+{% block header_subtitle %}Správa B2B vztahů a obchodních smluv{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6">
+    <a href="{% url 'create_b2b_company' %}" class="btn btn-primary">+ Nová firma</a>
+    <a href="{% url 'create_b2b_contract' %}" class="btn btn-secondary ml-2">+ Nová smlouva</a>
+    <a href="{% url 'list_b2b_companies' %}" class="btn btn-outline ml-2">Všechny firmy</a>
+    <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline ml-2">Všechny smlouvy</a>
+  </div>
+
+  <!-- Statistics -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <!-- Statistika -->
     <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">Aktivní klienti</h3>
-      <p class="text-3xl font-bold text-blue-600">0</p>
+      <h3 class="text-lg font-semibold mb-2">📊 Celkem firem</h3>
+      <p class="text-3xl font-bold text-blue-600">{{ total_companies }}</p>
     </div>
     <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">Příležitosti</h3>
-      <p class="text-3xl font-bold text-green-600">0</p>
+      <h3 class="text-lg font-semibold mb-2">📄 Celkem smluv</h3>
+      <p class="text-3xl font-bold text-green-600">{{ total_contracts }}</p>
     </div>
     <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">Obrat (měsíc)</h3>
-      <p class="text-3xl font-bold text-purple-600">0 Kč</p>
+      <h3 class="text-lg font-semibold mb-2">✅ Aktivních smluv</h3>
+      <p class="text-3xl font-bold text-purple-600">{{ active_contracts }}</p>
     </div>
   </div>
 
-  <div class="content-card">
-    <div class="text-center py-12">
-      <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-      </svg>
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">🚧 Modul v přípravě</h2>
-      <p class="text-gray-600 mb-6">
-        B2B Management je momentálně ve vývoji.<br>
-        Zde budete moci spravovat klienty, příležitosti a obchodní vztahy.
-      </p>
-      <a href="{% url 'index' %}" class="btn btn-outline">← Zpět na domů</a>
+  <!-- Recent Companies -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold mb-4">Nedávno přidané firmy</h3>
+    {% if companies %}
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-2">Název</th>
+            <th class="text-left py-2">Kategorie</th>
+            <th class="text-left py-2">Kontakt</th>
+            <th class="text-right py-2">Smlouvy</th>
+            <th class="text-right py-2">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company in companies %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3">
+              <a href="{% url 'detail_b2b_company' company.company_id %}" class="text-blue-600 hover:underline font-semibold">
+                {{ company.name }}
+              </a>
+            </td>
+            <td class="py-3">
+              <span class="px-2 py-1 bg-gray-200 rounded text-sm">{{ company.get_category_display }}</span>
+            </td>
+            <td class="py-3">{{ company.email|default:"-" }}</td>
+            <td class="py-3 text-right">{{ company.contracts_count }}</td>
+            <td class="py-3 text-right">
+              <a href="{% url 'detail_b2b_company' company.company_id %}" class="text-blue-600 hover:underline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">Zatím nejsou žádné B2B firmy. <a href="{% url 'create_b2b_company' %}" class="text-blue-600 hover:underline">Vytvořit první firmu</a></p>
+    {% endif %}
+  </div>
+
+  <!-- Recent Contracts -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">Nedávné smlouvy</h3>
+    {% if recent_contracts %}
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-2">Číslo smlouvy</th>
+            <th class="text-left py-2">Název</th>
+            <th class="text-left py-2">Firma</th>
+            <th class="text-left py-2">Status</th>
+            <th class="text-right py-2">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contract in recent_contracts %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3">
+              <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline font-semibold">
+                {{ contract.contract_number }}
+              </a>
+            </td>
+            <td class="py-3">{{ contract.title }}</td>
+            <td class="py-3">{{ contract.company.name }}</td>
+            <td class="py-3">
+              <span class="px-2 py-1 bg-blue-200 rounded text-sm">{{ contract.get_status_display }}</span>
+            </td>
+            <td class="py-3 text-right">
+              <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">Zatím nejsou žádné B2B smlouvy. <a href="{% url 'create_b2b_contract' %}" class="text-blue-600 hover:underline">Vytvořit první smlouvu</a></p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
