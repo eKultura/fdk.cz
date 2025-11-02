@@ -374,7 +374,7 @@
       <div class="action-buttons">
         {% if user.is_authenticated %}
           {% if grant.is_active and grant.end_date|date:'Y-m-d' >= today|date:'Y-m-d' %}
-          <a href="{% url 'create_application' grant.grant_id %}" class="btn btn-primary">
+          <a href="{% url 'application_create' grant.grant_id %}" class="btn btn-primary">
             📝 Podat žádost
           </a>
           {% else %}
@@ -382,7 +382,11 @@
             📝 Výzva uzavřena
           </button>
           {% endif %}
-          
+
+          <a href="{% url 'grant_edit' grant.grant_id %}" class="btn btn-secondary">
+            ✏️ Upravit výzvu
+          </a>
+
           <a href="{% url 'grant_calendar' %}" class="btn btn-outline">
             📅 Kalendář výzev
           </a>

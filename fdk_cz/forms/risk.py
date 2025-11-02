@@ -44,7 +44,7 @@ class RiskForm(forms.ModelForm):
             from django.db.models import Q
 
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             self.fields['project'].queryset = Project.objects.filter(

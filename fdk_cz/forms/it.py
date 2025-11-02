@@ -44,7 +44,7 @@ class ITAssetForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
 
@@ -84,7 +84,7 @@ class ITIncidentForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter IT assets

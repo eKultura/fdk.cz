@@ -18,7 +18,7 @@ def risk_dashboard(request):
     """Dashboard pro správu rizik"""
     # Get user's organizations and projects
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     user_projects = Project.objects.filter(
@@ -63,7 +63,7 @@ def risk_dashboard(request):
 def list_risks(request):
     """Seznam identifikovaných rizik"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     user_projects = Project.objects.filter(
@@ -176,7 +176,7 @@ def delete_risk(request, risk_id):
 def risk_matrix(request):
     """Matice rizik (probability vs impact)"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     user_projects = Project.objects.filter(

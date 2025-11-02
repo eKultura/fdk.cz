@@ -18,7 +18,7 @@ def it_dashboard(request):
     """Dashboard pro správu IT"""
     # Get user's organizations
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     # Get IT assets
@@ -59,7 +59,7 @@ def it_dashboard(request):
 def list_assets(request):
     """Seznam IT aktiv"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     assets = ITAsset.objects.filter(
@@ -168,7 +168,7 @@ def delete_asset(request, asset_id):
 def list_incidents(request):
     """Seznam IT incidentů (ITIL Incident Management)"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     incidents = ITIncident.objects.filter(

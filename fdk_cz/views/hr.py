@@ -18,7 +18,7 @@ def hr_dashboard(request):
     """Dashboard pro HR Management"""
     # Get user's organizations
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     # Get employees
@@ -56,7 +56,7 @@ def hr_dashboard(request):
 def list_employees(request):
     """Seznam zaměstnanců"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     employees = Employee.objects.filter(
@@ -164,7 +164,7 @@ def delete_employee(request, employee_id):
 def list_departments(request):
     """Seznam oddělení"""
     user_orgs = Organization.objects.filter(
-        Q(owner=request.user) | Q(organization_users__user=request.user)
+        Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
     departments = Department.objects.filter(

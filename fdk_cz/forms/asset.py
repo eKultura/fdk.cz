@@ -44,7 +44,7 @@ class AssetForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter categories based on selected organization
@@ -82,7 +82,7 @@ class AssetCategoryForm(forms.ModelForm):
         if user:
             from django.db.models import Q
             self.fields['organization'].queryset = Organization.objects.filter(
-                Q(owner=user) | Q(organization_users__user=user)
+                Q(created_by=user) | Q(members=user)
             ).distinct()
 
             # Filter parent categories based on selected organization
