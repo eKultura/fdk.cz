@@ -92,6 +92,12 @@ urlpatterns = (
     path('predplatne/<int:subscription_id>/zrusit/', subscription.cancel_subscription, name='cancel_subscription'),
     path('predplatne/<int:subscription_id>/obnovit/', subscription.renew_subscription, name='renew_subscription'),
 
+    # Subscription Admin URLs
+    path('admin/moduly/', subscription.admin_modules, name='admin_modules'),
+    path('admin/modul/<int:module_id>/upravit/', subscription.admin_edit_module, name='admin_edit_module'),
+    path('admin/priradit-modul/', subscription.admin_assign_module, name='admin_assign_module'),
+    path('admin/predplatne/', subscription.admin_subscriptions, name='admin_subscriptions'),
+
     # Auth paths
     path('prihlaseni/', login, name='login_cs'),
     path('odhlaseni/', logout, name='logout_cs'),

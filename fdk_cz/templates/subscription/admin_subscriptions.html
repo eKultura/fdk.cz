@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Správa předplatných | FDK.cz{% endblock %}
+{% block header_title %}📋 Správa předplatných{% endblock %}
+{% block header_subtitle %}Přehled všech uživatelských předplatných{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+
+  <!-- Filter Buttons -->
+  <div class="content-card mb-6">
+    <div class="flex gap-4 items-center">
+      <span class="font-semibold">Filtr:</span>
+      <a href="{% url 'admin_subscriptions' %}"
+         class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
+        Všechna
+      </a>
+      <a href="{% url 'admin_subscriptions' %}?status=active"
+         class="btn {% if status_filter == 'active' %}btn-primary{% else %}btn-outline{% endif %}">
+        ✅ Aktivní
+      </a>
+      <a href="{% url 'admin_subscriptions' %}?status=inactive"
+         class="btn {% if status_filter == 'inactive' %}btn-primary{% else %}btn-outline{% endif %}">
+        ❌ Neaktivní
+      </a>
+    </div>
+  </div>
+
+  <!-- Subscriptions Table -->
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Seznam předplatných</h2>
+      <a href="{% url 'admin_assign_module' %}" class="btn btn-primary">
+        ➕ Přiřadit modul
+      </a>
+    </div>
+
+    {% if subscriptions %}
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-3">Uživatel</th>
+              <th class="text-left p-3">Modul</th>
+              <th class="text-left p-3">Typ</th>
+              <th class="text-left p-3">Způsob platby</th>
+              <th class="text-left p-3">Začátek</th>
+              <th class="text-left p-3">Konec</th>
+              <th class="text-left p-3">Stav</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sub in subscriptions %}
+              <tr class="border-b hover:bg-gray-50">
+                <td class="p-3">
+                  <div class="font-semibold">{{ sub.user.username }}</div>
+                  <div class="text-sm text-gray-600">{{ sub.user.email }}</div>
+                </td>
+                <td class="p-3">
+                  <div class="font-semibold">{{ sub.module.display_name }}</div>
+                  <div class="text-xs text-gray-500">{{ sub.module.name }}</div>
+                </td>
+                <td class="p-3">
+                  {% if sub.subscription_type == 'monthly' %}
+                    📅 Měsíční
+                  {% elif sub.subscription_type == 'yearly' %}
+                    📆 Roční
+                  {% elif sub.subscription_type == 'lifetime' %}
+                    ♾️ Doživotní
+                  {% else %}
+                    {{ sub.subscription_type }}
+                  {% endif %}
+                </td>
+                <td class="p-3">
+                  {% if sub.payment_method == 'admin_assigned' %}
+                    <span class="text-purple-600">👤 Admin přiřazení</span>
+                  {% elif sub.payment_method == 'card' %}
+                    💳 Karta
+                  {% elif sub.payment_method == 'bank_transfer' %}
+                    🏦 Bankovní převod
+                  {% else %}
+                    {{ sub.payment_method|default:"N/A" }}
+                  {% endif %}
+                </td>
+                <td class="p-3">
+                  <div class="text-sm">{{ sub.start_date|date:"d.m.Y" }}</div>
+                  <div class="text-xs text-gray-500">{{ sub.start_date|date:"H:i" }}</div>
+                </td>
+                <td class="p-3">
+                  {% if sub.end_date %}
+                    <div class="text-sm">{{ sub.end_date|date:"d.m.Y" }}</div>
+                    <div class="text-xs text-gray-500">{{ sub.end_date|date:"H:i" }}</div>
+                  {% else %}
+                    <span class="text-gray-400">—</span>
+                  {% endif %}
+                </td>
+                <td class="p-3">
+                  {% if sub.is_active %}
+                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">✅ Aktivní</span>
+                  {% else %}
+                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-sm">❌ Neaktivní</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 text-sm text-gray-600">
+        Celkem: <strong>{{ subscriptions.count }}</strong> předplatných
+      </div>
+
+    {% else %}
+      <div class="text-center py-12 text-gray-500">
+        <p class="text-lg mb-2">📭 Žádná předplatná nenalezena</p>
+        {% if status_filter %}
+          <p class="text-sm">Zkuste změnit filtr nebo <a href="{% url 'admin_assign_module' %}" class="text-blue-600 hover:underline">přiřadit nový modul</a>.</p>
+        {% else %}
+          <p class="text-sm">Začněte <a href="{% url 'admin_assign_module' %}" class="text-blue-600 hover:underline">přiřazením modulu uživateli</a>.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Link -->
+  <div class="mt-6">
+    <a href="{% url 'admin_modules' %}" class="btn btn-outline">← Zpět na správu modulů</a>
+  </div>
+
+</div>
+{% endblock %}

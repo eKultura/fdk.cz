@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Přiřadit modul uživateli | FDK.cz{% endblock %}
+{% block header_title %}➕ Přiřadit modul uživateli{% endblock %}
+{% block header_subtitle %}Administrace předplatných{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">Uživatel</label>
+        <select name="user_id" class="form-control" required>
+          <option value="">-- Vyberte uživatele --</option>
+          {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">Modul</label>
+        <select name="module_id" class="form-control" required>
+          <option value="">-- Vyberte modul --</option>
+          {% for module in modules %}
+            <option value="{{ module.module_id }}">
+              {{ module.display_name }}
+              ({{ module.price_monthly }} Kč/měsíc, {{ module.price_yearly }} Kč/rok)
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-semibold mb-2">Typ předplatného</label>
+
+        <div class="space-y-2">
+          <label class="flex items-center">
+            <input type="radio" name="subscription_type" value="monthly" class="mr-2">
+            <span>📅 Měsíční (30 dní)</span>
+          </label>
+
+          <label class="flex items-center">
+            <input type="radio" name="subscription_type" value="yearly" checked class="mr-2">
+            <span>📆 Roční (365 dní)</span>
+          </label>
+
+          <label class="flex items-center">
+            <input type="radio" name="subscription_type" value="lifetime" class="mr-2">
+            <span>♾️ Doživotní (bez omezení)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <button type="submit" class="btn btn-primary">✅ Přiřadit modul</button>
+        <a href="{% url 'admin_modules' %}" class="btn btn-outline">← Zpět</a>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Info Box -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold mb-4">ℹ️ Důležité informace</h3>
+    <ul class="list-disc pl-6 space-y-2 text-sm">
+      <li>Přiřazení modulu uživateli nevyžaduje platbu</li>
+      <li>Předplatné bude označeno jako "admin_assigned"</li>
+      <li>U měsíčního předplatného platnost vyprší za 30 dní</li>
+      <li>U ročního předplatného platnost vyprší za 365 dní</li>
+      <li>Doživotní předplatné nemá datum vypršení</li>
+      <li>Pokud uživatel už má aktivní předplatné daného modulu, nebude vytvořeno nové</li>
+    </ul>
+  </div>
+
+</div>
+{% endblock %}

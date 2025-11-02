@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from fdk_cz.models import Module, UserModuleSubscription, ModuleBundle
+from django.db import models
 
 
 @login_required
@@ -186,3 +187,152 @@ def renew_subscription(request, subscription_id):
     }
 
     return render(request, 'subscription/renew_subscription.html', context)
+
+
+# ======================================================================
+# ADMIN FUNCTIONS - Správa modulů a předplatných
+# ======================================================================
+
+@login_required
+def admin_modules(request):
+    """Admin: Seznam všech modulů s možností editace"""
+
+    # Kontrola admin práv
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Nemáte oprávnění pro přístup k této stránce.")
+        return redirect('index')
+
+    modules = Module.objects.all().order_by('order')
+
+    # Statistiky
+    from django.db.models import Count
+    modules_with_stats = modules.annotate(
+        subscribers_count=Count('user_subscriptions', filter=models.Q(user_subscriptions__is_active=True))
+    )
+
+    context = {
+        'modules': modules_with_stats,
+    }
+
+    return render(request, 'subscription/admin_modules.html', context)
+
+
+@login_required
+def admin_edit_module(request, module_id):
+    """Admin: Editace modulu (cena, aktivita, atd.)"""
+
+    # Kontrola admin práv
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Nemáte oprávnění pro přístup k této stránce.")
+        return redirect('index')
+
+    module = get_object_or_404(Module, module_id=module_id)
+
+    if request.method == 'POST':
+        # Aktualizovat modul
+        module.display_name = request.POST.get('display_name', module.display_name)
+        module.description = request.POST.get('description', module.description)
+        module.price_monthly = request.POST.get('price_monthly', module.price_monthly)
+        module.price_yearly = request.POST.get('price_yearly', module.price_yearly)
+        module.is_active = request.POST.get('is_active') == 'on'
+        module.is_free = request.POST.get('is_free') == 'on'
+        module.order = request.POST.get('order', module.order)
+        module.save()
+
+        messages.success(request, f'Modul "{module.display_name}" byl úspěšně aktualizován.')
+        return redirect('admin_modules')
+
+    context = {
+        'module': module,
+    }
+
+    return render(request, 'subscription/admin_edit_module.html', context)
+
+
+@login_required
+def admin_assign_module(request):
+    """Admin: Přiřadit modul uživateli"""
+
+    # Kontrola admin práv
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Nemáte oprávnění pro přístup k této stránce.")
+        return redirect('index')
+
+    from django.contrib.auth.models import User
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        module_id = request.POST.get('module_id')
+        subscription_type = request.POST.get('subscription_type', 'yearly')
+
+        user = get_object_or_404(User, id=user_id)
+        module = get_object_or_404(Module, module_id=module_id)
+
+        # Zkontrolovat, zda už nemá aktivní subscription
+        existing = UserModuleSubscription.objects.filter(
+            user=user,
+            module=module,
+            is_active=True
+        ).first()
+
+        if existing:
+            messages.warning(request, f'Uživatel {user.username} už má aktivní předplatné modulu {module.display_name}.')
+        else:
+            # Vytvořit subscription
+            if subscription_type == 'monthly':
+                end_date = timezone.now() + timedelta(days=30)
+            elif subscription_type == 'yearly':
+                end_date = timezone.now() + timedelta(days=365)
+            else:
+                end_date = None  # Lifetime
+
+            UserModuleSubscription.objects.create(
+                user=user,
+                module=module,
+                subscription_type=subscription_type,
+                is_active=True,
+                end_date=end_date,
+                payment_method='admin_assigned'
+            )
+
+            messages.success(request, f'Modul "{module.display_name}" byl přiřazen uživateli {user.username}.')
+
+        return redirect('admin_modules')
+
+    # GET request
+    from django.contrib.auth.models import User
+    modules = Module.objects.filter(is_active=True).order_by('display_name')
+    users = User.objects.all().order_by('username')
+
+    context = {
+        'modules': modules,
+        'users': users,
+    }
+
+    return render(request, 'subscription/admin_assign_module.html', context)
+
+
+@login_required
+def admin_subscriptions(request):
+    """Admin: Seznam všech předplatných"""
+
+    # Kontrola admin práv
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Nemáte oprávnění pro přístup k této stránce.")
+        return redirect('index')
+
+    subscriptions = UserModuleSubscription.objects.select_related('user', 'module').order_by('-created_at')
+
+    # Filtry
+    status_filter = request.GET.get('status')
+    if status_filter == 'active':
+        subscriptions = subscriptions.filter(is_active=True)
+    elif status_filter == 'inactive':
+        subscriptions = subscriptions.filter(is_active=False)
+
+    context = {
+        'subscriptions': subscriptions,
+        'status_filter': status_filter,
+    }
+
+    return render(request, 'subscription/admin_subscriptions.html', context)
