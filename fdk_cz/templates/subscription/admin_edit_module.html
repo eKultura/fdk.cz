@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Upravit modul - {{ module.display_name }} | FDK.cz{% endblock %}
+{% block header_title %}✏️ Upravit modul{% endblock %}
+{% block header_subtitle %}{{ module.display_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">Zobrazovaný název</label>
+        <input type="text" name="display_name" value="{{ module.display_name }}" class="form-control" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">Popis</label>
+        <textarea name="description" rows="3" class="form-control">{{ module.description }}</textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-semibold mb-2">Cena měsíčně (Kč)</label>
+          <input type="number" name="price_monthly" value="{{ module.price_monthly }}" step="0.01" class="form-control" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">Cena ročně (Kč)</label>
+          <input type="number" name="price_yearly" value="{{ module.price_yearly }}" step="0.01" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">Pořadí</label>
+        <input type="number" name="order" value="{{ module.order }}" class="form-control" required>
+        <p class="text-xs text-gray-500 mt-1">Číslo určuje pořadí zobrazení (nižší = dříve)</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="flex items-center">
+          <input type="checkbox" name="is_active" {% if module.is_active %}checked{% endif %} class="mr-2">
+          <span class="font-semibold">Aktivní modul</span>
+        </label>
+        <p class="text-xs text-gray-500 mt-1">Neaktivní moduly nejsou viditelné na ceníku</p>
+      </div>
+
+      <div class="mb-6">
+        <label class="flex items-center">
+          <input type="checkbox" name="is_free" {% if module.is_free %}checked{% endif %} class="mr-2">
+          <span class="font-semibold">Zdarma pro všechny</span>
+        </label>
+        <p class="text-xs text-gray-500 mt-1">Modul bude dostupný všem bez předplatného</p>
+      </div>
+
+      <div class="flex gap-4">
+        <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+        <a href="{% url 'admin_modules' %}" class="btn btn-outline">← Zpět</a>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Module Info -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold mb-4">ℹ️ Informace o modulu</h3>
+    <div class="text-sm space-y-2">
+      <p><strong>Systémový název:</strong> <code class="bg-gray-100 px-2 py-1 rounded">{{ module.name }}</code></p>
+      <p><strong>URL patterny:</strong> <code class="bg-gray-100 px-2 py-1 rounded">{{ module.url_patterns }}</code></p>
+      <p><strong>Vytvořeno:</strong> {{ module.created_at|date:"d.m.Y H:i" }}</p>
+      <p><strong>Naposledy upraveno:</strong> {{ module.updated_at|date:"d.m.Y H:i" }}</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

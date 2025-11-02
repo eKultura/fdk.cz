@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Admin - Správa modulů | FDK.cz{% endblock %}
+{% block header_title %}🔧 Správa modulů{% endblock %}
+{% block header_subtitle %}Administrace modulů a cen{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+
+  <!-- Actions -->
+  <div class="mb-6">
+    <a href="{% url 'admin_assign_module' %}" class="btn btn-primary">+ Přiřadit modul uživateli</a>
+    <a href="{% url 'admin_subscriptions' %}" class="btn btn-outline ml-2">Všechna předplatná</a>
+    <a href="{% url 'subscription_pricing' %}" class="btn btn-outline ml-2">Veřejný ceník</a>
+  </div>
+
+  <!-- Modules Table -->
+  <div class="content-card">
+    <h2 class="text-2xl font-bold mb-4">Seznam modulů</h2>
+
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-2">Pořadí</th>
+            <th class="text-left py-2">Název modulu</th>
+            <th class="text-left py-2">Cena měsíčně</th>
+            <th class="text-left py-2">Cena ročně</th>
+            <th class="text-center py-2">Aktivní</th>
+            <th class="text-center py-2">Zdarma</th>
+            <th class="text-center py-2">Odběratelů</th>
+            <th class="text-right py-2">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for module in modules %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3">{{ module.order }}</td>
+            <td class="py-3">
+              <div class="font-semibold">{{ module.display_name }}</div>
+              <div class="text-sm text-gray-500">{{ module.name }}</div>
+            </td>
+            <td class="py-3">
+              {% if module.is_free %}
+                <span class="text-green-600 font-bold">ZDARMA</span>
+              {% else %}
+                {{ module.price_monthly }} Kč
+              {% endif %}
+            </td>
+            <td class="py-3">
+              {% if module.is_free %}
+                <span class="text-green-600 font-bold">ZDARMA</span>
+              {% else %}
+                {{ module.price_yearly }} Kč
+              {% endif %}
+            </td>
+            <td class="py-3 text-center">
+              {% if module.is_active %}
+                <span class="px-2 py-1 bg-green-200 text-green-800 rounded text-sm">✓ Ano</span>
+              {% else %}
+                <span class="px-2 py-1 bg-red-200 text-red-800 rounded text-sm">✗ Ne</span>
+              {% endif %}
+            </td>
+            <td class="py-3 text-center">
+              {% if module.is_free %}
+                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded text-sm">✓</span>
+              {% else %}
+                <span class="text-gray-400">-</span>
+              {% endif %}
+            </td>
+            <td class="py-3 text-center">
+              <span class="font-bold text-blue-600">{{ module.subscribers_count|default:0 }}</span>
+            </td>
+            <td class="py-3 text-right">
+              <a href="{% url 'admin_edit_module' module.module_id %}" class="text-blue-600 hover:underline">Upravit</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="py-8 text-center text-gray-500">
+              Nejsou žádné moduly. Spusťte <code>python manage.py init_modules</code>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold mb-2">ℹ️ Nápověda</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li><strong>Upravit</strong> - Změnit ceny, název nebo aktivaci modulu</li>
+      <li><strong>Přiřadit modul</strong> - Přidat předplatné konkrétnímu uživateli (bez platby)</li>
+      <li><strong>Všechna předplatná</strong> - Zobrazit seznam všech aktivních/neaktivních předplatných</li>
+      <li><strong>Zdarma</strong> - Moduly dostupné všem bez předplatného</li>
+    </ul>
+  </div>
+
+</div>
+{% endblock %}
