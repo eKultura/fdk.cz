@@ -14,7 +14,7 @@
       <!-- Název -->
       <div class="form-group mb-4">
         <label for="id_title" class="block text-sm font-medium text-gray-700">Název milníku <span class="text-red-600">*</span></label>
-        {{ form.title|as_widget(attrs={'class': 'w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500'}) }}
+        <input type="text" name="title" id="id_title" value="{{ form.title.value|default:'' }}" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" required>
         {% if form.title.errors %}
           <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
         {% endif %}
@@ -23,7 +23,7 @@
       <!-- Popis -->
       <div class="form-group mb-4">
         <label for="id_description" class="block text-sm font-medium text-gray-700">Popis</label>
-        {{ form.description|as_widget(attrs={'class': 'w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500'}) }}
+        <textarea name="description" id="id_description" rows="4" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default:'' }}</textarea>
         {% if form.description.errors %}
           <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
         {% endif %}
@@ -32,7 +32,7 @@
       <!-- Termín dokončení -->
       <div class="form-group mb-4">
         <label for="id_due_date" class="block text-sm font-medium text-gray-700">Termín dokončení</label>
-        {{ form.due_date|as_widget(attrs={'type': 'date', 'class': 'w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500'}) }}
+        <input type="date" name="due_date" id="id_due_date" value="{{ form.due_date.value|date:'Y-m-d' }}" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
         {% if form.due_date.errors %}
           <p class="text-red-600 text-sm mt-1">{{ form.due_date.errors|join:", " }}</p>
         {% endif %}
