@@ -347,29 +347,45 @@ def update_task_status(request, task_id, status):
 @login_required
 def task_management(request):
     user = request.user
-    user_tasks = ProjectTask.objects.filter(assigned=user).order_by('priority', '-status') 
-
+    user_tasks = ProjectTask.objects.filter(assigned=user).order_by('priority', '-status')
 
     user_organizations = user.companies.all()
+    # Get projects where user is a member
+    user_projects = Project.objects.filter(
+        models.Q(owner=user) | models.Q(project_users__user=user)
+    ).distinct()
 
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
-        if not user_organizations.exists():
-            messages.error(request, "Musíte být součástí organizace, abyste mohli vytvořit úkol mimo projekt.")
-        else:
-            # Create task without a project
-            ProjectTask.objects.create(
-                title=title,
-                description=description,
-                creator=user,
-                assigned=user,
-                organization=user_organizations.first()  # Assign the first organization as a default
-            )
-            messages.success(request, "Úkol byl úspěšně vytvořen.")
-            return redirect('task_management')
+        context = request.POST.get('context', 'personal')
+        project_id = request.POST.get('project_id')
+        organization_id = request.POST.get('organization_id')
 
-    return render(request, 'project/task_management.html', {'tasks': user_tasks})
+        task_data = {
+            'title': title,
+            'description': description,
+            'creator': user,
+            'assigned': user,
+        }
+
+        # Handle context-specific logic
+        if context == 'project' and project_id:
+            task_data['project'] = get_object_or_404(Project, pk=project_id)
+        elif context == 'organization' and organization_id:
+            task_data['organization'] = get_object_or_404(Company, pk=organization_id)
+        # For 'personal' context, no project or organization is set
+
+        ProjectTask.objects.create(**task_data)
+        messages.success(request, "Úkol byl úspěšně vytvořen.")
+        return redirect('task_management')
+
+    context = {
+        'tasks': user_tasks,
+        'user_organizations': user_organizations,
+        'user_projects': user_projects,
+    }
+    return render(request, 'project/task_management.html', context)
 
 
 

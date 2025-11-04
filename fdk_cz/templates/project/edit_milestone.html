@@ -8,34 +8,36 @@
 {% block content %}
 <div class="max-w-3xl mx-auto">
   <div class="content-card">
-    <form method="POST" action="{% url 'edit_milestone' project_id milestone.id %}">
+    <form method="POST" action="{% url 'edit_milestone' project_id milestone.milestone_id %}">
       {% csrf_token %}
 
       <!-- Název -->
-      <div class="form-group mb-4">
-        <label for="id_title" class="block text-sm font-medium text-gray-700">Název milníku <span class="text-red-600">*</span></label>
-        <input type="text" name="title" id="id_title" value="{{ form.title.value|default:'' }}" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" required>
+      <div class="form-group">
+        <label for="id_title" class="form-label">Název milníku <span class="required">*</span></label>
+        <input type="text" name="title" id="id_title" value="{{ form.title.value|default:milestone.title }}" class="form-control" required placeholder="Např. MVP Launch, Beta verze, Finální release">
         {% if form.title.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
+          <p class="form-error">{{ form.title.errors|join:", " }}</p>
         {% endif %}
       </div>
 
       <!-- Popis -->
-      <div class="form-group mb-4">
-        <label for="id_description" class="block text-sm font-medium text-gray-700">Popis</label>
-        <textarea name="description" id="id_description" rows="4" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default:'' }}</textarea>
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis</label>
+        <textarea name="description" id="id_description" rows="4" class="form-control" placeholder="Popište co má být v rámci tohoto milníku dokončeno...">{{ form.description.value|default:milestone.description|default:'' }}</textarea>
         {% if form.description.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
         {% endif %}
+        <div class="form-help">Detailní popis toho, co milník představuje a jaké výsledky se očekávají</div>
       </div>
 
       <!-- Termín dokončení -->
-      <div class="form-group mb-4">
-        <label for="id_due_date" class="block text-sm font-medium text-gray-700">Termín dokončení</label>
-        <input type="date" name="due_date" id="id_due_date" value="{{ form.due_date.value|date:'Y-m-d' }}" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+      <div class="form-group">
+        <label for="id_due_date" class="form-label">Termín dokončení</label>
+        <input type="date" name="due_date" id="id_due_date" value="{% if form.due_date.value %}{{ form.due_date.value|date:'Y-m-d' }}{% elif milestone.due_date %}{{ milestone.due_date|date:'Y-m-d' }}{% endif %}" class="form-control">
         {% if form.due_date.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.due_date.errors|join:", " }}</p>
+          <p class="form-error">{{ form.due_date.errors|join:", " }}</p>
         {% endif %}
+        <div class="form-help">Plánovaný termín splnění milníku</div>
       </div>
 
       <!-- Akce -->

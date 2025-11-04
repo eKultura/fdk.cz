@@ -155,7 +155,7 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
   </div>
 
   <!-- Sekce: Tým a kategorie -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
     <div class="content-card">
       <div class="flex justify-between items-center mb-3">
         <h2 class="text-xl font-semibold text-gray-800">Členové týmu</h2>
@@ -191,32 +191,111 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
     </div>
   </div>
 
+  <!-- Sekce: Poslední komentáře z úkolů -->
+  <div class="content-card mt-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-3">📝 Poslední komentáře z úkolů</h2>
+    {% with recent_comments=project.tasks.all|slice:":5" %}
+      {% if recent_comments %}
+        <div class="space-y-3">
+          {% for task in recent_comments %}
+            {% if task.comments.count > 0 %}
+              {% with last_comment=task.comments.first %}
+                <div class="border-l-4 border-blue-500 pl-3 py-2 bg-gray-50">
+                  <div class="flex justify-between items-start mb-1">
+                    <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline font-medium">
+                      {{ task.title }}
+                    </a>
+                    <span class="text-xs text-gray-500">{{ last_comment.posted|date:"d.m.Y H:i" }}</span>
+                  </div>
+                  <p class="text-sm text-gray-700">{{ last_comment.comment|truncatewords:20 }}</p>
+                  <p class="text-xs text-gray-500 mt-1">— {{ last_comment.user.username }}</p>
+                </div>
+              {% endwith %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-500 text-center py-4">Zatím žádné komentáře</p>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Sekce: Nice to Have úkoly -->
+  {% if nice_to_have_tasks %}
+  <div class="content-card mt-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-3">💡 Nice to Have úkoly</h2>
+    <p class="text-sm text-gray-600 mb-3">Úkoly s nízkou prioritou, které by bylo hezké mít, ale nejsou nezbytné</p>
+    <table class="w-full text-sm border-collapse">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="p-2 text-left">Název</th>
+          <th class="p-2 text-left hidden md:table-cell">Přiřazeno</th>
+          <th class="p-2 text-left hidden md:table-cell">Kategorie</th>
+          <th class="p-2 text-left">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in nice_to_have_tasks %}
+        <tr class="border-t hover:bg-gray-50">
+          <td class="p-2">
+            <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline">
+              {{ task.title }}
+            </a>
+          </td>
+          <td class="p-2 hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
+          <td class="p-2 hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
+          <td class="p-2">
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+              {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ task.status|default:"Nezahájeno" }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
 </div>
 
 <!-- Script: Chart.js + Toggle -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const ctx = document.getElementById('projectTaskPieChart');
-  new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
-      datasets: [{
-        data: [{{ project_status_counts.Nezahájeno }}, {{ project_status_counts.Probíhá }}, {{ project_status_counts.Hotovo }}],
-        backgroundColor: ['#f87171', '#facc15', '#4ade80']
-      }]
-    },
-    options: {responsive: true, maintainAspectRatio: false}
-  });
+  // Chart.js initialization
+  try {
+    const ctx = document.getElementById('projectTaskPieChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
+          datasets: [{
+            data: [{{ project_status_counts.Nezahájeno }}, {{ project_status_counts.Probíhá }}, {{ project_status_counts.Hotovo }}],
+            backgroundColor: ['#f87171', '#facc15', '#4ade80']
+          }]
+        },
+        options: {responsive: true, maintainAspectRatio: false}
+      });
+    }
+  } catch (error) {
+    console.error('Chart initialization error:', error);
+  }
 
+  // Toggle view functionality
   const toggleBtn = document.getElementById('toggleView');
   const taskColumns = document.getElementById('task_columns');
   const taskTable = document.getElementById('task_table');
-  toggleBtn.addEventListener('click', () => {
-    taskTable.classList.toggle('hidden');
-    taskColumns.classList.toggle('hidden');
-  });
+
+  if (toggleBtn && taskColumns && taskTable) {
+    toggleBtn.addEventListener('click', () => {
+      taskTable.classList.toggle('hidden');
+      taskColumns.classList.toggle('hidden');
+    });
+  }
 });
 </script>
 {% endblock %}
