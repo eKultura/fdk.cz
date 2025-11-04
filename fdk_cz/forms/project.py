@@ -104,7 +104,7 @@ class document_form(forms.ModelForm):
         project_id = kwargs.pop('project_id', None)
         super().__init__(*args, **kwargs)
         if project_id:
-            self.fields['category'].queryset = category.objects.filter(project_id=project_id)
+            self.fields['category'].queryset = ProjectCategory.objects.filter(project_id=project_id)
 
 
 
