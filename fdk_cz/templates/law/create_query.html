@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Nový AI dotaz | FDK.cz{% endblock %}
+{% block header_title %}– Nový AI dotaz{% endblock %}
+{% block header_subtitle %}Zeptejte se AI na právní otázku{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Query Type Selection -->
+      <div class="form-group">
+        <label for="id_query_type" class="form-label">Typ dotazu <span class="required">*</span></label>
+        <select name="query_type" id="id_query_type" class="form-control" required>
+          <option value="">Vyberte typ dotazu...</option>
+          {% for value, label in query_types %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-help">Vyberte typ právního dotazu pro optimální AI odpov</div>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="id_title" class="form-label">Název dotazu <span class="required">*</span></label>
+        <input type="text" name="title" id="id_title" class="form-control" required placeholder="Struný název vaaeho dotazu">
+        <div class="form-help">Zadejte výsti~ný název pro snadnou identifikaci</div>
+      </div>
+
+      <!-- Question -->
+      <div class="form-group">
+        <label for="id_question" class="form-label">Váa dotaz <span class="required">*</span></label>
+        <textarea name="question" id="id_question" class="form-control" rows="8" required placeholder="Popiate co nejpodrobnji svoj právní problém nebo otázku..."></textarea>
+        <div class="form-help">ím podrobnjaí informace poskytnete, tím pYesnjaí bude odpov AI</div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+          <div class="text-2xl mr-3">9</div>
+          <div>
+            <h4 class="font-semibold text-blue-800 mb-1">Upozornní</h4>
+            <p class="text-sm text-blue-700">
+              AI asistent poskytuje orientaní informace a nepYedstavuje oficiální právní poradenství.
+              Pro komplexní právní zále~itosti doporuujeme konzultaci s kvalifikovaným advokátem.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example Queries -->
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <h4 class="font-semibold text-gray-800 mb-3">=¡ PYíklady dotazo</h4>
+        <ul class="text-sm text-gray-700 space-y-2">
+          <li>" "Analýza kupní smlouvy - identifikujte rizikové klauzule"</li>
+          <li>" "Jaká jsou práva zamstnance pYi jednostranné zmn pracovní smlouvy?"</li>
+          <li>" "Postup pYi reklamaci vady zbo~í koupeného online"</li>
+          <li>" "Kontrola souladu obchodních podmínek s GDPR"</li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'law_dashboard' %}" class="btn btn-outline">Zruait</a>
+        <button type="submit" class="btn btn-primary">> Odeslat dotaz AI</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}HR Management | FDK.cz{% endblock %}
+{% block header_title %}👥 HR Management{% endblock %}
+{% block header_subtitle %}Správa zaměstnanců a oddělení{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_employee' %}" class="btn btn-primary">+ Nový zaměstnanec</a>
+    <a href="{% url 'create_department' %}" class="btn btn-secondary">+ Nové oddělení</a>
+    <a href="{% url 'list_employees' %}" class="btn btn-outline">Všichni zaměstnanci</a>
+    <a href="{% url 'list_departments' %}" class="btn btn-outline">Všechna oddělení</a>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-grid mb-6">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem zaměstnanců</div>
+          <div class="stat-value">{{ total_employees|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">👥</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Aktivních</div>
+          <div class="stat-value">{{ active_employees|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">✅</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Oddělení</div>
+          <div class="stat-value">{{ total_departments|default:0 }}</div>
+        </div>
+        <div class="stat-icon info">🏢</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Míra obsazenosti</div>
+          <div class="stat-value">
+            {% if total_employees > 0 %}
+              {{ active_employees|floatformat:0 }}/{{ total_employees }}
+            {% else %}
+              0
+            {% endif %}
+          </div>
+        </div>
+        <div class="stat-icon warning">📊</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Recent Employees (2/3 width) -->
+    <div class="lg:col-span-2 content-card">
+      <h3 class="text-xl font-semibold mb-4">👤 Nedávno přidaní zaměstnanci</h3>
+      {% if employees %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Jméno</th>
+            <th class="hidden md:table-cell">Email</th>
+            <th class="hidden md:table-cell">Oddělení</th>
+            <th>Status</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for employee in employees %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_employee' employee.employee_id %}"><strong>{{ employee.first_name }} {{ employee.last_name }}</strong></a>
+            </td>
+            <td class="hidden md:table-cell">{{ employee.email|default:"-" }}</td>
+            <td class="hidden md:table-cell">
+              {% if employee.department %}
+                <a href="{% url 'detail_department' employee.department.department_id %}" class="text-blue-600 hover:underline">
+                  {{ employee.department.name }}
+                </a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-medium
+                {% if employee.status == 'active' %}bg-green-100 text-green-700
+                {% elif employee.status == 'on_leave' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ employee.get_status_display }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_employee' employee.employee_id %}">👁️ Detail</a>
+                <a href="{% url 'edit_employee' employee.employee_id %}">✏️ Upravit</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="text-center py-8 bg-gray-50 rounded-lg">
+        <p class="text-gray-500">Zatím nejsou žádní zaměstnanci. <a href="{% url 'create_employee' %}" class="text-blue-600 hover:underline">Přidat prvního zaměstnance</a></p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Top Departments (1/3 width) -->
+    <div class="content-card">
+      <h3 class="text-xl font-semibold mb-4">🏢 Top oddělení</h3>
+      {% if departments_with_counts %}
+      <div class="space-y-3">
+        {% for dept in departments_with_counts %}
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+          <a href="{% url 'detail_department' dept.department_id %}" class="font-semibold text-gray-800 hover:text-blue-600 block mb-1">
+            {{ dept.name }}
+          </a>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-500">Počet zaměstnanců:</span>
+            <span class="text-sm font-bold text-blue-600">{{ dept.employee_count }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="mt-4">
+        <a href="{% url 'list_departments' %}" class="text-blue-600 hover:underline text-sm">Zobrazit všechna oddělení →</a>
+      </div>
+      {% else %}
+      <div class="text-center py-8 bg-gray-50 rounded-lg">
+        <p class="text-gray-500 text-sm">Žádná oddělení. <a href="{% url 'create_department' %}" class="text-blue-600 hover:underline">Vytvořit první</a></p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

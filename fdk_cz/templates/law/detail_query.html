@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ query.title }} | FDK.cz{% endblock %}
+{% block header_title %}ñ Detail AI dotazu{% endblock %}
+{% block header_subtitle %}{{ query.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <!-- Status and Actions -->
+  <div class="mb-6 flex justify-between items-center">
+    <div>
+      <span class="px-3 py-1 rounded-full text-sm font-medium
+        {% if query.status == 'completed' %}bg-green-100 text-green-700
+        {% elif query.status == 'processing' %}bg-blue-100 text-blue-700
+        {% elif query.status == 'pending' %}bg-yellow-100 text-yellow-700
+        {% else %}bg-red-100 text-red-700{% endif %}">
+        {% if query.status == 'completed' %} Dokoneno
+        {% elif query.status == 'processing' %}Û Zpracov·v· se
+        {% elif query.status == 'pending' %} ek· na zpracov·nÌ
+        {% else %}L Chyba{% endif %}
+      </span>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'law_dashboard' %}" class="btn btn-outline">ê Zpt na dashboard</a>
+      <a href="{% url 'create_query' %}" class="btn btn-secondary">+ Nov˝ dotaz</a>
+    </div>
+  </div>
+
+  <!-- Query Question -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <span class="text-2xl mr-2">S</span>
+      V·a dotaz
+    </h3>
+    <div class="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-4">
+      <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ query.question }}</p>
+    </div>
+    <div class="mt-3 flex items-center text-sm text-gray-500">
+      <span>=≈ VytvoYeno: {{ query.created_at|date:"d.m.Y H:i" }}</span>
+      {% if query.updated_at %}
+        <span class="mx-2">"</span>
+        <span>= Aktualizov·no: {{ query.updated_at|date:"d.m.Y H:i" }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- AI Response -->
+  {% if query.status == 'completed' and query.ai_response %}
+  <div class="content-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <span class="text-2xl mr-2">></span>
+      AI Odpov
+    </h3>
+    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-5">
+      <div class="prose max-w-none">
+        {{ query.ai_response|linebreaks }}
+      </div>
+    </div>
+
+    <!-- Response Actions -->
+    <div class="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+      <button class="btn btn-outline" onclick="copyToClipboard()">=À KopÌrovat odpov</button>
+      <button class="btn btn-outline" onclick="window.print()">=® Tisk</button>
+      <button class="btn btn-outline">=Â Export PDF</button>
+    </div>
+  </div>
+  {% elif query.status == 'processing' %}
+  <div class="content-card text-center">
+    <div class="py-12">
+      <div class="text-6xl mb-4">Û</div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">Zpracov·v· se...</h3>
+      <p class="text-gray-600">AI pr·vnÌ asistent pr·v analyzuje v·a dotaz. Tento proces mo~e trvat nkolik minut.</p>
+      <div class="mt-6">
+        <div class="animate-pulse bg-blue-100 h-2 rounded-full w-64 mx-auto"></div>
+      </div>
+    </div>
+  </div>
+  {% elif query.status == 'pending' %}
+  <div class="content-card text-center">
+    <div class="py-12">
+      <div class="text-6xl mb-4"></div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">ek· na zpracov·nÌ</h3>
+      <p class="text-gray-600">V·a dotaz je ve front a bude brzy zpracov·n.</p>
+    </div>
+  </div>
+  {% else %}
+  <div class="content-card text-center">
+    <div class="py-12">
+      <div class="text-6xl mb-4">L</div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">Chyba pYi zpracov·nÌ</h3>
+      <p class="text-gray-600">PYi zpracov·nÌ dotazu doalo k chyb. Zkuste prosÌm dotaz odeslat znovu.</p>
+      <div class="mt-4">
+        <a href="{% url 'create_query' %}" class="btn btn-primary">Zkusit znovu</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Disclaimer -->
+  <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mt-6">
+    <div class="flex items-start">
+      <div class="text-2xl mr-3">†</div>
+      <div>
+        <h4 class="font-semibold text-yellow-800 mb-1">Pr·vnÌ upozornnÌ</h4>
+        <p class="text-sm text-yellow-700">
+          Odpovdi AI asistenta jsou poskytov·ny pouze pro informanÌ ˙ely a nepYedstavujÌ pr·vnÌ poradenstvÌ.
+          Pro konkrÈtnÌ pr·vnÌ pYÌpady doporuujeme konzultaci s advok·tem nebo pr·vnÌkem.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyToClipboard() {
+  const response = document.querySelector('.prose').innerText;
+  navigator.clipboard.writeText(response).then(() => {
+    alert('Odpov zkopÌrov·na do schr·nky!');
+  });
+}
+</script>
+{% endblock %}

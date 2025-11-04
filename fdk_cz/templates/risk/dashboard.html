@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Správa rizik | FDK.cz{% endblock %}
+{% block header_title %}⚠️ Správa rizik{% endblock %}
+{% block header_subtitle %}Identifikace, hodnocení a řízení rizik projektů{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
+    <a href="{% url 'list_risks' %}" class="btn btn-outline">Všechna rizika</a>
+    <a href="{% url 'risk_matrix' %}" class="btn btn-outline">Riziková matice</a>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-grid mb-6">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem rizik</div>
+          <div class="stat-value">{{ total_risks|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">📊</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Kritická rizika</div>
+          <div class="stat-value">{{ critical_risks|default:0 }}</div>
+        </div>
+        <div class="stat-icon warning">🔴</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Průměrné skóre</div>
+          <div class="stat-value">{{ avg_risk_score|default:0|floatformat:1 }}</div>
+        </div>
+        <div class="stat-icon info">📈</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Aktivní</div>
+          <div class="stat-value">{{ risks_by_status.identified|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">✅</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Risks -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">⚠️ Nedávná rizika (seřazeno podle skóre)</h3>
+    {% if risks %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Název</th>
+          <th class="hidden md:table-cell">Projekt/Organizace</th>
+          <th>Skóre</th>
+          <th class="hidden md:table-cell">Pravděpodobnost</th>
+          <th class="hidden md:table-cell">Dopad</th>
+          <th>Status</th>
+          <th class="text-right">Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for risk in risks %}
+        <tr>
+          <td>
+            <a href="{% url 'detail_risk' risk.risk_id %}"><strong>{{ risk.name }}</strong></a>
+          </td>
+          <td class="hidden md:table-cell">
+            {% if risk.project %}
+              <a href="{% url 'detail_project' risk.project.project_id %}" class="text-blue-600 hover:underline">
+                {{ risk.project.name }}
+              </a>
+            {% elif risk.organization %}
+              {{ risk.organization.name }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <span class="px-2 py-1 rounded text-xs font-bold
+              {% if risk.risk_score >= 15 %}bg-red-100 text-red-700
+              {% elif risk.risk_score >= 10 %}bg-orange-100 text-orange-700
+              {% elif risk.risk_score >= 5 %}bg-yellow-100 text-yellow-700
+              {% else %}bg-green-100 text-green-700{% endif %}">
+              {{ risk.risk_score }}
+            </span>
+          </td>
+          <td class="hidden md:table-cell">{{ risk.probability }}/5</td>
+          <td class="hidden md:table-cell">{{ risk.impact }}/5</td>
+          <td>
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if risk.status == 'mitigated' %}bg-green-100 text-green-700
+              {% elif risk.status == 'identified' %}bg-blue-100 text-blue-700
+              {% elif risk.status == 'occurred' %}bg-red-100 text-red-700
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ risk.get_status_display }}
+            </span>
+          </td>
+          <td class="text-right">
+            <div class="data-table-actions">
+              <a href="{% url 'detail_risk' risk.risk_id %}">👁️ Detail</a>
+              <a href="{% url 'edit_risk' risk.risk_id %}">✏️ Upravit</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-8 bg-gray-50 rounded-lg">
+      <p class="text-gray-500">Zatím nejsou žádná identifikovaná rizika. <a href="{% url 'create_risk' %}" class="text-blue-600 hover:underline">Vytvořit první riziko</a></p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Risk Legend -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold mb-3">📌 Legenda skóre rizik</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="bg-green-50 border-2 border-green-200 rounded-lg p-3">
+        <div class="font-semibold text-green-700">Nízké (1-4)</div>
+        <p class="text-xs text-gray-600">Přijatelné riziko</p>
+      </div>
+      <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
+        <div class="font-semibold text-yellow-700">Střední (5-9)</div>
+        <p class="text-xs text-gray-600">Sledovat</p>
+      </div>
+      <div class="bg-orange-50 border-2 border-orange-200 rounded-lg p-3">
+        <div class="font-semibold text-orange-700">Vysoké (10-14)</div>
+        <p class="text-xs text-gray-600">Mitigovat</p>
+      </div>
+      <div class="bg-red-50 border-2 border-red-200 rounded-lg p-3">
+        <div class="font-semibold text-red-700">Kritické (15+)</div>
+        <p class="text-xs text-gray-600">Priorita!</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
