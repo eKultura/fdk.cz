@@ -586,6 +586,22 @@ class GrantCall(models.Model):
         db_column='external_id',
         help_text='ID z externí databáze (dotaceEU, MŠMT)'
     )
+
+    # Číslo dotace (např. od Ministerstva Kultury)
+    grant_number = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        db_column='grant_number',
+        help_text='Oficiální číslo dotace (např. 1508)'
+    )
+    grant_subnumber = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        db_column='grant_subnumber',
+        help_text='Podčíslo dotace (pokud existuje)'
+    )
     source_url = models.URLField(
         null=True,
         blank=True,
