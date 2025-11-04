@@ -92,30 +92,32 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
 
   <!-- Sekce: Milníky -->
   <div class="content-card">
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="text-xl font-semibold text-gray-800">Milníky</h2>
-      <a href="novy-milnik/" class="btn btn-primary">＋ Přidat</a>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">📍 Milníky</h2>
+      <a href="novy-milnik/" class="btn btn-primary">＋ Přidat milník</a>
     </div>
-    <table class="w-full text-sm border-collapse">
-      <thead class="bg-gray-100 text-gray-700">
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="p-2 text-left">Název</th>
-          <th class="p-2 text-left">Termín</th>
-          <th class="p-2 text-right">Akce</th>
+          <th>Název milníku</th>
+          <th>Termín dokončení</th>
+          <th class="text-right">Akce</th>
         </tr>
       </thead>
       <tbody>
         {% for milestone in project.milestones.all %}
-        <tr class="border-t hover:bg-gray-50">
-          <td class="p-2">{{ milestone.title }}</td>
-          <td class="p-2">{{ milestone.due_date|date:"d.m.Y" }}</td>
-          <td class="p-2 text-right">
-            <a href="{% url 'edit_milestone' project.project_id milestone.pk %}" class="text-blue-600 hover:underline">Upravit</a>
-            <a href="{% url 'delete_milestone' project.project_id milestone.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
+        <tr>
+          <td><strong>{{ milestone.title }}</strong></td>
+          <td>{{ milestone.due_date|date:"d.m.Y" }}</td>
+          <td class="text-right">
+            <div class="data-table-actions">
+              <a href="{% url 'edit_milestone' project.project_id milestone.pk %}">✏️ Upravit</a>
+              <a href="{% url 'delete_milestone' project.project_id milestone.pk %}" class="danger" onclick="return confirm('Opravdu chcete smazat tento milník?');">🗑️ Smazat</a>
+            </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="3" class="p-3 text-center text-gray-500">Žádné milníky</td></tr>
+        <tr><td colspan="3" class="data-table-empty">Zatím nejsou vytvořeny žádné milníky</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -123,32 +125,34 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
 
   <!-- Sekce: Dokumenty -->
   <div class="content-card">
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="text-xl font-semibold text-gray-800">Dokumenty</h2>
-      <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat</a>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">📄 Dokumenty</h2>
+      <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat dokument</a>
     </div>
-    <table class="w-full text-sm border-collapse">
-      <thead class="bg-gray-100 text-gray-700">
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="p-2 text-left">Název</th>
-          <th class="p-2 text-left hidden md:table-cell">Kategorie</th>
-          <th class="p-2 text-left hidden md:table-cell">Typ</th>
-          <th class="p-2 text-center">Akce</th>
+          <th>Název dokumentu</th>
+          <th class="hidden md:table-cell">Kategorie</th>
+          <th class="hidden md:table-cell">Typ</th>
+          <th class="text-right">Akce</th>
         </tr>
       </thead>
       <tbody>
         {% for document in project.documents.all %}
-        <tr class="border-t hover:bg-gray-50">
-          <td class="p-2"><a href="{% url 'detail_document' document.pk %}" class="text-blue-600 hover:underline">{{ document.title }}</a></td>
-          <td class="p-2 hidden md:table-cell">{{ document.category|default:"–" }}</td>
-          <td class="p-2 hidden md:table-cell">{{ document.document_type|default:"–" }}</td>
-          <td class="p-2 text-center">
-            <a href="{% url 'edit_document' document.pk %}" class="text-blue-600 hover:underline">✎</a>
-            <a href="{% url 'delete_document' document.pk %}" class="text-red-600 hover:underline ml-2">✖</a>
+        <tr>
+          <td><a href="{% url 'detail_document' document.pk %}"><strong>{{ document.title }}</strong></a></td>
+          <td class="hidden md:table-cell">{{ document.category|default:"–" }}</td>
+          <td class="hidden md:table-cell">{{ document.document_type|default:"–" }}</td>
+          <td class="text-right">
+            <div class="data-table-actions">
+              <a href="{% url 'edit_document' document.pk %}">✏️ Upravit</a>
+              <a href="{% url 'delete_document' document.pk %}" class="danger" onclick="return confirm('Opravdu chcete smazat tento dokument?');">🗑️ Smazat</a>
+            </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="p-3 text-center text-gray-500">Žádné dokumenty</td></tr>
+        <tr><td colspan="4" class="data-table-empty">Zatím nejsou vytvořeny žádné dokumenty</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -225,28 +229,28 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
   <!-- Sekce: Nice to Have úkoly -->
   {% if nice_to_have_tasks %}
   <div class="content-card mt-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-3">💡 Nice to Have úkoly</h2>
-    <p class="text-sm text-gray-600 mb-3">Úkoly s nízkou prioritou, které by bylo hezké mít, ale nejsou nezbytné</p>
-    <table class="w-full text-sm border-collapse">
-      <thead class="bg-gray-100 text-gray-700">
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">💡 Nice to Have úkoly</h2>
+    <p class="text-sm text-gray-600 mb-4">Úkoly s nízkou prioritou, které by bylo hezké mít, ale nejsou nezbytné</p>
+    <table class="data-table">
+      <thead>
         <tr>
-          <th class="p-2 text-left">Název</th>
-          <th class="p-2 text-left hidden md:table-cell">Přiřazeno</th>
-          <th class="p-2 text-left hidden md:table-cell">Kategorie</th>
-          <th class="p-2 text-left">Status</th>
+          <th>Název úkolu</th>
+          <th class="hidden md:table-cell">Přiřazeno</th>
+          <th class="hidden md:table-cell">Kategorie</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
         {% for task in nice_to_have_tasks %}
-        <tr class="border-t hover:bg-gray-50">
-          <td class="p-2">
-            <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline">
-              {{ task.title }}
+        <tr>
+          <td>
+            <a href="{% url 'detail_task' task.task_id %}">
+              <strong>{{ task.title }}</strong>
             </a>
           </td>
-          <td class="p-2 hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
-          <td class="p-2 hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
-          <td class="p-2">
+          <td class="hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
+          <td class="hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
+          <td>
             <span class="px-2 py-1 rounded text-xs font-medium
               {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
               {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
