@@ -38,12 +38,11 @@ class add_user_form(forms.Form):
 class milestone_form(forms.ModelForm):
     class Meta:
         model = ProjectMilestone
-        fields = ['title', 'description', 'due_date', 'status']
+        fields = ['title', 'description', 'due_date']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Název milníku'}),
             'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis milníku'}),
             'due_date': forms.DateInput(attrs={'type': 'date'}),
-            'status': forms.Select(attrs={}),
         }
 
 def initialize_project_forms(post_data=None):
