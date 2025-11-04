@@ -8,7 +8,7 @@
 {% block content %}
 <div class="max-w-3xl mx-auto">
   <div class="content-card">
-    <form method="POST" action="{% url 'edit_milestone' project_id milestone.id %}">
+    <form method="POST" action="{% url 'edit_milestone' project_id milestone.milestone_id %}">
       {% csrf_token %}
 
       <!-- Název -->
