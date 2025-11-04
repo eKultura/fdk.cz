@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Nová B2B smlouva | FDK.cz{% endblock %}
+{% block header_title %}Nová B2B smlouva{% endblock %}
+{% block header_subtitle %}Vytvoření nové obchodní smlouvy{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Info Section -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Základní informace</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_company" class="form-label">Firma <span class="required">*</span></label>
+          {{ form.company }}
+          {% if form.company.errors %}
+            <p class="form-error">{{ form.company.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Vyberte B2B firmu</div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_organization" class="form-label">Organizace</label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="form-error">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_project" class="form-label">Projekt</label>
+        {{ form.project }}
+        {% if form.project.errors %}
+          <p class="form-error">{{ form.project.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Volitelně přiřaďte smlouvu k projektu</div>
+      </div>
+
+      <!-- Contract Details -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Detaily smlouvy</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_contract_number" class="form-label">Číslo smlouvy <span class="required">*</span></label>
+          {{ form.contract_number }}
+          {% if form.contract_number.errors %}
+            <p class="form-error">{{ form.contract_number.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_status" class="form-label">Status <span class="required">*</span></label>
+          {{ form.status }}
+          {% if form.status.errors %}
+            <p class="form-error">{{ form.status.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_title" class="form-label">Název smlouvy <span class="required">*</span></label>
+        {{ form.title }}
+        {% if form.title.errors %}
+          <p class="form-error">{{ form.title.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Stručný popis obsahu a účelu smlouvy</div>
+      </div>
+
+      <!-- Financial Details -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Finanční údaje</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_contract_value" class="form-label">Hodnota smlouvy</label>
+          {{ form.contract_value }}
+          {% if form.contract_value.errors %}
+            <p class="form-error">{{ form.contract_value.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_currency" class="form-label">Měna</label>
+          {{ form.currency }}
+          {% if form.currency.errors %}
+            <p class="form-error">{{ form.currency.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Důležitá data</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_start_date" class="form-label">Datum zahájení</label>
+          {{ form.start_date }}
+          {% if form.start_date.errors %}
+            <p class="form-error">{{ form.start_date.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_end_date" class="form-label">Datum ukončení</label>
+          {{ form.end_date }}
+          {% if form.end_date.errors %}
+            <p class="form-error">{{ form.end_date.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_signed_date" class="form-label">Datum podpisu</label>
+        {{ form.signed_date }}
+        {% if form.signed_date.errors %}
+          <p class="form-error">{{ form.signed_date.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Datum podepsání smlouvy</div>
+      </div>
+
+      <!-- Additional Info -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Kategorizace</h3>
+
+      <div class="form-group">
+        <label for="id_categories" class="form-label">Kategorie</label>
+        {{ form.categories }}
+        {% if form.categories.errors %}
+          <p class="form-error">{{ form.categories.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Oddělte čárkami, např: "služby, IT, podpora"</div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_keywords" class="form-label">Klíčová slova</label>
+        {{ form.keywords }}
+        {% if form.keywords.errors %}
+          <p class="form-error">{{ form.keywords.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Oddělte čárkami pro lepší vyhledávání</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-6">
+        <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">📝 Vytvořit smlouvu</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

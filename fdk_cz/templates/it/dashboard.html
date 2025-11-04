@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}IT Správa | FDK.cz{% endblock %}
+{% block header_title %}🖥️ IT Správa{% endblock %}
+{% block header_subtitle %}Správa IT aktiv a incidentů{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_it_asset' %}" class="btn btn-primary">+ Nové aktivum</a>
+    <a href="{% url 'create_it_incident' %}" class="btn btn-secondary">+ Nový incident</a>
+    <a href="{% url 'list_it_assets' %}" class="btn btn-outline">Všechna aktiva</a>
+    <a href="{% url 'list_it_incidents' %}" class="btn btn-outline">Všechny incidenty</a>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-grid mb-6">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem aktiv</div>
+          <div class="stat-value">{{ total_assets|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">💻</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Aktivní aktiva</div>
+          <div class="stat-value">{{ active_assets|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">✅</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem incidentů</div>
+          <div class="stat-value">{{ total_incidents|default:0 }}</div>
+        </div>
+        <div class="stat-icon warning">⚠️</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Otevřené incidenty</div>
+          <div class="stat-value">{{ open_incidents|default:0 }}</div>
+        </div>
+        <div class="stat-icon info">🔴</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Assets -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold mb-4">💻 Nedávno přidaná IT aktiva</h3>
+    {% if assets %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Název</th>
+          <th class="hidden md:table-cell">Typ</th>
+          <th class="hidden md:table-cell">Sériové číslo</th>
+          <th>Status</th>
+          <th>Přiřazeno</th>
+          <th class="text-right">Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for asset in assets %}
+        <tr>
+          <td>
+            <a href="{% url 'detail_it_asset' asset.asset_id %}"><strong>{{ asset.name }}</strong></a>
+          </td>
+          <td class="hidden md:table-cell">{{ asset.get_asset_type_display|default:"-" }}</td>
+          <td class="hidden md:table-cell">{{ asset.serial_number|default:"-" }}</td>
+          <td>
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if asset.status == 'active' %}bg-green-100 text-green-700
+              {% elif asset.status == 'maintenance' %}bg-yellow-100 text-yellow-800
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ asset.get_status_display }}
+            </span>
+          </td>
+          <td>{{ asset.assigned_to.username|default:"-" }}</td>
+          <td class="text-right">
+            <div class="data-table-actions">
+              <a href="{% url 'detail_it_asset' asset.asset_id %}">👁️ Detail</a>
+              <a href="{% url 'edit_it_asset' asset.asset_id %}">✏️ Upravit</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-8 bg-gray-50 rounded-lg">
+      <p class="text-gray-500">Zatím nejsou žádná IT aktiva. <a href="{% url 'create_it_asset' %}" class="text-blue-600 hover:underline">Vytvořit první aktivum</a></p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Incidents -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">⚠️ Nedávné incidenty</h3>
+    {% if incidents %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Název</th>
+          <th class="hidden md:table-cell">Aktivum</th>
+          <th>Priorita</th>
+          <th>Status</th>
+          <th>Přiřazeno</th>
+          <th class="text-right">Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for incident in incidents %}
+        <tr>
+          <td>
+            <a href="{% url 'detail_it_incident' incident.incident_id %}"><strong>{{ incident.title }}</strong></a>
+          </td>
+          <td class="hidden md:table-cell">
+            {% if incident.affected_asset %}
+              <a href="{% url 'detail_it_asset' incident.affected_asset.asset_id %}" class="text-blue-600 hover:underline">
+                {{ incident.affected_asset.name }}
+              </a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if incident.priority == 'critical' %}bg-red-100 text-red-700
+              {% elif incident.priority == 'high' %}bg-orange-100 text-orange-700
+              {% elif incident.priority == 'medium' %}bg-yellow-100 text-yellow-700
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ incident.get_priority_display }}
+            </span>
+          </td>
+          <td>
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if incident.status == 'resolved' %}bg-green-100 text-green-700
+              {% elif incident.status == 'in_progress' %}bg-blue-100 text-blue-700
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ incident.get_status_display }}
+            </span>
+          </td>
+          <td>{{ incident.assigned_to.username|default:"-" }}</td>
+          <td class="text-right">
+            <div class="data-table-actions">
+              <a href="{% url 'detail_it_incident' incident.incident_id %}">👁️ Detail</a>
+              <a href="{% url 'edit_it_incident' incident.incident_id %}">✏️ Upravit</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-8 bg-gray-50 rounded-lg">
+      <p class="text-gray-500">Zatím nejsou žádné incidenty. <a href="{% url 'create_it_incident' %}" class="text-blue-600 hover:underline">Nahlásit první incident</a></p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

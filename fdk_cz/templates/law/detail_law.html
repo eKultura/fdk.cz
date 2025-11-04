@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}{{ law.title }} - {{ law.number }} | FDK.cz{% endblock %}
+{% block header_title %}=⁄ {{ law.title }}{% endblock %}
+{% block header_subtitle %}{{ law.number }} " ⁄innost od: {{ law.effective_date }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex justify-between items-center">
+    <div class="flex gap-3">
+      <span class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium text-sm">
+        {{ law.category }}
+      </span>
+      <span class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium text-sm">
+        Rok vyd·nÌ: {{ law.year }}
+      </span>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'law_list' %}" class="btn btn-outline">ê Zpt na seznam</a>
+      <button class="btn btn-secondary" onclick="window.print()">=® Tisk</button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <span class="text-2xl mr-2">=À</span>
+      ShrnutÌ
+    </h3>
+    <div class="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-4">
+      <p class="text-gray-800 leading-relaxed">{{ law.summary }}</p>
+    </div>
+  </div>
+
+  <!-- Key Sections -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <span class="text-2xl mr-2">=÷</span>
+      KlÌov· ustanovenÌ
+    </h3>
+
+    {% if law.key_sections %}
+      <div class="space-y-4">
+        {% for section in law.key_sections %}
+          <div class="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-start">
+              <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded mr-3 text-sm">
+                {{ section.section }}
+              </div>
+              <div class="flex-1">
+                <h4 class="font-semibold text-gray-800 mb-2">{{ section.title }}</h4>
+                <p class="text-gray-700 leading-relaxed text-sm">{{ section.content }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-8 bg-gray-50 rounded-lg">
+        <p class="text-gray-500">}·dn· klÌov· ustanovenÌ nejsou aktu·ln k dispozici.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- AI Assistant Call-to-Action -->
+  <div class="content-card bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+          <span class="text-2xl mr-2">></span>
+          M·te ot·zku k tomuto z·konu?
+        </h3>
+        <p class="text-gray-700">AI asistent v·m pomo~e s v˝kladem a aplikacÌ pr·vnÌch pYedpiso na v·a konkrÈtnÌ pYÌpad.</p>
+      </div>
+      <div class="ml-4">
+        <a href="{% url 'create_query' %}" class="btn btn-primary whitespace-nowrap">
+          =¨ Zeptat se AI
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metadata -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Ìslo z·kona</div>
+      <div class="font-bold text-gray-800">{{ law.number }}</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rok vyd·nÌ</div>
+      <div class="font-bold text-gray-800">{{ law.year }}</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">⁄innost</div>
+      <div class="font-bold text-gray-800">{{ law.effective_date }}</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Kategorie</div>
+      <div class="font-bold text-gray-800">{{ law.category }}</div>
+    </div>
+  </div>
+
+  <!-- External Links -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">= ExternÌ odkazy</h3>
+    <div class="space-y-2">
+      <a href="https://www.zakonyprolidi.cz/" target="_blank" class="block text-blue-600 hover:underline">
+        í Zobrazit na Z·kony pro lidi
+      </a>
+      <a href="https://www.sbirka.cz/" target="_blank" class="block text-blue-600 hover:underline">
+        í Zobrazit ve SbÌrce z·kono
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
