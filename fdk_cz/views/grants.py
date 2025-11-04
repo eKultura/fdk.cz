@@ -136,6 +136,8 @@ def grant_create(request, program_id=None):
         start_date = request.POST.get("start_date") or None
         end_date = request.POST.get("end_date") or None
         budget = request.POST.get("budget") or None
+        grant_number = request.POST.get("grant_number") or None
+        grant_subnumber = request.POST.get("grant_subnumber") or None
 
         grant = GrantCall.objects.create(
             program=program,
@@ -145,6 +147,8 @@ def grant_create(request, program_id=None):
             start_date=start_date,
             end_date=end_date,
             budget=budget,
+            grant_number=grant_number,
+            grant_subnumber=grant_subnumber,
             status="open",
             is_active=True,
         )
@@ -165,6 +169,8 @@ def grant_edit(request, grant_id):
         grant.start_date = request.POST.get("start_date") or grant.start_date
         grant.end_date = request.POST.get("end_date") or grant.end_date
         grant.budget = request.POST.get("budget") or grant.budget
+        grant.grant_number = request.POST.get("grant_number") or grant.grant_number
+        grant.grant_subnumber = request.POST.get("grant_subnumber") or grant.grant_subnumber
         grant.status = request.POST.get("status", grant.status)
         grant.save()
         messages.success(request, "Dotace byla upravena.")
