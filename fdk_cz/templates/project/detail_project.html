@@ -157,37 +157,39 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
   <!-- Sekce: Tým a kategorie -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
     <div class="content-card">
-      <div class="flex justify-between items-center mb-3">
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold text-gray-800">Členové týmu</h2>
         <a href="uzivatele/" class="btn btn-outline">Spravovat</a>
       </div>
-      <ul class="divide-y divide-gray-200">
+      <ul class="content-list">
         {% for member in members %}
-        <li class="py-2 flex justify-between items-center">
-          <span>{{ member.user.username }}</span>
-          <a href="{% url 'remove_project_user' project.project_id member.user.pk %}" class="text-red-600 hover:underline">✖</a>
+        <li class="content-list-item">
+          <span class="content-list-item-text">{{ member.user.username }}</span>
+          <a href="{% url 'remove_project_user' project.project_id member.user.pk %}"
+             class="content-list-item-action danger">✖ Odebrat</a>
         </li>
         {% empty %}
-        <li class="py-2 text-gray-500 text-center">Žádní členové</li>
+        <li class="content-list-empty">Žádní členové</li>
         {% endfor %}
       </ul>
     </div>
 
     <div class="content-card">
-      <h2 class="text-xl font-semibold text-gray-800 mb-3">Kategorie projektu</h2>
-      <ul class="divide-y divide-gray-200">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Kategorie projektu</h2>
+        <a href="{% url 'create_category' project.project_id %}" class="btn btn-outline">＋ Přidat</a>
+      </div>
+      <ul class="content-list">
         {% for category in project.categories.all %}
-        <li class="py-2 flex justify-between items-center">
-          <span>{{ category.name }}</span>
-          <a href="{% url 'edit_category' category.category_id %}" class="text-blue-600 hover:underline">Upravit</a>
+        <li class="content-list-item">
+          <span class="content-list-item-text">{{ category.name }}</span>
+          <a href="{% url 'edit_category' category.category_id %}"
+             class="content-list-item-action">✏️ Upravit</a>
         </li>
         {% empty %}
-        <li class="py-2 text-gray-500 text-center">Žádné kategorie</li>
+        <li class="content-list-empty">Žádné kategorie</li>
         {% endfor %}
       </ul>
-      <div class="text-right mt-3">
-        <a href="{% url 'create_category' project.project_id %}" class="btn btn-outline">＋ Přidat kategorii</a>
-      </div>
     </div>
   </div>
 

@@ -13,53 +13,66 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
+<div class="max-w-4xl mx-auto">
   <div class="content-card">
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.non_field_errors }}
 
       <!-- Název -->
-      <div class="form-group mb-4">
-        <label for="id_title" class="block text-sm font-medium text-gray-700">Název dokumentu <span class="text-red-600">*</span></label>
+      <div class="form-group">
+        <label for="id_title" class="form-label">Název dokumentu <span class="required">*</span></label>
         <input type="text" id="id_title" name="title" required
-               value="{{ form.title.value|default:document.title }}"
-               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+               value="{{ form.title.value|default:document.title|default:'' }}"
+               placeholder="Např. Zápis z jednání, Technická dokumentace"
+               class="form-control">
         {% if form.title.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.title.errors|join:", " }}</p>
+          <p class="form-error">{{ form.title.errors|join:", " }}</p>
         {% endif %}
       </div>
 
-      <!-- Typ -->
-      <div class="form-group mb-4">
-        <label for="id_document_type" class="block text-sm font-medium text-gray-700">Typ dokumentu <span class="text-red-600">*</span></label>
-        <input type="text" id="id_document_type" name="document_type" required
-               value="{{ form.document_type.value|default:document.document_type }}"
-               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
-        {% if form.document_type.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.document_type.errors|join:", " }}</p>
-        {% endif %}
-      </div>
+      <!-- Typ a Kategorie vedle sebe -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_document_type" class="form-label">Typ dokumentu <span class="required">*</span></label>
+          <input type="text" id="id_document_type" name="document_type" required
+                 value="{{ form.document_type.value|default:document.document_type|default:'' }}"
+                 placeholder="Např. zápis, smlouva, příloha"
+                 class="form-control">
+          {% if form.document_type.errors %}
+            <p class="form-error">{{ form.document_type.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Kategorizace typu dokumentu</div>
+        </div>
 
-      <!-- Kategorie -->
-      <div class="form-group mb-4">
-        <label for="id_category" class="block text-sm font-medium text-gray-700">Kategorie</label>
-        <select id="id_category" name="category"
-                class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
-          {% for category in form.category.field.queryset %}
-          <option value="{{ category.pk }}"
-            {% if form.category.value == category.pk or document.category.id == category.pk %}selected{% endif %}>
-            {{ category.name }}
-          </option>
-          {% endfor %}
-        </select>
+        <div class="form-group">
+          <label for="id_category" class="form-label">Kategorie</label>
+          <select id="id_category" name="category" class="form-control">
+            <option value="">-- Vyberte kategorii --</option>
+            {% for category in form.category.field.queryset %}
+              <option value="{{ category.pk }}"
+                      {% if form.category.value == category.pk or document.category and document.category.pk == category.pk %}selected{% endif %}>
+                {{ category.name }}
+              </option>
+            {% endfor %}
+          </select>
+          {% if form.category.errors %}
+            <p class="form-error">{{ form.category.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Volitelné - přiřazení ke kategorii úkolů</div>
+        </div>
       </div>
 
       <!-- Obsah (Summernote) -->
-      <div class="form-group mb-4">
-        <label for="id_description" class="block text-sm font-medium text-gray-700">Obsah</label>
-        <textarea id="id_description" name="description" rows="6"
-                  class="w-full border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default:document.description }}</textarea>
+      <div class="form-group">
+        <label for="id_description" class="form-label">Obsah dokumentu</label>
+        <textarea id="id_description" name="description" rows="8"
+                  placeholder="Zadejte obsah dokumentu..."
+                  class="form-control">{{ form.description.value|default:document.description|default:'' }}</textarea>
+        {% if form.description.errors %}
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Textový editor s podporou formátování</div>
       </div>
 
       <!-- Akce -->
