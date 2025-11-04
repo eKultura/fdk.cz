@@ -374,7 +374,7 @@
       <div class="action-buttons">
         {% if user.is_authenticated %}
           {% if grant.is_active and grant.end_date|date:'Y-m-d' >= today|date:'Y-m-d' %}
-          <a href="{% url 'application_create' grant.grant_id %}" class="btn btn-primary">
+          <a href="{% url 'application_create' grant.call_id %}" class="btn btn-primary">
             📝 Podat žádost
           </a>
           {% else %}
@@ -383,7 +383,7 @@
           </button>
           {% endif %}
 
-          <a href="{% url 'grant_edit' grant.grant_id %}" class="btn btn-secondary">
+          <a href="{% url 'grant_edit' grant.call_id %}" class="btn btn-secondary">
             ✏️ Upravit výzvu
           </a>
 
@@ -476,7 +476,7 @@
       
       {% for related_grant in related_grants|slice:":3" %}
       <div style="margin-bottom: 1rem; padding-bottom: 1rem; {% if not forloop.last %}border-bottom: 1px solid #f3f4f6;{% endif %}">
-        <a href="{% url 'grant_detail' related_grant.grant_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 0.875rem;">
+        <a href="{% url 'grant_detail' related_grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500; font-size: 0.875rem;">
           {{ related_grant.title|truncatechars:50 }}
         </a>
         <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">

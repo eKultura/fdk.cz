@@ -1844,6 +1844,104 @@ select.form-control {
   font-size: 14px;
 }
 
+/* ====== DATA TABLE STYLES ====== */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.data-table thead {
+  background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+}
+
+.data-table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table thead th.text-right {
+  text-align: right;
+}
+
+.data-table thead th.text-center {
+  text-align: center;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody td {
+  padding: 14px 16px;
+  color: #374151;
+}
+
+.data-table tbody td.text-right {
+  text-align: right;
+}
+
+.data-table tbody td.text-center {
+  text-align: center;
+}
+
+.data-table tbody td a {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.data-table tbody td a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.data-table tbody td a.danger {
+  color: #dc2626;
+}
+
+.data-table tbody td a.danger:hover {
+  color: #991b1b;
+}
+
+.data-table-empty {
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.data-table-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.data-table-actions a {
+  font-size: 13px;
+}
+
 
 
 
