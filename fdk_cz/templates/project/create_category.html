@@ -3,50 +3,42 @@
 
 {% block title %}Nová kategorie | FDK.cz{% endblock %}
 {% block header_title %}Nová kategorie{% endblock %}
-{% block header_subtitle %}Založení nové kategorie pro úkoly v projektu{% endblock %}
+{% block header_subtitle %}Přidejte kategorii pro organizaci úkolů v projektu <strong>{{ project.name }}</strong>{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto mt-8">
+<div class="max-w-3xl mx-auto">
   <div class="content-card">
-    <form method="post">
+    <form method="POST">
       {% csrf_token %}
 
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Základní informace</h2>
-
       <!-- Název -->
-      <div class="form-group mb-4">
-        <label for="id_name" class="block font-medium text-gray-700">
-          Název kategorie <span class="text-red-600">*</span>
-        </label>
-        <input type="text" name="name" id="id_name"
-               required
-               placeholder="Zadejte název kategorie"
-               value="{{ form.name.value|default_if_none:'' }}"
-               class="form-input w-full border border-gray-300 rounded-lg p-2">
+      <div class="form-group">
+        <label for="id_name" class="form-label">Název kategorie <span class="required">*</span></label>
+        <input type="text" name="name" id="id_name" required
+               class="form-control"
+               placeholder="Např. Frontend, Backend, Design, Testing"
+               value="{{ form.name.value|default_if_none:'' }}">
         {% if form.name.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          <p class="form-error">{{ form.name.errors|join:", " }}</p>
         {% endif %}
       </div>
 
       <!-- Popis -->
-      <div class="form-group mb-6">
-        <label for="id_description" class="block font-medium text-gray-700">Popis</label>
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis</label>
         <textarea name="description" id="id_description" rows="3"
-                  placeholder="Zadejte popis kategorie (volitelné)"
-                  class="form-input w-full border border-gray-300 rounded-lg p-2">{{ form.description.value|default_if_none:'' }}</textarea>
+                  class="form-control"
+                  placeholder="Popište účel a zaměření této kategorie...">{{ form.description.value|default_if_none:'' }}</textarea>
         {% if form.description.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
         {% endif %}
+        <div class="form-help">Volitelný popis pro lepší orientaci v kategoriích úkolů</div>
       </div>
 
       <!-- Akce -->
-      <div class="flex flex-col sm:flex-row gap-3 mt-6">
-        <button type="submit" class="btn btn-primary w-full sm:w-auto">
-          ➕ Vytvořit kategorii
-        </button>
-        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline w-full sm:w-auto">
-          ← Zpět
-        </a>
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">➕ Vytvořit kategorii</button>
       </div>
     </form>
   </div>
