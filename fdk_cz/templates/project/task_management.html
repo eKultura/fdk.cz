@@ -96,18 +96,40 @@
           <label class="block text-sm font-medium text-gray-700">Typ úkolu</label>
           <div class="flex gap-3 mt-1">
             <label class="flex items-center gap-2">
-              <input type="radio" name="context" value="project" checked class="text-blue-600 focus:ring-blue-500">
+              <input type="radio" name="context" value="personal" checked class="text-blue-600 focus:ring-blue-500">
+              <span>Osobní</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="context" value="project" class="text-blue-600 focus:ring-blue-500">
               <span>V projektu</span>
             </label>
             <label class="flex items-center gap-2">
               <input type="radio" name="context" value="organization" class="text-blue-600 focus:ring-blue-500">
               <span>V organizaci</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="context" value="personal" class="text-blue-600 focus:ring-blue-500">
-              <span>Osobní</span>
-            </label>
           </div>
+        </div>
+
+        <!-- Project selection (hidden by default) -->
+        <div id="project-select-group" class="form-group mb-3 hidden">
+          <label for="project_id" class="block text-sm font-medium text-gray-700">Vyberte projekt</label>
+          <select id="project_id" name="project_id" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+            <option value="">-- Vyberte projekt --</option>
+            {% for project in user_projects %}
+              <option value="{{ project.project_id }}">{{ project.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Organization selection (hidden by default) -->
+        <div id="organization-select-group" class="form-group mb-3 hidden">
+          <label for="organization_id" class="block text-sm font-medium text-gray-700">Vyberte organizaci</label>
+          <select id="organization_id" name="organization_id" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+            <option value="">-- Vyberte organizaci --</option>
+            {% for org in user_organizations %}
+              <option value="{{ org.company_id }}">{{ org.name }}</option>
+            {% endfor %}
+          </select>
         </div>
 
         <button type="submit" class="btn btn-primary w-full">💾 Uložit úkol</button>
@@ -115,4 +137,29 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const contextRadios = document.querySelectorAll('input[name="context"]');
+  const projectGroup = document.getElementById('project-select-group');
+  const organizationGroup = document.getElementById('organization-select-group');
+
+  contextRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const value = e.target.value;
+
+      // Hide all context-specific fields
+      projectGroup.classList.add('hidden');
+      organizationGroup.classList.add('hidden');
+
+      // Show relevant field
+      if (value === 'project') {
+        projectGroup.classList.remove('hidden');
+      } else if (value === 'organization') {
+        organizationGroup.classList.remove('hidden');
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

@@ -197,26 +197,37 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const ctx = document.getElementById('projectTaskPieChart');
-  new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
-      datasets: [{
-        data: [{{ project_status_counts.Nezahájeno }}, {{ project_status_counts.Probíhá }}, {{ project_status_counts.Hotovo }}],
-        backgroundColor: ['#f87171', '#facc15', '#4ade80']
-      }]
-    },
-    options: {responsive: true, maintainAspectRatio: false}
-  });
+  // Chart.js initialization
+  try {
+    const ctx = document.getElementById('projectTaskPieChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
+          datasets: [{
+            data: [{{ project_status_counts.Nezahájeno }}, {{ project_status_counts.Probíhá }}, {{ project_status_counts.Hotovo }}],
+            backgroundColor: ['#f87171', '#facc15', '#4ade80']
+          }]
+        },
+        options: {responsive: true, maintainAspectRatio: false}
+      });
+    }
+  } catch (error) {
+    console.error('Chart initialization error:', error);
+  }
 
+  // Toggle view functionality
   const toggleBtn = document.getElementById('toggleView');
   const taskColumns = document.getElementById('task_columns');
   const taskTable = document.getElementById('task_table');
-  toggleBtn.addEventListener('click', () => {
-    taskTable.classList.toggle('hidden');
-    taskColumns.classList.toggle('hidden');
-  });
+
+  if (toggleBtn && taskColumns && taskTable) {
+    toggleBtn.addEventListener('click', () => {
+      taskTable.classList.toggle('hidden');
+      taskColumns.classList.toggle('hidden');
+    });
+  }
 });
 </script>
 {% endblock %}
