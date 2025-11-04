@@ -230,7 +230,7 @@
           {% for grant in active_dotace|slice:":10" %}
           <tr style="border-bottom: 1px solid #f3f4f6;">
             <td style="padding: 0.75rem 0.5rem;">
-              <a href="{% url 'grant_detail' grant.grant_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+              <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
                 {{ grant.title|truncatechars:40 }}
               </a>
               <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
@@ -249,7 +249,7 @@
               </div>
             </td>
             <td style="padding: 0.75rem 0.5rem; text-align: center;">
-              <a href="{% url 'application_create' grant.grant_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+              <a href="{% url 'application_create' grant.call_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
                 Podat žádost
               </a>
             </td>
@@ -285,7 +285,7 @@
           {% for grant in active_granty|slice:":10" %}
           <tr style="border-bottom: 1px solid #f3f4f6;">
             <td style="padding: 0.75rem 0.5rem;">
-              <a href="{% url 'grant_detail' grant.grant_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+              <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
                 {{ grant.title|truncatechars:40 }}
               </a>
               <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
@@ -304,7 +304,7 @@
               </div>
             </td>
             <td style="padding: 0.75rem 0.5rem; text-align: center;">
-              <a href="{% url 'application_create' grant.grant_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+              <a href="{% url 'application_create' grant.call_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
                 Podat žádost
               </a>
             </td>
@@ -347,7 +347,7 @@
         {% for app in user_applications|slice:":5" %}
         <tr style="border-bottom: 1px solid #f3f4f6;">
           <td style="padding: 0.75rem;">
-            <a href="{% url 'grant_detail' app.grant.grant_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+            <a href="{% url 'grant_detail' app.grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
               {{ app.grant.title|truncatechars:35 }}
             </a>
           </td>
