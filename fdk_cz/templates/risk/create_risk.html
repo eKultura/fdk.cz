@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Nové riziko | FDK.cz{% endblock %}
+{% block header_title %}⚠️ Vytvořit nové riziko{% endblock %}
+{% block header_subtitle %}Identifikace a hodnocení rizika{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Info Section -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">📋 Základní informace</h3>
+
+        <div class="form-group">
+          <label for="id_title" class="form-label">Název rizika <span class="required">*</span></label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="text-red-600 text-sm mt-1">{{ form.title.errors }}</div>
+          {% endif %}
+          <div class="form-help">Stručný a výstižný název identifikovaného rizika</div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_description" class="form-label">Popis rizika <span class="required">*</span></label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-red-600 text-sm mt-1">{{ form.description.errors }}</div>
+          {% endif %}
+          <div class="form-help">Detailní popis rizika, jeho příčin a možných důsledků</div>
+        </div>
+      </div>
+
+      <!-- Context Section -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">🔗 Kontext</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_project" class="form-label">Projekt</label>
+            {{ form.project }}
+            <div class="form-help">Přiřaďte riziko k projektu (volitelné)</div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_organization" class="form-label">Organizace</label>
+            {{ form.organization }}
+            <div class="form-help">Nebo k organizaci (volitelné)</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_category" class="form-label">Kategorie <span class="required">*</span></label>
+            {{ form.category }}
+            {% if form.category.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.category.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_status" class="form-label">Status</label>
+            {{ form.status }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Assessment Section -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">📊 Hodnocení rizika</h3>
+
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+          <div class="flex items-start">
+            <div class="text-2xl mr-3">ℹ️</div>
+            <div class="text-sm text-blue-800">
+              <strong>Skóre rizika</strong> se počítá automaticky jako <strong>Pravděpodobnost × Dopad</strong>.
+              Výsledné skóre: 1-6 (nízké), 7-12 (střední), 13-19 (vysoké), 20-25 (kritické)
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_probability" class="form-label">Pravděpodobnost <span class="required">*</span></label>
+            {{ form.probability }}
+            {% if form.probability.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.probability.errors }}</div>
+            {% endif %}
+            <div class="form-help">
+              1 = Velmi nízká (1-10%)<br>
+              2 = Nízká (11-30%)<br>
+              3 = Střední (31-50%)<br>
+              4 = Vysoká (51-75%)<br>
+              5 = Velmi vysoká (76-100%)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="id_impact" class="form-label">Dopad <span class="required">*</span></label>
+            {{ form.impact }}
+            {% if form.impact.errors %}
+              <div class="text-red-600 text-sm mt-1">{{ form.impact.errors }}</div>
+            {% endif %}
+            <div class="form-help">
+              1 = Zanedbatelný<br>
+              2 = Malý<br>
+              3 = Střední<br>
+              4 = Velký<br>
+              5 = Kritický
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mitigation Section -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">🛡️ Opatření a plány</h3>
+
+        <div class="form-group">
+          <label for="id_mitigation_strategy" class="form-label">Strategie zmírnění</label>
+          {{ form.mitigation_strategy }}
+          <div class="form-help">Jak lze toto riziko zmírnit nebo předejít mu?</div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_contingency_plan" class="form-label">Záložní plán</label>
+          {{ form.contingency_plan }}
+          <div class="form-help">Co uděláme, když se riziko realizuje?</div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_owner" class="form-label">Zodpovědná osoba</label>
+          {{ form.owner }}
+          <div class="form-help">Osoba odpovědná za sledování a řízení tohoto rizika</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'list_risks' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Vytvořit riziko</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Auto-calculate risk score
+document.addEventListener('DOMContentLoaded', () => {
+  const probabilitySelect = document.getElementById('id_probability');
+  const impactSelect = document.getElementById('id_impact');
+
+  if (probabilitySelect && impactSelect) {
+    const updateRiskScore = () => {
+      const prob = parseInt(probabilitySelect.value) || 0;
+      const imp = parseInt(impactSelect.value) || 0;
+      const score = prob * imp;
+
+      // You could display the score here if needed
+      console.log('Risk Score:', score);
+    };
+
+    probabilitySelect.addEventListener('change', updateRiskScore);
+    impactSelect.addEventListener('change', updateRiskScore);
+  }
+});
+</script>
+{% endblock %}

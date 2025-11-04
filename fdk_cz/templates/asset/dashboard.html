@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}Sklad a majetek | FDK.cz{% endblock %}
+{% block header_title %}📦 Sklad a majetek{% endblock %}
+{% block header_subtitle %}Správa majetku a skladu organizace{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_asset' %}" class="btn btn-primary">+ Nový majetek</a>
+    <a href="{% url 'list_assets' %}" class="btn btn-secondary">📋 Všechen majetek</a>
+    <a href="{% url 'list_asset_categories' %}" class="btn btn-outline">🏷️ Kategorie</a>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-grid mb-6">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between;">
+        <div>
+          <div class="stat-title">Celkem majetku</div>
+          <div class="stat-value">{{ total_assets|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">📦</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between;">
+        <div>
+          <div class="stat-title">Aktivní majetek</div>
+          <div class="stat-value">{{ active_assets|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">✅</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between;">
+        <div>
+          <div class="stat-title">Celková hodnota</div>
+          <div class="stat-value">{{ total_value|floatformat:0|default:0 }}</div>
+          <div class="stat-subtitle">Kč</div>
+        </div>
+        <div class="stat-icon warning">💰</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between;">
+        <div>
+          <div class="stat-title">Kategorií</div>
+          <div class="stat-value">{{ categories_with_counts|length|default:0 }}</div>
+        </div>
+        <div class="stat-icon info">🏷️</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Recent Assets -->
+    <div class="lg:col-span-2 content-card">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Nedávno přidaný majetek</h3>
+
+      {% if assets %}
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Název</th>
+                <th>Kategorie</th>
+                <th>Status</th>
+                <th class="hidden md:table-cell">Umístění</th>
+                <th class="hidden md:table-cell">Hodnota</th>
+                <th class="text-right">Akce</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for asset in assets %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_asset' asset.asset_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ asset.name }}
+                  </a>
+                  {% if asset.asset_number %}
+                    <div class="text-xs text-gray-500">{{ asset.asset_number }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if asset.category %}
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                      {{ asset.category.name }}
+                    </span>
+                  {% else %}
+                    <span class="text-gray-400">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="px-2 py-1 rounded text-xs font-medium
+                    {% if asset.status == 'active' %}bg-green-100 text-green-700
+                    {% elif asset.status == 'stored' %}bg-gray-100 text-gray-700
+                    {% elif asset.status == 'maintenance' %}bg-yellow-100 text-yellow-700
+                    {% else %}bg-red-100 text-red-700{% endif %}">
+                    {{ asset.get_status_display }}
+                  </span>
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {{ asset.location|default:"—" }}
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {% if asset.current_value %}
+                    {{ asset.current_value|floatformat:0 }} Kč
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_asset' asset.asset_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_asset' asset.asset_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-4 text-center">
+          <a href="{% url 'list_assets' %}" class="btn btn-outline">Zobrazit vše</a>
+        </div>
+      {% else %}
+        <div class="text-center py-12 bg-gray-50 rounded-lg">
+          <div class="text-5xl mb-3">📦</div>
+          <p class="text-gray-600 mb-4">Zatím nemáte přidaný žádný majetek</p>
+          <a href="{% url 'create_asset' %}" class="btn btn-primary">+ Přidat první majetek</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Top Categories -->
+    <div class="content-card">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">🏷️ Top kategorie</h3>
+
+      {% if categories_with_counts %}
+        <div class="space-y-3">
+          {% for category in categories_with_counts %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+              <div class="flex-1">
+                <div class="font-medium text-gray-800">{{ category.name }}</div>
+                {% if category.description %}
+                  <div class="text-xs text-gray-500 mt-1">{{ category.description|truncatewords:10 }}</div>
+                {% endif %}
+              </div>
+              <div class="ml-3 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+                {{ category.asset_count }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="mt-4">
+          <a href="{% url 'list_asset_categories' %}" class="btn btn-outline w-full">Všechny kategorie</a>
+        </div>
+      {% else %}
+        <div class="text-center py-8 bg-gray-50 rounded-lg">
+          <p class="text-gray-600 text-sm mb-3">Žádné kategorie</p>
+          <a href="{% url 'create_asset_category' %}" class="btn btn-secondary text-sm">+ Vytvořit kategorii</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Quick Info -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu majetku</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Pravidelně kontrolujte stav majetku a aktualizujte jeho hodnotu</li>
+          <li>• Přiřazujte zodpovědné osoby k jednotlivým položkám</li>
+          <li>• Využívejte kategorie pro lepší organizaci</li>
+          <li>• Sledujte záruční lhůty a termíny údržby</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

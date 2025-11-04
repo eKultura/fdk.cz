@@ -87,9 +87,9 @@ def edit_test_type(request, test_type_id):
 @login_required
 def list_tests(request):
     user_projects = Project.objects.filter(project_users__user=request.user)
-    tests = test.objects.filter(project__in=user_projects)
-    test_types = test_type.objects.filter(project__in=user_projects)
-    test_errors = test_error.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
+    tests = Test.objects.filter(project__in=user_projects)
+    test_types = TestType.objects.filter(project__in=user_projects)
+    test_errors = TestError.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
 
     return render(request, 'test/list_tests.html', {
         'tests': tests,

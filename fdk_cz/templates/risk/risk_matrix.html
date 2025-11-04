@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}Matice rizik | FDK.cz{% endblock %}
+{% block header_title %}📊 Matice rizik{% endblock %}
+{% block header_subtitle %}Vizualizace rizik podle pravděpodobnosti a dopadu{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex justify-between items-center">
+    <div class="flex gap-3">
+      <a href="{% url 'risk_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+      <a href="{% url 'list_risks' %}" class="btn btn-outline">📋 Seznam rizik</a>
+    </div>
+    <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
+  </div>
+
+  <!-- Legend -->
+  <div class="content-card mb-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">📚 Legenda</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 bg-green-200 border border-green-400 rounded"></div>
+        <span class="text-sm">Nízké (1-6)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 bg-yellow-200 border border-yellow-400 rounded"></div>
+        <span class="text-sm">Střední (7-12)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 bg-orange-200 border border-orange-400 rounded"></div>
+        <span class="text-sm">Vysoké (13-19)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 bg-red-200 border border-red-400 rounded"></div>
+        <span class="text-sm">Kritické (20-25)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Matrix -->
+  <div class="content-card overflow-x-auto">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">🎯 Matice pravděpodobnosti × dopadu</h3>
+
+    <table class="w-full border-collapse">
+      <thead>
+        <tr>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-bold text-gray-700">
+            <div class="text-xs text-gray-500">Pravděpodobnost</div>
+            <div class="text-xs text-gray-500">Dopad →</div>
+          </th>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">
+            <div class="text-sm">Zanedbatelný</div>
+            <div class="text-xs text-gray-500">(1)</div>
+          </th>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">
+            <div class="text-sm">Malý</div>
+            <div class="text-xs text-gray-500">(2)</div>
+          </th>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">
+            <div class="text-sm">Střední</div>
+            <div class="text-xs text-gray-500">(3)</div>
+          </th>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">
+            <div class="text-sm">Velký</div>
+            <div class="text-xs text-gray-500">(4)</div>
+          </th>
+          <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">
+            <div class="text-sm">Kritický</div>
+            <div class="text-xs text-gray-500">(5)</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for prob in "54321" %}
+          <tr>
+            <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold text-left">
+              <div class="text-sm">
+                {% if prob == "5" %}Velmi vysoká
+                {% elif prob == "4" %}Vysoká
+                {% elif prob == "3" %}Střední
+                {% elif prob == "2" %}Nízká
+                {% else %}Velmi nízká{% endif %}
+              </div>
+              <div class="text-xs text-gray-500">({{ prob }})</div>
+            </th>
+            {% for imp in "12345" %}
+              {% with score=prob|add:0|multiply:imp|add:0 %}
+                {% with cell_key=prob|add:0|add:"_"|add:imp|add:0 %}
+                  <td class="border-2 border-gray-300 p-2 align-top
+                    {% if score <= 6 %}bg-green-100
+                    {% elif score <= 12 %}bg-yellow-100
+                    {% elif score <= 19 %}bg-orange-100
+                    {% else %}bg-red-100{% endif %}"
+                    style="min-height: 100px; height: 120px; min-width: 150px;">
+
+                    <div class="text-xs font-bold text-gray-600 mb-2">
+                      Skóre: {{ prob }}×{{ imp }} =
+                      {% widthratio prob 1 1 as p_int %}
+                      {% widthratio imp 1 1 as i_int %}
+                      {% widthratio p_int i_int 1 as final_score %}
+                      {{ p_int|multiply:i_int }}
+                    </div>
+
+                    {% with key_str=prob|stringformat:"s"|add:"_"|add:imp|stringformat:"s" %}
+                      {% if matrix_data %}
+                        {% for risk in matrix_data|dict_lookup:key_str %}
+                          <div class="bg-white border border-gray-300 rounded p-1 mb-1 text-xs hover:shadow-md transition-shadow">
+                            <a href="{% url 'detail_risk' risk.risk_id %}" class="text-blue-600 hover:underline font-medium">
+                              {{ risk.title|truncatewords:5 }}
+                            </a>
+                            <div class="text-gray-500 text-xs mt-1">
+                              {% if risk.project %}
+                                📁 {{ risk.project.name|truncatewords:3 }}
+                              {% elif risk.organization %}
+                                🏢 {{ risk.organization.name|truncatewords:3 }}
+                              {% endif %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                {% endwith %}
+              {% endwith %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <!-- Risk Distribution -->
+    <div class="content-card">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">📈 Rozložení rizik</h3>
+      <div class="space-y-3">
+        {% for risk in risks %}
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+            <div class="flex-1">
+              <a href="{% url 'detail_risk' risk.risk_id %}" class="font-medium text-blue-600 hover:underline">
+                {{ risk.title }}
+              </a>
+              <div class="text-xs text-gray-500 mt-1">
+                {{ risk.get_category_display }} •
+                Pravděpodobnost: {{ risk.probability }} •
+                Dopad: {{ risk.impact }}
+              </div>
+            </div>
+            <div class="ml-3">
+              <span class="px-3 py-1 rounded-full text-xs font-bold
+                {% if risk.risk_score >= 20 %}bg-red-100 text-red-700
+                {% elif risk.risk_score >= 13 %}bg-orange-100 text-orange-700
+                {% elif risk.risk_score >= 7 %}bg-yellow-100 text-yellow-700
+                {% else %}bg-green-100 text-green-700{% endif %}">
+                {{ risk.risk_score }}
+              </span>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text-center py-8 text-gray-500">
+            <div class="text-4xl mb-2">📊</div>
+            <p>Žádná rizika k zobrazení</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="content-card">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">🎯 Statistiky</h3>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between p-3 bg-red-50 border-2 border-red-200 rounded-lg">
+          <div>
+            <div class="text-xs text-red-600 font-semibold uppercase">Kritická rizika</div>
+            <div class="text-2xl font-bold text-red-700">
+              {{ risks|filter_by_score:20|length }}
+            </div>
+          </div>
+          <div class="text-3xl">🔴</div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-orange-50 border-2 border-orange-200 rounded-lg">
+          <div>
+            <div class="text-xs text-orange-600 font-semibold uppercase">Vysoká rizika</div>
+            <div class="text-2xl font-bold text-orange-700">
+              {{ risks|filter_by_score_range:13:19|length }}
+            </div>
+          </div>
+          <div class="text-3xl">🟠</div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+          <div>
+            <div class="text-xs text-yellow-600 font-semibold uppercase">Střední rizika</div>
+            <div class="text-2xl font-bold text-yellow-700">
+              {{ risks|filter_by_score_range:7:12|length }}
+            </div>
+          </div>
+          <div class="text-3xl">🟡</div>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-green-50 border-2 border-green-200 rounded-lg">
+          <div>
+            <div class="text-xs text-green-600 font-semibold uppercase">Nízká rizika</div>
+            <div class="text-2xl font-bold text-green-700">
+              {{ risks|filter_by_score:6|length }}
+            </div>
+          </div>
+          <div class="text-3xl">🟢</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Custom styles for better matrix display */
+td {
+  vertical-align: top;
+  overflow-y: auto;
+  max-height: 150px;
+}
+</style>
+
+<script>
+// Add custom template filters simulation (Django doesn't support arithmetic in templates natively)
+// This is just for display - the actual filtering would be done server-side
+</script>
+{% endblock %}

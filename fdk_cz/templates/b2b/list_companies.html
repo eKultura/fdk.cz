@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}B2B Firmy | FDK.cz{% endblock %}
+{% block header_title %}🏢 B2B Firmy{% endblock %}
+{% block header_subtitle %}Seznam obchodních partnerů a firem{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions and Filters -->
+  <div class="mb-6 flex flex-col md:flex-row justify-between gap-4">
+    <div class="flex gap-3">
+      <a href="{% url 'create_b2b_company' %}" class="btn btn-primary">+ Nová firma</a>
+      <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex gap-2">
+      <!-- Category Filter -->
+      <form method="GET" class="flex gap-2 items-center">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        <select name="category" onchange="this.form.submit()" class="form-control">
+          <option value="">Všechny kategorie</option>
+          {% for value, label in category_choices %}
+            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Search -->
+      <form method="GET" class="flex gap-2">
+        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat firmu..." class="form-control">
+        <button type="submit" class="btn btn-secondary">🔍</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Companies Table -->
+  <div class="content-card">
+    {% if companies %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Právní název</th>
+              <th class="hidden md:table-cell">IČO</th>
+              <th>Kategorie</th>
+              <th class="hidden lg:table-cell">Smluv</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for company in companies %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_b2b_company' company.company_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ company.name }}
+                  </a>
+                  {% if company.website %}
+                    <div class="text-xs text-gray-500 mt-1">
+                      <a href="{{ company.website }}" target="_blank" class="hover:underline">
+                        🌐 {{ company.website|slice:":30" }}
+                      </a>
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {{ company.legal_name|default:"—" }}
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {{ company.company_id_number|default:"—" }}
+                </td>
+                <td>
+                  <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                    {{ company.get_category_display }}
+                  </span>
+                </td>
+                <td class="hidden lg:table-cell text-center">
+                  <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-bold">
+                    {{ company.contracts_count|default:0 }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_b2b_company' company.company_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_b2b_company' company.company_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-5xl mb-3">🏢</div>
+        <p class="text-gray-600 mb-4">
+          {% if search_query or selected_category %}
+            Žádné firmy odpovídající vašemu hledání
+          {% else %}
+            Zatím nemáte přidané žádné B2B firmy
+          {% endif %}
+        </p>
+        {% if search_query or selected_category %}
+          <a href="{% url 'list_b2b_companies' %}" class="btn btn-outline mr-2">Zrušit filtr</a>
+        {% endif %}
+        <a href="{% url 'create_b2b_company' %}" class="btn btn-primary">+ Přidat první firmu</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu B2B firem</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Udržujte aktuální kontaktní údaje a právní informace</li>
+          <li>• Kategorizujte firmy podle typu spolupráce (dodavatel, klient, partner)</li>
+          <li>• Propojte firmy se smlouvami pro lepší přehled</li>
+          <li>• Sledujte počet aktivních smluv s každou firmou</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

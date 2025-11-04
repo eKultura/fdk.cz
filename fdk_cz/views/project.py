@@ -119,7 +119,7 @@ def detail_project(request, project_id):
     tasks_to_do = proj.tasks.exclude(priority='Nice to have').exclude(status='Hotovo')
     # Další logika pro detaily projektu
     tasks_by_status = {
-        'Ke zpracování': proj.tasks.filter(status='Nezahájeno'),
+        'Nezahájeno': proj.tasks.filter(status='Nezahájeno'),
         'Probíhá': proj.tasks.filter(status='Probíhá'),
         'Hotovo': proj.tasks.filter(status='Hotovo')
     }
