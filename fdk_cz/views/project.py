@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from django.utils import timezone
 
@@ -352,7 +352,7 @@ def task_management(request):
     user_organizations = user.companies.all()
     # Get projects where user is a member
     user_projects = Project.objects.filter(
-        models.Q(owner=user) | models.Q(project_users__user=user)
+        Q(owner=user) | Q(project_users__user=user)
     ).distinct()
 
     if request.method == 'POST':
@@ -418,7 +418,7 @@ def create_milestone(request, project_id):
 @login_required
 def edit_milestone(request, project_id, milestone_id):
     milestone_instance = get_object_or_404(ProjectMilestone, pk=milestone_id, project_id=project_id)
-    
+
     if request.method == 'POST':
         form = milestone_form(request.POST, instance=milestone_instance)
         if form.is_valid():
@@ -426,8 +426,12 @@ def edit_milestone(request, project_id, milestone_id):
             return redirect('detail_project', project_id=project_id)
     else:
         form = milestone_form(instance=milestone_instance)
-    
-    return render(request, 'project/edit_milestone.html', {'form': form, 'project_id': project_id, 'milestone': milestone_instance})
+
+    return render(request, 'project/edit_milestone.html', {
+        'form': form,
+        'project_id': project_id,
+        'milestone': milestone_instance
+    })
 
 
 

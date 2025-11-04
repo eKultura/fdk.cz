@@ -13,28 +13,27 @@
       {{ form.non_field_errors }}
 
       <!-- Název -->
-      <div class="form-group mb-4">
-        <label for="id_name" class="block text-sm font-medium text-gray-700">
-          Název kategorie <span class="text-red-600">*</span>
-        </label>
+      <div class="form-group">
+        <label for="id_name" class="form-label">Název kategorie <span class="required">*</span></label>
         <input type="text" id="id_name" name="name" required
-               value="{{ form.name.value|default:category.name }}"
-               placeholder="Zadejte název kategorie"
-               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+               value="{{ form.name.value|default:category.name|default:'' }}"
+               placeholder="Např. Frontend, Backend, Design, Testing"
+               class="form-control">
         {% if form.name.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          <p class="form-error">{{ form.name.errors|join:", " }}</p>
         {% endif %}
       </div>
 
       <!-- Popis -->
-      <div class="form-group mb-6">
-        <label for="id_description" class="block text-sm font-medium text-gray-700">Popis</label>
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis</label>
         <textarea id="id_description" name="description" rows="3"
-                  placeholder="Zadejte popis kategorie (volitelné)"
-                  class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default:category.description }}</textarea>
+                  placeholder="Popište účel a zaměření této kategorie..."
+                  class="form-control">{{ form.description.value|default:category.description|default:'' }}</textarea>
         {% if form.description.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
         {% endif %}
+        <div class="form-help">Volitelný popis pro lepší orientaci v kategoriích úkolů</div>
       </div>
 
       <!-- Akce -->
