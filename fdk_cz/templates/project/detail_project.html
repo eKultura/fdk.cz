@@ -374,10 +374,32 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  // Toggle view functionality - must work even if chart fails
+  const toggleBtn = document.getElementById('toggleView');
+  const taskColumns = document.getElementById('task_columns');
+  const taskTable = document.getElementById('task_table');
+
+  if (toggleBtn && taskColumns && taskTable) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      taskTable.classList.toggle('hidden');
+      taskColumns.classList.toggle('hidden');
+
+      // Update button text
+      if (taskTable.classList.contains('hidden')) {
+        toggleBtn.textContent = '📋 Přepnout zobrazení';
+      } else {
+        toggleBtn.textContent = '📊 Přepnout zobrazení';
+      }
+    });
+  } else {
+    console.error('Toggle button or containers not found:', { toggleBtn, taskColumns, taskTable });
+  }
+
   // Chart.js initialization
   try {
     const ctx = document.getElementById('projectTaskPieChart');
-    if (ctx) {
+    if (ctx && typeof Chart !== 'undefined') {
       new Chart(ctx, {
         type: 'pie',
         data: {
@@ -392,18 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (error) {
     console.error('Chart initialization error:', error);
-  }
-
-  // Toggle view functionality
-  const toggleBtn = document.getElementById('toggleView');
-  const taskColumns = document.getElementById('task_columns');
-  const taskTable = document.getElementById('task_table');
-
-  if (toggleBtn && taskColumns && taskTable) {
-    toggleBtn.addEventListener('click', () => {
-      taskTable.classList.toggle('hidden');
-      taskColumns.classList.toggle('hidden');
-    });
   }
 });
 </script>

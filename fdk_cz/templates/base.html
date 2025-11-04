@@ -80,6 +80,7 @@
           <a href="{% url 'index_list' %}" class="nav-item"><span class="nav-icon">&#128221;</span> Seznamy</a>
           <a href="{% url 'list_tests' %}" class="nav-item"><span class="nav-icon">&#129514;</span> Testování</a>
           <a href="{% url 'all_stores' %}" class="nav-item"><span class="nav-icon">&#128230;</span> Sklad</a>
+          <a href="{% url 'law_list' %}" class="nav-item"><span class="nav-icon">&#128220;</span> Zákony</a>
         </div>
 
         {% if user.is_superuser or user.is_staff %}

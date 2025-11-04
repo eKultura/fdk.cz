@@ -52,7 +52,8 @@ class EmployeeForm(forms.ModelForm):
             ).distinct()
 
             # Filter departments based on selected organization
-            if self.instance and self.instance.organization:
+            # Only filter if instance exists and has organization set
+            if self.instance and self.instance.pk and hasattr(self.instance, 'organization_id') and self.instance.organization_id:
                 self.fields['department'].queryset = Department.objects.filter(
                     organization=self.instance.organization
                 )
@@ -92,7 +93,8 @@ class DepartmentForm(forms.ModelForm):
             ).distinct()
 
             # Filter parent departments based on selected organization
-            if self.instance and self.instance.organization:
+            # Only filter if instance exists and has organization set
+            if self.instance and self.instance.pk and hasattr(self.instance, 'organization_id') and self.instance.organization_id:
                 self.fields['parent_department'].queryset = Department.objects.filter(
                     organization=self.instance.organization
                 ).exclude(pk=self.instance.pk)

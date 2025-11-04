@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}B2B Smlouvy | FDK.cz{% endblock %}
+{% block header_title %}📄 B2B Smlouvy{% endblock %}
+{% block header_subtitle %}Seznam obchodních smluv a dohod{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions and Filters -->
+  <div class="mb-6 flex flex-col md:flex-row justify-between gap-4">
+    <div class="flex gap-3">
+      <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">+ Nová smlouva</a>
+      <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex gap-2">
+      <!-- Status Filter -->
+      <form method="GET" class="flex gap-2 items-center">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        <select name="status" onchange="this.form.submit()" class="form-control">
+          <option value="">Všechny statusy</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Search -->
+      <form method="GET" class="flex gap-2">
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat smlouvu..." class="form-control">
+        <button type="submit" class="btn btn-secondary">🔍</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contracts Table -->
+  <div class="content-card">
+    {% if contracts %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Číslo smlouvy</th>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Firma</th>
+              <th>Status</th>
+              <th class="hidden lg:table-cell">Hodnota</th>
+              <th class="hidden md:table-cell">Podpis</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for contract in contracts %}
+              <tr>
+                <td class="font-mono text-sm text-gray-600">
+                  {{ contract.contract_number|default:"—" }}
+                </td>
+                <td>
+                  <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ contract.title }}
+                  </a>
+                  {% if contract.project %}
+                    <div class="text-xs text-gray-500 mt-1">
+                      📁 {{ contract.project.name }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell">
+                  {% if contract.company %}
+                    <a href="{% url 'detail_b2b_company' contract.company.company_id %}" class="text-blue-600 hover:underline">
+                      {{ contract.company.name }}
+                    </a>
+                  {% else %}
+                    <span class="text-gray-400">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="px-2 py-1 rounded text-xs font-medium
+                    {% if contract.status == 'active' %}bg-green-100 text-green-700
+                    {% elif contract.status == 'signed' %}bg-blue-100 text-blue-700
+                    {% elif contract.status == 'negotiation' %}bg-yellow-100 text-yellow-700
+                    {% elif contract.status == 'draft' %}bg-gray-100 text-gray-700
+                    {% elif contract.status == 'completed' %}bg-indigo-100 text-indigo-700
+                    {% elif contract.status == 'terminated' %}bg-red-100 text-red-700
+                    {% else %}bg-gray-100 text-gray-600{% endif %}">
+                    {{ contract.get_status_display }}
+                  </span>
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {% if contract.contract_value %}
+                    {{ contract.contract_value|floatformat:0 }} Kč
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell text-gray-500 text-sm">
+                  {% if contract.signature_date %}
+                    {{ contract.signature_date|date:"d.m.Y" }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_b2b_contract' contract.contract_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_b2b_contract' contract.contract_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-5xl mb-3">📄</div>
+        <p class="text-gray-600 mb-4">
+          {% if search_query or selected_status %}
+            Žádné smlouvy odpovídající vašemu hledání
+          {% else %}
+            Zatím nemáte přidané žádné B2B smlouvy
+          {% endif %}
+        </p>
+        {% if search_query or selected_status %}
+          <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline mr-2">Zrušit filtr</a>
+        {% endif %}
+        <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">+ Přidat první smlouvu</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+    <div class="content-card bg-green-50 border-2 border-green-200">
+      <div class="text-xs text-green-600 font-semibold uppercase mb-1">Aktivní</div>
+      <div class="text-2xl font-bold text-green-700">
+        {{ contracts|filter_by_status:"active"|length|default:0 }}
+      </div>
+    </div>
+
+    <div class="content-card bg-yellow-50 border-2 border-yellow-200">
+      <div class="text-xs text-yellow-600 font-semibold uppercase mb-1">V jednání</div>
+      <div class="text-2xl font-bold text-yellow-700">
+        {{ contracts|filter_by_status:"negotiation"|length|default:0 }}
+      </div>
+    </div>
+
+    <div class="content-card bg-blue-50 border-2 border-blue-200">
+      <div class="text-xs text-blue-600 font-semibold uppercase mb-1">Podepsáno</div>
+      <div class="text-2xl font-bold text-blue-700">
+        {{ contracts|filter_by_status:"signed"|length|default:0 }}
+      </div>
+    </div>
+
+    <div class="content-card bg-gray-50 border-2 border-gray-200">
+      <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Koncept</div>
+      <div class="text-2xl font-bold text-gray-700">
+        {{ contracts|filter_by_status:"draft"|length|default:0 }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu smluv</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Používejte jednoznačná čísla smluv pro snadnou identifikaci</li>
+          <li>• Sledujte důležité termíny (podpis, začátek, ukončení)</li>
+          <li>• Propojte smlouvy s projekty a firmami</li>
+          <li>• Udržujte aktuální status smlouvy (koncept → jednání → podepsáno → aktivní)</li>
+          <li>• Využívejte kategorizaci pro rychlé filtrování</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
