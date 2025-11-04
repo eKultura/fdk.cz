@@ -39,7 +39,12 @@ def program_detail(request, program_id):
 
 @login_required
 def program_create(request):
-    """Vytvoření nového programu"""
+    """Vytvoření nového programu - pouze pro superadminy"""
+    # Kontrola oprávnění - pouze superadmin může vytvářet programy
+    if not request.user.is_superuser:
+        messages.error(request, "Nemáte oprávnění k vytvoření programu. Pouze superadmin může vytvářet nové programy.")
+        return redirect("program_list")
+
     if request.method == "POST":
         name = request.POST.get("name")
         provider = request.POST.get("provider")
@@ -64,7 +69,12 @@ def program_create(request):
 
 @login_required
 def program_edit(request, program_id):
-    """Úprava programu"""
+    """Úprava programu - pouze pro superadminy"""
+    # Kontrola oprávnění - pouze superadmin může upravovat programy
+    if not request.user.is_superuser:
+        messages.error(request, "Nemáte oprávnění k úpravě programu. Pouze superadmin může upravovat programy.")
+        return redirect("program_detail", program_id=program_id)
+
     program = get_object_or_404(GrantProgram, pk=program_id)
     if request.method == "POST":
         program.name = request.POST.get("name", program.name)
@@ -93,8 +103,16 @@ def grant_list(request):
     if type_filter:
         grants = grants.filter(type=type_filter)
 
+    # Rozdělení dotací podle typu pro zobrazení v template
+    active_dotace = grants.filter(type='dotace')
+    active_granty = grants.filter(type='grant')
+    active_grants_count = grants.count()
+
     context = {
         "grants": grants,
+        "active_dotace": active_dotace,
+        "active_granty": active_granty,
+        "active_grants_count": active_grants_count,
         "providers": GrantCall.objects.values_list("provider", flat=True).distinct(),
         "types": GrantCall._meta.get_field("type").choices,
     }
@@ -124,7 +142,12 @@ def grant_detail(request, grant_id):
 
 @login_required
 def grant_create(request, program_id=None):
-    """Vytvoření nové výzvy / dotace"""
+    """Vytvoření nové výzvy / dotace - pouze pro superadminy"""
+    # Kontrola oprávnění - pouze superadmin může vytvářet dotace
+    if not request.user.is_superuser:
+        messages.error(request, "Nemáte oprávnění k vytvoření dotace. Pouze superadmin může vytvářet nové dotace.")
+        return redirect("grant_list")
+
     program = None
     if program_id:
         program = get_object_or_404(GrantProgram, pk=program_id)
@@ -160,7 +183,12 @@ def grant_create(request, program_id=None):
 
 @login_required
 def grant_edit(request, grant_id):
-    """Editace výzvy / dotace"""
+    """Editace výzvy / dotace - pouze pro superadminy"""
+    # Kontrola oprávnění - pouze superadmin může upravovat dotace
+    if not request.user.is_superuser:
+        messages.error(request, "Nemáte oprávnění k úpravě dotace. Pouze superadmin může upravovat dotace.")
+        return redirect("grant_detail", grant_id=grant_id)
+
     grant = get_object_or_404(GrantCall, pk=grant_id)
     if request.method == "POST":
         grant.title = request.POST.get("title", grant.title)
@@ -180,7 +208,12 @@ def grant_edit(request, grant_id):
 
 @login_required
 def grant_delete(request, grant_id):
-    """Smazání dotace"""
+    """Smazání dotace - pouze pro superadminy"""
+    # Kontrola oprávnění - pouze superadmin může mazat dotace
+    if not request.user.is_superuser:
+        messages.error(request, "Nemáte oprávnění ke smazání dotace. Pouze superadmin může mazat dotace.")
+        return redirect("grant_detail", grant_id=grant_id)
+
     grant = get_object_or_404(GrantCall, pk=grant_id)
     if request.method == "POST":
         grant.delete()

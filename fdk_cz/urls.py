@@ -128,7 +128,7 @@ urlpatterns = (
     # 📝 Žádosti
     path('dotace/zadosti/', application_list, name='application_list'),
     path('dotace/zadost/<int:application_id>/', application_detail, name='application_detail'),
-    path('dotace/zadost/novy/<int:grant_id>/', application_create, name='application_create'),
+    path('dotace/zadost/novy/<int:call_id>/', application_create, name='application_create'),
     path('dotace/zadost/<int:application_id>/edit/', application_edit, name='application_edit'),
     path('dotace/zadost/<int:application_id>/smazat/', application_delete, name='application_delete'),
 
