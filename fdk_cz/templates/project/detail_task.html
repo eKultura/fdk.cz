@@ -50,7 +50,12 @@ Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
 
       <div>
         <p class="text-sm text-gray-500 mb-1">Termín dokončení</p>
-        <p class="font-semibold text-gray-800">{{ task.due_date|date:"d.m.Y"|default:"–" }}</p>
+        <p class="font-semibold {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}text-red-600{% else %}text-gray-800{% endif %}">
+          {{ task.due_date|date:"d.m.Y"|default:"–" }}
+          {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}
+            <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded">⚠️ Po termínu</span>
+          {% endif %}
+        </p>
       </div>
     </div>
 
@@ -90,27 +95,31 @@ Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
     {% endif %}
 
     <!-- Akční tlačítka -->
-    <div class="flex flex-wrap gap-3 pb-6 border-b border-gray-200">
-      {% if task.status != "Hotovo" %}
-      <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" class="inline">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-success">✅ Označit jako hotové</button>
-      </form>
-      {% endif %}
+    <div class="flex flex-wrap justify-between items-center gap-3 pb-6 border-b border-gray-200">
+      <div class="flex flex-wrap gap-3">
+        {% if task.status != "Hotovo" %}
+        <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success">✅ Označit jako hotové</button>
+        </form>
+        {% endif %}
 
-      <a href="{% url 'edit_task' task.task_id %}" class="btn btn-primary">✏️ Upravit</a>
+        <a href="{% url 'edit_task' task.task_id %}" class="btn btn-primary">✏️ Upravit</a>
 
-      <a href="{% url 'delete_task' task.task_id %}"
-         class="btn btn-danger"
-         onclick="return confirm('Opravdu chcete smazat tento úkol?');">
-        🗑️ Smazat
-      </a>
+        <a href="{% url 'delete_task' task.task_id %}"
+           class="btn btn-danger"
+           onclick="return confirm('Opravdu chcete smazat tento úkol?');">
+          🗑️ Smazat
+        </a>
+      </div>
 
-      {% if project %}
-        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
-      {% else %}
-        <a href="{% url 'task_management' %}" class="btn btn-outline">← Zpět na úkoly</a>
-      {% endif %}
+      <div>
+        {% if project %}
+          <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
+        {% else %}
+          <a href="{% url 'task_management' %}" class="btn btn-outline">← Zpět na úkoly</a>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Komentáře -->
@@ -118,15 +127,33 @@ Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
       <h3 class="text-xl font-semibold text-gray-800 mb-4">💬 Komentáře</h3>
 
       {% if comments %}
-      <div class="space-y-3 mb-6">
+      <div class="space-y-4 mb-6">
         {% for comment in comments %}
-        <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
-          <div class="flex justify-between items-start mb-2">
-            <span class="font-semibold text-gray-800">{{ comment.user.username|default:"Anonym" }}</span>
-            <span class="text-sm text-gray-500">{{ comment.posted|date:"d.m.Y H:i" }}</span>
-          </div>
-          <p class="text-gray-700">{{ comment.comment }}</p>
-        </div>
+          {% if comment.user == user %}
+            <!-- Můj komentář (vpravo) -->
+            <div class="flex justify-end">
+              <div class="max-w-[75%]">
+                <div class="bg-blue-600 text-white rounded-lg rounded-tr-none p-4 shadow-md">
+                  <p class="leading-relaxed">{{ comment.comment }}</p>
+                </div>
+                <div class="text-xs text-gray-500 mt-1 text-right">
+                  <span class="font-medium">{{ comment.user.username }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- Komentář od jiného uživatele (vlevo) -->
+            <div class="flex justify-start">
+              <div class="max-w-[75%]">
+                <div class="bg-gray-100 border-2 border-gray-200 rounded-lg rounded-tl-none p-4 shadow-sm">
+                  <p class="leading-relaxed text-gray-800">{{ comment.comment }}</p>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">
+                  <span class="font-medium">{{ comment.user.username|default:"Anonym" }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
         {% endfor %}
       </div>
       {% else %}

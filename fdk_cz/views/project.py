@@ -296,7 +296,13 @@ def detail_task(request, task_id):
         new_comment.save()
         return redirect('detail_task', task_id=task_id)
 
-    return render(request, 'project/detail_task.html', {'task': task_obj, 'project': project, 'comments': comments})
+    from datetime import date
+    return render(request, 'project/detail_task.html', {
+        'task': task_obj,
+        'project': project,
+        'comments': comments,
+        'today': date.today()
+    })
 
 
 
@@ -322,13 +328,17 @@ def edit_task(request, task_id):
 def delete_task(request, task_id):
     # Načtení úkolu
     selected_task = get_object_or_404(ProjectTask, pk=task_id)
-    project_id = selected_task.project.project_id  # Získání ID projektu pro přesměrování
 
     if request.method == 'POST':
         # Proveďte smazání a nastavte zprávu
         selected_task.delete()
         messages.success(request, "Úkol byl úspěšně smazán.")
-        return redirect('detail_project', project_id=project_id)  # Přesměrování zpět na projekt
+
+        # Přesměrování - zpět na projekt nebo task management
+        if selected_task.project:
+            return redirect('detail_project', project_id=selected_task.project.project_id)
+        else:
+            return redirect('task_management')
 
     return render(request, 'project/delete_task.html', {'selected_task': selected_task})
 
