@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ article.title }} | Nápověda | FDK.cz{% endblock %}
+{% block header_title %}{{ article.title }}{% endblock %}
+{% block header_subtitle %}
+{% if article.module %}
+Modul: {{ article.module.display_name }}
+{% else %}
+{{ article.get_category_display }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+  <!-- Breadcrumb -->
+  <div class="mb-6">
+    <nav class="flex items-center gap-2 text-sm text-gray-600">
+      <a href="{% url 'help_index' %}" class="hover:text-blue-600">📚 Nápověda</a>
+      <span>→</span>
+      <span class="text-gray-800 font-medium">{{ article.title }}</span>
+    </nav>
+  </div>
+
+  <!-- Article Content -->
+  <div class="content-card">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        {% if article.is_technical %}
+        <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+          🔧 Technická dokumentace
+        </span>
+        {% endif %}
+        {% if article.module %}
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-2xl">{{ article.module.icon|default:"📦" }}</span>
+          <span class="text-sm font-semibold text-gray-600">{{ article.module.display_name }}</span>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if can_edit %}
+      <div class="flex gap-2">
+        <a href="{% url 'help_edit' article.slug %}" class="btn btn-outline">✏️ Upravit</a>
+        <a href="{% url 'help_delete' article.slug %}" class="btn btn-outline text-red-600 border-red-600 hover:bg-red-50">🗑️ Smazat</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Content (Markdown rendered as HTML) -->
+    <div class="prose prose-lg max-w-none">
+      <div class="markdown-content">
+        {{ article.content|linebreaks }}
+      </div>
+    </div>
+
+    <!-- Metadata -->
+    <div class="mt-8 pt-6 border-t border-gray-200">
+      <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+        <div>
+          <span class="font-semibold">Vytvořeno:</span> {{ article.created_at|date:"d.m.Y H:i" }}
+        </div>
+        {% if article.created_by %}
+        <div>
+          <span class="font-semibold">Autor:</span> {{ article.created_by.username }}
+        </div>
+        {% endif %}
+        {% if article.updated_at != article.created_at %}
+        <div>
+          <span class="font-semibold">Upraveno:</span> {{ article.updated_at|date:"d.m.Y H:i" }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    {% if article.keywords %}
+    <div class="mt-4 flex flex-wrap gap-2">
+      {% for keyword in article.keywords.split:',' %}
+      <span class="inline-block bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">
+        {{ keyword|trim }}
+      </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Back button -->
+  <div class="mt-6">
+    <a href="{% url 'help_index' %}" class="btn btn-outline">← Zpět na přehled nápovědy</a>
+  </div>
+
+</div>
+
+<style>
+.markdown-content {
+  line-height: 1.8;
+}
+
+.markdown-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.markdown-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #334155;
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #475569;
+}
+
+.markdown-content p {
+  margin-bottom: 1rem;
+  color: #64748b;
+}
+
+.markdown-content ul, .markdown-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin-left: 0;
+  color: #64748b;
+  font-style: italic;
+}
+</style>
+{% endblock %}

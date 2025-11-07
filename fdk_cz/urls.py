@@ -30,6 +30,7 @@ from fdk_cz.views.project import create_category, create_document, create_task, 
 from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
+from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
 
 from fdk_cz.views.warehouse import (
     all_stores,
@@ -370,6 +371,13 @@ urlpatterns = (
     path('majetek/kategorie/<int:category_id>/upravit/', edit_asset_category, name='edit_asset_category'),
     path('majetek/kategorie/<int:category_id>/smazat/', delete_asset_category, name='delete_asset_category'),
 
+
+    # Help & Documentation System
+    path('dokumentace/', help_index, name='help_index'),
+    path('dokumentace/pridat/', help_add, name='help_add'),
+    path('dokumentace/<slug:slug>/', help_detail, name='help_detail'),
+    path('dokumentace/<slug:slug>/upravit/', help_edit, name='help_edit'),
+    path('dokumentace/<slug:slug>/smazat/', help_delete, name='help_delete'),
 
     # Articles
     path('clanky/', article_blog_index, name='article_blog_index'),

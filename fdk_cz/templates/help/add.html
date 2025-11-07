@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Přidat článek | Nápověda | FDK.cz{% endblock %}
+{% block header_title %}＋ Přidat nový článek nápovědy{% endblock %}
+{% block header_subtitle %}
+Vytvoření nového článku dokumentace pro uživatele
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title" class="form-label">Název článku <span class="required">*</span></label>
+        <input type="text" name="title" id="title" class="form-control" required placeholder="Např. Úvod do správy projektů">
+      </div>
+
+      <!-- Slug -->
+      <div class="form-group">
+        <label for="slug" class="form-label">URL slug</label>
+        <input type="text" name="slug" id="slug" class="form-control" placeholder="uvod-do-spravy-projektu (nechte prázdné pro automatické generování)">
+        <div class="form-help">URL friendly verze názvu. Pokud necháte prázdné, vygeneruje se automaticky.</div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category" class="form-label">Kategorie <span class="required">*</span></label>
+        <select name="category" id="category" class="form-control" required>
+          <option value="">-- Vyberte kategorii --</option>
+          {% for value, label in categories %}
+          <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Module (optional) -->
+      <div class="form-group">
+        <label for="module" class="form-label">Modul (volitelné)</label>
+        <select name="module" id="module" class="form-control">
+          <option value="">-- Bez modulu --</option>
+          {% for module in modules %}
+          <option value="{{ module.module_id }}">{{ module.display_name }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-help">Pokud se článek vztahuje ke konkrétnímu modulu, vyberte ho zde.</div>
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label for="content" class="form-label">Obsah (Markdown) <span class="required">*</span></label>
+        <textarea name="content" id="content" rows="20" class="form-control" required placeholder="# Nadpis
+
+Základní text článku...
+
+## Podnadpis
+
+- Odrážka 1
+- Odrážka 2
+
+**Tučný text** a *kurzíva*"></textarea>
+        <div class="form-help">Podporuje Markdown formátování (nadpisy, seznamy, tučný text, odkazy atd.)</div>
+      </div>
+
+      <!-- Meta Description -->
+      <div class="form-group">
+        <label for="meta_description" class="form-label">Krátký popis</label>
+        <input type="text" name="meta_description" id="meta_description" class="form-control" maxlength="255" placeholder="Stručný popis pro zobrazení v seznamu">
+      </div>
+
+      <!-- Keywords -->
+      <div class="form-group">
+        <label for="keywords" class="form-label">Klíčová slova</label>
+        <input type="text" name="keywords" id="keywords" class="form-control" placeholder="projekt, úkol, management, dokumentace">
+        <div class="form-help">Oddělené čárkami pro lepší vyhledávání</div>
+      </div>
+
+      <!-- Order -->
+      <div class="form-group">
+        <label for="order" class="form-label">Pořadí zobrazení</label>
+        <input type="number" name="order" id="order" class="form-control" value="0" min="0">
+        <div class="form-help">Nižší číslo = vyšší pozice v seznamu</div>
+      </div>
+
+      <!-- Flags -->
+      <div class="form-group">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" name="is_published" checked class="w-4 h-4">
+          <span>Publikováno (viditelné pro uživatele)</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" name="is_technical" class="w-4 h-4">
+          <span>🔧 Technická dokumentace (viditelné pouze pro administrátory a testery)</span>
+        </label>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'help_index' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Vytvořit článek</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+// Auto-generate slug from title
+document.getElementById('title').addEventListener('input', function() {
+  const slugInput = document.getElementById('slug');
+  if (!slugInput.value || slugInput.dataset.auto !== 'false') {
+    const title = this.value;
+    const slug = title
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    slugInput.value = slug;
+    slugInput.dataset.auto = 'true';
+  }
+});
+
+document.getElementById('slug').addEventListener('input', function() {
+  this.dataset.auto = 'false';
+});
+</script>
+{% endblock %}

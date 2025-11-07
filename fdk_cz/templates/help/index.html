@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Nápověda | FDK.cz{% endblock %}
+{% block header_title %}📚 Nápověda a dokumentace{% endblock %}
+{% block header_subtitle %}
+Kompletní průvodce systémem FDK.cz pro efektivní řízení organizací
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+
+  <!-- Header Actions -->
+  {% if can_edit %}
+  <div class="flex justify-end mb-4">
+    <a href="{% url 'help_add' %}" class="btn btn-primary">＋ Přidat článek</a>
+  </div>
+  {% endif %}
+
+  <!-- Obecný úvod -->
+  {% if intro_articles %}
+  <div class="content-card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+      <span class="text-3xl mr-3">🏠</span> Obecný úvod
+    </h2>
+    <p class="text-gray-600 mb-6">Základní informace o systému FDK.cz a jeho možnostech</p>
+
+    <div class="space-y-3">
+      {% for article in intro_articles %}
+      <a href="{% url 'help_detail' article.slug %}" class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-semibold text-gray-800 text-lg">{{ article.title }}</h3>
+            {% if article.meta_description %}
+            <p class="text-sm text-gray-600 mt-1">{{ article.meta_description }}</p>
+            {% endif %}
+          </div>
+          {% if can_edit %}
+          <div class="flex gap-2">
+            <a href="{% url 'help_edit' article.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">✏️</a>
+            <a href="{% url 'help_delete' article.slug %}" class="text-red-600 hover:text-red-800 text-sm">🗑️</a>
+          </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Dokumentace modulů -->
+  {% if modules_with_articles %}
+  <div class="content-card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+      <span class="text-3xl mr-3">📦</span> Dokumentace modulů
+    </h2>
+    <p class="text-gray-600 mb-6">Podrobný popis jednotlivých modulů a jejich funkcí</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for module, articles in modules_with_articles.items %}
+      <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-2xl">{{ module.icon|default:"📦" }}</span>
+          <h3 class="font-bold text-gray-800 text-lg">{{ module.display_name }}</h3>
+        </div>
+
+        <div class="space-y-2">
+          {% for article in articles %}
+          <a href="{% url 'help_detail' article.slug %}" class="block px-3 py-2 bg-white hover:bg-blue-50 rounded border border-gray-200 transition">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-800">{{ article.title }}</span>
+              {% if can_edit %}
+              <div class="flex gap-1">
+                <a href="{% url 'help_edit' article.slug %}" class="text-blue-600 hover:text-blue-800 text-xs" onclick="event.stopPropagation();">✏️</a>
+              </div>
+              {% endif %}
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Často kladené otázky -->
+  {% if faq_articles %}
+  <div class="content-card">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+      <span class="text-3xl mr-3">❓</span> Často kladené otázky
+    </h2>
+
+    <div class="space-y-3">
+      {% for article in faq_articles %}
+      <a href="{% url 'help_detail' article.slug %}" class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition">
+        <div class="flex justify-between items-start">
+          <h3 class="font-semibold text-gray-800">{{ article.title }}</h3>
+          {% if can_edit %}
+          <div class="flex gap-2">
+            <a href="{% url 'help_edit' article.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">✏️</a>
+            <a href="{% url 'help_delete' article.slug %}" class="text-red-600 hover:text-red-800 text-sm">🗑️</a>
+          </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Technická dokumentace (jen pro administrátory a testery) -->
+  {% if technical_articles %}
+  <div class="content-card bg-yellow-50 border-2 border-yellow-300">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+      <span class="text-3xl mr-3">🔧</span> Technická dokumentace
+    </h2>
+    <p class="text-gray-600 mb-4">
+      <strong>⚠️ Viditelné pouze pro administrátory a testery</strong>
+    </p>
+
+    <div class="space-y-3">
+      {% for article in technical_articles %}
+      <a href="{% url 'help_detail' article.slug %}" class="block p-4 bg-white hover:bg-yellow-100 rounded-lg border border-yellow-200 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-semibold text-gray-800">{{ article.title }}</h3>
+            {% if article.meta_description %}
+            <p class="text-sm text-gray-600 mt-1">{{ article.meta_description }}</p>
+            {% endif %}
+          </div>
+          {% if can_edit %}
+          <div class="flex gap-2">
+            <a href="{% url 'help_edit' article.slug %}" class="text-blue-600 hover:text-blue-800 text-sm">✏️</a>
+            <a href="{% url 'help_delete' article.slug %}" class="text-red-600 hover:text-red-800 text-sm">🗑️</a>
+          </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Empty state -->
+  {% if not intro_articles and not modules_with_articles and not faq_articles and not technical_articles %}
+  <div class="content-card text-center py-12">
+    <div class="text-6xl mb-4">📚</div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Zatím zde není žádná dokumentace</h3>
+    <p class="text-gray-600 mb-4">Dokumentace se právě připravuje</p>
+    {% if can_edit %}
+    <a href="{% url 'help_add' %}" class="btn btn-primary">＋ Přidat první článek</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
