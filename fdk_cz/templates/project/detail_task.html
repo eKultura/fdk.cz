@@ -2,100 +2,179 @@
 {% load i18n %}
 
 {% block title %}{{ task.title }} | Detail úkolu | FDK.cz{% endblock %}
-{% block header_title %}{{ task.title }}{% endblock %}
+{% block header_title %}📋 {{ task.title }}{% endblock %}
 {% block header_subtitle %}
 {% if project %}
-Úkol v projektu <strong>{{ project.name }}</strong> &middot; Stav: {{ task.status|default:"Nedefinován" }}
+  Úkol v projektu <strong>{{ project.name }}</strong>
+  {% if project.organization %} • Organizace: <strong>{{ project.organization.name }}</strong>{% endif %}
+{% elif task.organization %}
+  Úkol v organizaci <strong>{{ task.organization.name }}</strong>
 {% else %}
-Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
+  Osobní úkol
 {% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-5xl mx-auto">
+
+  <!-- Context Info -->
+  <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
+    <div class="flex items-center gap-2 text-sm">
+      <span class="text-gray-600">📍 Kontext:</span>
+      {% if project %}
+        <span class="font-medium text-gray-800">Úkol</span>
+        <span class="text-gray-400">→</span>
+        <a href="{% url 'detail_project' project.project_id %}" class="text-blue-600 hover:underline font-medium">
+          {{ project.name }}
+        </a>
+        {% if project.organization %}
+          <span class="text-gray-400">→</span>
+          <span class="text-gray-600">{{ project.organization.name }}</span>
+        {% endif %}
+      {% elif task.organization %}
+        <span class="font-medium text-gray-800">Úkol</span>
+        <span class="text-gray-400">→</span>
+        <span class="text-gray-600">{{ task.organization.name }}</span>
+      {% else %}
+        <span class="font-medium text-gray-800">Osobní úkol</span>
+      {% endif %}
+    </div>
+  </div>
+
   <div class="content-card">
+    <!-- Základní údaje o úkolu - karty -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">ℹ️ Informace o úkolu</h3>
 
-    <!-- Základní údaje o úkolu -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 pb-6 border-b border-gray-200">
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Status</p>
-        <p class="font-semibold text-gray-800">{{ task.status|default:"Nedefinován" }}</p>
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Status -->
+        <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Status</div>
+          <div class="font-bold text-lg">
+            <span class="px-3 py-1 rounded-full text-sm font-medium
+              {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+              {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ task.status|default:"Nezahájeno" }}
+            </span>
+          </div>
+        </div>
 
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Priorita</p>
-        <p class="font-semibold text-gray-800">{{ task.priority|default:"-" }}</p>
-      </div>
+        <!-- Priorita -->
+        <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Priorita</div>
+          <div class="font-bold text-lg text-gray-800">
+            {% if task.priority == 'Vysoká' %}
+              <span class="text-red-600">🔴 {{ task.priority }}</span>
+            {% elif task.priority == 'Střední' %}
+              <span class="text-yellow-600">🟡 {{ task.priority }}</span>
+            {% elif task.priority == 'Nízká' %}
+              <span class="text-green-600">🟢 {{ task.priority }}</span>
+            {% else %}
+              <span class="text-gray-400">{{ task.priority|default:"—" }}</span>
+            {% endif %}
+          </div>
+        </div>
 
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Kategorie</p>
-        <p class="font-semibold text-gray-800">{{ task.category.name|default:"-" }}</p>
-      </div>
+        <!-- Kategorie -->
+        <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Kategorie</div>
+          <div class="font-bold text-lg text-gray-800">
+            {% if task.category %}
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+                {{ task.category.name }}
+              </span>
+            {% else %}
+              <span class="text-gray-400">—</span>
+            {% endif %}
+          </div>
+        </div>
 
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Přiřazeno</p>
-        <p class="font-semibold text-gray-800">
-          {% if task.assigned %}
-            {{ task.assigned.username }}
-          {% else %}
-            <span class="text-gray-400">Nepřiřazeno</span>
-          {% endif %}
-        </p>
-      </div>
+        <!-- Přiřazeno -->
+        <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Přiřazeno</div>
+          <div class="font-bold text-lg text-gray-800">
+            {% if task.assigned %}
+              👤 {{ task.assigned.username }}
+            {% else %}
+              <span class="text-gray-400">Nepřiřazeno</span>
+            {% endif %}
+          </div>
+        </div>
 
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Vytvořeno</p>
-        <p class="font-semibold text-gray-800">{{ task.created|date:"d.m.Y" }}</p>
-      </div>
+        <!-- Vytvořeno -->
+        <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Vytvořeno</div>
+          <div class="font-bold text-lg text-gray-800">
+            📅 {{ task.created|date:"d.m.Y" }}
+          </div>
+        </div>
 
-      <div>
-        <p class="text-sm text-gray-500 mb-1">Termín dokončení</p>
-        <p class="font-semibold {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}text-red-600{% else %}text-gray-800{% endif %}">
-          {{ task.due_date|date:"d.m.Y"|default:"–" }}
-          {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}
-            <span class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded">⚠️ Po termínu</span>
-          {% endif %}
-        </p>
+        <!-- Termín dokončení -->
+        <div class="bg-gray-50 border-2 {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}border-red-300 bg-red-50{% else %}border-gray-200{% endif %} rounded-lg p-4">
+          <div class="text-xs font-semibold {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}text-red-600{% else %}text-gray-500{% endif %} uppercase tracking-wide mb-2">
+            Termín dokončení
+          </div>
+          <div class="font-bold text-lg {% if task.due_date and task.due_date < today and task.status != 'Hotovo' %}text-red-600{% else %}text-gray-800{% endif %}">
+            {% if task.due_date %}
+              ⏰ {{ task.due_date|date:"d.m.Y" }}
+              {% if task.due_date < today and task.status != 'Hotovo' %}
+                <div class="text-xs mt-1 font-normal">⚠️ Po termínu!</div>
+              {% endif %}
+            {% else %}
+              <span class="text-gray-400">—</span>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Popis -->
     {% if task.description %}
-    <div class="mb-6 pb-6 border-b border-gray-200">
-      <h3 class="text-sm text-gray-500 mb-2">Popis</h3>
-      <p class="text-gray-800">{{ task.description }}</p>
+    <div class="mb-6 pb-6 border-t border-gray-200 pt-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-3">📝 Popis úkolu</h3>
+      <div class="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-4">
+        <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ task.description }}</p>
+      </div>
     </div>
     {% endif %}
 
     <!-- Nadřazený úkol -->
     {% if task.parent %}
-    <div class="mb-6 pb-6 border-b border-gray-200">
-      <h3 class="text-sm text-gray-500 mb-2">Nadřazený úkol</h3>
-      <a href="{% url 'detail_task' task.parent.task_id %}" class="text-blue-600 hover:underline font-medium">
-        {{ task.parent.title }}
-      </a>
+    <div class="mb-6 pb-6 border-t border-gray-200 pt-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-3">⬆️ Nadřazený úkol</h3>
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition">
+        <a href="{% url 'detail_task' task.parent.task_id %}" class="text-blue-600 hover:underline font-medium text-lg">
+          {{ task.parent.title }}
+        </a>
+      </div>
     </div>
     {% endif %}
 
     <!-- Podúkoly -->
     {% if task.subtasks.exists %}
-    <div class="mb-6 pb-6 border-b border-gray-200">
-      <h3 class="text-sm text-gray-500 mb-3">Podúkoly</h3>
-      <ul class="content-list">
+    <div class="mb-6 pb-6 border-t border-gray-200 pt-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-3">⬇️ Podúkoly</h3>
+      <div class="space-y-2">
         {% for subtask in task.subtasks.all %}
-          <li class="content-list-item">
-            <a href="{% url 'detail_task' subtask.task_id %}" class="content-list-item-text text-blue-600 hover:underline">
+          <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition flex items-center justify-between">
+            <a href="{% url 'detail_task' subtask.task_id %}" class="text-blue-600 hover:underline font-medium flex-1">
               {{ subtask.title }}
             </a>
-            <span class="text-xs text-gray-500">{{ subtask.status }}</span>
-          </li>
+            <span class="px-2 py-1 rounded text-xs font-medium ml-3
+              {% if subtask.status == 'Hotovo' %}bg-green-100 text-green-700
+              {% elif subtask.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ subtask.status|default:"Nezahájeno" }}
+            </span>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
     </div>
     {% endif %}
 
     <!-- Akční tlačítka -->
-    <div class="flex flex-wrap justify-between items-center gap-3 pb-6 border-b border-gray-200">
+    <div class="flex flex-wrap justify-between items-center gap-3 pt-6 border-t-2 border-gray-300">
       <div class="flex flex-wrap gap-3">
         {% if task.status != "Hotovo" %}
         <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" class="inline">
@@ -104,12 +183,12 @@ Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
         </form>
         {% endif %}
 
-        <a href="{% url 'edit_task' task.task_id %}" class="btn btn-primary">✏️ Upravit</a>
+        <a href="{% url 'edit_task' task.task_id %}" class="btn btn-primary">✏️ Upravit úkol</a>
 
         <a href="{% url 'delete_task' task.task_id %}"
            class="btn btn-danger"
            onclick="return confirm('Opravdu chcete smazat tento úkol?');">
-          🗑️ Smazat
+          🗑️ Smazat úkol
         </a>
       </div>
 
@@ -121,61 +200,63 @@ Osobní úkol &middot; Stav: {{ task.status|default:"Nedefinován" }}
         {% endif %}
       </div>
     </div>
+  </div>
 
-    <!-- Komentáře -->
-    <div class="mt-6">
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">💬 Komentáře</h3>
+  <!-- Komentáře -->
+  <div class="content-card mt-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">💬 Komentáře</h3>
 
-      {% if comments %}
-      <div class="space-y-4 mb-6">
-        {% for comment in comments %}
-          {% if comment.user == user %}
-            <!-- Můj komentář (vpravo) -->
-            <div class="flex justify-end">
-              <div class="max-w-[75%]">
-                <div class="bg-blue-600 text-white rounded-lg rounded-tr-none p-4 shadow-md">
-                  <p class="leading-relaxed">{{ comment.comment }}</p>
-                </div>
-                <div class="text-xs text-gray-500 mt-1 text-right">
-                  <span class="font-medium">{{ comment.user.username }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
-                </div>
+    {% if comments %}
+    <div class="space-y-4 mb-6">
+      {% for comment in comments %}
+        {% if comment.user == user %}
+          <!-- Můj komentář (vpravo) -->
+          <div class="flex justify-end">
+            <div class="max-w-[75%]">
+              <div class="bg-blue-600 text-white rounded-lg rounded-tr-none p-4 shadow-md">
+                <p class="leading-relaxed">{{ comment.comment }}</p>
+              </div>
+              <div class="text-xs text-gray-500 mt-1 text-right">
+                <span class="font-medium">{{ comment.user.username }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
               </div>
             </div>
-          {% else %}
-            <!-- Komentář od jiného uživatele (vlevo) -->
-            <div class="flex justify-start">
-              <div class="max-w-[75%]">
-                <div class="bg-gray-100 border-2 border-gray-200 rounded-lg rounded-tl-none p-4 shadow-sm">
-                  <p class="leading-relaxed text-gray-800">{{ comment.comment }}</p>
-                </div>
-                <div class="text-xs text-gray-500 mt-1">
-                  <span class="font-medium">{{ comment.user.username|default:"Anonym" }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
-                </div>
+          </div>
+        {% else %}
+          <!-- Komentář od jiného uživatele (vlevo) -->
+          <div class="flex justify-start">
+            <div class="max-w-[75%]">
+              <div class="bg-gray-100 border-2 border-gray-200 rounded-lg rounded-tl-none p-4 shadow-sm">
+                <p class="leading-relaxed text-gray-800">{{ comment.comment }}</p>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">
+                <span class="font-medium">{{ comment.user.username|default:"Anonym" }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
               </div>
             </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-      {% else %}
-      <p class="text-gray-500 mb-6 text-center py-4">Zatím žádné komentáře.</p>
-      {% endif %}
-
-      <!-- Přidat komentář -->
-      <form method="post" action="{% url 'detail_task' task.task_id %}">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="id_comment" class="form-label">Přidat komentář</label>
-          <textarea name="comment" id="id_comment" rows="4"
-                    class="form-control"
-                    placeholder="Napište váš komentář k tomuto úkolu..."></textarea>
-          <div class="form-help">Komentáře jsou viditelné pro všechny členy týmu</div>
-        </div>
-        <div class="flex justify-end">
-          <button type="submit" class="btn btn-primary">💬 Přidat komentář</button>
-        </div>
-      </form>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
+    {% else %}
+    <p class="text-gray-500 mb-6 text-center py-8 bg-gray-50 rounded-lg">
+      <span class="text-4xl block mb-2">💭</span>
+      Zatím žádné komentáře. Buďte první, kdo přidá komentář!
+    </p>
+    {% endif %}
 
+    <!-- Přidat komentář -->
+    <form method="post" action="{% url 'detail_task' task.task_id %}" class="border-t-2 border-gray-200 pt-6">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_comment" class="form-label">Přidat komentář</label>
+        <textarea name="comment" id="id_comment" rows="4"
+                  class="form-control"
+                  placeholder="Napište váš komentář k tomuto úkolu..."></textarea>
+        <div class="form-help">Komentáře jsou viditelné pro všechny členy týmu</div>
+      </div>
+      <div class="flex justify-end">
+        <button type="submit" class="btn btn-primary">💬 Přidat komentář</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}
