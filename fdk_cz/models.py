@@ -1133,6 +1133,31 @@ class ModuleUsage(models.Model):
         return f"{self.user.username} - {self.module.name} - {self.action}"
 
 
+class UserModulePreference(models.Model):
+    """Uživatelské preference pro zobrazení modulů v menu (zapnout/vypnout)"""
+    preference_id = models.AutoField(primary_key=True, db_column='preference_id')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_preferences', db_column='user_id')
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='user_preferences', db_column='module_id')
+
+    # Zobrazovat v menu?
+    is_visible = models.BooleanField(default=True, db_column='is_visible')
+
+    # Pořadí v menu (pro uživatelské seřazení)
+    display_order = models.IntegerField(default=0, db_column='display_order')
+
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_user_module_preference'
+        unique_together = ('user', 'module')
+        ordering = ['display_order', 'module__order']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.module.display_name} ({'✓' if self.is_visible else '✗'})"
+
+
 # -------------------------------------------------------------------
 #                    B2B MANAGEMENT
 # -------------------------------------------------------------------

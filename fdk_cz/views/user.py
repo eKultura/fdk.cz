@@ -45,6 +45,8 @@ def user_profile(request):
 
 @login_required
 def user_settings(request):
+    from fdk_cz.models import Module, UserModulePreference
+
     if request.method == 'POST':
         form = profile_edit_form(request.POST, instance=request.user)
         if form.is_valid():
@@ -52,7 +54,47 @@ def user_settings(request):
             return redirect('user_profile')
     else:
         form = profile_edit_form(instance=request.user)
-    return render(request, 'user/settings.html', {'user': request.user, 'form': form})
+
+    # Get all modules and user preferences
+    modules = Module.objects.filter(is_active=True).order_by('order', 'display_name')
+    user_preferences = {}
+    for pref in UserModulePreference.objects.filter(user=request.user):
+        user_preferences[pref.module_id] = pref
+
+    # Prepare modules with their preference status
+    modules_with_prefs = []
+    for module in modules:
+        pref = user_preferences.get(module.module_id)
+        modules_with_prefs.append({
+            'module': module,
+            'is_visible': pref.is_visible if pref else True,  # Default to visible
+            'preference': pref
+        })
+
+    return render(request, 'user/settings.html', {
+        'user': request.user,
+        'form': form,
+        'modules_with_prefs': modules_with_prefs
+    })
+
+
+@login_required
+def toggle_module_visibility(request, module_id):
+    """Toggle visibility of a module in the menu"""
+    from fdk_cz.models import Module, UserModulePreference
+
+    if request.method == 'POST':
+        module = Module.objects.get(module_id=module_id)
+        pref, created = UserModulePreference.objects.get_or_create(
+            user=request.user,
+            module=module
+        )
+        pref.is_visible = not pref.is_visible
+        pref.save()
+
+        messages.success(request, f"Modul {module.display_name} byl {'zapnut' if pref.is_visible else 'vypnut'}.")
+
+    return redirect('user_settings')
 
 
 def registration(request):
