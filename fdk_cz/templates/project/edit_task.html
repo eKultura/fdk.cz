@@ -110,7 +110,11 @@
 
       <!-- Tlačítka -->
       <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-        <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">Zrušit</a>
+        {% if project %}
+          <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">Zrušit</a>
+        {% else %}
+          <a href="{% url 'task_management' %}" class="btn btn-outline">Zrušit</a>
+        {% endif %}
         <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
       </div>
     </form>

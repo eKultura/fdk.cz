@@ -74,65 +74,72 @@
 
   <!-- Formulář pro vytvoření úkolu -->
   <div>
-    <div class="content-card" style="background:#f9fafb;border:1px solid #e5e7eb;">
-      <h4 style="font-weight:600;color:#1f2937;margin-bottom:1rem;">➕ Nový úkol</h4>
+    <div class="content-card">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4">➕ Nový úkol</h4>
 
       <form method="POST">
         {% csrf_token %}
-        <div class="form-group mb-3">
-          <label for="title" class="block text-sm font-medium text-gray-700">Název úkolu</label>
-          <input type="text" id="title" name="title" required
-                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        <div class="form-group">
+          <label for="title" class="form-label">Název úkolu <span class="required">*</span></label>
+          <input type="text" id="title" name="title" required class="form-control" placeholder="Název úkolu">
         </div>
 
-        <div class="form-group mb-3">
-          <label for="description" class="block text-sm font-medium text-gray-700">Popis</label>
-          <textarea id="description" name="description"
-                    class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"></textarea>
+        <div class="form-group">
+          <label for="description" class="form-label">Popis</label>
+          <textarea id="description" name="description" class="form-control" rows="3" placeholder="Popis úkolu (volitelné)"></textarea>
         </div>
 
         <!-- Kontext úkolu -->
-        <div class="form-group mb-3">
-          <label class="block text-sm font-medium text-gray-700">Typ úkolu</label>
-          <div class="flex gap-3 mt-1">
-            <label class="flex items-center gap-2">
-              <input type="radio" name="context" value="personal" checked class="text-blue-600 focus:ring-blue-500">
-              <span>Osobní</span>
+        <div class="form-group">
+          <label class="form-label">Typ úkolu <span class="required">*</span></label>
+          <div class="flex gap-4 mt-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="context" value="personal" checked class="w-4 h-4 text-blue-600">
+              <span class="text-gray-700">📝 Osobní</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="context" value="project" class="text-blue-600 focus:ring-blue-500">
-              <span>V projektu</span>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="context" value="project" class="w-4 h-4 text-blue-600">
+              <span class="text-gray-700">📁 V projektu</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="radio" name="context" value="organization" class="text-blue-600 focus:ring-blue-500">
-              <span>V organizaci</span>
+            {% if user_organizations %}
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="context" value="organization" class="w-4 h-4 text-blue-600">
+              <span class="text-gray-700">🏢 V organizaci</span>
             </label>
+            {% else %}
+            <label class="flex items-center gap-2 opacity-50 cursor-not-allowed" title="Nemáte žádnou organizaci">
+              <input type="radio" name="context" value="organization" disabled class="w-4 h-4">
+              <span class="text-gray-400">🏢 V organizaci</span>
+            </label>
+            {% endif %}
           </div>
         </div>
 
         <!-- Project selection (hidden by default) -->
-        <div id="project-select-group" class="form-group mb-3 hidden">
-          <label for="project_id" class="block text-sm font-medium text-gray-700">Vyberte projekt</label>
-          <select id="project_id" name="project_id" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        <div id="project-select-group" class="form-group hidden">
+          <label for="project_id" class="form-label">Vyberte projekt <span class="required">*</span></label>
+          <select id="project_id" name="project_id" class="form-control">
             <option value="">-- Vyberte projekt --</option>
             {% for project in user_projects %}
               <option value="{{ project.project_id }}">{{ project.name }}</option>
             {% endfor %}
           </select>
+          <div class="form-help">Přiřaďte úkol k projektu</div>
         </div>
 
         <!-- Organization selection (hidden by default) -->
-        <div id="organization-select-group" class="form-group mb-3 hidden">
-          <label for="organization_id" class="block text-sm font-medium text-gray-700">Vyberte organizaci</label>
-          <select id="organization_id" name="organization_id" class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+        <div id="organization-select-group" class="form-group hidden">
+          <label for="organization_id" class="form-label">Vyberte organizaci <span class="required">*</span></label>
+          <select id="organization_id" name="organization_id" class="form-control">
             <option value="">-- Vyberte organizaci --</option>
             {% for org in user_organizations %}
               <option value="{{ org.company_id }}">{{ org.name }}</option>
             {% endfor %}
           </select>
+          <div class="form-help">Přiřaďte úkol k organizaci</div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-full">💾 Uložit úkol</button>
+        <button type="submit" class="btn btn-primary w-full mt-2">💾 Vytvořit úkol</button>
       </form>
     </div>
   </div>
