@@ -62,8 +62,14 @@ def help_detail(request, slug):
         messages.error(request, "Nemáte oprávnění k zobrazení této technické dokumentace.")
         return redirect('help_index')
 
+    # Split keywords into list
+    keywords_list = []
+    if article.keywords:
+        keywords_list = [k.strip() for k in article.keywords.split(',') if k.strip()]
+
     context = {
         'article': article,
+        'keywords_list': keywords_list,
         'can_edit': user.is_authenticated and user.is_superuser,
     }
 
