@@ -139,6 +139,10 @@
             <span class="nav-icon">&#128220;</span>
             Zákony
           </a>
+          <a href="{% url 'help_index' %}" class="nav-item {% if 'help' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#128218;</span>
+            Dokumentace
+          </a>
         </div>
       </nav>
     </aside>

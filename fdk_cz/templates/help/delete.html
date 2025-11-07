@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Smazat {{ article.title }} | Nápověda | FDK.cz{% endblock %}
+{% block header_title %}🗑️ Smazat článek{% endblock %}
+{% block header_subtitle %}
+Potvrzení smazání
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+  <div class="content-card bg-red-50 border-2 border-red-200">
+    <div class="text-center mb-6">
+      <div class="text-6xl mb-4">⚠️</div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Opravdu chcete smazat tento článek?</h2>
+      <p class="text-gray-600">Tato akce je nevratná.</p>
+    </div>
+
+    <!-- Article Info -->
+    <div class="bg-white rounded-lg p-6 mb-6 border border-red-200">
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ article.title }}</h3>
+
+      <div class="space-y-2 text-sm text-gray-600">
+        <div>
+          <strong>Kategorie:</strong> {{ article.get_category_display }}
+        </div>
+        {% if article.module %}
+        <div>
+          <strong>Modul:</strong> {{ article.module.display_name }}
+        </div>
+        {% endif %}
+        <div>
+          <strong>URL:</strong> /napoveda/{{ article.slug }}/
+        </div>
+        {% if article.created_by %}
+        <div>
+          <strong>Vytvořil:</strong> {{ article.created_by.username }}
+        </div>
+        {% endif %}
+        <div>
+          <strong>Vytvořeno:</strong> {{ article.created_at|date:"d.m.Y H:i" }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Form -->
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="flex justify-center gap-4">
+        <a href="{% url 'help_detail' article.slug %}" class="btn btn-outline">✖ Zrušit</a>
+        <button type="submit" class="btn btn-primary bg-red-600 hover:bg-red-700 border-red-600">🗑️ Ano, smazat článek</button>
+      </div>
+    </form>
+
+  </div>
+
+</div>
+{% endblock %}

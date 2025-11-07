@@ -64,7 +64,7 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
     </div>
 
     <!-- Sloupcové zobrazení (kanban) -->
-    <div id="task_columns" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div id="task_columns" style="display: none;" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Nezahájeno / Ke zpracování -->
       <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg p-4">
         <h3 class="font-bold text-gray-700 mb-3 flex items-center">
@@ -382,15 +382,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (toggleBtn && taskColumns && taskTable) {
     toggleBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      taskTable.classList.toggle('hidden');
-      taskColumns.classList.toggle('hidden');
 
-      // Update button text based on current view
-      if (taskColumns.classList.contains('hidden')) {
-        // Showing table view
+      // Toggle visibility using display style
+      if (taskTable.style.display === 'none') {
+        // Currently showing kanban, switch to table
+        taskTable.style.display = '';
+        taskColumns.style.display = 'none';
         toggleBtn.textContent = '📊 Zobrazit Kanban';
       } else {
-        // Showing kanban view
+        // Currently showing table, switch to kanban
+        taskTable.style.display = 'none';
+        taskColumns.style.display = '';
         toggleBtn.textContent = '📋 Zobrazit tabulku';
       }
     });
