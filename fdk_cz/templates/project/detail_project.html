@@ -151,36 +151,36 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
   <!-- Sekce: Statistika úkolů -->
   <div class="content-card">
     <h2 class="text-xl font-semibold text-gray-800 mb-4">📊 Statistika úkolů</h2>
-    <div class="flex flex-col md:flex-row items-start gap-6">
-      <div class="flex-1">
-        <canvas id="projectTaskPieChart" height="260"></canvas>
+
+    <!-- Graf -->
+    <div class="mb-6">
+      <canvas id="projectTaskPieChart" height="200"></canvas>
+    </div>
+
+    <!-- Statistiky v řádku -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- Nezahájeno -->
+      <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nezahájeno</div>
+        <div class="text-3xl font-bold text-gray-700">{{ project_status_counts.Nezahájeno|default:0 }}</div>
       </div>
-      <div class="flex-1">
-        <div class="grid grid-cols-2 gap-3">
-          <!-- Nezahájeno -->
-          <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nezahájeno</div>
-            <div class="text-3xl font-bold text-gray-700">{{ project_status_counts.Nezahájeno|default:0 }}</div>
-          </div>
 
-          <!-- Probíhá -->
-          <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="text-xs font-semibold text-yellow-700 uppercase tracking-wide mb-1">Probíhá</div>
-            <div class="text-3xl font-bold text-yellow-600">{{ project_status_counts.Probíhá|default:0 }}</div>
-          </div>
+      <!-- Probíhá -->
+      <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="text-xs font-semibold text-yellow-700 uppercase tracking-wide mb-1">Probíhá</div>
+        <div class="text-3xl font-bold text-yellow-600">{{ project_status_counts.Probíhá|default:0 }}</div>
+      </div>
 
-          <!-- Hotovo -->
-          <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Hotovo</div>
-            <div class="text-3xl font-bold text-green-600">{{ project_status_counts.Hotovo|default:0 }}</div>
-          </div>
+      <!-- Hotovo -->
+      <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Hotovo</div>
+        <div class="text-3xl font-bold text-green-600">{{ project_status_counts.Hotovo|default:0 }}</div>
+      </div>
 
-          <!-- Celkem -->
-          <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Celkem</div>
-            <div class="text-3xl font-bold text-blue-600">{{ project_total_tasks|default:0 }}</div>
-          </div>
-        </div>
+      <!-- Celkem -->
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Celkem</div>
+        <div class="text-3xl font-bold text-blue-600">{{ project_total_tasks|default:0 }}</div>
       </div>
     </div>
   </div>
@@ -386,13 +386,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Toggle visibility using display style
       if (taskTable.style.display === 'none') {
         // Currently showing kanban, switch to table
-        taskTable.style.display = '';
+        taskTable.style.display = 'block';
         taskColumns.style.display = 'none';
         toggleBtn.textContent = '📊 Zobrazit Kanban';
       } else {
         // Currently showing table, switch to kanban
         taskTable.style.display = 'none';
-        taskColumns.style.display = '';
+        taskColumns.style.display = 'grid';
         toggleBtn.textContent = '📋 Zobrazit tabulku';
       }
     });
