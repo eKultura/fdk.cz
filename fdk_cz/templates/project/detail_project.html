@@ -16,12 +16,55 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
       <h2 class="text-xl font-semibold text-gray-800">✅ Úkoly projektu</h2>
       <div class="flex gap-3">
         <a href="novy-ukol/" class="btn btn-primary">＋ Nový úkol</a>
-        <button id="toggleView" class="btn btn-outline">📋 Přepnout zobrazení</button>
+        <button id="toggleView" class="btn btn-outline">📊 Zobrazit Kanban</button>
       </div>
     </div>
 
-    <!-- Sloupcové zobrazení (defaultní) -->
-    <div id="task_columns" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Tabulkové zobrazení (výchozí) -->
+    <div id="task_table">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název</th>
+            <th>Status</th>
+            <th class="hidden md:table-cell">Priorita</th>
+            <th>Přiřazeno</th>
+            <th class="hidden md:table-cell">Kategorie</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks_to_do %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_task' task.task_id %}"><strong>{{ task.title }}</strong></a>
+            </td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-medium
+                {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+                {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ task.status|default:"Nezahájeno" }}
+              </span>
+            </td>
+            <td class="hidden md:table-cell">{{ task.priority }}</td>
+            <td>{{ task.assigned.username|default:"–" }}</td>
+            <td class="hidden md:table-cell">{{ task.category.name|default:"–" }}</td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_task' task.task_id %}">👁️ Detail</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="data-table-empty">Žádné úkoly k zobrazení</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sloupcové zobrazení (kanban) -->
+    <div id="task_columns" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Nezahájeno / Ke zpracování -->
       <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg p-4">
         <h3 class="font-bold text-gray-700 mb-3 flex items-center">
@@ -102,49 +145,6 @@ Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middo
           {% endfor %}
         </div>
       </div>
-    </div>
-
-    <!-- Tabulkové zobrazení -->
-    <div id="task_table" class="hidden">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Název</th>
-            <th>Status</th>
-            <th class="hidden md:table-cell">Priorita</th>
-            <th>Přiřazeno</th>
-            <th class="hidden md:table-cell">Kategorie</th>
-            <th class="text-right">Akce</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for task in tasks_to_do %}
-          <tr>
-            <td>
-              <a href="{% url 'detail_task' task.task_id %}"><strong>{{ task.title }}</strong></a>
-            </td>
-            <td>
-              <span class="px-2 py-1 rounded text-xs font-medium
-                {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
-                {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
-                {% else %}bg-gray-100 text-gray-700{% endif %}">
-                {{ task.status|default:"Nezahájeno" }}
-              </span>
-            </td>
-            <td class="hidden md:table-cell">{{ task.priority }}</td>
-            <td>{{ task.assigned.username|default:"–" }}</td>
-            <td class="hidden md:table-cell">{{ task.category.name|default:"–" }}</td>
-            <td class="text-right">
-              <div class="data-table-actions">
-                <a href="{% url 'detail_task' task.task_id %}">👁️ Detail</a>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="6" class="data-table-empty">Žádné úkoly k zobrazení</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
   </div>
 
@@ -385,11 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
       taskTable.classList.toggle('hidden');
       taskColumns.classList.toggle('hidden');
 
-      // Update button text
-      if (taskTable.classList.contains('hidden')) {
-        toggleBtn.textContent = '📋 Přepnout zobrazení';
+      // Update button text based on current view
+      if (taskColumns.classList.contains('hidden')) {
+        // Showing table view
+        toggleBtn.textContent = '📊 Zobrazit Kanban';
       } else {
-        toggleBtn.textContent = '📊 Přepnout zobrazení';
+        // Showing kanban view
+        toggleBtn.textContent = '📋 Zobrazit tabulku';
       }
     });
   } else {

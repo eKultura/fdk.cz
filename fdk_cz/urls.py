@@ -29,7 +29,7 @@ from fdk_cz.views.project import create_category, create_document, create_task, 
 
 from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 
-from fdk_cz.views.user import login, logout, user_profile, registration, user_settings
+from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 
 from fdk_cz.views.warehouse import (
     all_stores,
@@ -102,9 +102,10 @@ urlpatterns = (
     path('prihlaseni/', login, name='login_cs'),
     path('odhlaseni/', logout, name='logout_cs'),
     path('registrace/', registration, name='registration_cs'),
-    path('profil/', user_profile, name='user_profile'),   
-    path('profil/nastaveni/', user_settings, name='user_settings'),   
-         
+    path('profil/', user_profile, name='user_profile'),
+    path('profil/nastaveni/', user_settings, name='user_settings'),
+    path('profil/nastaveni/modul/<int:module_id>/toggle/', toggle_module_visibility, name='toggle_module_visibility'),
+
     # EN
     path('login/', login, name='login_en'),
     path('logout/', logout, name='logout_en'),  
