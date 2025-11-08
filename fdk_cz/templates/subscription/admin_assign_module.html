@@ -4,15 +4,15 @@
 {% block header_subtitle %}Administrace předplatných{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div style="max-width: 800px; margin: 0 auto;">
 
   <div class="content-card">
     <form method="POST">
       {% csrf_token %}
 
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Uživatel</label>
-        <select name="user_id" class="form-control" required>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">👤 Uživatel</label>
+        <select name="user_id" class="form-control" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
           <option value="">-- Vyberte uživatele --</option>
           {% for user in users %}
             <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
@@ -20,9 +20,9 @@
         </select>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Modul</label>
-        <select name="module_id" class="form-control" required>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">📦 Modul</label>
+        <select name="module_id" class="form-control" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
           <option value="">-- Vyberte modul --</option>
           {% for module in modules %}
             <option value="{{ module.module_id }}">
@@ -33,28 +33,28 @@
         </select>
       </div>
 
-      <div class="mb-6">
-        <label class="block text-sm font-semibold mb-2">Typ předplatného</label>
+      <div style="margin-bottom: 2rem;">
+        <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: #1e293b;">📅 Typ předplatného</label>
 
-        <div class="space-y-2">
-          <label class="flex items-center">
-            <input type="radio" name="subscription_type" value="monthly" class="mr-2">
-            <span>📅 Měsíční (30 dní)</span>
+        <div style="display: grid; gap: 0.75rem;">
+          <label style="display: flex; align-items: center; padding: 0.75rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
+            <input type="radio" name="subscription_type" value="monthly" style="margin-right: 0.75rem; width: 18px; height: 18px;">
+            <span style="font-weight: 500; color: #1e293b;">📅 Měsíční (30 dní)</span>
           </label>
 
-          <label class="flex items-center">
-            <input type="radio" name="subscription_type" value="yearly" checked class="mr-2">
-            <span>📆 Roční (365 dní)</span>
+          <label style="display: flex; align-items: center; padding: 0.75rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
+            <input type="radio" name="subscription_type" value="yearly" checked style="margin-right: 0.75rem; width: 18px; height: 18px;">
+            <span style="font-weight: 500; color: #1e293b;">📆 Roční (365 dní)</span>
           </label>
 
-          <label class="flex items-center">
-            <input type="radio" name="subscription_type" value="lifetime" class="mr-2">
-            <span>♾️ Doživotní (bez omezení)</span>
+          <label style="display: flex; align-items: center; padding: 0.75rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
+            <input type="radio" name="subscription_type" value="lifetime" style="margin-right: 0.75rem; width: 18px; height: 18px;">
+            <span style="font-weight: 500; color: #1e293b;">♾️ Doživotní (bez omezení)</span>
           </label>
         </div>
       </div>
 
-      <div class="flex gap-4">
+      <div style="display: flex; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
         <button type="submit" class="btn btn-primary">✅ Přiřadit modul</button>
         <a href="{% url 'admin_modules' %}" class="btn btn-outline">← Zpět</a>
       </div>
@@ -63,9 +63,9 @@
   </div>
 
   <!-- Info Box -->
-  <div class="content-card mt-6">
-    <h3 class="text-lg font-semibold mb-4">ℹ️ Důležité informace</h3>
-    <ul class="list-disc pl-6 space-y-2 text-sm">
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">ℹ️ Důležité informace</h3>
+    <ul style="list-style: disc; padding-left: 1.5rem; display: grid; gap: 0.75rem; color: #475569; font-size: 0.875rem; line-height: 1.6;">
       <li>Přiřazení modulu uživateli nevyžaduje platbu</li>
       <li>Předplatné bude označeno jako "admin_assigned"</li>
       <li>U měsíčního předplatného platnost vyprší za 30 dní</li>

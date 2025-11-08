@@ -1,97 +1,81 @@
-{% extends 'warehouse/base.html' %}
+{% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Skladové hospodářství" %} |  FDK.cz{% endblock %}
-
-{% block meta %}
-<meta name="description" content="{% trans 'Seznam všech skladů dostupných uživateli.' %}">
-{% endblock %}
-
-
-{% block nav1 %}FDK.cz{% endblock %}
-{% block nav2 %}Sklady{% endblock %}
+{% block title %}{% trans "Skladové hospodářství" %} | FDK.cz{% endblock %}
+{% block header_title %}📦 {% trans "Skladové hospodářství" %}{% endblock %}
+{% block header_subtitle %}{% trans "Přehled všech skladových položek a zásob" %}{% endblock %}
 
 {% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
 
+  <!-- Action Buttons -->
+  <div style="margin-bottom: 1.5rem;">
+    <a href="{% url 'create_item' %}" class="btn btn-primary">➕ {% trans "Přidat novou položku" %}</a>
+  </div>
 
-      <div class="row">
-        <div class="col-12">
-          <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-              <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-                <h6 class="text-white text-capitalize ps-3">Sklad </h6>
-              </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-
-
-<!-- Skladové položky -->
-<div class="container-fluid py-4">
-    <div class="card">
-        <div class="card-header pb-0">
-            <h6>{% trans "Seznam skladových položek" %}</h6>
-        </div>
-        <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Název" %}</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">{% trans "Popis" %}</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Množství" %}</th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">{% trans "Cena za jednotku" %}</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">{% trans "Lokalita" %}</th>
-                            <th class="text-secondary opacity-7"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in items %}
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <h6 class="mb-0 text-sm">{{ item.name }}</h6>
-                                    <p class="text-xs text-secondary mb-0">{{ item.code }}</p>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-xs text-secondary mb-0">{{ item.description }}</p>
-                            </td>
-                            <td class="align-middle text-center text-sm">
-                                <span class="text-xs font-weight-bold">{{ item.quantity }}</span>
-                            </td>
-                            <td class="align-middle text-center text-sm">
-                                <span class="text-xs font-weight-bold">{{ item.unit_price }} Kč</span>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">{{ item.location }}</p>
-                            </td>
-                            <td class="align-middle">
-                                <a href="{% url 'edit_item' item.id %}" class="text-secondary font-weight-bold text-xs">{% trans "Editovat" %}</a> |
-                                <a href="{% url 'delete_item' item.id %}" class="text-danger font-weight-bold text-xs">{% trans "Smazat" %}</a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center text-gray-500">
-                                {% trans "Žádné skladové položky nenalezeny." %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <!-- Warehouse Items Table -->
+  <div class="content-card">
+    <div style="margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">{% trans "Seznam skladových položek" %}</h3>
     </div>
-    <a class="btn bg-gradient-dark mb-0 mt-2" href="javascript:;"><i class="material-symbols-rounded text-sm">add</i>&nbsp;&nbsp;Přidat novou položku</a>
-</div>
 
-
+    {% if items %}
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Název" %}</th>
+            <th>{% trans "Kód" %}</th>
+            <th>{% trans "Popis" %}</th>
+            <th style="text-align: center;">{% trans "Množství" %}</th>
+            <th style="text-align: right;">{% trans "Cena za jednotku" %}</th>
+            <th>{% trans "Lokalita" %}</th>
+            <th style="text-align: center;">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: #1e293b;">{{ item.name }}</div>
+            </td>
+            <td>
+              <div style="font-family: monospace; font-size: 0.875rem; color: #64748b;">{{ item.code }}</div>
+            </td>
+            <td>
+              <div style="color: #64748b; font-size: 0.875rem;">{{ item.description|truncatewords:10 }}</div>
+            </td>
+            <td style="text-align: center;">
+              <span style="padding: 4px 12px; background: {% if item.quantity > 50 %}#d1fae5{% elif item.quantity > 10 %}#fef3c7{% else %}#fee2e2{% endif %}; color: {% if item.quantity > 50 %}#065f46{% elif item.quantity > 10 %}#92400e{% else %}#991b1b{% endif %}; border-radius: 12px; font-weight: 600; font-size: 0.875rem;">
+                {{ item.quantity }}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <div style="font-weight: 600; color: #1e293b;">{{ item.unit_price|floatformat:2 }} Kč</div>
+            </td>
+            <td>
+              <div style="color: #475569; font-size: 0.875rem;">📍 {{ item.location|default:"—" }}</div>
+            </td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                <a href="{% url 'edit_item' item.id %}" class="btn btn-sm btn-outline" style="padding: 4px 12px;">✏️ {% trans "Upravit" %}</a>
+                <a href="{% url 'delete_item' item.id %}" class="btn btn-sm btn-outline" style="padding: 4px 12px; color: #dc2626; border-color: #dc2626;" onclick="return confirm('{% trans "Opravdu chcete smazat tuto položku?" %}')">🗑️ {% trans "Smazat" %}</a>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{% trans "Žádné skladové položky" %}</h3>
+      <p style="color: #64748b; margin-bottom: 1.5rem;">{% trans "Zatím nemáte žádné položky ve skladu." %}</p>
+      <a href="{% url 'create_item' %}" class="btn btn-primary">➕ {% trans "Přidat první položku" %}</a>
+    </div>
+    {% endif %}
+  </div>
 
-
+</div>
 {% endblock %}
