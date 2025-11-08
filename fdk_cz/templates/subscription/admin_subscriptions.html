@@ -4,12 +4,12 @@
 {% block header_subtitle %}Přehled všech uživatelských předplatných{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
+<div style="max-width: 1400px; margin: 0 auto;">
 
   <!-- Filter Buttons -->
-  <div class="content-card mb-6">
-    <div class="flex gap-4 items-center">
-      <span class="font-semibold">Filtr:</span>
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: #1e293b;">Filtr:</span>
       <a href="{% url 'admin_subscriptions' %}"
          class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
         Všechna
@@ -27,39 +27,39 @@
 
   <!-- Subscriptions Table -->
   <div class="content-card">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">Seznam předplatných</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin: 0;">Seznam předplatných</h2>
       <a href="{% url 'admin_assign_module' %}" class="btn btn-primary">
         ➕ Přiřadit modul
       </a>
     </div>
 
     {% if subscriptions %}
-      <div class="overflow-x-auto">
-        <table class="w-full">
+      <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="data-table" style="min-width: 800px;">
           <thead>
-            <tr class="border-b">
-              <th class="text-left p-3">Uživatel</th>
-              <th class="text-left p-3">Modul</th>
-              <th class="text-left p-3">Typ</th>
-              <th class="text-left p-3">Způsob platby</th>
-              <th class="text-left p-3">Začátek</th>
-              <th class="text-left p-3">Konec</th>
-              <th class="text-left p-3">Stav</th>
+            <tr>
+              <th>Uživatel</th>
+              <th>Modul</th>
+              <th>Typ</th>
+              <th>Způsob platby</th>
+              <th>Začátek</th>
+              <th>Konec</th>
+              <th style="text-align: center;">Stav</th>
             </tr>
           </thead>
           <tbody>
             {% for sub in subscriptions %}
-              <tr class="border-b hover:bg-gray-50">
-                <td class="p-3">
-                  <div class="font-semibold">{{ sub.user.username }}</div>
-                  <div class="text-sm text-gray-600">{{ sub.user.email }}</div>
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #1e293b;">{{ sub.user.username }}</div>
+                  <div style="font-size: 0.875rem; color: #64748b;">{{ sub.user.email }}</div>
                 </td>
-                <td class="p-3">
-                  <div class="font-semibold">{{ sub.module.display_name }}</div>
-                  <div class="text-xs text-gray-500">{{ sub.module.name }}</div>
+                <td>
+                  <div style="font-weight: 600; color: #1e293b;">{{ sub.module.display_name }}</div>
+                  <div style="font-size: 0.75rem; color: #94a3b8;">{{ sub.module.name }}</div>
                 </td>
-                <td class="p-3">
+                <td>
                   {% if sub.subscription_type == 'monthly' %}
                     📅 Měsíční
                   {% elif sub.subscription_type == 'yearly' %}
@@ -70,9 +70,9 @@
                     {{ sub.subscription_type }}
                   {% endif %}
                 </td>
-                <td class="p-3">
+                <td>
                   {% if sub.payment_method == 'admin_assigned' %}
-                    <span class="text-purple-600">👤 Admin přiřazení</span>
+                    <span style="color: #7c3aed; font-weight: 500;">👤 Admin přiřazení</span>
                   {% elif sub.payment_method == 'card' %}
                     💳 Karta
                   {% elif sub.payment_method == 'bank_transfer' %}
@@ -81,23 +81,23 @@
                     {{ sub.payment_method|default:"N/A" }}
                   {% endif %}
                 </td>
-                <td class="p-3">
-                  <div class="text-sm">{{ sub.start_date|date:"d.m.Y" }}</div>
-                  <div class="text-xs text-gray-500">{{ sub.start_date|date:"H:i" }}</div>
+                <td>
+                  <div>{{ sub.start_date|date:"d.m.Y" }}</div>
+                  <div style="font-size: 0.75rem; color: #94a3b8;">{{ sub.start_date|date:"H:i" }}</div>
                 </td>
-                <td class="p-3">
+                <td>
                   {% if sub.end_date %}
-                    <div class="text-sm">{{ sub.end_date|date:"d.m.Y" }}</div>
-                    <div class="text-xs text-gray-500">{{ sub.end_date|date:"H:i" }}</div>
+                    <div>{{ sub.end_date|date:"d.m.Y" }}</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">{{ sub.end_date|date:"H:i" }}</div>
                   {% else %}
-                    <span class="text-gray-400">—</span>
+                    <span style="color: #cbd5e1;">—</span>
                   {% endif %}
                 </td>
-                <td class="p-3">
+                <td style="text-align: center;">
                   {% if sub.is_active %}
-                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">✅ Aktivní</span>
+                    <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1fae5; color: #065f46; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">✅ Aktivní</span>
                   {% else %}
-                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-sm">❌ Neaktivní</span>
+                    <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #fee2e2; color: #991b1b; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">❌ Neaktivní</span>
                   {% endif %}
                 </td>
               </tr>
@@ -106,24 +106,25 @@
         </table>
       </div>
 
-      <div class="mt-4 text-sm text-gray-600">
-        Celkem: <strong>{{ subscriptions.count }}</strong> předplatných
+      <div style="margin-top: 1rem; font-size: 0.875rem; color: #64748b;">
+        Celkem: <strong style="color: #1e293b;">{{ subscriptions.count }}</strong> předplatných
       </div>
 
     {% else %}
-      <div class="text-center py-12 text-gray-500">
-        <p class="text-lg mb-2">📭 Žádná předplatná nenalezena</p>
+      <div style="text-align: center; padding: 4rem 2rem; color: #94a3b8;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+        <p style="font-size: 1.125rem; margin-bottom: 0.5rem; color: #64748b;">Žádná předplatná nenalezena</p>
         {% if status_filter %}
-          <p class="text-sm">Zkuste změnit filtr nebo <a href="{% url 'admin_assign_module' %}" class="text-blue-600 hover:underline">přiřadit nový modul</a>.</p>
+          <p style="font-size: 0.875rem;">Zkuste změnit filtr nebo <a href="{% url 'admin_assign_module' %}" style="color: #3b82f6; text-decoration: none;">přiřadit nový modul</a>.</p>
         {% else %}
-          <p class="text-sm">Začněte <a href="{% url 'admin_assign_module' %}" class="text-blue-600 hover:underline">přiřazením modulu uživateli</a>.</p>
+          <p style="font-size: 0.875rem;">Začněte <a href="{% url 'admin_assign_module' %}" style="color: #3b82f6; text-decoration: none;">přiřazením modulu uživateli</a>.</p>
         {% endif %}
       </div>
     {% endif %}
   </div>
 
   <!-- Back Link -->
-  <div class="mt-6">
+  <div style="margin-top: 1.5rem;">
     <a href="{% url 'admin_modules' %}" class="btn btn-outline">← Zpět na správu modulů</a>
   </div>
 

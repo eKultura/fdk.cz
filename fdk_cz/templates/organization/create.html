@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Nová organizace | FDK.cz{% endblock %}
+{% block header_title %}🏢 Vytvoření nové organizace{% endblock %}
+{% block header_subtitle %}Založte svou organizaci a začněte spravovat projekty{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+
+  <!-- Info Card -->
+  <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e40af; margin-bottom: 0.75rem;">
+      ℹ️ Co to znamená vytvořit organizaci?
+    </h3>
+    <ul style="color: #1e40af; font-size: 0.875rem; line-height: 1.8; margin-left: 1.5rem;">
+      <li>Budete správcem organizace s plnými právy</li>
+      <li>Můžete přidávat další členy</li>
+      <li>Organizace slouží pro sdílení projektů, smluv a dalších dat</li>
+      <li>Organizace bude po vytvoření okamžitě aktivní</li>
+    </ul>
+  </div>
+
+  <!-- Form -->
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_name" class="form-label">Název organizace <span class="required">*</span></label>
+        <input
+          type="text"
+          id="id_name"
+          name="name"
+          class="form-control"
+          value="{{ name|default:'' }}"
+          placeholder="Zadejte název organizace"
+          required
+        >
+        <div class="form-help">Oficiální název vaší firmy nebo organizace</div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_ico" class="form-label">IČO <span class="required">*</span></label>
+        <input
+          type="text"
+          id="id_ico"
+          name="ico"
+          class="form-control"
+          value="{{ ico|default:'' }}"
+          placeholder="12345678"
+          pattern="[0-9]{8}"
+          maxlength="8"
+          required
+        >
+        <div class="form-help">Identifikační číslo organizace (8 číslic)</div>
+      </div>
+
+      <div style="background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1.5rem 0;">
+        <p style="font-size: 0.875rem; color: #92400e; margin: 0;">
+          <strong>⚠️ Upozornění:</strong> Po vytvoření organizace již nebude možné změnit IČO. Ujistěte se, že je zadáno správně.
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; margin-top: 2rem;">
+        <a href="{% url 'organization_dashboard' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">✓ Vytvořit organizaci</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

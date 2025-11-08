@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Moje organizace | FDK.cz{% endblock %}
+{% block header_title %}🏢 Moje organizace{% endblock %}
+{% block header_subtitle %}Správa organizací a členství{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Action Button -->
+  <div style="margin-bottom: 2rem; display: flex; justify-content: flex-end;">
+    <a href="{% url 'create_organization' %}" class="btn btn-primary">
+      ➕ Vytvořit novou organizaci
+    </a>
+  </div>
+
+  <!-- Owned Organizations -->
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      👑 Organizace, které spravuji
+    </h3>
+
+    {% if owned_organizations %}
+      <div style="display: grid; gap: 1rem;">
+        {% for org in owned_organizations %}
+        <div style="border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); transition: all 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div style="flex: 1;">
+              <h4 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
+                {{ org.name }}
+              </h4>
+              <div style="font-size: 0.875rem; color: #64748b;">
+                IČO: <span style="font-weight: 500; color: #3b82f6;">{{ org.ico }}</span> ·
+                Vytvořeno: {{ org.created_at|date:"d.m.Y" }}
+              </div>
+            </div>
+            <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-primary btn-sm">
+              Detail →
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🏢</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">Zatím nespravujete žádnou organizaci</p>
+        <a href="{% url 'create_organization' %}" class="btn btn-primary">
+          Vytvořit první organizaci
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Member Organizations -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      👥 Organizace, kde jsem členem
+    </h3>
+
+    {% if member_organizations %}
+      <div style="display: grid; gap: 1rem;">
+        {% for org in member_organizations %}
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; background: white; transition: all 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div style="flex: 1;">
+              <h4 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
+                {{ org.name }}
+              </h4>
+              <div style="font-size: 0.875rem; color: #64748b;">
+                IČO: {{ org.ico }} · Vlastník: {{ org.created_by.username }}
+              </div>
+            </div>
+            <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-outline btn-sm">
+              Detail →
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px;">
+        <p style="color: #64748b;">Nejste členem žádné organizace</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

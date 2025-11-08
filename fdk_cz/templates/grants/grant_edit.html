@@ -374,7 +374,7 @@ function archiveGrant() {
 function duplicateGrant() {
   if (confirm('Chcete vytvořit kopii této výzvy?')) {
     // Přesměrování na create s předvyplněnými daty
-    window.location.href = '{% url "create_grant" %}?duplicate={{ grant.grant_id }}';
+    window.location.href = '{% url "grant_create" %}?duplicate={{ grant.grant_id }}';
   }
 }
 

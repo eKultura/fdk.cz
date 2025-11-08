@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}{{ organization.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 {{ organization.name }}{% endblock %}
+{% block header_subtitle %}IČO: {{ organization.ico }} · Vytvořeno: {{ organization.created_at|date:"d.m.Y" }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Back Button -->
+  <div style="margin-bottom: 2rem;">
+    <a href="{% url 'organization_dashboard' %}" class="btn btn-outline">
+      ← Zpět na přehled organizací
+    </a>
+  </div>
+
+  <!-- Organization Info -->
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      📋 Informace o organizaci
+    </h3>
+    <div class="data-table-simple">
+      <div class="data-row">
+        <span class="data-label">Název</span>
+        <span class="data-value">{{ organization.name }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">IČO</span>
+        <span class="data-value">{{ organization.ico }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Vlastník</span>
+        <span class="data-value">{{ organization.created_by.username }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Datum vytvoření</span>
+        <span class="data-value">{{ organization.created_at|date:"d.m.Y H:i" }}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Počet členů</span>
+        <span class="data-value">{{ memberships.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Members -->
+  <div class="content-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+        👥 Členové organizace
+      </h3>
+      {% if is_admin %}
+      <button onclick="document.getElementById('addMemberForm').style.display='block'" class="btn btn-primary btn-sm">
+        ➕ Přidat člena
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- Add Member Form (Hidden by default) -->
+    {% if is_admin %}
+    <div id="addMemberForm" style="display: none; background: #f8fafc; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+      <h4 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Přidat nového člena</h4>
+      <form method="POST" action="{% url 'add_organization_member' organization.organization_id %}">
+        {% csrf_token %}
+        <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label for="id_user_id" class="form-label">Vyberte uživatele</label>
+            <input type="number" id="id_user_id" name="user_id" class="form-control" placeholder="ID uživatele" required>
+            <div class="form-help">Zadejte ID uživatele, kterého chcete přidat</div>
+          </div>
+          <div class="form-group">
+            <label for="id_role" class="form-label">Role</label>
+            <select id="id_role" name="role" class="form-control">
+              <option value="member">Člen</option>
+              <option value="admin">Admin</option>
+              <option value="viewer">Pozorovatel</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button type="submit" class="btn btn-primary btn-sm">Přidat</button>
+          <button type="button" onclick="document.getElementById('addMemberForm').style.display='none'" class="btn btn-outline btn-sm">Zrušit</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Members List -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Uživatel</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Datum přidání</th>
+          {% if is_admin %}<th class="text-right">Akce</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in memberships %}
+        <tr>
+          <td>
+            <strong>{{ membership.user.username }}</strong>
+            {% if membership.user == organization.created_by %}
+              <span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 0.5rem;">Vlastník</span>
+            {% endif %}
+          </td>
+          <td>{{ membership.user.email|default:"—" }}</td>
+          <td>
+            <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
+              {% if membership.role == 'admin' %}background: #dbeafe; color: #1e40af;
+              {% elif membership.role == 'member' %}background: #f0fdf4; color: #166534;
+              {% else %}background: #f8fafc; color: #64748b;{% endif %}">
+              {{ membership.get_role_display }}
+            </span>
+          </td>
+          <td>{{ membership.joined_at|date:"d.m.Y" }}</td>
+          {% if is_admin %}
+          <td class="text-right">
+            {% if membership.user != organization.created_by %}
+            <a href="{% url 'remove_organization_member' organization.organization_id membership.user.id %}"
+               onclick="return confirm('Opravdu chcete odebrat tohoto člena?')"
+               class="btn btn-sm btn-outline danger">
+              🗑️ Odebrat
+            </a>
+            {% else %}
+            <span style="color: #94a3b8; font-size: 0.875rem;">Nelze odebrat</span>
+            {% endif %}
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="{% if is_admin %}5{% else %}4{% endif %}" class="data-table-empty">Žádní členové</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<style>
+  .data-table-simple {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .data-row:last-child {
+    border-bottom: none;
+  }
+
+  .data-row:hover {
+    background: #f8fafc;
+  }
+
+  .data-label {
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .data-value {
+    color: #1e293b;
+  }
+</style>
+{% endblock %}
