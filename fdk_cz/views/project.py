@@ -204,20 +204,47 @@ def manage_project_users(request, project_id):
 
     if request.method == 'POST':
         form = add_user_form(request.POST)
-        
-        if form.is_valid():
-            new_member = ProjectUser(
-                project=project_instance,
-                user=form.cleaned_data['user'],
-                role=form.cleaned_data['role']
-            )
 
-            if new_member.role:  # Kontrola, že role není prázdná
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            role = form.cleaned_data['role']
+            send_invitation = form.cleaned_data.get('send_invitation', True)
+
+            try:
+                # Pokus o nalezení uživatele podle emailu
+                user = User.objects.get(email=email)
+
+                # Kontrola, zda už není v projektu (oprava duplikátní chyby)
+                if ProjectUser.objects.filter(project=project_instance, user=user).exists():
+                    messages.warning(request, f"Uživatel {user.username} ({email}) je již členem projektu.")
+                    return redirect('manage_project_users', project_id=project_id)
+
+                # Přidat uživatele do projektu
+                new_member = ProjectUser(
+                    project=project_instance,
+                    user=user,
+                    role=role
+                )
                 new_member.save()
-                messages.success(request, "Uživatel byl úspěšně přidán do projektu.")
+
+                # Odeslat notifikaci existujícímu uživateli
+                if send_invitation:
+                    from fdk_cz.utils.email import send_project_member_added_email
+                    send_project_member_added_email(user, project_instance, role, request.user)
+
+                messages.success(request, f"Uživatel {user.username} byl úspěšně přidán do projektu.")
                 return redirect('manage_project_users', project_id=project_id)
-            else:
-                messages.error(request, "Vyberte prosím roli pro nového uživatele.")
+
+            except User.DoesNotExist:
+                # Uživatel neexistuje - poslat pozvánku
+                if send_invitation:
+                    from fdk_cz.utils.email import send_project_invitation_email
+                    send_project_invitation_email(email, project_instance, role, request.user)
+                    messages.info(request, f"Uživatel s emailem {email} není registrován. Byla mu odeslána pozvánka k registraci a přidání do projektu.")
+                else:
+                    messages.error(request, f"Uživatel s emailem {email} není registrován. Zaškrtněte 'Odeslat pozvánku emailem' pro zaslání registrační pozvánky.")
+
+                return redirect('manage_project_users', project_id=project_id)
     else:
         form = add_user_form()
 

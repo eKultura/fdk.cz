@@ -1,0 +1,24 @@
+NOVÝ ÚKOL - FDK.cz
+================================================================================
+
+Dobrý den {{ user.username }},
+
+Uživatel {{ assigned_by.username }} vám přiřadil úkol v projektu "{{ project.name }}".
+
+ÚKOL: {{ task.title }}
+-----------------
+{% if task.description %}{{ task.description }}
+
+{% endif %}Priorita: {{ task.priority }}
+Status: {{ task.status }}
+{% if task.due_date %}Termín: {{ task.due_date|date:"d.m.Y" }}{% endif %}
+
+ZOBRAZIT ÚKOL:
+-----------------
+{{ task_url }}
+
+---
+Nechcete dostávat notifikace? Upravte nastavení: {{ site_url }}/nastaveni/notifikace/
+
+Tento email byl odeslán automaticky systémem FDK.cz.
+© 2025 FDK.cz | {{ site_url }}

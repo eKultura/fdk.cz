@@ -1,0 +1,23 @@
+POZVÁNKA DO PROJEKTU - FDK.cz
+================================================================================
+
+Dobrý den,
+
+Uživatel {{ invited_by.username }} vás zve k připojení do projektu "{{ project.name }}" na platformě FDK.cz.
+
+DETAILY PROJEKTU:
+-----------------
+Název: {{ project.name }}
+Vaše role: {{ role.role_name }}
+{% if project.description %}Popis: {{ project.description }}{% endif %}
+
+PRO PŘIJETÍ POZVÁNKY:
+--------------------
+Zaregistrujte se na FDK.cz:
+{{ site_url }}/auth/register/?email={{ email }}
+
+Pokud již máte účet, můžete se jednoduše přihlásit.
+
+---
+Tento email byl odeslán automaticky systémem FDK.cz.
+© 2025 FDK.cz | {{ site_url }}

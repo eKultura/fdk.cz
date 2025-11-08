@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load functions %}
 
 {% block title %}{{ article.title }} | Nápověda | FDK.cz{% endblock %}
 {% block header_title %}{{ article.title }}{% endblock %}
@@ -50,9 +51,14 @@ Modul: {{ article.module.display_name }}
     </div>
 
     <!-- Content (Markdown rendered as HTML) -->
-    <div class="prose prose-lg max-w-none">
+    <div style="max-width: none;">
       <div class="markdown-content">
-        {{ article.content|linebreaks }}
+        {{ article.content|markdown }}
+      </div>
+      <div style="margin-top: 1.5rem; padding: 1rem; background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px;">
+        <p style="font-size: 0.875rem; color: #1e40af; margin: 0;">
+          💡 <strong>Tip:</strong> Dokumentace podporuje plné <strong>Markdown</strong> formátování. Použijte <code>**tučně**</code>, <code>*kurzíva*</code>, <code>`kód`</code>, <code>[odkaz](url)</code>, <code># Nadpisy</code> a další.
+        </p>
       </div>
     </div>
 
