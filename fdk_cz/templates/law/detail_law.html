@@ -1,114 +1,114 @@
 {% extends "base.html" %}
 {% block title %}{{ law.title }} - {{ law.number }} | FDK.cz{% endblock %}
-{% block header_title %}=Ú {{ law.title }}{% endblock %}
-{% block header_subtitle %}{{ law.number }} " Úinnost od: {{ law.effective_date }}{% endblock %}
+{% block header_title %}ğŸ“š {{ law.title }}{% endblock %}
+{% block header_subtitle %}{{ law.number }} Â· ÃšÄinnost od: {{ law.effective_date }}{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div style="max-width: 1200px; margin: 0 auto;">
   <!-- Actions -->
-  <div class="mb-6 flex justify-between items-center">
-    <div class="flex gap-3">
-      <span class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium text-sm">
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; gap: 0.75rem;">
+      <span style="padding: 8px 12px; background: #eff6ff; color: #1e40af; border-radius: 8px; font-weight: 500; font-size: 0.875rem;">
         {{ law.category }}
       </span>
-      <span class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium text-sm">
-        Rok vydání: {{ law.year }}
+      <span style="padding: 8px 12px; background: #f8fafc; color: #475569; border-radius: 8px; font-weight: 500; font-size: 0.875rem;">
+        Rok vydÃ¡nÃ­: {{ law.year }}
       </span>
     </div>
-    <div class="flex gap-3">
-      <a href="{% url 'law_list' %}" class="btn btn-outline"> Zpt na seznam</a>
-      <button class="btn btn-secondary" onclick="window.print()">=¨ Tisk</button>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'law_list' %}" class="btn btn-outline">â† ZpÄ›t na seznam</a>
+      <button class="btn btn-outline" onclick="window.print()">ğŸ–¨ï¸ Tisk</button>
     </div>
   </div>
 
   <!-- Summary -->
-  <div class="content-card mb-6">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-      <span class="text-2xl mr-2">=Ë</span>
-      Shrnutí
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; display: flex; align-items: center;">
+      <span style="margin-right: 0.5rem;">ğŸ“</span>
+      ShrnutÃ­
     </h3>
-    <div class="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-4">
-      <p class="text-gray-800 leading-relaxed">{{ law.summary }}</p>
+    <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem;">
+      <p style="color: #1e293b; line-height: 1.6;">{{ law.summary }}</p>
     </div>
   </div>
 
   <!-- Key Sections -->
-  <div class="content-card mb-6">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-      <span class="text-2xl mr-2">=Ö</span>
-      Klíová ustanovení
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; display: flex; align-items: center;">
+      <span style="margin-right: 0.5rem;">ğŸ“‹</span>
+      KlÃ­ÄovÃ¡ ustanovenÃ­
     </h3>
 
     {% if law.key_sections %}
-      <div class="space-y-4">
+      <div style="display: grid; gap: 1rem;">
         {% for section in law.key_sections %}
-          <div class="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-start">
-              <div class="bg-blue-600 text-white font-bold px-3 py-1 rounded mr-3 text-sm">
+          <div style="background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; transition: box-shadow 0.2s;">
+            <div style="display: flex; align-items: flex-start;">
+              <div style="background: #3b82f6; color: white; font-weight: 600; padding: 6px 12px; border-radius: 6px; margin-right: 0.75rem; font-size: 0.875rem;">
                 {{ section.section }}
               </div>
-              <div class="flex-1">
-                <h4 class="font-semibold text-gray-800 mb-2">{{ section.title }}</h4>
-                <p class="text-gray-700 leading-relaxed text-sm">{{ section.content }}</p>
+              <div style="flex: 1;">
+                <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{{ section.title }}</h4>
+                <p style="color: #475569; line-height: 1.6; font-size: 0.875rem;">{{ section.content }}</p>
               </div>
             </div>
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <div class="text-center py-8 bg-gray-50 rounded-lg">
-        <p class="text-gray-500">}ádná klíová ustanovení nejsou aktuáln k dispozici.</p>
+      <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px;">
+        <p style="color: #64748b;">Å½Ã¡dnÃ¡ klÃ­ÄovÃ¡ ustanovenÃ­ nejsou aktuÃ¡lnÄ› k dispozici.</p>
       </div>
     {% endif %}
   </div>
 
   <!-- AI Assistant Call-to-Action -->
-  <div class="content-card bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-    <div class="flex items-center justify-between">
+  <div class="content-card" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #bfdbfe; margin-bottom: 1.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
-          <span class="text-2xl mr-2">></span>
-          Máte otázku k tomuto zákonu?
+        <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; display: flex; align-items: center;">
+          <span style="margin-right: 0.5rem;">ğŸ¤–</span>
+          MÃ¡te otÃ¡zku k tomuto zÃ¡konu?
         </h3>
-        <p class="text-gray-700">AI asistent vám pomo~e s vıkladem a aplikací právních pYedpiso na váa konkrétní pYípad.</p>
+        <p style="color: #475569;">AI asistent vÃ¡m pomÅ¯Å¾e s vÃ½kladem a aplikacÃ­ prÃ¡vnÃ­ch pÅ™edpisÅ¯ na vÃ¡Å¡ konkrÃ©tnÃ­ pÅ™Ã­pad.</p>
       </div>
-      <div class="ml-4">
-        <a href="{% url 'create_query' %}" class="btn btn-primary whitespace-nowrap">
-          =¬ Zeptat se AI
+      <div style="margin-left: 1rem;">
+        <a href="{% url 'create_query' %}" class="btn btn-primary" style="white-space: nowrap;">
+          ğŸ¤– Zeptat se AI
         </a>
       </div>
     </div>
   </div>
 
   <!-- Metadata -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-4">
-      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">íslo zákona</div>
-      <div class="font-bold text-gray-800">{{ law.number }}</div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+      <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">ÄŒÃ­slo zÃ¡kona</div>
+      <div style="font-weight: 600; color: #1e293b;">{{ law.number }}</div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-lg p-4">
-      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Rok vydání</div>
-      <div class="font-bold text-gray-800">{{ law.year }}</div>
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+      <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Rok vydÃ¡nÃ­</div>
+      <div style="font-weight: 600; color: #1e293b;">{{ law.year }}</div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-lg p-4">
-      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Úinnost</div>
-      <div class="font-bold text-gray-800">{{ law.effective_date }}</div>
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+      <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">ÃšÄinnost</div>
+      <div style="font-weight: 600; color: #1e293b;">{{ law.effective_date }}</div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-lg p-4">
-      <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Kategorie</div>
-      <div class="font-bold text-gray-800">{{ law.category }}</div>
+    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+      <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Kategorie</div>
+      <div style="font-weight: 600; color: #1e293b;">{{ law.category }}</div>
     </div>
   </div>
 
   <!-- External Links -->
-  <div class="content-card mt-6">
-    <h3 class="text-lg font-semibold text-gray-800 mb-3">= Externí odkazy</h3>
-    <div class="space-y-2">
-      <a href="https://www.zakonyprolidi.cz/" target="_blank" class="block text-blue-600 hover:underline">
-        ’ Zobrazit na Zákony pro lidi
+  <div class="content-card">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">ğŸ”— ExternÃ­ odkazy</h3>
+    <div style="display: grid; gap: 0.5rem;">
+      <a href="https://www.zakonyprolidi.cz/" target="_blank" style="color: #3b82f6; text-decoration: none; display: block; padding: 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+        â†’ Zobrazit na ZÃ¡kony pro lidi
       </a>
-      <a href="https://www.sbirka.cz/" target="_blank" class="block text-blue-600 hover:underline">
-        ’ Zobrazit ve Sbírce zákono
+      <a href="https://www.sbirka.cz/" target="_blank" style="color: #3b82f6; text-decoration: none; display: block; padding: 0.5rem; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+        â†’ Zobrazit ve SbÃ­rce zÃ¡konÅ¯
       </a>
     </div>
   </div>
