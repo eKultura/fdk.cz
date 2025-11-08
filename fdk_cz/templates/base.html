@@ -48,9 +48,6 @@
           <a href="{% url 'index' %}" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
             <span class="nav-icon">&#127968;</span> Domů
           </a>
-          <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-            <span class="nav-icon">&#128202;</span> Dashboard
-          </a>
           <a href="{% url 'pravo_ai' %}" class="nav-item {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">
             <span class="nav-icon">&#9889;</span> Právo AI
           </a>
