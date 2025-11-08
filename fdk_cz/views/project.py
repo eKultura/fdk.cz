@@ -39,7 +39,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 @login_required
 def new_project(request):
     if request.method == 'POST':
-        form = project_form(request.POST)
+        form = project_form(request.POST, user=request.user)
         if form.is_valid():
             new_project = form.save(commit=False)
             new_project.owner = request.user
@@ -62,9 +62,10 @@ def new_project(request):
                     description=f'Základní kategorie: {category_name}'
                 )
 
+            messages.success(request, f'Projekt "{new_project.name}" byl úspěšně vytvořen.')
             return redirect('index_project_cs')
     else:
-        form = project_form()
+        form = project_form(user=request.user)
     return render(request, 'project/new_project.html', {'form': form})
 
 

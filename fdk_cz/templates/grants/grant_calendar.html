@@ -431,7 +431,7 @@
         <div class="timeline-item" data-provider="{{ grant.provider|default:'Neznámý' }}" data-type="{{ grant.type|default:'dotace' }}">
           <div class="timeline-label">
             <div>
-              <a href="{% url 'detail_grant' grant.grant_id %}" class="grant-title">
+              <a href="{% url 'grant_detail' grant.grant_id %}" class="grant-title">
                 {{ grant.title }}
               </a>
               <div class="grant-meta">
@@ -449,7 +449,7 @@
               {% if grant.start_month <= m and m <= grant.end_month %}
                 <div class="timeline-bar active {% if grant.start_month == m %}start{% endif %} {% if grant.end_month == m %}end{% endif %} {% if grant.start_month == grant.end_month %}single{% endif %} {% now 'm'|add:0 as current_month %}{% if m == current_month %}today{% endif %}" 
                      title="{{ grant.title }} - {% if grant.start_date %}{{ grant.start_date|date:'d.m.Y' }}{% endif %}{% if grant.end_date %} až {{ grant.end_date|date:'d.m.Y' }}{% endif %}"
-                     onclick="window.location.href='{% url 'detail_grant' grant.grant_id %}'">
+                     onclick="window.location.href='{% url 'grant_detail' grant.grant_id %}'">
                 </div>
               {% else %}
                 <div class="timeline-bar"></div>

@@ -11,12 +11,27 @@ class project_form(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ['name', 'description', 'url', 'start_date', 'end_date']
+        fields = ['name', 'description', 'organization', 'url', 'start_date', 'end_date']
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Název projektu'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis projektu'}),
-            'url': forms.TextInput(attrs={'placeholder': 'URL projektu'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Název projektu', 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis projektu', 'class': 'form-control'}),
+            'organization': forms.Select(attrs={'class': 'form-control'}),
+            'url': forms.TextInput(attrs={'placeholder': 'URL projektu', 'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        # Filtrovat organizace pouze na ty, kde je uživatel členem nebo vlastníkem
+        if user:
+            from django.db.models import Q
+            from fdk_cz.models import Organization
+            self.fields['organization'].queryset = Organization.objects.filter(
+                Q(created_by=user) | Q(members=user)
+            ).distinct()
+            self.fields['organization'].required = False
+            self.fields['organization'].empty_label = "Bez organizace (osobní projekt)"
 
 
 

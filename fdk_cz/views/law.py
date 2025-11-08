@@ -9,7 +9,47 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from functools import wraps
 import json
+
+
+def law_module_required(view_func):
+    """
+    Decorator pro kontrolu přístupu k modulu AI Právo
+    Přístup mají:
+    - Superadmini
+    - Uživatelé s aktivním předplatným modulu AI Právo
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, 'Pro přístup k modulu AI Právo se musíte přihlásit.')
+            return redirect('login_cs')
+
+        # Superadmin má vždy přístup
+        if request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+
+        # Kontrola aktivního předplatného modulu AI Právo
+        from fdk_cz.models import UserModuleSubscription, Module
+        try:
+            law_module = Module.objects.get(name='ai_law')
+            has_subscription = UserModuleSubscription.objects.filter(
+                user=request.user,
+                module=law_module,
+                is_active=True
+            ).exists()
+
+            if has_subscription:
+                return view_func(request, *args, **kwargs)
+        except Module.DoesNotExist:
+            pass
+
+        # Uživatel nemá přístup
+        messages.warning(request, 'Modul AI Právo je v testovacím režimu. Přístup mají pouze superadmini a uživatelé s aktivním předplatným.')
+        return redirect('index')
+
+    return wrapper
 
 
 # Dummy models pro demonstraci - nahraďte skutečnými modely
@@ -57,30 +97,55 @@ def law_dashboard(request):
     """Hlavní dashboard AI Práva"""
     context = {
         'page_title': 'AI Právo Dashboard',
+        'testing_mode': True,  # Indikátor testovacího režimu
     }
-    
+
+    # Kontrola přístupu
+    has_access = False
     if request.user.is_authenticated:
-        # Statistiky pro přihlášené uživatele
+        if request.user.is_superuser:
+            has_access = True
+            context['access_reason'] = 'superadmin'
+        else:
+            # Kontrola předplatného
+            from fdk_cz.models import UserModuleSubscription, Module
+            try:
+                law_module = Module.objects.get(name='ai_law')
+                has_subscription = UserModuleSubscription.objects.filter(
+                    user=request.user,
+                    module=law_module,
+                    is_active=True
+                ).exists()
+                if has_subscription:
+                    has_access = True
+                    context['access_reason'] = 'subscription'
+            except Module.DoesNotExist:
+                pass
+
+    context['has_access'] = has_access
+
+    if request.user.is_authenticated and has_access:
+        # Statistiky pro přihlášené uživatele s přístupem
         context.update({
             'total_queries': 47,  # LawQuery.objects.filter(user=request.user).count()
             'pending_queries': 3,  # LawQuery.objects.filter(user=request.user, status='pending').count()
             'completed_queries': 44,  # LawQuery.objects.filter(user=request.user, status='completed').count()
             'total_documents': 12,  # LawDocument.objects.filter(user=request.user).count()
-            
+
             # Nejnovější aktivity
             'recent_queries': [
                 {'id': 1, 'title': 'Analýza kupní smlouvy', 'status': 'completed', 'created_at': timezone.now()},
                 {'id': 2, 'title': 'Právní precedent - pracovní právo', 'status': 'processing', 'created_at': timezone.now()},
                 {'id': 3, 'title': 'Generování žaloby', 'status': 'completed', 'created_at': timezone.now()},
             ],
-            
+
             'recent_documents': [
                 {'id': 1, 'title': 'Smlouva o dílo - IT služby', 'document_type': 'contract', 'created_at': timezone.now()},
                 {'id': 2, 'title': 'Analýza obchodních podmínek', 'document_type': 'analysis', 'created_at': timezone.now()},
             ]
         })
     else:
-        # Demo data pro nepřihlášené
+        # Demo data pro nepřihlášené nebo bez přístupu
         context.update({
             'demo_mode': True,
             'total_queries': 15632,
@@ -88,11 +153,12 @@ def law_dashboard(request):
             'completed_queries': 15385,
             'total_documents': 3456,
         })
-    
+
     return render(request, 'law/dashboard.html', context)
 
 
 @login_required
+@law_module_required
 def create_query(request):
     """Vytvoření nového AI dotazu"""
     if request.method == 'POST':
@@ -130,39 +196,39 @@ def create_query(request):
 
 
 @login_required
+@law_module_required
 def query_detail(request, query_id):
     """Detail AI dotazu"""
     # query = get_object_or_404(LawQuery, id=query_id, user=request.user)
-    
-    # Demo data
+
+    # Demo data - použití UTF-8 safe stringu
+    ai_response_text = (
+        "**Analýza kupní smlouvy dokončena**\n\n"
+        "Identifikoval jsem následující rizikové klauzule:\n\n"
+        "1. **Výhrada vlastnictví (čl. 4.2)** - Prodávající si vyhrazuje vlastnictví až do úplného zaplacení\n"
+        "2. **Omezení záruky (čl. 7.1)** - Záruka pouze 6 měsíců, což je pod zákonným minimem\n"
+        "3. **Jednostranné změny cen (čl. 3.4)** - Prodávající může změnit cenu bez souhlasu kupujícího\n\n"
+        "**Doporučené úpravy:**\n"
+        "- Prodloužit záruční dobu na 24 měsíců\n"
+        "- Omezit možnosti změny ceny\n"
+        "- Přidat sankce za prodlení s dodáním"
+    )
+
     query_data = {
         'id': query_id,
         'title': 'Analýza kupní smlouvy - rizikové klauzule',
         'question': 'Prosím analyzujte přiloženou kupní smlouvu a identifikujte potenciální rizika pro kupujícího.',
         'status': 'completed',
-        'ai_response': '''
-**Analýza kupní smlouvy dokončena**
-
-Identifikoval jsem následující rizikové klauzule:
-
-1. **Výhrada vlastnictví (čl. 4.2)** - Prodávající si vyhrazuje vlastnictví až do úplného zaplacení
-2. **Omezení záruky (čl. 7.1)** - Záruka pouze 6 měsíců, což je pod zákonným minimem
-3. **Jednostranné změny cen (čl. 3.4)** - Prodávající může změnit cenu bez souhlasu kupujícího
-
-**Doporučené úpravy:**
-- Prodloužit záruční dobu na 24 měsíců
-- Omezit možnosti změny ceny
-- Přidat sankce za prodlení s dodáním
-        ''',
+        'ai_response': ai_response_text,
         'created_at': timezone.now(),
         'updated_at': timezone.now(),
     }
-    
+
     context = {
         'page_title': 'Detail AI dotazu',
         'query': query_data,
     }
-    
+
     return render(request, 'law/detail_query.html', context)
 
 

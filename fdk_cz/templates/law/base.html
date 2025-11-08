@@ -54,7 +54,7 @@
           <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
           <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
           <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
-          <a href="{% url 'list_grants' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
+          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
         </div>
       </div>
       <a href="{% url 'pravo_ai' %}" class="nav-link law-ai {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Upravit firmu {{ company.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 Upravit B2B firmu{% endblock %}
+{% block header_subtitle %}{{ company.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Info Section -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0;">📋 Základní informace</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_name" class="form-label">Název firmy <span class="required">*</span></label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <p class="form-error">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Běžně používaný název firmy</div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_legal_name" class="form-label">Právní název</label>
+          {{ form.legal_name }}
+          {% if form.legal_name.errors %}
+            <p class="form-error">{{ form.legal_name.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Oficiální název dle OR</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_company_id_number" class="form-label">IČO</label>
+          {{ form.company_id_number }}
+          {% if form.company_id_number.errors %}
+            <p class="form-error">{{ form.company_id_number.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_tax_id" class="form-label">DIČ</label>
+          {{ form.tax_id }}
+          {% if form.tax_id.errors %}
+            <p class="form-error">{{ form.tax_id.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-top: 2rem;">📞 Kontaktní údaje</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_email" class="form-label">Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <p class="form-error">{{ form.email.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_phone" class="form-label">Telefon</label>
+          {{ form.phone }}
+          {% if form.phone.errors %}
+            <p class="form-error">{{ form.phone.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_website" class="form-label">Webové stránky</label>
+        {{ form.website }}
+        {% if form.website.errors %}
+          <p class="form-error">{{ form.website.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Address -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-top: 2rem;">📍 Adresa</h3>
+
+      <div class="form-group">
+        <label for="id_street" class="form-label">Ulice a č.p.</label>
+        {{ form.street }}
+        {% if form.street.errors %}
+          <p class="form-error">{{ form.street.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_city" class="form-label">Město</label>
+          {{ form.city }}
+          {% if form.city.errors %}
+            <p class="form-error">{{ form.city.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_postal_code" class="form-label">PSČ</label>
+          {{ form.postal_code }}
+          {% if form.postal_code.errors %}
+            <p class="form-error">{{ form.postal_code.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_country" class="form-label">Země</label>
+        {{ form.country }}
+        {% if form.country.errors %}
+          <p class="form-error">{{ form.country.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Additional Info -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-top: 2rem;">🏷️ Kategorizace</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_category" class="form-label">Kategorie</label>
+          {{ form.category }}
+          {% if form.category.errors %}
+            <p class="form-error">{{ form.category.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_organization" class="form-label">Organizace</label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="form-error">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+          <div class="form-help">Přiřaďte k organizaci</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_tags" class="form-label">Štítky</label>
+        {{ form.tags }}
+        {% if form.tags.errors %}
+          <p class="form-error">{{ form.tags.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Oddělte čárkami, např: "dodavatel, IT, software"</div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_notes" class="form-label">Poznámky</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}
+          <p class="form-error">{{ form.notes.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Interní poznámky o firmě</div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; margin-top: 2rem;">
+        <a href="{% url 'delete_b2b_company' company.company_id %}" class="btn btn-outline danger" onclick="return confirm('Opravdu chcete smazat tuto firmu?')">
+          🗑️ Smazat firmu
+        </a>
+        <div style="display: flex; gap: 0.75rem;">
+          <a href="{% url 'detail_b2b_company' company.company_id %}" class="btn btn-outline">Zrušit</a>
+          <button type="submit" class="btn btn-primary">✓ Uložit změny</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
