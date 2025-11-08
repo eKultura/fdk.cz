@@ -1,20 +1,51 @@
-{% extends 'warehouse/base.html' %}
+{% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ store.name }}{% endblock %}
-
-{% block meta %}
-<meta name="description" content="{% trans 'Detail skladu a jeho specifikace.' %}">
-{% endblock %}
+{% block title %}{{ store.name }} | FDK.cz{% endblock %}
+{% block header_title %}📦 {{ store.name }}{% endblock %}
+{% block header_subtitle %}{% trans "Detail skladu a jeho specifikace" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-semibold text-gray-700 mb-4">{{ store.name }}</h1>
-        <p class="text-gray-600 mb-6">{{ store.description }}</p>
-        <a href="{% url 'store_transactions' store.id %}" class="px-4 py-2 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-            {% trans "Zobrazit transakce" %}
-        </a>
+<div style="max-width: 1000px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem;">
+    <a href="{% url 'store_transactions' store.id %}" class="btn btn-primary">📊 {% trans "Zobrazit transakce" %}</a>
+    <a href="{% url 'all_stores' %}" class="btn btn-outline">← {% trans "Zpět na sklady" %}</a>
+  </div>
+
+  <!-- Store Details -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">ℹ️ {% trans "Informace o skladu" %}</h3>
+
+    <div style="display: grid; gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Název skladu" %}</div>
+        <div style="font-weight: 600; color: #1e293b; font-size: 1.125rem;">{{ store.name }}</div>
+      </div>
+
+      {% if store.description %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Popis" %}</div>
+        <div style="color: #1e293b; line-height: 1.6;">{{ store.description }}</div>
+      </div>
+      {% endif %}
+
+      {% if store.location %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Lokalita" %}</div>
+        <div style="color: #1e293b;">📍 {{ store.location }}</div>
+      </div>
+      {% endif %}
+
+      {% if store.capacity %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Kapacita" %}</div>
+        <div style="color: #1e293b; font-weight: 600;">{{ store.capacity }} {% trans "jednotek" %}</div>
+      </div>
+      {% endif %}
     </div>
+  </div>
+
 </div>
 {% endblock %}
