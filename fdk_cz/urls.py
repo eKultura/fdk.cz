@@ -31,6 +31,7 @@ from fdk_cz.views.test import  create_test, create_test_error, create_test_resul
 
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
+from fdk_cz.views.organization import organization_dashboard, create_organization, organization_detail, add_member, remove_member
 
 from fdk_cz.views.warehouse import (
     all_stores,
@@ -108,6 +109,13 @@ urlpatterns = (
     path('profil/nastaveni/', user_settings, name='user_settings'),
     path('profil/nastaveni/modul/<int:module_id>/toggle/', toggle_module_visibility, name='toggle_module_visibility'),
 
+    # Organization paths
+    path('organizace/', organization_dashboard, name='organization_dashboard'),
+    path('organizace/nova/', create_organization, name='create_organization'),
+    path('organizace/<int:organization_id>/', organization_detail, name='organization_detail'),
+    path('organizace/<int:organization_id>/pridat-clena/', add_member, name='add_organization_member'),
+    path('organizace/<int:organization_id>/odebrat-clena/<int:user_id>/', remove_member, name='remove_organization_member'),
+
     # EN
     path('login/', login, name='login_en'),
     path('logout/', logout, name='logout_en'),  
@@ -137,7 +145,7 @@ urlpatterns = (
 
 
 	# PRAVO
-    path('', law_dashboard, name='pravo_ai'),
+    path('pravo-ai/', law_dashboard, name='pravo_ai'),
     path('dotaz/', create_query, name='law_query'),
     path('dotaz/<int:query_id>/', query_detail, name='law_query_detail'),
     path('zakony/', law_list, name='law_list'),

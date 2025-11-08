@@ -60,6 +60,10 @@
             <span class="nav-icon">&#9889;</span>
             Právo AI
           </a>
+          <a href="{% url 'organization_dashboard' %}" class="nav-item {% if 'organization' in request.resolver_match.url_name %}active{% endif %}">
+            <span class="nav-icon">&#127970;</span>
+            Organizace
+          </a>
         </div>
 
         <!-- Management -->
