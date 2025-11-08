@@ -26,13 +26,15 @@
       <!-- Popis -->
       <div class="form-group">
         <label for="id_description" class="form-label">Popis</label>
-        <textarea id="id_description" name="description" rows="4"
-                  placeholder="Detailní popis úkolu, co je potřeba udělat..."
+        <textarea id="id_description" name="description" rows="6"
+                  placeholder="Detailní popis úkolu, co je potřeba udělat...
+
+Podporuje Markdown: **tučně**, *kurzíva*, `kód`, [odkaz](url), # Nadpisy"
                   class="form-control">{{ form.description.value|default:task.description|default:'' }}</textarea>
         {% if form.description.errors %}
           <p class="form-error">{{ form.description.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Popište co je potřeba udělat a jaké jsou očekávané výsledky</div>
+        <div class="form-help">Popište co je potřeba udělat a jaké jsou očekávané výsledky. Podporuje <strong>Markdown</strong> formátování (např. **tučně**, *kurzíva*, `kód`, [odkaz](url)).</div>
       </div>
 
       <!-- Kategorie -->

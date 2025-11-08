@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load functions %}
 
 {% block title %}{{ task.title }} | Detail úkolu | FDK.cz{% endblock %}
 {% block header_title %}📋 {{ task.title }}{% endblock %}
@@ -15,38 +16,65 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<style>
+  .task-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .task-info-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .task-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+  }
+  .task-actions-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>
+
+<div style="max-width: 1200px; margin: 0 auto;">
 
   <!-- Context Info -->
-  <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
-    <div class="flex items-center gap-2 text-sm">
-      <span class="text-gray-600">📍 Kontext:</span>
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+      <span style="color: #64748b;">📍 Kontext:</span>
       {% if project %}
-        <span class="font-medium text-gray-800">Úkol</span>
-        <span class="text-gray-400">→</span>
-        <a href="{% url 'detail_project' project.project_id %}" class="text-blue-600 hover:underline font-medium">
+        <span style="font-weight: 500; color: #1e293b;">Úkol</span>
+        <span style="color: #9ca3af;">→</span>
+        <a href="{% url 'detail_project' project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
           {{ project.name }}
         </a>
         {% if project.organization %}
-          <span class="text-gray-400">→</span>
-          <span class="text-gray-600">{{ project.organization.name }}</span>
+          <span style="color: #9ca3af;">→</span>
+          <span style="color: #64748b;">{{ project.organization.name }}</span>
         {% endif %}
       {% elif task.organization %}
-        <span class="font-medium text-gray-800">Úkol</span>
-        <span class="text-gray-400">→</span>
-        <span class="text-gray-600">{{ task.organization.name }}</span>
+        <span style="font-weight: 500; color: #1e293b;">Úkol</span>
+        <span style="color: #9ca3af;">→</span>
+        <span style="color: #64748b;">{{ task.organization.name }}</span>
       {% else %}
-        <span class="font-medium text-gray-800">Osobní úkol</span>
+        <span style="font-weight: 500; color: #1e293b;">Osobní úkol</span>
       {% endif %}
     </div>
   </div>
 
   <div class="content-card">
     <!-- Základní údaje o úkolu - karty -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">ℹ️ Informace o úkolu</h3>
+    <div style="margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">ℹ️ Informace o úkolu</h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="task-info-grid">
         <!-- Status -->
         <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
           <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Status</div>
@@ -131,10 +159,13 @@
 
     <!-- Popis -->
     {% if task.description %}
-    <div class="mb-6 pb-6 border-t border-gray-200 pt-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-3">📝 Popis úkolu</h3>
-      <div class="bg-gray-50 border-l-4 border-blue-500 rounded-lg p-4">
-        <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ task.description }}</p>
+    <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">📝 Popis úkolu</h3>
+      <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem;">
+        <div style="color: #1e293b; line-height: 1.7;">{{ task.description|markdown }}</div>
+        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #e2e8f0; font-size: 0.75rem; color: #94a3b8;">
+          💡 Tip: Tento popis podporuje <strong>Markdown</strong> formátování
+        </div>
       </div>
     </div>
     {% endif %}
@@ -174,10 +205,10 @@
     {% endif %}
 
     <!-- Akční tlačítka -->
-    <div class="flex flex-wrap justify-between items-center gap-3 pt-6 border-t-2 border-gray-300">
-      <div class="flex flex-wrap gap-3">
+    <div class="task-actions">
+      <div class="task-actions-left">
         {% if task.status != "Hotovo" %}
-        <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" class="inline">
+        <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" style="display: inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-success">✅ Označit jako hotové</button>
         </form>
@@ -186,7 +217,8 @@
         <a href="{% url 'edit_task' task.task_id %}" class="btn btn-primary">✏️ Upravit úkol</a>
 
         <a href="{% url 'delete_task' task.task_id %}"
-           class="btn btn-danger"
+           class="btn btn-outline"
+           style="color: #dc2626; border-color: #dc2626;"
            onclick="return confirm('Opravdu chcete smazat tento úkol?');">
           🗑️ Smazat úkol
         </a>
@@ -203,57 +235,41 @@
   </div>
 
   <!-- Komentáře -->
-  <div class="content-card mt-6">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">💬 Komentáře</h3>
+  <div class="content-card" style="margin-top: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">💬 Komentáře</h3>
 
     {% if comments %}
-    <div class="space-y-4 mb-6">
+    <div style="margin-bottom: 1.5rem;">
       {% for comment in comments %}
-        {% if comment.user == user %}
-          <!-- Můj komentář (vpravo) -->
-          <div class="flex justify-end">
-            <div class="max-w-[75%]">
-              <div class="bg-blue-600 text-white rounded-lg rounded-tr-none p-4 shadow-md">
-                <p class="leading-relaxed">{{ comment.comment }}</p>
-              </div>
-              <div class="text-xs text-gray-500 mt-1 text-right">
-                <span class="font-medium">{{ comment.user.username }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
-              </div>
-            </div>
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+            <span style="font-weight: 600; color: #1e293b;">{{ comment.user.username|default:"Anonym" }}</span>
+            <span style="font-size: 0.75rem; color: #9ca3af;">{{ comment.posted|date:"d.m.Y H:i" }}</span>
           </div>
-        {% else %}
-          <!-- Komentář od jiného uživatele (vlevo) -->
-          <div class="flex justify-start">
-            <div class="max-w-[75%]">
-              <div class="bg-gray-100 border-2 border-gray-200 rounded-lg rounded-tl-none p-4 shadow-sm">
-                <p class="leading-relaxed text-gray-800">{{ comment.comment }}</p>
-              </div>
-              <div class="text-xs text-gray-500 mt-1">
-                <span class="font-medium">{{ comment.user.username|default:"Anonym" }}</span> • {{ comment.posted|date:"d.m.Y H:i" }}
-              </div>
-            </div>
+          <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px; padding: 0.75rem;">
+            <div style="font-size: 0.875rem; color: #374151; line-height: 1.6;">{{ comment.comment|markdown }}</div>
           </div>
-        {% endif %}
+        </div>
       {% endfor %}
     </div>
     {% else %}
-    <p class="text-gray-500 mb-6 text-center py-8 bg-gray-50 rounded-lg">
-      <span class="text-4xl block mb-2">💭</span>
-      Zatím žádné komentáře. Buďte první, kdo přidá komentář!
-    </p>
+    <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px; margin-bottom: 1.5rem;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">💭</span>
+      <p style="color: #64748b;">Zatím žádné komentáře. Buďte první, kdo přidá komentář!</p>
+    </div>
     {% endif %}
 
     <!-- Přidat komentář -->
-    <form method="post" action="{% url 'detail_task' task.task_id %}" class="border-t-2 border-gray-200 pt-6">
+    <form method="post" action="{% url 'detail_task' task.task_id %}" style="border-top: 2px solid #e2e8f0; padding-top: 1.5rem;">
       {% csrf_token %}
       <div class="form-group">
         <label for="id_comment" class="form-label">Přidat komentář</label>
         <textarea name="comment" id="id_comment" rows="4"
                   class="form-control"
                   placeholder="Napište váš komentář k tomuto úkolu..."></textarea>
-        <div class="form-help">Komentáře jsou viditelné pro všechny členy týmu</div>
+        <div class="form-help">Komentáře jsou viditelné pro všechny členy týmu. Podporujeme <strong>Markdown</strong> formátování (např. **tučně**, *kurzíva*, `kód`, [odkaz](url)).</div>
       </div>
-      <div class="flex justify-end">
+      <div style="display: flex; justify-content: flex-end;">
         <button type="submit" class="btn btn-primary">💬 Přidat komentář</button>
       </div>
     </form>
