@@ -27,14 +27,14 @@ Vedeno uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ pro
     </div>
 
     <!-- Tabulkové zobrazení (výchozí) -->
-    <div id="task_table">
-      <table class="data-table">
+    <div id="task_table" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+      <table class="data-table" style="min-width: 600px;">
         <thead>
           <tr>
             <th>Název</th>
             <th>Status</th>
             <th class="hidden md:table-cell">Priorita</th>
-            <th>Přiřazeno</th>
+            <th class="hidden sm:table-cell">Přiřazeno</th>
             <th class="hidden md:table-cell">Kategorie</th>
             <th class="text-right">Akce</th>
           </tr>
@@ -54,7 +54,7 @@ Vedeno uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ pro
               </span>
             </td>
             <td class="hidden md:table-cell">{{ task.priority }}</td>
-            <td>{{ task.assigned.username|default:"–" }}</td>
+            <td class="hidden sm:table-cell">{{ task.assigned.username|default:"–" }}</td>
             <td class="hidden md:table-cell">{{ task.category.name|default:"–" }}</td>
             <td class="text-right">
               <div class="data-table-actions">

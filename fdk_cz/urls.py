@@ -102,6 +102,7 @@ urlpatterns = (
     # Auth paths
     path('prihlaseni/', login, name='login_cs'),
     path('odhlaseni/', logout, name='logout_cs'),
+    path('odhlaseni/', logout, name='logout'),  # Alias for backward compatibility
     path('registrace/', registration, name='registration_cs'),
     path('profil/', user_profile, name='user_profile'),
     path('profil/nastaveni/', user_settings, name='user_settings'),

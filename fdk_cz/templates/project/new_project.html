@@ -6,59 +6,60 @@
 {% block header_subtitle %}Založte nový projekt a vyplňte základní informace{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
+<div style="max-width: 800px; margin: 0 auto;">
   <div class="content-card">
     <form method="POST">
       {% csrf_token %}
 
-      <!-- Název -->
-      <div class="form-group mb-4">
-        <label for="id_name" class="block text-sm font-medium text-gray-700">
-          Název projektu <span class="text-red-600">*</span>
-        </label>
-        <input type="text" id="id_name" name="name" required
-               value="{{ form.name.value|default_if_none:'' }}"
-               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
-        {% if form.name.errors %}
-          <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
-        {% endif %}
+      <!-- Název a URL -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_name" class="form-label">Název projektu <span class="required">*</span></label>
+          <input type="text" id="id_name" name="name" required
+                 value="{{ form.name.value|default_if_none:'' }}"
+                 class="form-control"
+                 placeholder="Zadejte název projektu">
+          {% if form.name.errors %}
+            <div class="form-error">{{ form.name.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="id_url" class="form-label">Web projektu</label>
+          <input type="url" id="id_url" name="url"
+                 value="{{ form.url.value|default_if_none:'' }}"
+                 class="form-control"
+                 placeholder="https://">
+          <div class="form-help">Volitelné - adresa webových stránek projektu</div>
+        </div>
       </div>
 
       <!-- Popis -->
-      <div class="form-group mb-4">
-        <label for="id_description" class="block text-sm font-medium text-gray-700">Popis projektu</label>
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis projektu</label>
         <textarea id="id_description" name="description" rows="4"
-                  class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default_if_none:'' }}</textarea>
+                  class="form-control"
+                  placeholder="Popište účel, cíle a zaměření projektu...">{{ form.description.value|default_if_none:'' }}</textarea>
+        <div class="form-help">Stručný popis projektu pro lepší orientaci členů týmu</div>
       </div>
 
-      <!-- URL -->
-      <div class="form-group mb-4">
-        <label for="id_url" class="block text-sm font-medium text-gray-700">
-          URL projektu <span class="text-gray-400">(nepovinné)</span>
-        </label>
-        <input type="url" id="id_url" name="url"
-               value="{{ form.url.value|default_if_none:'' }}"
-               class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
-      </div>
-
-      <!-- Data -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label for="id_start_date" class="block text-sm font-medium text-gray-700">Datum začátku</label>
+      <!-- Datum začátku a konce -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_start_date" class="form-label">Datum začátku</label>
           <input type="date" id="id_start_date" name="start_date"
                  value="{{ form.start_date.value|default_if_none:'' }}"
-                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                 class="form-control">
         </div>
-        <div>
-          <label for="id_end_date" class="block text-sm font-medium text-gray-700">Datum konce</label>
+        <div class="form-group">
+          <label for="id_end_date" class="form-label">Datum konce</label>
           <input type="date" id="id_end_date" name="end_date"
                  value="{{ form.end_date.value|default_if_none:'' }}"
-                 class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                 class="form-control">
         </div>
       </div>
 
       <!-- Akce -->
-      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; margin-top: 1.5rem;">
         <a href="{% url 'index_project_cs' %}" class="btn btn-outline">Zrušit</a>
         <button type="submit" class="btn btn-primary">💾 Vytvořit projekt</button>
       </div>
