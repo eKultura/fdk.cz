@@ -25,7 +25,7 @@ from fdk_cz.views.grants import (
 
 from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
-from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, new_project, manage_project_users, remove_project_user, task_management, update_task_status
+from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, remove_project_user, task_management, update_task_status
 
 from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 
@@ -171,6 +171,7 @@ urlpatterns = (
     # Projects - management of users and roles
     path('projekt/<int:project_id>/uzivatele/', manage_project_users, name='manage_project_users'),
     path('projekt/<int:project_id>/uzivatel/<int:user_id>/smazat/', remove_project_user, name='remove_project_user'),
+    path('projekt/<int:project_id>/pridat-se/', join_project, name='join_project'),
     path('projekt/<int:project_id>/novy-milnik/', create_milestone, name='create_milestone'),
     path('projekt/<int:project_id>/milnik/edit/<int:milestone_id>/', edit_milestone, name='edit_milestone'),
     path('projekt/<int:project_id>/milnik/<int:milestone_id>/smazat/', delete_milestone, name='delete_milestone'),
