@@ -1,25 +1,28 @@
-{% extends 'contract/base.html' %}
+{% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Nový kontrakt{% endblock %}
-
-
-
-    {% block meta %}
-    
-    
-    {% endblock %}
-
-
+{% block title %}Nová smlouva | FDK.cz{% endblock %}
+{% block header_title %}📄 Nová smlouva{% endblock %}
+{% block header_subtitle %}Vytvoření smlouvy pro projekt {{ project.name }}{% endblock %}
 
 {% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
 
-<h1>Nový kontrakt pro projekt {{ project.name }}</h1>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Přidat kontrakt</button>
-</form>
+  <div class="content-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
 
+      <div style="display: grid; gap: 1.5rem;">
+        {{ form.as_p }}
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <button type="submit" class="btn btn-primary">✓ Vytvořit smlouvu</button>
+        <a href="{% url 'list_contracts' %}" class="btn btn-outline">← Zpět na seznam</a>
+      </div>
+    </form>
+  </div>
+
+</div>
 {% endblock %}
 

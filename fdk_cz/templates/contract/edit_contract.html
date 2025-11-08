@@ -1,26 +1,28 @@
-
-{% extends 'contract/base.html' %}
+{% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Editace kontraktu{% endblock %}
-
-
-
-    {% block meta %}
-    
-    
-    {% endblock %}
-
-
+{% block title %}Upravit smlouvu | FDK.cz{% endblock %}
+{% block header_title %}📝 Úprava smlouvy{% endblock %}
+{% block header_subtitle %}{{ contract.name }}{% endblock %}
 
 {% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
 
-<h1>Editace kontraktu: {{ contract.name }}</h1>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Uložit změny</button>
-</form>
+  <div class="content-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
 
+      <div style="display: grid; gap: 1.5rem;">
+        {{ form.as_p }}
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <button type="submit" class="btn btn-primary">✓ Uložit změny</button>
+        <a href="{% url 'detail_contract' contract.pk %}" class="btn btn-outline">← Zpět na detail</a>
+      </div>
+    </form>
+  </div>
+
+</div>
 {% endblock %}
 
