@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Seznam rizik | FDK.cz{% endblock %}
+{% block header_title %}⚠️ Seznam rizik{% endblock %}
+{% block header_subtitle %}Přehled identifikovaných rizik a jejich řízení{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+  <div class="content-card">
+    {% if risks %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název rizika</th>
+            <th>Kategorie</th>
+            <th style="text-align: center;">Závažnost</th>
+            <th style="text-align: center;">Pravděpodobnost</th>
+            <th style="text-align: center;">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for risk in risks %}
+          <tr>
+            <td><strong>{{ risk.name }}</strong></td>
+            <td>{{ risk.category|default:"—" }}</td>
+            <td style="text-align: center;">{{ risk.severity|default:"—" }}</td>
+            <td style="text-align: center;">{{ risk.probability|default:"—" }}</td>
+            <td style="text-align: center;">
+              <a href="#" class="btn btn-sm btn-outline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+        <p style="color: #64748b;">Zatím nejsou žádná rizika k zobrazení.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

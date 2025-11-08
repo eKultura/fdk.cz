@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Nové oddělení | FDK.cz{% endblock %}
+{% block header_title %}🏢 Nové oddělení{% endblock %}
+{% block header_subtitle %}Vytvoření nového oddělení v organizaci{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <button type="submit" class="btn btn-primary">✓ Vytvořit oddělení</button>
+        <a href="javascript:history.back()" class="btn btn-outline">← Zpět</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
