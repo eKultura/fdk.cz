@@ -24,8 +24,10 @@ class list_form(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if user:
             # Zobrazí pouze projekty, kde je uživatel členem
-            user_projects = project_user.objects.filter(user=user).values_list('project', flat=True)
-            self.fields['project'].queryset = project.objects.filter(pk__in=user_projects)
+            user_projects = ProjectUser.objects.filter(user=user).values_list('project', flat=True)
+            self.fields['project'].queryset = Project.objects.filter(pk__in=user_projects)
+            self.fields['project'].required = False
+            self.fields['project'].empty_label = "-- Osobní seznam (bez projektu) --"
 
 
 
