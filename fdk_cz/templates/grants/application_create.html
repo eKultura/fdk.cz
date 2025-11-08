@@ -238,7 +238,7 @@
       ← Zpět na granty
     </a>
     <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
-    <a href="{% url 'detail_grant' grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
+    <a href="{% url 'grant_detail' grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
       {{ grant.title|truncatewords:5 }}
     </a>
   </nav>
@@ -379,7 +379,7 @@
         <button type="submit" class="btn btn-primary">
           📄 Odeslat žádost
         </button>
-        <a href="{% url 'detail_grant' grant.grant_id %}" class="btn btn-outline">
+        <a href="{% url 'grant_detail' grant.grant_id %}" class="btn btn-outline">
           ❌ Zrušit
         </a>
       </div>

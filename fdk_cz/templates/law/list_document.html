@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Moje dokumenty | FDK.cz{% endblock %}
+{% block header_title %}📄 Moje dokumenty{% endblock %}
+{% block header_subtitle %}Právní dokumenty a analýzy{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <span style="font-weight: 600; color: #1e293b;">Filtr:</span>
+      <a href="{% url 'law_documents' %}" class="btn btn-outline btn-sm">Vše</a>
+      {% for type_code, type_name in document_types %}
+      <a href="{% url 'law_documents' %}?type={{ type_code }}" class="btn btn-outline btn-sm">{{ type_name }}</a>
+      {% endfor %}
+    </div>
+    <a href="{% url 'law_query' %}" class="btn btn-primary">
+      ➕ Nový dokument
+    </a>
+  </div>
+
+  <!-- Documents List -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1.5rem;">
+      Seznam dokumentů ({{ documents|length }})
+    </h3>
+
+    {% if documents %}
+      <div style="display: grid; gap: 1rem;">
+        {% for doc in documents %}
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; transition: all 0.2s; background: white;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+            <div style="flex: 1;">
+              <h4 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
+                {{ doc.title }}
+              </h4>
+              <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #f1f5f9; color: #475569; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+                  {% if doc.document_type == 'contract' %}📝 Smlouva
+                  {% elif doc.document_type == 'agreement' %}🤝 Dohoda
+                  {% elif doc.document_type == 'analysis' %}🔍 Analýza
+                  {% elif doc.document_type == 'opinion' %}💡 Stanovisko
+                  {% elif doc.document_type == 'template' %}📋 Šablona
+                  {% else %}{{ doc.document_type }}{% endif %}
+                </span>
+                {% if doc.status == 'completed' %}
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1fae5; color: #065f46; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+                  ✓ Dokončeno
+                </span>
+                {% elif doc.status == 'draft' %}
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+                  📝 Návrh
+                </span>
+                {% elif doc.status == 'processing' %}
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+                  ⏳ Zpracovává se
+                </span>
+                {% endif %}
+                <span style="font-size: 0.875rem; color: #94a3b8;">
+                  {{ doc.created_at|date:"d.m.Y H:i" }}
+                </span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <a href="#" class="btn btn-outline btn-sm">
+                👁️ Detail
+              </a>
+              <a href="#" class="btn btn-outline btn-sm">
+                📥 Stáhnout
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">📄</div>
+        <h3 style="font-size: 1.25rem; color: #64748b; margin-bottom: 1rem;">Zatím nemáte žádné dokumenty</h3>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">Vytvořte svůj první právní dokument pomocí AI asistenta</p>
+        <a href="{% url 'law_query' %}" class="btn btn-primary">
+          🤖 Vytvořit dokument s AI
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Link -->
+  <div style="margin-top: 1.5rem;">
+    <a href="{% url 'pravo_ai' %}" class="btn btn-outline">← Zpět na AI Právo</a>
+  </div>
+
+</div>
+{% endblock %}
