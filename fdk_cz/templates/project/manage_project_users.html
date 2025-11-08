@@ -6,52 +6,111 @@
 {% block header_subtitle %}Přidávejte a spravujte členy týmu pro projekt <strong>{{ project.name }}</strong>{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div style="max-width: 1000px; margin: 0 auto;">
 
-  <!-- Formulář pro přidání člena -->
-  <div class="content-card">
-    <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:1rem;">➕ Přidat člena do projektu</h3>
+  <!-- Sdílený odkaz projektu -->
+  <div class="content-card" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:1rem; color: #1e40af;">🔗 Sdílený odkaz projektu</h3>
+
+    <p style="color: #475569; margin-bottom: 1rem; font-size: 0.95rem;">
+      Sdílejte tento odkaz s kolegy - po přihlášení se automaticky přidají do projektu:
+    </p>
+
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <input type="text"
+             id="project_share_link"
+             readonly
+             value="{{ request.scheme }}://{{ request.get_host }}{% url 'join_project' project.project_id %}"
+             style="flex: 1; padding: 0.75rem; border: 2px solid #3b82f6; border-radius: 6px; font-family: monospace; font-size: 0.9rem; background: white;">
+      <button onclick="copyShareLink()"
+              class="btn btn-primary"
+              style="white-space: nowrap;">
+        📋 Zkopírovat
+      </button>
+    </div>
+
+    <p style="color: #64748b; margin-top: 0.75rem; font-size: 0.85rem;">
+      💡 Tento odkaz mohou použít i neregistrovaní uživatelé - budou vyzváni k registraci.
+    </p>
+  </div>
+
+  <!-- Formulář pro přidání člena přes email -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:1rem;">➕ Přidat člena přes email</h3>
 
     <form method="post" style="margin-bottom:1.5rem;">
       {% csrf_token %}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-        <div>
-          <label for="id_user" class="block text-sm font-medium text-gray-700">Uživatel</label>
-          {{ form.user }}
-        </div>
-        <div>
-          <label for="id_role" class="block text-sm font-medium text-gray-700">Role</label>
+
+      <div class="form-group">
+        <label for="id_email" class="form-label">{{ form.email.label }}</label>
+        {{ form.email }}
+        <div class="form-help">{{ form.email.help_text }}</div>
+        {% if form.email.errors %}
+          <div class="form-error">{{ form.email.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="id_role" class="form-label">{{ form.role.label }} <span class="required">*</span></label>
           {{ form.role }}
+          {% if form.role.errors %}
+            <div class="form-error">{{ form.role.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="opacity: 0;">Placeholder</label>
+          <div class="form-check">
+            {{ form.send_invitation }}
+            <label for="id_send_invitation" class="form-check-label">{{ form.send_invitation.label }}</label>
+          </div>
+          <div class="form-help">{{ form.send_invitation.help_text }}</div>
         </div>
       </div>
-      <div class="text-right mt-4">
-        <button type="submit" class="btn btn-primary">💾 Přidat uživatele</button>
+
+      <div style="text-align: right; margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary">✉️ Přidat uživatele</button>
       </div>
     </form>
   </div>
 
   <!-- Seznam členů projektu -->
-  <div class="content-card mt-6">
-    <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:1rem;">👥 Členové projektu</h3>
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-weight:600;font-size:1.1rem;margin-bottom:1rem;">👥 Členové projektu ({{ members.count }})</h3>
 
     {% if members %}
     <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead style="background:#f9fafb;">
+      <table class="data-table">
+        <thead>
           <tr>
-            <th class="px-4 py-2 text-left text-gray-600 font-semibold">Uživatel</th>
-            <th class="px-4 py-2 text-left text-gray-600 font-semibold">Role</th>
-            <th class="px-4 py-2 text-left text-gray-600 font-semibold text-center">Akce</th>
+            <th>Uživatel</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="text-center">Akce</th>
           </tr>
         </thead>
         <tbody>
           {% for member in members %}
-          <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-            <td class="px-4 py-2 text-gray-700">{{ member.user.username }}</td>
-            <td class="px-4 py-2 text-gray-700">{{ member.role.role_name }}</td>
-            <td class="px-4 py-2 text-center">
-              <a href="{% url 'remove_project_user' project.project_id member.user.id %}"
-                 class="text-red-600 hover:text-red-800 font-medium">🗑️ Odebrat</a>
+          <tr>
+            <td>
+              <strong>{{ member.user.username }}</strong>
+              {% if member.user == project.created_by %}
+                <span style="background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">👑 Vedoucí</span>
+              {% endif %}
+            </td>
+            <td style="color: #64748b; font-size: 0.9rem;">{{ member.user.email }}</td>
+            <td>{{ member.role.role_name }}</td>
+            <td class="text-center">
+              {% if member.user != project.created_by %}
+                <a href="{% url 'remove_project_user' project.project_id member.user.id %}"
+                   class="danger"
+                   onclick="return confirm('Opravdu chcete odebrat uživatele {{ member.user.username }} z projektu?');">
+                  🗑️ Odebrat
+                </a>
+              {% else %}
+                <span style="color: #9ca3af; font-size: 0.85rem;">Vedoucí projektu</span>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}
@@ -59,12 +118,37 @@
       </table>
     </div>
     {% else %}
-    <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
-      <div style="font-size:2rem;">🤝</div>
-      <p style="margin-top:0.5rem;">Zatím nejsou přidáni žádní členové projektu.</p>
+    <div style="text-align:center;padding:2rem;background:#f8fafc;border-radius:8px;">
+      <div style="font-size:3rem;margin-bottom:0.5rem;">🤝</div>
+      <p style="color:#64748b;">Zatím nejsou přidáni žádní členové projektu.</p>
     </div>
     {% endif %}
   </div>
 
+  <!-- Zpět na projekt -->
+  <div style="margin-top: 2rem;">
+    <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
+  </div>
+
 </div>
+
+<script>
+function copyShareLink() {
+  const input = document.getElementById('project_share_link');
+  input.select();
+  input.setSelectionRange(0, 99999); // For mobile
+
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ Zkopírováno!';
+    btn.style.background = 'linear-gradient(135deg, #059669, #047857)';
+
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+</script>
 {% endblock %}

@@ -5,7 +5,12 @@
 {% block title %}{{ project.name }} | FDK.cz{% endblock %}
 {% block header_title %}{{ project.name }}{% endblock %}
 {% block header_subtitle %}
-Projekt vedený uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ project.tasks.count }} úkolů
+{% if project.organization %}
+Projekt pod organizací <strong>{{ project.organization.name }}</strong> &middot;
+{% else %}
+Volný projekt bez organizace &middot;
+{% endif %}
+Vedeno uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ project.tasks.count }} úkolů
 {% endblock %}
 
 {% block content %}

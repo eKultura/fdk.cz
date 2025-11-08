@@ -297,10 +297,22 @@ def create_task(request, project_id):
             task.creator = request.user
             task.created = timezone.now()
             task.save()
+
+            # Send email notification if task is assigned
+            if task.assigned and task.assigned != request.user:
+                from fdk_cz.utils.email import send_task_assignment_email
+                send_task_assignment_email(
+                    user=task.assigned,
+                    task=task,
+                    project=proj,
+                    assigned_by=request.user
+                )
+
+            messages.success(request, f"Úkol '{task.title}' byl vytvořen{' a přiřazen uživateli ' + task.assigned.username if task.assigned else ''}.")
             return redirect('detail_project', project_id=project_id)
     else:
         form = task_form(project=proj)
-    
+
     return render(request, 'project/create_task.html', {'form': form, 'project': proj})
 
 
@@ -338,10 +350,26 @@ def detail_task(request, task_id):
 def edit_task(request, task_id):
     task_obj = get_object_or_404(ProjectTask, pk=task_id)
     project = task_obj.project  # Uložení projektu z úkolu
+    old_assigned = task_obj.assigned  # Remember who was previously assigned
+
     if request.method == 'POST':
         form = task_form(request.POST, instance=task_obj, project=project)  # Přidání projektu při POST
         if form.is_valid():
-            form.save()
+            task = form.save()
+
+            # Send email if task was newly assigned or reassigned to different user
+            if task.assigned and task.assigned != old_assigned and task.assigned != request.user:
+                from fdk_cz.utils.email import send_task_assignment_email
+                send_task_assignment_email(
+                    user=task.assigned,
+                    task=task,
+                    project=project,
+                    assigned_by=request.user
+                )
+                messages.success(request, f"Úkol byl upraven a přiřazen uživateli {task.assigned.username}.")
+            else:
+                messages.success(request, "Úkol byl úspěšně upraven.")
+
             return redirect('detail_project', project_id=project.project_id)
     else:
         form = task_form(instance=task_obj, project=project)  # Přidání projektu při GET
@@ -579,3 +607,51 @@ def detail_document(request, document_id):
     doc = get_object_or_404(ProjectDocument, pk=document_id)
     return render(request, 'project/detail_document.html', {'document': doc})
 
+
+
+@login_required
+def join_project(request, project_id):
+    """
+    Allow users to join a project via shareable link
+    """
+    project_instance = get_object_or_404(Project, pk=project_id)
+    user = request.user
+
+    # Check if user is already a member
+    if ProjectUser.objects.filter(project=project_instance, user=user).exists():
+        messages.info(request, f"Již jste členem projektu '{project_instance.name}'.")
+        return redirect('detail_project', project_id=project_id)
+
+    # Get default role (first available) or create "Member" role
+    try:
+        default_role = ProjectRole.objects.first()
+        if not default_role:
+            default_role = ProjectRole.objects.create(role_name='Člen')
+    except:
+        messages.error(request, "Chyba při přidávání do projektu. Kontaktujte administrátora.")
+        return redirect('index')
+
+    # Add user to project
+    try:
+        ProjectUser.objects.create(
+            project=project_instance,
+            user=user,
+            role=default_role
+        )
+        messages.success(request, f"Byli jste úspěšně přidáni do projektu '{project_instance.name}' s rolí '{default_role.role_name}'.")
+
+        # Send notification to project owner
+        if project_instance.owner and project_instance.owner != user:
+            from fdk_cz.utils.email import send_email
+            send_email(
+                recipient=project_instance.owner.email,
+                subject=f"Nový člen v projektu {project_instance.name}",
+                html_content=f"<p>Uživatel <strong>{user.username}</strong> ({user.email}) se připojil do projektu {project_instance.name} přes sdílený odkaz.</p>",
+                text_content=f"Uživatel {user.username} ({user.email}) se připojil do projektu {project_instance.name} přes sdílený odkaz."
+            )
+
+        return redirect('detail_project', project_id=project_id)
+
+    except Exception as e:
+        messages.error(request, f"Chyba při přidávání do projektu: {str(e)}")
+        return redirect('index')
