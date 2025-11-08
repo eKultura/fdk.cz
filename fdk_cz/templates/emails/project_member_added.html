@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byli jste přidáni do projektu</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">📋 FDK.cz</h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Nový projekt</p>
+    </div>
+
+    <div style="background: white; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px; margin: 0 0 20px 0;">Dobrý den {{ user.username }},</p>
+
+        <p style="font-size: 16px; margin: 0 0 20px 0;">
+            Uživatel <strong>{{ added_by.username }}</strong> vás přidal do projektu
+            <strong>{{ project.name }}</strong>.
+        </p>
+
+        <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0 0 10px 0; font-weight: 600; color: #15803d;">Detaily projektu:</p>
+            <p style="margin: 5px 0;"><strong>Název:</strong> {{ project.name }}</p>
+            <p style="margin: 5px 0;"><strong>Vaše role:</strong> {{ role.role_name }}</p>
+            {% if project.description %}
+            <p style="margin: 5px 0;"><strong>Popis:</strong> {{ project.description }}</p>
+            {% endif %}
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ project_url }}"
+               style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                Zobrazit projekt
+            </a>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+        <div style="font-size: 12px; color: #94a3b8; text-align: center;">
+            <p style="margin: 10px 0;">
+                Tento email byl odeslán automaticky systémem FDK.cz.
+            </p>
+            <p style="margin: 10px 0;">
+                © 2025 <a href="{{ site_url }}" style="color: #3b82f6; text-decoration: none;">FDK.cz</a> |
+                <a href="{{ site_url }}/napoveda/" style="color: #3b82f6; text-decoration: none;">Nápověda</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

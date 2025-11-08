@@ -21,16 +21,27 @@ class project_form(forms.ModelForm):
 
 
 class add_user_form(forms.Form):
-    user = forms.ModelChoiceField(
-        queryset=User.objects.all(), 
-        label='Uživatel', 
-        widget=forms.Select(attrs={'class': 'form-control'})
+    email = forms.EmailField(
+        label='Email uživatele',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'uzivatel@example.com'
+        }),
+        help_text='Zadejte email uživatele. Pokud není registrován, bude mu zaslána pozvánka.'
     )
     role = forms.ModelChoiceField(
         queryset=ProjectRole.objects.all(),
         label='Role',
-        required=True,  # Označení pole role jako povinného
+        required=True,
         widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    send_invitation = forms.BooleanField(
+        label='Odeslat pozvánku emailem',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        help_text='Zaškrtněte pro odeslání emailu s pozvánkou do projektu'
     )
 
 

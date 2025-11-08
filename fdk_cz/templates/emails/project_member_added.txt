@@ -1,0 +1,20 @@
+BYLI JSTE PŘIDÁNI DO PROJEKTU - FDK.cz
+================================================================================
+
+Dobrý den {{ user.username }},
+
+Uživatel {{ added_by.username }} vás přidal do projektu "{{ project.name }}".
+
+DETAILY PROJEKTU:
+-----------------
+Název: {{ project.name }}
+Vaše role: {{ role.role_name }}
+{% if project.description %}Popis: {{ project.description }}{% endif %}
+
+ZOBRAZIT PROJEKT:
+-----------------
+{{ project_url }}
+
+---
+Tento email byl odeslán automaticky systémem FDK.cz.
+© 2025 FDK.cz | {{ site_url }}

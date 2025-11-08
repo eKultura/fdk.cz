@@ -1,0 +1,3 @@
+"""
+FDK.cz utilities package
+"""
