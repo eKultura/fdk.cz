@@ -4,20 +4,20 @@
 {% block header_subtitle %}Seznam obchodních smluv a dohod{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
+<div style="max-width: 1600px; margin: 0 auto;">
   <!-- Actions and Filters -->
-  <div class="mb-6 flex flex-col md:flex-row justify-between gap-4">
-    <div class="flex gap-3">
-      <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">+ Nová smlouva</a>
+  <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">➕ Nová smlouva</a>
       <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">← Dashboard</a>
     </div>
 
     <!-- Filters -->
-    <div class="flex gap-2">
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
       <!-- Status Filter -->
-      <form method="GET" class="flex gap-2 items-center">
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
         {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-        <select name="status" onchange="this.form.submit()" class="form-control">
+        <select name="status" onchange="this.form.submit()" class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
           <option value="">Všechny statusy</option>
           {% for value, label in status_choices %}
             <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
@@ -28,10 +28,10 @@
       </form>
 
       <!-- Search -->
-      <form method="GET" class="flex gap-2">
+      <form method="GET" style="display: flex; gap: 0.5rem;">
         {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
-        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat smlouvu..." class="form-control">
-        <button type="submit" class="btn btn-secondary">🔍</button>
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat smlouvu..." class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <button type="submit" class="btn btn-outline">🔍</button>
       </form>
     </div>
   </div>
@@ -39,74 +39,76 @@
   <!-- Contracts Table -->
   <div class="content-card">
     {% if contracts %}
-      <div class="overflow-x-auto">
+      <div style="overflow-x: auto;">
         <table class="data-table">
           <thead>
             <tr>
               <th>Číslo smlouvy</th>
               <th>Název</th>
-              <th class="hidden md:table-cell">Firma</th>
+              <th>Firma</th>
               <th>Status</th>
-              <th class="hidden lg:table-cell">Hodnota</th>
-              <th class="hidden md:table-cell">Podpis</th>
-              <th class="text-right">Akce</th>
+              <th style="text-align: right;">Hodnota</th>
+              <th>Podpis</th>
+              <th style="text-align: center;">Akce</th>
             </tr>
           </thead>
           <tbody>
             {% for contract in contracts %}
               <tr>
-                <td class="font-mono text-sm text-gray-600">
-                  {{ contract.contract_number|default:"—" }}
+                <td>
+                  <div style="font-family: monospace; font-size: 0.875rem; color: #64748b;">
+                    {{ contract.contract_number|default:"—" }}
+                  </div>
                 </td>
                 <td>
-                  <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="font-semibold text-blue-600 hover:underline">
+                  <a href="{% url 'detail_b2b_contract' contract.contract_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
                     {{ contract.title }}
                   </a>
                   {% if contract.project %}
-                    <div class="text-xs text-gray-500 mt-1">
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
                       📁 {{ contract.project.name }}
                     </div>
                   {% endif %}
                 </td>
-                <td class="hidden md:table-cell">
+                <td>
                   {% if contract.company %}
-                    <a href="{% url 'detail_b2b_company' contract.company.company_id %}" class="text-blue-600 hover:underline">
+                    <a href="{% url 'detail_b2b_company' contract.company.company_id %}" style="color: #3b82f6; text-decoration: none;">
                       {{ contract.company.name }}
                     </a>
                   {% else %}
-                    <span class="text-gray-400">—</span>
+                    <span style="color: #cbd5e1;">—</span>
                   {% endif %}
                 </td>
                 <td>
-                  <span class="px-2 py-1 rounded text-xs font-medium
-                    {% if contract.status == 'active' %}bg-green-100 text-green-700
-                    {% elif contract.status == 'signed' %}bg-blue-100 text-blue-700
-                    {% elif contract.status == 'negotiation' %}bg-yellow-100 text-yellow-700
-                    {% elif contract.status == 'draft' %}bg-gray-100 text-gray-700
-                    {% elif contract.status == 'completed' %}bg-indigo-100 text-indigo-700
-                    {% elif contract.status == 'terminated' %}bg-red-100 text-red-700
-                    {% else %}bg-gray-100 text-gray-600{% endif %}">
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+                    {% if contract.status == 'active' %}background: #d1fae5; color: #065f46;
+                    {% elif contract.status == 'signed' %}background: #dbeafe; color: #1e40af;
+                    {% elif contract.status == 'negotiation' %}background: #fef3c7; color: #92400e;
+                    {% elif contract.status == 'draft' %}background: #f1f5f9; color: #475569;
+                    {% elif contract.status == 'completed' %}background: #e0e7ff; color: #3730a3;
+                    {% elif contract.status == 'terminated' %}background: #fee2e2; color: #991b1b;
+                    {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
                     {{ contract.get_status_display }}
                   </span>
                 </td>
-                <td class="hidden lg:table-cell text-gray-600">
+                <td style="text-align: right; color: #475569;">
                   {% if contract.contract_value %}
-                    {{ contract.contract_value|floatformat:0 }} Kč
+                    <span style="font-weight: 600;">{{ contract.contract_value|floatformat:0 }} Kč</span>
                   {% else %}
                     —
                   {% endif %}
                 </td>
-                <td class="hidden md:table-cell text-gray-500 text-sm">
+                <td style="color: #64748b; font-size: 0.875rem;">
                   {% if contract.signature_date %}
                     {{ contract.signature_date|date:"d.m.Y" }}
                   {% else %}
                     —
                   {% endif %}
                 </td>
-                <td class="text-right">
-                  <div class="data-table-actions">
-                    <a href="{% url 'detail_b2b_contract' contract.contract_id %}">👁️ Detail</a>
-                    <a href="{% url 'edit_b2b_contract' contract.contract_id %}">✏️ Upravit</a>
+                <td style="text-align: center;">
+                  <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="btn btn-sm btn-outline">👁️</a>
+                    <a href="{% url 'edit_b2b_contract' contract.contract_id %}" class="btn btn-sm btn-outline">✏️</a>
                   </div>
                 </td>
               </tr>
@@ -115,9 +117,9 @@
         </table>
       </div>
     {% else %}
-      <div class="text-center py-12 bg-gray-50 rounded-lg">
-        <div class="text-5xl mb-3">📄</div>
-        <p class="text-gray-600 mb-4">
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">📄</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
           {% if search_query or selected_status %}
             Žádné smlouvy odpovídající vašemu hledání
           {% else %}
@@ -125,56 +127,25 @@
           {% endif %}
         </p>
         {% if search_query or selected_status %}
-          <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline mr-2">Zrušit filtr</a>
+          <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline" style="margin-right: 0.5rem;">Zrušit filtr</a>
         {% endif %}
-        <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">+ Přidat první smlouvu</a>
+        <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">➕ Přidat první smlouvu</a>
       </div>
     {% endif %}
   </div>
 
-  <!-- Quick Stats -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-    <div class="content-card bg-green-50 border-2 border-green-200">
-      <div class="text-xs text-green-600 font-semibold uppercase mb-1">Aktivní</div>
-      <div class="text-2xl font-bold text-green-700">
-        {{ contracts|filter_by_status:"active"|length|default:0 }}
-      </div>
-    </div>
-
-    <div class="content-card bg-yellow-50 border-2 border-yellow-200">
-      <div class="text-xs text-yellow-600 font-semibold uppercase mb-1">V jednání</div>
-      <div class="text-2xl font-bold text-yellow-700">
-        {{ contracts|filter_by_status:"negotiation"|length|default:0 }}
-      </div>
-    </div>
-
-    <div class="content-card bg-blue-50 border-2 border-blue-200">
-      <div class="text-xs text-blue-600 font-semibold uppercase mb-1">Podepsáno</div>
-      <div class="text-2xl font-bold text-blue-700">
-        {{ contracts|filter_by_status:"signed"|length|default:0 }}
-      </div>
-    </div>
-
-    <div class="content-card bg-gray-50 border-2 border-gray-200">
-      <div class="text-xs text-gray-600 font-semibold uppercase mb-1">Koncept</div>
-      <div class="text-2xl font-bold text-gray-700">
-        {{ contracts|filter_by_status:"draft"|length|default:0 }}
-      </div>
-    </div>
-  </div>
-
   <!-- Info Card -->
-  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-    <div class="flex items-start">
-      <div class="text-3xl mr-4">💡</div>
+  <div class="content-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 2rem;">💡</div>
       <div>
-        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu smluv</h4>
-        <ul class="text-sm text-gray-700 space-y-1">
-          <li>• Používejte jednoznačná čísla smluv pro snadnou identifikaci</li>
-          <li>• Sledujte důležité termíny (podpis, začátek, ukončení)</li>
-          <li>• Propojte smlouvy s projekty a firmami</li>
-          <li>• Udržujte aktuální status smlouvy (koncept → jednání → podepsáno → aktivní)</li>
-          <li>• Využívejte kategorizaci pro rychlé filtrování</li>
+        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Tipy pro správu smluv</h4>
+        <ul style="font-size: 0.875rem; color: #475569; line-height: 1.6; list-style: disc; padding-left: 1.5rem;">
+          <li>Používejte jednoznačná čísla smluv pro snadnou identifikaci</li>
+          <li>Sledujte důležité termíny (podpis, začátek, ukončení)</li>
+          <li>Propojte smlouvy s projekty a firmami</li>
+          <li>Udržujte aktuální status smlouvy (koncept → jednání → podepsáno → aktivní)</li>
+          <li>Využívejte kategorizaci pro rychlé filtrování</li>
         </ul>
       </div>
     </div>

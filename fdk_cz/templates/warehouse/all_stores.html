@@ -3,79 +3,58 @@
 
 {% block title %}{% trans "Skladové hospodářství" %} | FDK.cz{% endblock %}
 {% block header_title %}📦 {% trans "Skladové hospodářství" %}{% endblock %}
-{% block header_subtitle %}{% trans "Přehled všech skladových položek a zásob" %}{% endblock %}
+{% block header_subtitle %}{% trans "Přehled všech skladů" %}{% endblock %}
 
 {% block content %}
 <div style="max-width: 1400px; margin: 0 auto;">
 
-  <!-- Action Buttons -->
-  <div style="margin-bottom: 1.5rem;">
-    <a href="{% url 'create_item' %}" class="btn btn-primary">➕ {% trans "Přidat novou položku" %}</a>
-  </div>
+  <!-- Stores Grid -->
+  {% if stores %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for store in stores %}
+    <a href="{% url 'store_detail' store.id %}" style="text-decoration: none; display: block;">
+      <div class="content-card" style="transition: all 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+        <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+          <div style="font-size: 2.5rem;">📦</div>
+          <div style="flex: 1;">
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{{ store.name }}</h3>
+            {% if store.description %}
+            <p style="color: #64748b; font-size: 0.875rem; line-height: 1.5;">{{ store.description|truncatewords:15 }}</p>
+            {% endif %}
+          </div>
+        </div>
 
-  <!-- Warehouse Items Table -->
-  <div class="content-card">
-    <div style="margin-bottom: 1.5rem;">
-      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">{% trans "Seznam skladových položek" %}</h3>
-    </div>
+        {% if store.location or store.capacity %}
+        <div style="display: grid; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+          {% if store.location %}
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.875rem;">
+            <span>📍</span>
+            <span>{{ store.location }}</span>
+          </div>
+          {% endif %}
+          {% if store.capacity %}
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; font-size: 0.875rem;">
+            <span>📊</span>
+            <span>Kapacita: {{ store.capacity }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
 
-    {% if items %}
-    <div style="overflow-x: auto;">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{% trans "Název" %}</th>
-            <th>{% trans "Kód" %}</th>
-            <th>{% trans "Popis" %}</th>
-            <th style="text-align: center;">{% trans "Množství" %}</th>
-            <th style="text-align: right;">{% trans "Cena za jednotku" %}</th>
-            <th>{% trans "Lokalita" %}</th>
-            <th style="text-align: center;">{% trans "Akce" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-          <tr>
-            <td>
-              <div style="font-weight: 600; color: #1e293b;">{{ item.name }}</div>
-            </td>
-            <td>
-              <div style="font-family: monospace; font-size: 0.875rem; color: #64748b;">{{ item.code }}</div>
-            </td>
-            <td>
-              <div style="color: #64748b; font-size: 0.875rem;">{{ item.description|truncatewords:10 }}</div>
-            </td>
-            <td style="text-align: center;">
-              <span style="padding: 4px 12px; background: {% if item.quantity > 50 %}#d1fae5{% elif item.quantity > 10 %}#fef3c7{% else %}#fee2e2{% endif %}; color: {% if item.quantity > 50 %}#065f46{% elif item.quantity > 10 %}#92400e{% else %}#991b1b{% endif %}; border-radius: 12px; font-weight: 600; font-size: 0.875rem;">
-                {{ item.quantity }}
-              </span>
-            </td>
-            <td style="text-align: right;">
-              <div style="font-weight: 600; color: #1e293b;">{{ item.unit_price|floatformat:2 }} Kč</div>
-            </td>
-            <td>
-              <div style="color: #475569; font-size: 0.875rem;">📍 {{ item.location|default:"—" }}</div>
-            </td>
-            <td style="text-align: center;">
-              <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                <a href="{% url 'edit_item' item.id %}" class="btn btn-sm btn-outline" style="padding: 4px 12px;">✏️ {% trans "Upravit" %}</a>
-                <a href="{% url 'delete_item' item.id %}" class="btn btn-sm btn-outline" style="padding: 4px 12px; color: #dc2626; border-color: #dc2626;" onclick="return confirm('{% trans "Opravdu chcete smazat tuto položku?" %}')">🗑️ {% trans "Smazat" %}</a>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
-      <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
-      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{% trans "Žádné skladové položky" %}</h3>
-      <p style="color: #64748b; margin-bottom: 1.5rem;">{% trans "Zatím nemáte žádné položky ve skladu." %}</p>
-      <a href="{% url 'create_item' %}" class="btn btn-primary">➕ {% trans "Přidat první položku" %}</a>
-    </div>
-    {% endif %}
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+          <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">{{ store.transactions.count }} transakcí</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
   </div>
+  {% else %}
+  <div style="text-align: center; padding: 4rem; background: #f8fafc; border-radius: 12px;">
+    <div style="font-size: 5rem; margin-bottom: 1.5rem;">📦</div>
+    <h3 style="font-size: 1.5rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">{% trans "Žádné sklady" %}</h3>
+    <p style="color: #64748b; margin-bottom: 2rem;">{% trans "Zatím nebyly vytvořeny žádné sklady." %}</p>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}
