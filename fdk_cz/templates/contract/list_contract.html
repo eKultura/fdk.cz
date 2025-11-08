@@ -1,27 +1,72 @@
-{% extends 'contract/base.html' %}
+{% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Nový kontrakt{% endblock %}
-
-
-
-    {% block meta %}
-    
-    
-    {% endblock %}
-
-
+{% block title %}Seznam smluv | FDK.cz{% endblock %}
+{% block header_title %}📄 Seznam smluv{% endblock %}
+{% block header_subtitle %}Správa všech smluv v systému{% endblock %}
 
 {% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
 
-    <h2>Seznam kontraktů</h2>
-    <ul>
-        {% for contract in contracts %}
-            <li>{{ contract.name }} ({{ contract.start_date }} - {{ contract.end_date }})</li>
-        {% empty %}
-            <li>Žádné kontrakty k zobrazení.</li>
-        {% endfor %}
-    </ul>
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <a href="{% url 'create_contract' %}" class="btn btn-primary">+ Nová smlouva</a>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <input type="text" placeholder="Hledat smlouvy..." style="padding: 0.5rem 1rem; border: 1px solid #e2e8f0; border-radius: 6px; width: 300px;">
+    </div>
+  </div>
 
+  <!-- Contracts Table -->
+  <div class="content-card">
+    {% if contracts %}
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název smlouvy</th>
+            <th>Začátek</th>
+            <th>Konec</th>
+            <th>Status</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contract in contracts %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_contract' contract.pk %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                {{ contract.name }}
+              </a>
+            </td>
+            <td>{{ contract.start_date|date:"d.m.Y"|default:"—" }}</td>
+            <td>{{ contract.end_date|date:"d.m.Y"|default:"—" }}</td>
+            <td>
+              {% if contract.is_active %}
+                <span style="background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">✓ Aktivní</span>
+              {% else %}
+                <span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">✗ Neaktivní</span>
+              {% endif %}
+            </td>
+            <td class="text-right">
+              <a href="{% url 'detail_contract' contract.pk %}" class="btn btn-outline btn-sm">Zobrazit</a>
+              <a href="{% url 'edit_contract' contract.pk %}" class="btn btn-outline btn-sm">Upravit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Žádné smlouvy</h3>
+      <p style="color: #64748b; margin-bottom: 1.5rem;">Zatím nemáte v systému žádné smlouvy.</p>
+      <a href="{% url 'create_contract' %}" class="btn btn-primary">+ Vytvořit první smlouvu</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
 {% endblock %}
-

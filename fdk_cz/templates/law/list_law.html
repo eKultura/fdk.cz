@@ -1,141 +1,16 @@
-{% load static %}
+{% extends 'base.html' %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
-  <title>Zákony a předpisy | AI Právo | FDK.cz</title>
-  
-  <!-- Fonts -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
-  
-  <!-- Unified CSS -->
-  <style>
-    {% include 'inc/style.css' %}
-  </style>
-</head>
 
-<body>
+{% block title %}Zákony a předpisy | FDK.cz{% endblock %}
+{% block header_title %}📚 Zákony a právní předpisy{% endblock %}
+{% block header_subtitle %}Kompletní databáze českých zákonů, vyhlášek a právních předpisů{% endblock %}
 
-  <!-- Header -->
-  <header class="header">
-    <a href="{% url 'index' %}" class="logo">
-      <div class="logo-icon">&#9873;</div>
-      FDK.cz
-    </a>
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
 
-
-<!-- Law Navigation --><!--
-<nav style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem;">
-  <div style="display: flex; gap: 2rem; align-items: center;">
-    <a href="{% url 'pravo_ai' %}" class="nav-link {% if request.resolver_match.url_name == 'pravo_ai' %}active{% endif %}">
-      &#127968; Dashboard
-    </a>
-    <a href="{% url 'law_query' %}" class="nav-link {% if 'query' in request.resolver_match.url_name %}active{% endif %}">
-      &#128293; AI Dotazy
-    </a>
-    <a href="{% url 'law_list' %}" class="nav-link {% if 'law' in request.resolver_match.url_name %}active{% endif %}">
-      &#128214; Zákony
-    </a>
-    <a href="{% url 'law_contracts' %}" class="nav-link {% if 'contract' in request.resolver_match.url_name %}active{% endif %}">
-      &#128196; Šablony
-    </a>
-    <a href="{% url 'law_documents' %}" class="nav-link {% if 'document' in request.resolver_match.url_name %}active{% endif %}">
-      &#128221; Dokumenty
-    </a>
-    <a href="{% url 'law_ai_assistant' %}" class="nav-link {% if 'assistant' in request.resolver_match.url_name %}active{% endif %}">
-      &#129302; AI Asistent
-    </a>
-  </div>
-</nav>
--->
-<nav class="top-nav">
-  <a href="" class="nav-link law-ai {% if 'pravo' in request.resolver_match.url_name %}active{% endif %}">
-    &#9889; Právo AI
-  </a>
-  <div class="dropdown">
-    <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
-    <div class="dropdown-menu">
-      <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
-      <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
-          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
-          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
-          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
-          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
-          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
-          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
-          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
-    </div>
-  </div>
-  <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-</nav>
-
-    <!--<nav class="top-nav">
-      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai">&#9889; Právo AI</a>
-      <div class="dropdown">
-        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
-        <div class="dropdown-menu">
-          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
-          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
-          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
-          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
-          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
-          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
-          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
-          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
-          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
-        </div>
-      </div>
-      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-    </nav>-->
-
-    <div class="user-menu">
-      {% if user.is_authenticated %}
-      <div class="search-box">
-        <span class="search-icon">&#128269;</span>
-        <input type="text" placeholder="Vyhledávání zákonů..." id="search-input">
-      </div>
-      <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
-        {{ user.first_name|first|default:user.username|first|upper }}
-      </a>
-      <a href="{% url 'user_profile' %}" class="user-name">
-        {{ user.first_name|default:user.username }}
-      </a>
-      {% else %}
-      <a href="{% url 'login_cs' %}" class="btn btn-primary">
-        &#128273; Přihlásit se
-      </a>
-      {% endif %}
-    </div>
-  </header>
-
-
-  <!-- Messages Block -->
-  {% if messages %}
-  <div style="position: fixed; top: 90px; right: 20px; z-index: 1100; max-width: 400px;">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-      {{ message }}
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="page-header">
-      <h1 class="page-title">&#128214; Zákony a právní předpisy</h1>
-      <p class="page-subtitle">
-        Kompletní databáze českých zákonů, vyhlášek a právních předpisů
-      </p>
-    </div>
-
-    <!-- Filters and Controls -->
-    <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #e2e8f0;">
+  <!-- Filters and Actions -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: space-between;">
       <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <div>
           <label style="font-weight: 500; color: #374151; margin-right: 0.5rem;">Kategorie:</label>
@@ -146,7 +21,7 @@
             {% endfor %}
           </select>
         </div>
-        
+
         <div>
           <label style="font-weight: 500; color: #374151; margin-right: 0.5rem;">Řazení:</label>
           <select style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white;" onchange="sortLaws(this.value)">
@@ -156,186 +31,126 @@
             <option value="number">Podle čísla</option>
           </select>
         </div>
+      </div>
 
-        <div style="margin-left: auto;">
-          <a href="{% url 'pravo_ai' %}" class="btn btn-outline">
-            &#8592; Zpět na AI Právo
+      <div>
+        <a href="{% url 'pravo_ai' %}" class="btn btn-outline">← Zpět na AI Právo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Laws List -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">📚 Seznam zákonů ({{ laws|length }})</h3>
+
+    {% if laws %}
+    <div style="display: grid; gap: 1rem;">
+      {% for law in laws %}
+      <div class="law-card" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; transition: all 0.2s; cursor: pointer;" onclick="window.location.href='{% url 'law_detail' law.id %}'">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+          <div style="flex: 1;">
+            <h4 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
+              <a href="{% url 'law_detail' law.id %}" style="text-decoration: none; color: inherit;">
+                {{ law.title }}
+              </a>
+            </h4>
+            <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem; align-items: center;">
+              <span style="font-weight: 600; color: #3b82f6;">{{ law.number }}/{{ law.year }}</span>
+              <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; color: #64748b;">
+                {{ law.category }}
+              </span>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div style="color: #64748b; font-size: 0.875rem;">Rok vydání</div>
+            <div style="font-weight: 600; color: #1e293b; font-size: 1.25rem;">{{ law.year }}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); analyzeWithAI({{ law.id }})">
+            🤖 AI Analýza
+          </button>
+          <a href="{% url 'law_detail' law.id %}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">
+            📖 Detail zákona
           </a>
         </div>
       </div>
+      {% endfor %}
     </div>
 
-    <!-- Laws List -->
-    <div class="content-card">
-      <h3>&#128214; Seznam zákonů ({{ laws|length }})</h3>
-      
-      {% if laws %}
-      <div style="display: grid; gap: 1rem; margin-top: 1rem;">
-        {% for law in laws %}
-        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; transition: all 0.2s; cursor: pointer;" onclick="window.location.href='{% url 'law_detail' law.id %}'">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-            <div style="flex: 1;">
-              <h4 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
-                <a href="{% url 'law_detail' law.id %}" style="text-decoration: none; color: inherit;">
-                  {{ law.title }}
-                </a>
-              </h4>
-              <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
-                <span style="font-weight: 500; color: #3b82f6;">{{ law.number }}/{{ law.year }}</span>
-                <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.875rem; color: #64748b;">
-                  {{ law.category }}
-                </span>
-              </div>
-            </div>
-            
-            <div style="text-align: right;">
-              <div style="color: #64748b; font-size: 0.875rem;">Rok vydání</div>
-              <div style="font-weight: 600; color: #1e293b;">{{ law.year }}</div>
-            </div>
-          </div>
-          
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; gap: 1rem;">
-              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.875rem;" onclick="event.stopPropagation(); analyzeWithAI({{ law.id }})">
-                &#129302; AI Analýza
-              </button>
-              <a href="{% url 'law_detail' law.id %}" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.875rem;" onclick="event.stopPropagation()">
-                &#128214; Detail
-              </a>
-            </div>
-            
-            <div style="color: #64748b; font-size: 0.875rem;">
-              &#128214; Zákon č. {{ law.number }}
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      
-      {% else %}
-      <div class="empty-state">
-        <div class="empty-state-icon">&#128214;</div>
-        <h3>Žádné zákony nenalezeny</h3>
-        <p>Zkuste změnit filtry nebo vyhledávací kritéria.</p>
-        <a href="{% url 'law_list' %}" class="btn btn-primary">Zobrazit všechny zákony</a>
-      </div>
-      {% endif %}
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Žádné zákony nenalezeny</h3>
+      <p style="color: #64748b; margin-bottom: 1.5rem;">Zkuste změnit filtry nebo vyhledávací kritéria.</p>
+      <a href="{% url 'law_list' %}" class="btn btn-primary">Zobrazit všechny zákony</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Quick Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+    <div class="content-card" style="text-align: center; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">📚</div>
+      <div style="font-weight: 700; font-size: 1.5rem; color: #1e293b; margin-bottom: 0.25rem;">{{ laws|length }}</div>
+      <div style="color: #475569; font-size: 0.875rem;">Dostupných zákonů</div>
     </div>
 
-    <!-- Quick Stats -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
-      <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
-        <div style="font-size: 1.5rem; color: #3b82f6;">&#128214;</div>
-        <div style="font-weight: 600; margin: 0.5rem 0;">{{ laws|length }}</div>
-        <div style="color: #64748b; font-size: 0.875rem;">Dostupných zákonů</div>
-      </div>
-      
-      <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
-        <div style="font-size: 1.5rem; color: #059669;">&#128270;</div>
-        <div style="font-weight: 600; margin: 0.5rem 0;">{{ categories|length }}</div>
-        <div style="color: #64748b; font-size: 0.875rem;">Právních oblastí</div>
-      </div>
-      
-      <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
-        <div style="font-size: 1.5rem; color: #d97706;">&#9889;</div>
-        <div style="font-weight: 600; margin: 0.5rem 0;">24/7</div>
-        <div style="color: #64748b; font-size: 0.875rem;">AI asistent</div>
-      </div>
-      
-      <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
-        <div style="font-size: 1.5rem; color: #dc2626;">&#128293;</div>
-        <div style="font-weight: 600; margin: 0.5rem 0;">Denně</div>
-        <div style="color: #64748b; font-size: 0.875rem;">Aktualizace</div>
-      </div>
+    <div class="content-card" style="text-align: center; background: linear-gradient(135deg, #f0fdf4, #dcfce7);">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+      <div style="font-weight: 700; font-size: 1.5rem; color: #1e293b; margin-bottom: 0.25rem;">{{ categories|length }}</div>
+      <div style="color: #475569; font-size: 0.875rem;">Právních oblastí</div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>&copy; {% now "Y" %} FDK.cz - AI Právo | 
-         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
-    </footer>
-  </main>
+    <div class="content-card" style="text-align: center; background: linear-gradient(135deg, #fefce8, #fef3c7);">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+      <div style="font-weight: 700; font-size: 1.5rem; color: #1e293b; margin-bottom: 0.25rem;">24/7</div>
+      <div style="color: #475569; font-size: 0.875rem;">AI asistent</div>
+    </div>
 
-  <script>
-    // Filter by category
-    function filterByCategory(category) {
-      const url = new URL(window.location);
-      if (category) {
-        url.searchParams.set('category', category);
-      } else {
-        url.searchParams.delete('category');
-      }
-      window.location.href = url.toString();
+    <div class="content-card" style="text-align: center; background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔥</div>
+      <div style="font-weight: 700; font-size: 1.5rem; color: #1e293b; margin-bottom: 0.25rem;">Denně</div>
+      <div style="color: #475569; font-size: 0.875rem;">Aktualizace</div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .law-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #3b82f6 !important;
+  }
+</style>
+
+<script>
+  // Filter by category
+  function filterByCategory(category) {
+    const url = new URL(window.location);
+    if (category) {
+      url.searchParams.set('category', category);
+    } else {
+      url.searchParams.delete('category');
     }
+    window.location.href = url.toString();
+  }
 
-    // Sort laws
-    function sortLaws(sortBy) {
-      const url = new URL(window.location);
-      url.searchParams.set('sort', sortBy);
-      window.location.href = url.toString();
+  // Sort laws
+  function sortLaws(sortBy) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortBy);
+    window.location.href = url.toString();
+  }
+
+  // AI Analysis
+  function analyzeWithAI(lawId) {
+    if (confirm('Chcete analyzovat tento zákon pomocí AI? Bude vytvořen nový dotaz.')) {
+      window.location.href = `/pravo-ai/dotaz/?law_id=${lawId}`;
     }
-
-    // AI Analysis
-    function analyzeWithAI(lawId) {
-      if (confirm('Chcete analyzovat tento zákon pomocí AI? Bude vytvořen nový dotaz.')) {
-        window.location.href = `/pravo-ai/dotaz/?law_id=${lawId}`;
-      }
-    }
-
-    // Search functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('search-input');
-      let searchTimeout;
-
-      if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-          clearTimeout(searchTimeout);
-          const searchTerm = e.target.value.toLowerCase();
-          
-          searchTimeout = setTimeout(() => {
-            const lawCards = document.querySelectorAll('[onclick*="law_detail"]');
-            
-            lawCards.forEach(card => {
-              const title = card.querySelector('h4').textContent.toLowerCase();
-              const number = card.querySelector('[style*="color: #3b82f6"]').textContent.toLowerCase();
-              
-              if (title.includes(searchTerm) || number.includes(searchTerm)) {
-                card.style.display = 'block';
-              } else {
-                card.style.display = searchTerm === '' ? 'block' : 'none';
-              }
-            });
-          }, 300);
-        });
-      }
-
-      // Add hover effects
-      document.querySelectorAll('[onclick*="law_detail"]').forEach(card => {
-        card.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateY(-2px)';
-          this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-          this.style.borderColor = '#3b82f6';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-          this.style.transform = 'translateY(0)';
-          this.style.boxShadow = 'none';
-          this.style.borderColor = '#e2e8f0';
-        });
-      });
-
-      // Auto-hide messages
-      const alerts = document.querySelectorAll('.alert');
-      alerts.forEach(alert => {
-        setTimeout(() => {
-          alert.style.opacity = '0';
-          alert.style.transform = 'translateY(-10px)';
-          setTimeout(() => {
-            alert.remove();
-          }, 300);
-        }, 5000);
-      });
-    });
-  </script>
-</body>
-</html>
+  }
+</script>
+{% endblock %}
