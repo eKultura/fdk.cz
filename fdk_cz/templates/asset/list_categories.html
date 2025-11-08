@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Kategorie majetku | FDK.cz{% endblock %}
+{% block header_title %}🏷️ Kategorie majetku{% endblock %}
+{% block header_subtitle %}Přehled kategorií majetkového účetnictví{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+  <div class="content-card">
+    {% if categories %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+        {% for category in categories %}
+        <div style="padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h3 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{{ category.name }}</h3>
+          {% if category.description %}
+          <p style="color: #64748b; font-size: 0.875rem;">{{ category.description }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🏷️</div>
+        <p style="color: #64748b;">Zatím nejsou žádné kategorie k zobrazení.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

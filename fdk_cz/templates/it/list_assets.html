@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}IT Aktiva | FDK.cz{% endblock %}
+{% block header_title %}💻 IT Aktiva{% endblock %}
+{% block header_subtitle %}Přehled IT majetku a zařízení{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+  <div class="content-card">
+    {% if assets %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název</th>
+            <th>Typ</th>
+            <th>Sériové číslo</th>
+            <th>Status</th>
+            <th style="text-align: center;">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asset in assets %}
+          <tr>
+            <td><strong>{{ asset.name }}</strong></td>
+            <td>{{ asset.type|default:"—" }}</td>
+            <td>{{ asset.serial_number|default:"—" }}</td>
+            <td>{{ asset.status|default:"—" }}</td>
+            <td style="text-align: center;">
+              <a href="#" class="btn btn-sm btn-outline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">💻</div>
+        <p style="color: #64748b;">Zatím nejsou žádná IT aktiva k zobrazení.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
