@@ -1,484 +1,165 @@
-{% load static %}
+{% extends "base.html" %}
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
-  <title>Profil | FDK.cz</title>
-  
-  <!-- Fonts -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
-  
-  <!-- Unified CSS -->
-  <style>
-    {% include 'inc/style.css' %}
-    
-    /* Profile specific styles */
-    .profile-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      height: 300px;
-      border-radius: 12px;
-      position: relative;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-    
-    .profile-header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.3);
-    }
-    
-    .profile-card {
-      background: white;
-      border-radius: 20px;
-      margin-top: -80px;
-      padding: 2rem;
-      position: relative;
-      z-index: 10;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-    
-    .profile-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 4px solid white;
-      margin-top: -60px;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 2rem;
-      font-weight: 700;
-      position: relative;
-      z-index: 11;
-    }
-    
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    
-    .profile-tabs {
-      display: flex;
-      gap: 1rem;
-      margin: 2rem 0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .profile-tab {
-      padding: 12px 24px;
-      border: none;
-      background: none;
-      color: #64748b;
-      font-weight: 500;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-    
-    .profile-tab.active {
-      color: #3b82f6;
-      border-bottom-color: #3b82f6;
-    }
-    
-    .profile-tab:hover {
-      color: #1e293b;
-      text-decoration: none;
-    }
-    
-    .profile-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    
-    .profile-section {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      border: 1px solid #e2e8f0;
-    }
-    
-    .profile-section h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #1e293b;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .profile-info-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    
-    .profile-info-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #f1f5f9;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .profile-info-item:last-child {
-      border-bottom: none;
-    }
-    
-    .profile-info-label {
-      font-weight: 600;
-      color: #1e293b;
-    }
-    
-    .profile-info-value {
-      color: #64748b;
-    }
-    
-    .social-links {
-      display: flex;
-      gap: 12px;
-      margin-top: 1rem;
-    }
-    
-    .social-link {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: #64748b;
-      font-size: 1.2rem;
-      transition: all 0.2s;
-    }
-    
-    .social-link:hover {
-      background: #3b82f6;
-      color: white;
-      text-decoration: none;
-    }
-    
-    .setting-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    
-    .setting-item:last-child {
-      border-bottom: none;
-    }
-    
-    .setting-switch {
-      position: relative;
-      width: 48px;
-      height: 24px;
-      background: #e2e8f0;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .setting-switch.active {
-      background: #3b82f6;
-    }
-    
-    .setting-switch::before {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      transition: all 0.2s;
-    }
-    
-    .setting-switch.active::before {
-      transform: translateX(24px);
-    }
-    
-    @media (max-width: 768px) {
-      .profile-content {
-        grid-template-columns: 1fr;
-      }
-      
-      .profile-tabs {
-        flex-wrap: wrap;
-      }
-    }
-  </style>
-</head>
 
-<body>
-  <!-- Messages Block -->
-  {% if messages %}
-  <div style="position: fixed; top: 90px; right: 20px; z-index: 1100; max-width: 400px;">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}" style="margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-      {{ message }}
+{% block title %}Profil | FDK.cz{% endblock %}
+{% block header_title %}👤 Můj profil{% endblock %}
+{% block header_subtitle %}{{ user.first_name }} {{ user.last_name }} · {{ user.email }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Profile Header Card -->
+  <div class="content-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: center; gap: 2rem;">
+      <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: 700; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        {% if user.profile.photo %}
+          <img src="{{ user.profile.photo.url }}" alt="Foto" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        {% else %}
+          {{ user.first_name|first|default:user.username|first|upper }}
+        {% endif %}
+      </div>
+
+      <div style="flex: 1;">
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">
+          {{ user.first_name }} {{ user.last_name }}
+        </h2>
+        <p style="color: #475569; margin-bottom: 1rem;">
+          @{{ user.username }} · {{ user.email }}
+        </p>
+
+        <div style="display: flex; gap: 1rem;">
+          <a href="{% url 'user_settings' %}" class="btn btn-primary">⚙️ Upravit profil</a>
+          <a href="{% url 'logout' %}" class="btn btn-outline">🚪 Odhlásit se</a>
+        </div>
+      </div>
     </div>
-    {% endfor %}
   </div>
-  {% endif %}
 
-  <!-- Header -->
-  <header class="header">
-    <a href="{% url 'index' %}" class="logo">
-      <div class="logo-icon">&#9873;</div>
-      FDK.cz
-    </a>
+  <!-- Profile Information Grid -->
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
 
-    <nav class="top-nav">
-      <a href="{% url 'pravo_ai' %}" class="nav-link law-ai">&#9889; Právo AI</a>
-      <div class="dropdown">
-        <a href="#" class="nav-link dropdown-toggle">Moduly &#9660;</a>
-        <div class="dropdown-menu">
-          <a href="{% url 'accounting_dashboard' %}" class="dropdown-item">&#128202; Účetnictví</a>
-          <a href="{% url 'my_contacts' %}" class="dropdown-item">&#128101; Kontakt Management</a>
-          <a href="{% url 'list_contracts' %}" class="dropdown-item">&#128196; Contract Management</a>
-          <a href="{% url 'index_list' %}" class="dropdown-item">&#128221; Seznamy</a>
-          <a href="{% url 'dashboard' %}" class="dropdown-item">&#127919; Management</a>
-          <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128295; Projekt Management</a>
-          <a href="{% url 'list_tests' %}" class="dropdown-item">&#128270; Test Management</a>
-          <a href="{% url 'all_stores' %}" class="dropdown-item">&#128230; Warehouse</a>
-          <a href="{% url 'grant_list' %}" class="dropdown-item">&#128176; Granty & Dotace</a>
+    <!-- Personal Information -->
+    <div class="content-card">
+      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+        📋 Osobní informace
+      </h3>
+
+      <div class="data-table-simple">
+        <div class="data-row">
+          <span class="data-label">Uživatelské jméno</span>
+          <span class="data-value">{{ user.username }}</span>
         </div>
-      </div>
-      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-    </nav>
-
-    <div class="user-menu">
-      <div class="search-box">
-        <span class="search-icon">&#128269;</span>
-        <input type="text" placeholder="Vyhledávání..." id="search-input">
-      </div>
-      <a href="{% url 'user_profile' %}" class="user-avatar" title="{{ user.first_name|default:user.username }}">
-        {{ user.first_name|first|default:user.username|first|upper }}
-      </a>
-      <a href="{% url 'user_profile' %}" class="user-name">
-        {{ user.first_name|default:user.username }}
-      </a>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Profile Header -->
-    <div class="profile-header">
-    </div>
-
-    <div class="profile-card">
-      <div style="display: flex; align-items: center; gap: 2rem;">
-        <div class="profile-avatar">
-          {% if user.profile.photo %}
-            <img src="{{ user.profile.photo.url }}" alt="{% trans 'Profilová fotka' %}">
-          {% else %}
-            {{ user.first_name|first|default:user.username|first|upper }}
-          {% endif %}
+        <div class="data-row">
+          <span class="data-label">Jméno</span>
+          <span class="data-value">{{ user.first_name|default:"Nenastaveno" }}</span>
         </div>
-        
-        <div style="flex: 1;">
-          <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
-            {{ user.first_name }} {{ user.last_name }}
-          </h1>
-          <p style="color: #64748b; margin-bottom: 1rem;">
-            {{ user.description|default:"Uživatel FDK.cz systému" }}
-          </p>
-          
-          <div class="profile-tabs">
-            <a href="#" class="profile-tab active">&#127968; Přehled</a>
-            <a href="#" class="profile-tab">&#128233; Zprávy</a>
-            <a href="{% url 'user_settings' %}" class="profile-tab">&#9881; Nastavení</a>
-          </div>
+        <div class="data-row">
+          <span class="data-label">Příjmení</span>
+          <span class="data-value">{{ user.last_name|default:"Nenastaveno" }}</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Email</span>
+          <span class="data-value">{{ user.email|default:"Není nastaven" }}</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Telefon</span>
+          <span class="data-value">{{ user.profile.phone_number|default:"Nenastaveno" }}</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Lokalita</span>
+          <span class="data-value">{{ user.profile.location|default:"Nenastaveno" }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Profile Content -->
-    <div class="profile-content">
-      <!-- Personal Information -->
-      <div class="profile-section">
-        <h3>
-          &#128100; Osobní informace
-          <a href="{% url 'user_settings' %}" style="margin-left: auto; color: #64748b; font-size: 1rem;">&#9998;</a>
-        </h3>
-        
-        <ul class="profile-info-list">
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Uživatelské jméno" %}</span>
-            <span class="profile-info-value">{{ user.username }}</span>
-          </li>
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Jméno" %}</span>
-            <span class="profile-info-value">{{ user.first_name|default:"Nenastaveno" }}</span>
-          </li>
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Příjmení" %}</span>
-            <span class="profile-info-value">{{ user.last_name|default:"Nenastaveno" }}</span>
-          </li>
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Email" %}</span>
-            <span class="profile-info-value">{{ user.email|default:"Není nastaven" }}</span>
-          </li>
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Telefon" %}</span>
-            <span class="profile-info-value">{{ user.profile.phone_number|default:"Nenastaveno" }}</span>
-          </li>
-          <li class="profile-info-item">
-            <span class="profile-info-label">{% trans "Lokace" %}</span>
-            <span class="profile-info-value">{{ user.profile.location|default:"Nenastaveno" }}</span>
-          </li>
-        </ul>
+    <!-- Account Stats -->
+    <div class="content-card">
+      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+        📊 Statistiky účtu
+      </h3>
 
-        <div class="social-links">
-          <a href="#" class="social-link" title="Facebook">&#128279;</a>
-          <a href="#" class="social-link" title="Twitter">&#128038;</a>
-          <a href="#" class="social-link" title="Instagram">&#128247;</a>
-          <a href="#" class="social-link" title="LinkedIn">&#128188;</a>
-        </div>
-      </div>
-
-      <!-- Platform Settings -->
-      <div class="profile-section">
-        <h3>&#9881; Nastavení platformy</h3>
-        
-        <div style="margin-bottom: 1.5rem;">
-          <h4 style="font-size: 0.875rem; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 1rem;">Účet</h4>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Email při sledování</span>
-            <div class="setting-switch active"></div>
-          </div>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Email při odpovědi na příspěvek</span>
-            <div class="setting-switch"></div>
-          </div>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Email při zmínce</span>
-            <div class="setting-switch active"></div>
-          </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">{{ user.owned_projects.count }}</div>
+          <div style="font-size: 0.875rem; color: #64748b;">Vlastněné projekty</div>
         </div>
 
-        <div>
-          <h4 style="font-size: 0.875rem; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 1rem;">Aplikace</h4>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Nové projekty a spuštění</span>
-            <div class="setting-switch"></div>
-          </div>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Měsíční aktualizace produktu</span>
-            <div class="setting-switch active"></div>
-          </div>
-          
-          <div class="setting-item">
-            <span style="font-size: 0.9rem;">Odběr newsletteru</span>
-            <div class="setting-switch"></div>
-          </div>
+        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #10b981;">{{ user.project_memberships.count }}</div>
+          <div style="font-size: 0.875rem; color: #64748b;">Členství v projektech</div>
         </div>
-      </div>
 
-      <!-- Recent Activity / Conversations -->
-      <div class="profile-section">
-        <h3>&#128172; Nedávné konverzace</h3>
-        
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; background: #f8fafc;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #059669, #047857); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-              S
-            </div>
-            <div style="flex: 1;">
-              <div style="font-weight: 600; font-size: 0.9rem;">Sophie B.</div>
-              <div style="font-size: 0.8rem; color: #64748b;">Potřebuji více informací...</div>
-            </div>
-            <a href="#" class="btn btn-outline" style="padding: 4px 12px; font-size: 0.8rem;">Odpovědět</a>
-          </div>
-          
-          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; background: #f8fafc;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #d97706, #b45309); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-              A
-            </div>
-            <div style="flex: 1;">
-              <div style="font-weight: 600; font-size: 0.9rem;">Anna Marie</div>
-              <div style="font-size: 0.8rem; color: #64748b;">Skvělá práce, můžeš...</div>
-            </div>
-            <a href="#" class="btn btn-outline" style="padding: 4px 12px; font-size: 0.8rem;">Odpovědět</a>
-          </div>
-          
-          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; background: #f8fafc;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-              P
-            </div>
-            <div style="flex: 1;">
-              <div style="font-weight: 600; font-size: 0.9rem;">Peterson</div>
-              <div style="font-size: 0.8rem; color: #64748b;">Mějte krásné odpoledne...</div>
-            </div>
-            <a href="#" class="btn btn-outline" style="padding: 4px 12px; font-size: 0.8rem;">Odpovědět</a>
-          </div>
+        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;">{{ user.assigned_tasks.count }}</div>
+          <div style="font-size: 0.875rem; color: #64748b;">Přiřazené úkoly</div>
+        </div>
+
+        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;">{{ user.created_organizations.count }}</div>
+          <div style="font-size: 0.875rem; color: #64748b;">Organizace</div>
         </div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>&copy; {% now "Y" %} FDK.cz - Komplexní řízení organizací | 
-         Vytvořeno s &#10084;&#65039; pro <a href="https://ekultura.eu" style="color: #3b82f6;">eKultura</a></p>
-    </footer>
-  </main>
+  </div>
 
-  <script>
-    // Auto-hide messages
-    document.addEventListener('DOMContentLoaded', function() {
-      const alerts = document.querySelectorAll('.alert');
-      alerts.forEach(alert => {
-        setTimeout(() => {
-          alert.style.opacity = '0';
-          alert.style.transform = 'translateY(-10px)';
-          setTimeout(() => alert.remove(), 300);
-        }, 5000);
-      });
+  <!-- Active Modules -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+        🔧 Aktivní moduly
+      </h3>
+      <a href="{% url 'user_settings' %}" class="btn btn-outline btn-sm">Spravovat moduly</a>
+    </div>
 
-      // Setting switches
-      document.querySelectorAll('.setting-switch').forEach(switchEl => {
-        switchEl.addEventListener('click', function() {
-          this.classList.toggle('active');
-        });
-      });
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+      {% for module in user.visible_modules.all %}
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.5rem;">{{ module.icon|default:"📦" }}</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #1e293b;">{{ module.display_name }}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">{{ module.description|truncatewords:5 }}</div>
+          </div>
+        </div>
+      {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #64748b;">
+          Nemáte žádné aktivní moduly
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 
-      // Tab navigation
-      document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.addEventListener('click', function(e) {
-          if (this.getAttribute('href') === '#') {
-            e.preventDefault();
-            document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-          }
-        });
-      });
-    });
-  </script>
-</body>
-</html>
+</div>
+
+<style>
+  .data-table-simple {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .data-row:last-child {
+    border-bottom: none;
+  }
+
+  .data-row:hover {
+    background: #f8fafc;
+  }
+
+  .data-label {
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .data-value {
+    color: #1e293b;
+  }
+</style>
+{% endblock %}
