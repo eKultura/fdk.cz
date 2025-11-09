@@ -97,13 +97,24 @@ class task_form(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
         super().__init__(*args, **kwargs)
+
+        # Kategorie podle projektu
         if project:
             self.fields['category'].queryset = ProjectCategory.objects.filter(project=project)
             self.fields['category'].required = True
+
+            # Filtrovat assigned na členy projektu
+            from fdk_cz.models import ProjectUser
+            project_members = User.objects.filter(user_projects__project=project).distinct()
+            self.fields['assigned'].queryset = project_members
         else:
             self.fields['category'].queryset = ProjectCategory.objects.none()
             self.fields['category'].required = False
+            self.fields['assigned'].queryset = User.objects.all()
+
         self.fields['category'].empty_label = "Vyberte kategorii"
+        self.fields['assigned'].required = False
+        self.fields['assigned'].empty_label = "Nepřiřazeno"
 
 
 

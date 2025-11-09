@@ -447,6 +447,8 @@ def task_management(request):
             'title': title,
             'description': description,
             'creator': user,
+            'assigned': user,  # Přiřadit úkol sobě
+            'created': timezone.now(),
         }
 
         # Handle context-specific logic
