@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}IT Incidenty | FDK.cz{% endblock %}
+{% block header_title %}🚨 IT Incidenty{% endblock %}
+{% block header_subtitle %}Přehled IT incidentů podle ITIL{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_it_incident' %}" class="btn btn-primary">+ Nový incident</a>
+    <a href="{% url 'it_dashboard' %}" class="btn btn-outline">Dashboard</a>
+    <a href="{% url 'list_it_assets' %}" class="btn btn-outline">IT Aktiva</a>
+  </div>
+
+  <div class="content-card">
+    {% if incidents %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Číslo</th>
+            <th>Název</th>
+            <th>Organizace</th>
+            <th>Priorita</th>
+            <th>Status</th>
+            <th>Nahlášeno</th>
+            <th style="text-align: center;">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for incident in incidents %}
+          <tr>
+            <td><strong>{{ incident.incident_number }}</strong></td>
+            <td>{{ incident.title }}</td>
+            <td>{{ incident.organization.name|default:"—" }}</td>
+            <td>
+              <span class="badge {% if incident.priority == 'critical' %}badge-danger{% elif incident.priority == 'high' %}badge-warning{% else %}badge-info{% endif %}">
+                {{ incident.get_priority_display|default:incident.priority }}
+              </span>
+            </td>
+            <td>
+              <span class="badge {% if incident.status == 'resolved' %}badge-success{% elif incident.status == 'in_progress' %}badge-warning{% else %}badge-secondary{% endif %}">
+                {{ incident.get_status_display|default:incident.status }}
+              </span>
+            </td>
+            <td>{{ incident.created_at|date:"d.m.Y H:i"|default:"—" }}</td>
+            <td style="text-align: center;">
+              <a href="{% url 'detail_it_incident' incident.incident_id %}" class="btn btn-sm btn-outline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="text-align: center; padding: 3rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🚨</div>
+        <p style="color: #64748b;">Zatím nejsou žádné IT incidenty k zobrazení.</p>
+        <a href="{% url 'create_it_incident' %}" class="btn btn-primary mt-4">+ Vytvořit první incident</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

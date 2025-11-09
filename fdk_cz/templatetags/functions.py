@@ -7,6 +7,17 @@ import re
 register = template.Library()
 
 @register.filter
+def multiply(value, arg):
+    """
+    Multiplies the value by the argument.
+    Usage: {{ value|multiply:2 }}
+    """
+    try:
+        return int(value) * int(arg)
+    except (ValueError, TypeError):
+        return 0
+
+@register.filter
 def replace_url_with_link(value):
     # Regulární výraz pro URL https://fdk.cz
     url_pattern = r"https://fdk\.cz"
