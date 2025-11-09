@@ -123,6 +123,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True, blank=True, db_column='end_date')
     created = models.DateTimeField(null=True, blank=True, db_column='created')
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_projects', db_column='owner_id')
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, null=True, blank=True, db_column='organization')
 
     def __str__(self):
         return self.name

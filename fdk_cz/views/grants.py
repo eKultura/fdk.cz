@@ -259,9 +259,14 @@ def application_create(request, call_id):
             status="submitted",
         )
         messages.success(request, "Žádost byla úspěšně odeslána.")
-        return redirect("call_detail", call_id=call.call_id)
+        return redirect("grant_detail", grant_id=call.call_id)
 
-    context = {"call": call, "projects": user_projects, "companies": user_companies}
+    context = {
+        "grant": call,  # Template používá 'grant'
+        "call": call,  # Pro zpětnou kompatibilitu
+        "projects": user_projects,
+        "companies": user_companies
+    }
     return render(request, "grants/application_create.html", context)
 
 
@@ -298,7 +303,7 @@ def application_edit(request, application_id):
             messages.success(request, "Žádost byla uložena.")
 
         app.save()
-        return redirect("call_detail", call_id=app.call.call_id)
+        return redirect("grant_detail", grant_id=app.call.call_id)
 
     context = {"application": app, "projects": user_projects, "companies": user_companies}
     return render(request, "grants/application_edit.html", context)
@@ -311,13 +316,13 @@ def application_delete(request, application_id):
 
     if app.status != "draft":
         messages.error(request, "Lze mazat pouze koncepty žádostí.")
-        return redirect("call_detail", call_id=app.call.call_id)
+        return redirect("grant_detail", grant_id=app.call.call_id)
 
     if request.method == "POST":
         call_id = app.call.call_id
         app.delete()
         messages.success(request, "Koncept žádosti byl smazán.")
-        return redirect("call_detail", call_id=call_id)
+        return redirect("grant_detail", grant_id=call_id)
 
     return render(request, "grants/application_delete.html", {"application": app})
 

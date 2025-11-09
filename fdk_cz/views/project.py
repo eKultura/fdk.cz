@@ -167,12 +167,13 @@ def edit_project(request, project_id):
     project_instance = get_object_or_404(Project, pk=project_id)
 
     if request.method == 'POST':
-        form = project_form(request.POST, instance=project_instance)
+        form = project_form(request.POST, instance=project_instance, user=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, f'Projekt "{project_instance.name}" byl úspěšně upraven.')
             return redirect('detail_project', project_id=project_instance.project_id)  # Přesměrování na detail projektu po úpravě
     else:
-        form = project_form(instance=project_instance)
+        form = project_form(instance=project_instance, user=request.user)
 
     return render(request, 'project/edit_project.html', {'form': form, 'project': project_instance})
 

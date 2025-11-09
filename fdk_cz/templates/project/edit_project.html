@@ -38,6 +38,16 @@
         <div class="form-help">Stručný popis projektu pro lepší orientaci členů týmu</div>
       </div>
 
+      <!-- Organizace -->
+      <div class="form-group">
+        <label for="id_organization" class="form-label">Organizace</label>
+        {{ form.organization }}
+        {% if form.organization.errors %}
+          <div class="form-error">{{ form.organization.errors|join:", " }}</div>
+        {% endif %}
+        <div class="form-help">Volitelné - přiřaďte projekt k organizaci pro sdílení s dalšími členy</div>
+      </div>
+
       <!-- Datum začátku a konce -->
       <div class="form-row">
         <div class="form-group">

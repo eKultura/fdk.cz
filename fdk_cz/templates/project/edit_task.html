@@ -5,6 +5,12 @@
 {% block header_title %}Upravit úkol{% endblock %}
 {% block header_subtitle %}Upravte detaily úkolu v projektu <strong>{{ project.name }}</strong>{% endblock %}
 
+{% block meta %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-3xl mx-auto">
   <div class="content-card">
@@ -27,14 +33,12 @@
       <div class="form-group">
         <label for="id_description" class="form-label">Popis</label>
         <textarea id="id_description" name="description" rows="6"
-                  placeholder="Detailní popis úkolu, co je potřeba udělat...
-
-Podporuje Markdown: **tučně**, *kurzíva*, `kód`, [odkaz](url), # Nadpisy"
+                  placeholder="Detailní popis úkolu, co je potřeba udělat..."
                   class="form-control">{{ form.description.value|default:task.description|default:'' }}</textarea>
         {% if form.description.errors %}
           <p class="form-error">{{ form.description.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Popište co je potřeba udělat a jaké jsou očekávané výsledky. Podporuje <strong>Markdown</strong> formátování (např. **tučně**, *kurzíva*, `kód`, [odkaz](url)).</div>
+        <div class="form-help">Popište co je potřeba udělat a jaké jsou očekávané výsledky. Textový editor s podporou formátování.</div>
       </div>
 
       <!-- Kategorie -->
@@ -122,4 +126,23 @@ Podporuje Markdown: **tučně**, *kurzíva*, `kód`, [odkaz](url), # Nadpisy"
     </form>
   </div>
 </div>
+
+<!-- Inicializace Summernote -->
+<script>
+  $(document).ready(function() {
+    $('#id_description').summernote({
+      placeholder: 'Detailní popis úkolu, co je potřeba udělat...',
+      tabsize: 2,
+      height: 200,
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['fontsize', 'color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['table', ['table']],
+        ['insert', ['link']],
+        ['view', ['fullscreen', 'codeview']]
+      ]
+    });
+  });
+</script>
 {% endblock %}
