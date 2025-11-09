@@ -211,37 +211,43 @@ def create_query(request):
 @law_module_required
 def query_detail(request, query_id):
     """Detail AI dotazu"""
-    # query = get_object_or_404(LawQuery, id=query_id, user=request.user)
+    try:
+        # query = get_object_or_404(LawQuery, id=query_id, user=request.user)
 
-    # Demo data - použití UTF-8 safe stringu
-    ai_response_text = (
-        "**Analýza kupní smlouvy dokončena**\n\n"
-        "Identifikoval jsem následující rizikové klauzule:\n\n"
-        "1. **Výhrada vlastnictví (čl. 4.2)** - Prodávající si vyhrazuje vlastnictví až do úplného zaplacení\n"
-        "2. **Omezení záruky (čl. 7.1)** - Záruka pouze 6 měsíců, což je pod zákonným minimem\n"
-        "3. **Jednostranné změny cen (čl. 3.4)** - Prodávající může změnit cenu bez souhlasu kupujícího\n\n"
-        "**Doporučené úpravy:**\n"
-        "- Prodloužit záruční dobu na 24 měsíců\n"
-        "- Omezit možnosti změny ceny\n"
-        "- Přidat sankce za prodlení s dodáním"
-    )
+        # Demo data - použití UTF-8 safe stringu
+        ai_response_text = (
+            "**Analýza kupní smlouvy dokončena**\n\n"
+            "Identifikoval jsem následující rizikové klauzule:\n\n"
+            "1. **Výhrada vlastnictví (čl. 4.2)** - Prodávající si vyhrazuje vlastnictví až do úplného zaplacení\n"
+            "2. **Omezení záruky (čl. 7.1)** - Záruka pouze 6 měsíců, což je pod zákonným minimem\n"
+            "3. **Jednostranné změny cen (čl. 3.4)** - Prodávající může změnit cenu bez souhlasu kupujícího\n\n"
+            "**Doporučené úpravy:**\n"
+            "- Prodloužit záruční dobu na 24 měsíců\n"
+            "- Omezit možnosti změny ceny\n"
+            "- Přidat sankce za prodlení s dodáním"
+        )
 
-    query_data = {
-        'id': query_id,
-        'title': 'Analýza kupní smlouvy - rizikové klauzule',
-        'question': 'Prosím analyzujte přiloženou kupní smlouvu a identifikujte potenciální rizika pro kupujícího.',
-        'status': 'completed',
-        'ai_response': ai_response_text,
-        'created_at': timezone.now(),
-        'updated_at': timezone.now(),
-    }
+        query_data = {
+            'id': query_id,
+            'title': 'Analýza kupní smlouvy - rizikové klauzule',
+            'question': 'Prosím analyzujte přiloženou kupní smlouvu a identifikujte potenciální rizika pro kupujícího.',
+            'status': 'completed',
+            'ai_response': ai_response_text,
+            'created_at': timezone.now(),
+            'updated_at': timezone.now(),
+        }
 
-    context = {
-        'page_title': 'Detail AI dotazu',
-        'query': query_data,
-    }
+        context = {
+            'page_title': 'Detail AI dotazu',
+            'query': query_data,
+        }
 
-    return render(request, 'law/detail_query.html', context)
+        return render(request, 'law/detail_query.html', context)
+    except UnicodeDecodeError:
+        from django.contrib import messages
+        messages.error(request, 'Chyba při načítání dotazu. Data mohou obsahovat neplatné znaky.')
+        from django.shortcuts import redirect
+        return redirect('law_dashboard')
 
 
 def law_list(request):

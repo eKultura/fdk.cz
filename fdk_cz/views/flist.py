@@ -79,7 +79,7 @@ def edit_list(request, list_id):
 
 @login_required
 def detail_list(request, list_id):
-    flist_instance = get_object_or_404(flist, pk=list_id)
+    flist_instance = get_object_or_404(Flist, pk=list_id)
     items = flist_instance.items.all()
 
     if request.method == 'POST':

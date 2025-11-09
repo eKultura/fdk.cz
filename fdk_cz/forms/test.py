@@ -17,19 +17,19 @@ class test_error_form(forms.ModelForm):
 
         # Omezení projektů na ty, které jsou dostupné pro uživatele
         if user:
-            user_projects = project.objects.filter(project_users__user=user)
+            user_projects = Project.objects.filter(project_users__user=user)
             self.fields['project'].queryset = user_projects
 
         # Nastavení pole test_result jako nepovinného
         self.fields['test_result'].required = False
-        self.fields['test_result'].queryset = test_result.objects.none()
+        self.fields['test_result'].queryset = TestResult.objects.none()
 
         if 'project' in self.data:
             try:
                 project_id = int(self.data.get('project'))
-                self.fields['test_result'].queryset = test_result.objects.filter(project_id=project_id)
+                self.fields['test_result'].queryset = TestResult.objects.filter(project_id=project_id)
             except (ValueError, TypeError):
-                self.fields['test_result'].queryset = test_result.objects.none()
+                self.fields['test_result'].queryset = TestResult.objects.none()
         elif self.instance.pk:
             self.fields['test_result'].queryset = self.instance.project.test_results
 
@@ -61,16 +61,16 @@ class test_form(forms.ModelForm):
 
         # Omezení projektů pro daného uživatele
         if user:
-            user_projects = project.objects.filter(project_users__user=user)
+            user_projects = Project.objects.filter(project_users__user=user)
             self.fields['project'].queryset = user_projects
 
         # Zpočátku prázdná roletka pro typy testů
-        self.fields['test_type'].queryset = test_type.objects.none()
+        self.fields['test_type'].queryset = TestType.objects.none()
 
         if 'project' in self.data:
             try:
                 selected_project_id = int(self.data.get('project'))
-                self.fields['test_type'].queryset = test_type.objects.filter(project_id=selected_project_id)
+                self.fields['test_type'].queryset = TestType.objects.filter(project_id=selected_project_id)
             except (ValueError, TypeError):
                 pass
         elif self.instance.pk:
@@ -95,10 +95,10 @@ class test_type_form(forms.ModelForm):
 
         # Pokud byl předán uživatel, omezíme projekty na ty, ke kterým má uživatel přístup
         if user:
-            user_projects = project.objects.filter(project_users__user=user)
+            user_projects = Project.objects.filter(project_users__user=user)
             self.fields['project'].queryset = user_projects
         else:
-            self.fields['project'].queryset = project.objects.all()  # Pokud není uživatel, načteme všechny projekty
+            self.fields['project'].queryset = Project.objects.all()  # Pokud není uživatel, načteme všechny projekty
 
         # Stylování formulářových polí
         self.fields['project'].widget.attrs.update({'class': 'form-control'})
