@@ -424,7 +424,7 @@ def update_task_status(request, task_id, status):
 @login_required
 def task_management(request):
     user = request.user
-    user_tasks = ProjectTask.objects.filter(assigned=user).order_by('priority', '-status')
+    user_tasks = ProjectTask.objects.filter(assigned=user).exclude(status='Hotovo').order_by('priority', '-status')
 
     # Get organizations where user is member or creator
     user_organizations = Organization.objects.filter(
