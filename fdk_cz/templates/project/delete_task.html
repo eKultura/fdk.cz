@@ -21,7 +21,11 @@
     <form method="post" class="flex flex-col sm:flex-row justify-center gap-3">
       {% csrf_token %}
       <button type="submit" class="btn btn-danger w-full sm:w-auto">🗑️ Smazat</button>
-      <a href="{% url 'detail_project' selected_task.project.project_id %}" class="btn btn-outline w-full sm:w-auto">← Zpět</a>
+      {% if selected_task.project %}
+        <a href="{% url 'detail_project' selected_task.project.project_id %}" class="btn btn-outline w-full sm:w-auto">← Zpět</a>
+      {% else %}
+        <a href="{% url 'task_management' %}" class="btn btn-outline w-full sm:w-auto">← Zpět</a>
+      {% endif %}
     </form>
   </div>
 </div>

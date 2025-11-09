@@ -3,7 +3,13 @@
 
 {% block title %}Upravit úkol | FDK.cz{% endblock %}
 {% block header_title %}Upravit úkol{% endblock %}
-{% block header_subtitle %}Upravte detaily úkolu v projektu <strong>{{ project.name }}</strong>{% endblock %}
+{% block header_subtitle %}
+{% if project %}
+Upravte detaily úkolu v projektu <strong>{{ project.name }}</strong>
+{% else %}
+Upravte detaily osobního úkolu
+{% endif %}
+{% endblock %}
 
 {% block meta %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -41,7 +47,8 @@
         <div class="form-help">Popište co je potřeba udělat a jaké jsou očekávané výsledky. Textový editor s podporou formátování.</div>
       </div>
 
-      <!-- Kategorie -->
+      <!-- Kategorie - pouze pro úkoly v projektu -->
+      {% if project %}
       <div class="form-group">
         <label for="id_category" class="form-label">Kategorie <span class="required">*</span></label>
         <select id="id_category" name="category" required class="form-control">
@@ -58,6 +65,7 @@
         {% endif %}
         <div class="form-help">Přiřaďte úkol do příslušné kategorie pro lepší organizaci</div>
       </div>
+      {% endif %}
 
       <!-- Priorita a Status vedle sebe -->
       <div class="form-row">
@@ -100,12 +108,20 @@
           <label for="id_assigned" class="form-label">Přiděleno</label>
           <select id="id_assigned" name="assigned" class="form-control">
             <option value="">-- Nepřiřazeno --</option>
-            {% for member in project.project_users.all %}
-              <option value="{{ member.user.id }}"
-                      {% if task.assigned and member.user.id == task.assigned.id %}selected{% endif %}>
-                {{ member.user.username }}
+            {% if project %}
+              {% for member in project.project_users.all %}
+                <option value="{{ member.user.id }}"
+                        {% if task.assigned and member.user.id == task.assigned.id %}selected{% endif %}>
+                  {{ member.user.username }}
+                </option>
+              {% endfor %}
+            {% else %}
+              {# Pro osobní úkoly bez projektu - zobrazit jen současného uživatele #}
+              <option value="{{ user.id }}"
+                      {% if task.assigned and user.id == task.assigned.id %}selected{% endif %}>
+                {{ user.username }} (já)
               </option>
-            {% endfor %}
+            {% endif %}
           </select>
           {% if form.assigned.errors %}
             <p class="form-error">{{ form.assigned.errors|join:", " }}</p>
