@@ -447,7 +447,8 @@ def task_management(request):
             'title': title,
             'description': description,
             'creator': user,
-            'assigned': user,  # Přiřadit úkol sobě
+            'priority': 'Nízká',  # Výchozí priorita
+            'status': 'Ke zpracování',  # Výchozí status
             'created': timezone.now(),
         }
 

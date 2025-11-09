@@ -165,7 +165,7 @@ def create_query(request):
         title = request.POST.get('title')
         question = request.POST.get('question')
         query_type = request.POST.get('query_type', 'general')
-        
+
         if title and question:
             # Zde by se vytvořil skutečný dotaz a poslal do AI
             # query = LawQuery.objects.create(
@@ -174,14 +174,26 @@ def create_query(request):
             #     question=question,
             #     status='pending'
             # )
-            
+
             messages.success(request, f'Dotaz "{title}" byl úspěšně vytvořen a je zpracováván AI.')
             return redirect('law_query_detail', query_id=1)  # Dummy ID
         else:
             messages.error(request, 'Vyplňte prosím všechna povinná pole.')
-    
+
+    # Pre-fill law if law_id is provided
+    selected_law = None
+    law_id = request.GET.get('law_id')
+    if law_id:
+        try:
+            from fdk_cz.models import Law
+            selected_law = Law.objects.get(id=law_id)
+        except (Law.DoesNotExist, ValueError, UnicodeDecodeError):
+            # Ignore if law doesn't exist or has encoding issues
+            pass
+
     context = {
         'page_title': 'Nový AI dotaz',
+        'selected_law': selected_law,
         'query_types': [
             ('contract_analysis', 'Analýza smlouvy'),
             ('legal_research', 'Právní rešerše'),
@@ -191,7 +203,7 @@ def create_query(request):
             ('compliance_check', 'Kontrola souladu'),
         ]
     }
-    
+
     return render(request, 'law/create_query.html', context)
 
 
