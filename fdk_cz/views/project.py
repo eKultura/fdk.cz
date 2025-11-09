@@ -13,9 +13,10 @@ from django.utils import timezone
 from fdk_cz.forms.project import add_user_form, document_form, category_form, initialize_project_forms, milestone_form, project_form, task_form
 
 from fdk_cz.models import (
+    Company,
+    Organization,
     ProjectCategory,
     ProjectComment,
-    Company,
     ProjectDocument,
     ProjectMilestone,
     Project,
@@ -661,3 +662,4 @@ def join_project(request, project_id):
     except Exception as e:
         messages.error(request, f"Chyba při přidávání do projektu: {str(e)}")
         return redirect('index')
+
