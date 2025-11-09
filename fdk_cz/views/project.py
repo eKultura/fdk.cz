@@ -373,7 +373,11 @@ def edit_task(request, task_id):
             else:
                 messages.success(request, "Úkol byl úspěšně upraven.")
 
-            return redirect('detail_project', project_id=project.project_id)
+            # Přesměrování - zpět na projekt nebo task management
+            if project:
+                return redirect('detail_project', project_id=project.project_id)
+            else:
+                return redirect('task_management')
     else:
         form = task_form(instance=task_obj, project=project)  # Přidání projektu při GET
 
@@ -407,7 +411,12 @@ def update_task_status(request, task_id, status):
     selected_task = get_object_or_404(ProjectTask, pk=task_id)  # Načte úkol podle ID
     selected_task.status = status  # Nastaví nový stav
     selected_task.save()  # Uloží změny
-    return redirect('detail_project', project_id=selected_task.project.project_id)  
+
+    # Přesměrování - zpět na projekt nebo task management
+    if selected_task.project:
+        return redirect('detail_project', project_id=selected_task.project.project_id)
+    else:
+        return redirect('task_management')  
 
 
 

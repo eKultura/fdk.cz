@@ -99,8 +99,10 @@ class task_form(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if project:
             self.fields['category'].queryset = ProjectCategory.objects.filter(project=project)
+            self.fields['category'].required = True
         else:
             self.fields['category'].queryset = ProjectCategory.objects.none()
+            self.fields['category'].required = False
         self.fields['category'].empty_label = "Vyberte kategorii"
 
 
