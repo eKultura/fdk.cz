@@ -133,7 +133,7 @@
           <select id="organization_id" name="organization_id" class="form-control">
             <option value="">-- Vyberte organizaci --</option>
             {% for org in user_organizations %}
-              <option value="{{ org.company_id }}">{{ org.name }}</option>
+              <option value="{{ org.organization_id }}">{{ org.name }}</option>
             {% endfor %}
           </select>
           <div class="form-help">Přiřaďte úkol k organizaci</div>

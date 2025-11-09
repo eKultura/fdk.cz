@@ -1,117 +1,149 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Testy" %}{% endblock %}
+{% block title %}{% trans "Testování" %} | FDK.cz{% endblock %}
+{% block header_title %}🧪 {% trans "Testování" %}{% endblock %}
+{% block header_subtitle %}{% trans "Správa testů, typů testů a chyb" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_test' %}" class="btn btn-primary">+ {% trans "Nový test" %}</a>
+    <a href="{% url 'create_test_type' %}" class="btn btn-outline">+ {% trans "Nový typ testu" %}</a>
+    <a href="{% url 'create_test_error' %}" class="btn btn-outline">+ {% trans "Nová chyba" %}</a>
+  </div>
 
-    <!-- Levý blok - Seznam testů (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <!-- Seznam testů -->
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Testy" %}</h2>
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6">{% trans "Název" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Popis" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6">{% trans "Typ" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6">{% trans "Projekt" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/6">{% trans "Akce" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for test in tests %}
-                <tr class="border-b">
-                    <td class="py-3 px-4 text-gray-600">{{ test.name }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ test.description }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ test.test_type.name }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ test.project.name }}</td>
-                    <td class="py-3 px-4 text-yellow-600 hover:text-yellow-800 font-semibold">
-                        <a href="{% url 'edit_test' test.test_id %}">{% trans "Upravit" %}</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center text-gray-500 py-3 px-4">{% trans "Žádné testy." %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-3 text-right">
-            <a href="{% url 'create_test' %}" class="text-blue-600 hover:text-blue-800 font-semibold">{% trans "Přidat nový test" %}</a>
-        </div>
-
-        <!-- Dostupné typy testů -->
-        <h2 class="mt-5 text-lg font-semibold text-gray-700">{% trans "Dostupné typy testů" %}</h2>
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Název" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Popis" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold">{% trans "Projekt" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for test_type in test_types %}
-                <tr class="border-b">
-                    <td class="py-3 px-4 text-gray-600">{{ test_type.name }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ test_type.description|default:"-" }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ test_type.project.name }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center text-gray-500 py-3 px-4">{% trans "Žádné typy testů nejsou k dispozici." %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-3 text-right">
-            <a href="{% url 'create_test_type' %}" class="text-blue-600 hover:text-blue-800 font-semibold">{% trans "Přidat nový typ testu" %}</a>
-        </div>
-
-        <!-- Posledních 10 aktivních chyb -->
-        <h2 class="mt-5 text-lg font-semibold text-gray-700">{% trans "Posledních 10 aktivních chyb" %}</h2>
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Název chyby" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Status" %}</th>
-                    <th class="py-3 px-4 text-left text-gray-700 font-semibold w-1/3">{% trans "Autor" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for error in test_errors %}
-                <tr class="border-b">
-                    <td class="py-3 px-4 text-gray-600">{{ error.error_title }}</td>
-                    <td class="py-3 px-4 text-gray-600">{{ error.status }}</td>
-                    <td class="py-3 px-4 text-gray-600">{% if error.created_by %}{{ error.created_by.username }}{% else %}{% trans "Neznámý" %}{% endif %}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center text-gray-500 py-3 px-4">{% trans "Žádné aktivní chyby." %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-3 text-right">
-            <a href="{% url 'create_test_error' %}" class="text-blue-600 hover:text-blue-800 font-semibold">{% trans "Přidat novou chybu" %}</a>
-        </div>
+  <!-- Testy -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold mb-4">{% trans "Testy" %}</h3>
+    {% if tests %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="text-left">{% trans "Název" %}</th>
+            <th class="text-left">{% trans "Popis" %}</th>
+            <th class="text-left">{% trans "Typ" %}</th>
+            <th class="text-left">{% trans "Projekt" %}</th>
+            <th class="text-right">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for test in tests %}
+          <tr>
+            <td class="font-semibold">{{ test.name }}</td>
+            <td>{{ test.description|truncatewords:10|default:"—" }}</td>
+            <td><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{{ test.test_type.name }}</span></td>
+            <td>{{ test.project.name }}</td>
+            <td class="text-right">
+              <a href="{% url 'edit_test' test.test_id %}" class="btn btn-outline btn-sm">{% trans "Upravit" %}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "V této sekci můžete spravovat testy, typy testů a aktivní chyby. Použijte odkazy vlevo k přidání nebo zobrazení detailů." %}
-        </p>
-        <p class="text-gray-600">{% trans "Pro rychlý přehled dostupných typů testů a aktivních chyb je zde zobrazen krátký výpis." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
-        </div>
+    {% else %}
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <div class="text-5xl mb-3">🧪</div>
+      <h4 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Žádné testy" %}</h4>
+      <p class="text-gray-600 mb-4">{% trans "Zatím nemáte vytvořené žádné testy." %}</p>
+      <a href="{% url 'create_test' %}" class="btn btn-primary">+ {% trans "Vytvořit první test" %}</a>
     </div>
+    {% endif %}
+  </div>
 
+  <!-- Typy testů -->
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold mb-4">{% trans "Dostupné typy testů" %}</h3>
+    {% if test_types %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="text-left">{% trans "Název" %}</th>
+            <th class="text-left">{% trans "Popis" %}</th>
+            <th class="text-left">{% trans "Projekt" %}</th>
+            <th class="text-right">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for test_type in test_types %}
+          <tr>
+            <td class="font-semibold">{{ test_type.name }}</td>
+            <td>{{ test_type.description|truncatewords:10|default:"—" }}</td>
+            <td>{{ test_type.project.name }}</td>
+            <td class="text-right">
+              <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-outline btn-sm">{% trans "Upravit" %}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-8 bg-gray-50 rounded-lg">
+      <p class="text-gray-600 mb-3">{% trans "Žádné typy testů nejsou k dispozici." %}</p>
+      <a href="{% url 'create_test_type' %}" class="btn btn-outline btn-sm">+ {% trans "Přidat typ testu" %}</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Aktivní chyby -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">{% trans "Posledních 10 aktivních chyb" %}</h3>
+    {% if test_errors %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="text-left">{% trans "Název chyby" %}</th>
+            <th class="text-left">{% trans "Status" %}</th>
+            <th class="text-left">{% trans "Autor" %}</th>
+            <th class="text-right">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for error in test_errors %}
+          <tr>
+            <td class="font-semibold">{{ error.error_title }}</td>
+            <td>
+              <span class="px-2 py-1 {% if error.status == 'open' %}bg-yellow-100 text-yellow-700{% elif error.status == 'closed' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %} rounded text-sm">
+                {{ error.status }}
+              </span>
+            </td>
+            <td>{% if error.created_by %}{{ error.created_by.username }}{% else %}{% trans "Neznámý" %}{% endif %}</td>
+            <td class="text-right">
+              <a href="{% url 'detail_test_error' error.test_error_id %}" class="btn btn-outline btn-sm">{% trans "Detail" %}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-8 bg-gray-50 rounded-lg">
+      <p class="text-gray-600 mb-3">{% trans "Žádné aktivní chyby." %}</p>
+      <a href="{% url 'create_test_error' %}" class="btn btn-outline btn-sm">+ {% trans "Přidat chybu" %}</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Help Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">{% trans "Tipy pro správu testování" %}</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• {% trans "Pravidelně vytvářejte a aktualizujte testy pro kritické části aplikace" %}</li>
+          <li>• {% trans "Kategorizujte testy podle typů pro lepší organizaci" %}</li>
+          <li>• {% trans "Sledujte a rychle řešte nahlášené chyby" %}</li>
+          <li>• {% trans "Dokumentujte očekávané výsledky testů" %}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

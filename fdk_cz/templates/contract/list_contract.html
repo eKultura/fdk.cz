@@ -11,7 +11,23 @@
   <!-- Actions -->
   <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
     <div>
-      <a href="{% url 'create_contract' %}" class="btn btn-primary">+ Nová smlouva</a>
+      {% if project %}
+        <a href="{% url 'create_contract' project.project_id %}" class="btn btn-primary">+ Nová smlouva</a>
+      {% elif user_projects %}
+        <div style="position: relative; display: inline-block;">
+          <button id="newContractBtn" class="btn btn-primary" type="button">+ Nová smlouva</button>
+          <div id="projectDropdown" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 0.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 250px; z-index: 1000;">
+            <div style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">Vyberte projekt</div>
+            {% for proj in user_projects %}
+              <a href="{% url 'create_contract' proj.project_id %}" style="display: block; padding: 0.75rem 1rem; color: #1e293b; text-decoration: none; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                📁 {{ proj.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <span style="color: #64748b; font-size: 0.875rem;">Nejprve vytvořte projekt</span>
+      {% endif %}
     </div>
     <div style="display: flex; gap: 0.5rem;">
       <input type="text" placeholder="Hledat smlouvy..." style="padding: 0.5rem 1rem; border: 1px solid #e2e8f0; border-radius: 6px; width: 300px;">
@@ -63,10 +79,37 @@
       <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
       <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Žádné smlouvy</h3>
       <p style="color: #64748b; margin-bottom: 1.5rem;">Zatím nemáte v systému žádné smlouvy.</p>
-      <a href="{% url 'create_contract' %}" class="btn btn-primary">+ Vytvořit první smlouvu</a>
+      {% if project %}
+        <a href="{% url 'create_contract' project.project_id %}" class="btn btn-primary">+ Vytvořit první smlouvu</a>
+      {% elif user_projects %}
+        <p style="color: #64748b; margin-bottom: 1rem;">Klikněte na tlačítko "Nová smlouva" nahoře a vyberte projekt.</p>
+      {% else %}
+        <p style="color: #64748b; margin-bottom: 1rem;">Nejprve <a href="{% url 'new_project_cs' %}" style="color: #3b82f6;">vytvořte projekt</a>, poté můžete přidat smlouvy.</p>
+      {% endif %}
     </div>
     {% endif %}
   </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const newContractBtn = document.getElementById('newContractBtn');
+  const projectDropdown = document.getElementById('projectDropdown');
+
+  if (newContractBtn && projectDropdown) {
+    newContractBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      projectDropdown.style.display = projectDropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!newContractBtn.contains(e.target) && !projectDropdown.contains(e.target)) {
+        projectDropdown.style.display = 'none';
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

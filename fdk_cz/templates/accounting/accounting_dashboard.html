@@ -1,68 +1,102 @@
-{% extends 'base.html' %}
-{% block title %}Účetnictví - Přehled{% endblock %}
+{% extends "base.html" %}
+{% block title %}Účetnictví | FDK.cz{% endblock %}
+{% block header_title %}💰 Účetnictví{% endblock %}
+{% block header_subtitle %}Správa faktur a peněžních deníků{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Účetnictví - Přehled</h1>
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Nová faktura</a>
+    <a href="{% url 'list_invoices' %}" class="btn btn-outline">Všechny faktury</a>
+    <a href="{% url 'free_invoice' %}" class="btn btn-outline">Vytvoř fakturu zdarma</a>
+  </div>
 
-    <!-- Blok 1: Informace o účetnictví (naplnění později) -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Informace o účetnictví</h3>
-        </div>
-        <div class="card-body">
-            <p>Faktury a peněžní deníky.</p>
-        </div>
+  <!-- Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">📄 Celkem faktur</h3>
+      <p class="text-3xl font-bold text-blue-600">{{ total_invoices|default:invoices|length }}</p>
     </div>
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">⏳ Nevyřízených</h3>
+      <p class="text-3xl font-bold text-yellow-600">{{ pending_invoices|default:0 }}</p>
+    </div>
+    <div class="content-card">
+      <h3 class="text-lg font-semibold mb-2">✅ Zaplacených</h3>
+      <p class="text-3xl font-bold text-green-600">{{ paid_invoices|default:0 }}</p>
+    </div>
+  </div>
 
-    <!-- Blok 2: Tvorba nové faktury -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Tvorba faktur</h3>
-        </div>
-        <div class="card-body">
-            <a href="{% url 'create_invoice' %}" class="btn btn-primary">Vytvořit novou fakturu</a>
-        </div>
+  <!-- Recent Invoices -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">Nedávné faktury</h3>
+    {% if invoices %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="text-left">Číslo faktury</th>
+            <th class="text-left">Datum vystavení</th>
+            <th class="text-left">Datum splatnosti</th>
+            <th class="text-left">Plátce</th>
+            <th class="text-left">Částka</th>
+            <th class="text-left">Stav</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+          <tr>
+            <td class="font-semibold">{{ invoice.invoice_number }}</td>
+            <td>{{ invoice.issue_date|date:"d.m.Y"|default:"—" }}</td>
+            <td>{{ invoice.due_date|date:"d.m.Y"|default:"—" }}</td>
+            <td>{{ invoice.company.name|default:"—" }}</td>
+            <td class="font-semibold">{{ invoice.total_amount|default:"—" }} Kč</td>
+            <td>
+              {% if invoice.status == 'paid' %}
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">✓ Zaplaceno</span>
+              {% elif invoice.status == 'pending' %}
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">⏳ Čeká</span>
+              {% elif invoice.status == 'overdue' %}
+                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">⚠️ Po splatnosti</span>
+              {% else %}
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">{{ invoice.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td class="text-right">
+              <a href="{% url 'detail_invoice' invoice.id %}" class="btn btn-outline btn-sm">Detail</a>
+              <a href="{% url 'edit_invoice' invoice.id %}" class="btn btn-outline btn-sm">Upravit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <div class="text-5xl mb-3">📄</div>
+      <h4 class="text-lg font-semibold text-gray-700 mb-2">Žádné faktury</h4>
+      <p class="text-gray-600 mb-4">Zatím nemáte vytvořené žádné faktury.</p>
+      <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Vytvořit první fakturu</a>
+    </div>
+    {% endif %}
+  </div>
 
-    <!-- Blok 3: Seznam faktur -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Seznam faktur</h3>
-        </div>
-        <div class="card-body">
-            {% if invoices %}
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Číslo faktury</th>
-                            <th>Datum vystavení</th>
-                            <th>Datum splatnosti</th>
-                            <th>Plátce</th>
-                            <th>Stav</th>
-                            <th>Akce</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for invoice in invoices %}
-                        <tr>
-                            <td>{{ invoice.invoice_number }}</td>
-                            <td>{{ invoice.issue_date }}</td>
-                            <td>{{ invoice.due_date }}</td>
-                            <td>{{ invoice.company.name }}</td>
-                            <td>{{ invoice.get_status_display }}</td>
-                            <td>
-                                <a href="{% url 'detail_invoice' invoice.id %}" class="btn btn-info btn-sm">Detail</a>
-                                <a href="{% url 'edit_invoice' invoice.id %}" class="btn btn-warning btn-sm">Upravit</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>Nemáte žádné faktury.</p>
-            {% endif %}
-        </div>
+  <!-- Help Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu účetnictví</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Pravidelně kontrolujte stav faktur a termíny splatnosti</li>
+          <li>• Udržujte aktuální informace o zákaznících a dodavatelích</li>
+          <li>• Využívejte automatické upomínky pro nezaplacené faktury</li>
+          <li>• Zálohujte si důležitá účetní data</li>
+        </ul>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

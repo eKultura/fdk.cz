@@ -36,7 +36,7 @@
             <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 text-white">
               <div class="flex items-center gap-3">
                 <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-blue-600">
-                  {{ contact.first_name|first }}{{ contact.last_name|first }}
+                  {{ contact.first_name|default:""|first }}{{ contact.last_name|default:""|first }}
                 </div>
                 <div class="flex-1">
                   <h5 class="font-semibold text-lg">
