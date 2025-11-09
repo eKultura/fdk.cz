@@ -1,95 +1,117 @@
-{% extends "project/base.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Přidat nový test" %}{% endblock %}
+{% block title %}{% trans "Přidat nový test" %} | FDK.cz{% endblock %}
+{% block header_title %}🧪 {% trans "Nový test" %}{% endblock %}
+{% block header_subtitle %}{% trans "Vytvoření nového testu pro projekt" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
-    <h1 class="text-center mb-6 font-semibold text-gray-800">{% trans "Přidat nový test" %}</h1>
-    <form method="POST" class="needs-validation">
-        {% csrf_token %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'list_tests' %}" class="btn btn-outline">← {% trans "Zpět na testy" %}</a>
+  </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Levý blok - Formulář -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Formulář testu" %}</h2>
+  <!-- Form -->
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
 
-                <!-- Projekt -->
-                <div class="mb-4">
-                    <label for="id_project" class="block font-semibold text-gray-600 mb-1">{% trans "Projekt" %}</label>
-                    {{ form.project }}
-                </div>
+      <!-- Projekt -->
+      <div class="mb-6">
+        <label for="id_project" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Projekt" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.project }}
+        {% if form.project.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.project.errors }}</p>
+        {% endif %}
+      </div>
 
-                <!-- Typ testu -->
-                <div class="mb-4">
-                    <label for="id_test_type" class="block font-semibold text-gray-600 mb-1">
-                        {% trans "Typ testu" %} 
-                        <small>(<a href="/testy/typy/novy/" class="text-blue-500 hover:text-blue-700 underline font-semibold">{% trans "Nový typ testování" %}</a>)</small>
-                    </label>
-                    <select name="test_type" id="id_test_type" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
+      <!-- Typ testu -->
+      <div class="mb-6">
+        <label for="id_test_type" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Typ testu" %} <span class="text-red-500">*</span>
+          <a href="{% url 'create_test_type' %}" class="text-blue-600 hover:underline text-xs ml-2">
+            + {% trans "Přidat nový typ" %}
+          </a>
+        </label>
+        <select name="test_type" id="id_test_type" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">{% trans "Vyberte typ testu" %}</option>
+        </select>
+        {% if form.test_type.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.test_type.errors }}</p>
+        {% endif %}
+      </div>
 
-                      <option value="">{% trans "Vyberte typ testu" %}</option>
-                    </select>
-                    {% if form.test_type.errors %}
-                        <div class="text-red-600 mt-1">{{ form.test_type.errors }}</div>
-                    {% endif %}
-                </div>
+      <!-- Název testu -->
+      <div class="mb-6">
+        <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Název testu" %} <span class="text-red-500">*</span>
+        </label>
+        <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}" required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        {% if form.name.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.name.errors }}</p>
+        {% endif %}
+      </div>
 
-                <!-- Název testu -->
-                <div class="mb-4">
-                    <label for="id_name" class="block font-semibold text-gray-600 mb-1">{% trans "Název testu" %}</label>
-                    <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}"
-                           class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                    {% if form.name.errors %}
-                        <div class="text-red-600 mt-1">{{ form.name.errors }}</div>
-                    {% endif %}
-                </div>
+      <!-- Popis testu -->
+      <div class="mb-6">
+        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Popis testu" %}
+        </label>
+        <textarea name="description" id="id_description" rows="4"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">{{ form.description.value|default_if_none:'' }}</textarea>
+        {% if form.description.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors }}</p>
+        {% endif %}
+      </div>
 
-                <!-- Popis testu -->
-                <div class="mb-4">
-                    <label for="id_description" class="block font-semibold text-gray-600 mb-1">{% trans "Popis testu" %}</label>
-                    <textarea name="description" id="id_description" rows="4"
-                              class="w-full p-2 border border-gray-300 rounded-lg bg-white">{{ form.description.value|default_if_none:'' }}</textarea>
-                    {% if form.description.errors %}
-                        <div class="text-red-600 mt-1">{{ form.description.errors }}</div>
-                    {% endif %}
-                </div>
+      <!-- Mřížka umístění -->
+      <div class="mb-6">
+        <label for="id_grid_location" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Mřížka (umístění)" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.grid_location }}
+        {% if form.grid_location.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.grid_location.errors }}</p>
+        {% endif %}
 
-                <!-- Mřížka umístění -->
-                <div class="mb-4">
-                    <label for="id_grid_location" class="block font-semibold text-gray-600 mb-1">{% trans "Mřížka (umístění)" %}</label>
-                    {{ form.grid_location }}
-                </div>
-
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded font-semibold w-full mt-3">
-                    {% trans "Přidat test" %}
-                </button>
-            </div>
-
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-
-            <p class="text-gray-600 mb-4">{% trans "Mřížka umístění" %}</p>
-                <table class="table table-bordered text-center" style="width:100%">
-                    <tr>
-                        <td>A1</td><td>A2</td><td>A3</td>
-                    </tr>
-                    <tr>
-                        <td>B1</td><td>B2</td><td>B3</td>
-                    </tr>
-                    <tr>
-                        <td>C1</td><td>C2</td><td>C3</td>
-                    </tr>
-                </table>
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+        <!-- Helper grid -->
+        <div class="mt-3 p-4 bg-gray-50 rounded-lg inline-block">
+          <p class="text-xs text-gray-600 mb-2">{% trans "Reference mřížky:" %}</p>
+          <table class="border-collapse">
+            <tr>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">A1</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">A2</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">A3</td>
+            </tr>
+            <tr>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">B1</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">B2</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">B3</td>
+            </tr>
+            <tr>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">C1</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">C2</td>
+              <td class="border border-gray-300 px-3 py-2 text-center text-sm">C3</td>
+            </tr>
+          </table>
         </div>
-    </div>
+      </div>
 
-        </div>
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          {% trans "Přidat test" %}
+        </button>
+        <a href="{% url 'list_tests' %}" class="btn btn-outline">
+          {% trans "Zrušit" %}
+        </a>
+      </div>
     </form>
+  </div>
 </div>
 
 <script>
@@ -97,7 +119,6 @@ document.getElementById('id_project').addEventListener('change', function() {
     var projectId = this.value;
     var testTypeSelect = document.getElementById('id_test_type');
 
-    // Přidejte 'test_types' místo 'test_result' v JSON datu pro správné přiřazení
     testTypeSelect.innerHTML = '<option value="">{% trans "Vyberte typ testu" %}</option>';
 
     if (projectId) {
@@ -114,6 +135,5 @@ document.getElementById('id_project').addEventListener('change', function() {
             .catch(error => console.error('Error:', error));
     }
 });
-
 </script>
 {% endblock %}

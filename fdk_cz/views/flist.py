@@ -58,7 +58,7 @@ def create_list(request):
 
 @login_required
 def edit_list(request, list_id):
-    flist_instance = get_object_or_404(flist, pk=list_id)
+    flist_instance = get_object_or_404(Flist, pk=list_id)
 
     if flist_instance.owner != request.user:
         return redirect('detail_list', list_id=list_id)
@@ -114,7 +114,7 @@ def add_item(request, list_id):
 
 
 def edit_item(request, item_id):
-    item = get_object_or_404(list_item, pk=item_id)
+    item = get_object_or_404(ListItem, pk=item_id)
     if request.method == 'POST':
         form = list_item_form(request.POST, instance=item)
         if form.is_valid():
