@@ -88,7 +88,7 @@ class ITIncidentForm(forms.ModelForm):
             ).distinct()
 
             # Filter IT assets
-            if self.instance and self.instance.organization:
+            if self.instance and self.instance.pk and hasattr(self.instance, 'organization_id') and self.instance.organization_id:
                 self.fields['affected_asset'].queryset = ITAsset.objects.filter(
                     organization=self.instance.organization
                 )
