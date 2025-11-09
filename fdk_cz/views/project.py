@@ -416,7 +416,11 @@ def task_management(request):
     user = request.user
     user_tasks = ProjectTask.objects.filter(assigned=user).order_by('priority', '-status')
 
-    user_organizations = user.companies.all()
+    # Get organizations where user is member or creator
+    user_organizations = Organization.objects.filter(
+        Q(created_by=user) | Q(members=user)
+    ).distinct()
+
     # Get projects where user is a member
     user_projects = Project.objects.filter(
         Q(owner=user) | Q(project_users__user=user)
@@ -440,7 +444,7 @@ def task_management(request):
         if context == 'project' and project_id:
             task_data['project'] = get_object_or_404(Project, pk=project_id)
         elif context == 'organization' and organization_id:
-            task_data['organization'] = get_object_or_404(Company, pk=organization_id)
+            task_data['organization'] = get_object_or_404(Organization, pk=organization_id)
         # For 'personal' context, no project or organization is set
 
         ProjectTask.objects.create(**task_data)
