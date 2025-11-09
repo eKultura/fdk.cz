@@ -223,7 +223,7 @@ class ProjectTask(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks', db_column='creator_id')
     assigned = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_tasks', db_column='assigned_id')
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, related_name='tasks', db_column='project_id')
-    organization = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks', db_column='organization_id')
+    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks', db_column='organization_id')
     due_date = models.DateField(null=True, blank=True, db_column='due_date')
     created = models.DateTimeField(null=True, blank=True, db_column='created')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks', db_column='parent_id')
