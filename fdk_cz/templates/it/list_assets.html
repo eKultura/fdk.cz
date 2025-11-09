@@ -5,6 +5,14 @@
 
 {% block content %}
 <div style="max-width: 1400px; margin: 0 auto;">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_it_asset' %}" class="btn btn-primary">+ Nové aktivum</a>
+    <a href="{% url 'create_it_incident' %}" class="btn btn-secondary">+ Nový incident</a>
+    <a href="{% url 'it_dashboard' %}" class="btn btn-outline">Dashboard</a>
+    <a href="{% url 'list_it_incidents' %}" class="btn btn-outline">Všechny incidenty</a>
+  </div>
+
   <div class="content-card">
     {% if assets %}
       <table class="data-table">

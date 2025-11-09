@@ -1,12 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}Seznam faktur{% endblock %}
+{% block title %}Seznam faktur | FDK.cz{% endblock %}
+{% block header_title %}📄 Faktury{% endblock %}
+{% block header_subtitle %}Správa faktur a účetních dokladů{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Seznam faktur</h1>
-    <a href="{% url 'create_invoice' %}" class="btn btn-primary mb-3">Vytvořit novou fakturu</a>
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Vytvořit novou fakturu</a>
+    <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">Dashboard</a>
+  </div>
 
-    <table class="table table-striped">
+  <div class="content-card">
+    {% if invoices %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
         <thead>
             <tr>
                 <th>Číslo faktury</th>
@@ -36,6 +44,16 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <div class="text-5xl mb-3">📄</div>
+      <h4 class="text-lg font-semibold text-gray-700 mb-2">Žádné faktury</h4>
+      <p class="text-gray-600 mb-4">Zatím nemáte vytvořené žádné faktury.</p>
+      <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Vytvořit první fakturu</a>
+    </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

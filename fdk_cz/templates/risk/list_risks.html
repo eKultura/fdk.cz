@@ -5,6 +5,13 @@
 
 {% block content %}
 <div style="max-width: 1400px; margin: 0 auto;">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
+    <a href="{% url 'risk_dashboard' %}" class="btn btn-outline">Dashboard</a>
+    <a href="{% url 'risk_matrix' %}" class="btn btn-outline">Riziková matice</a>
+  </div>
+
   <div class="content-card">
     {% if risks %}
       <table class="data-table">
