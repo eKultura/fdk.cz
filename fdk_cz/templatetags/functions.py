@@ -18,6 +18,16 @@ def multiply(value, arg):
         return 0
 
 @register.filter
+def dict_lookup(dictionary, key):
+    """
+    Looks up a key in a dictionary.
+    Usage: {{ my_dict|dict_lookup:"key_name" }}
+    """
+    if isinstance(dictionary, dict):
+        return dictionary.get(key, [])
+    return []
+
+@register.filter
 def replace_url_with_link(value):
     # Regulární výraz pro URL https://fdk.cz
     url_pattern = r"https://fdk\.cz"
