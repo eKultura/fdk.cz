@@ -161,11 +161,8 @@
     {% if task.description %}
     <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
       <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">📝 Popis úkolu</h3>
-      <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem;">
-        <div style="color: #1e293b; line-height: 1.7;">{{ task.description|markdown }}</div>
-        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #e2e8f0; font-size: 0.75rem; color: #94a3b8;">
-          💡 Tip: Tento popis podporuje <strong>Markdown</strong> formátování
-        </div>
+      <div style="background: linear-gradient(to bottom, #eff6ff, #f0f9ff); border: 2px solid #3b82f6; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="color: #1e293b; line-height: 1.8; font-size: 1rem;">{{ task.description|markdown }}</div>
       </div>
     </div>
     {% endif %}
