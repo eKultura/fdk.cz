@@ -424,7 +424,10 @@ def update_task_status(request, task_id, status):
 @login_required
 def task_management(request):
     user = request.user
-    user_tasks = ProjectTask.objects.filter(assigned=user).exclude(status='Hotovo').order_by('priority', '-status')
+    # Zobraz úkoly přiřazené uživateli NEBO vytvořené uživatelem
+    user_tasks = ProjectTask.objects.filter(
+        Q(assigned=user) | Q(creator=user)
+    ).exclude(status='Hotovo').distinct().order_by('priority', '-status')
 
     # Get organizations where user is member or creator
     user_organizations = Organization.objects.filter(
@@ -442,6 +445,25 @@ def task_management(request):
         context = request.POST.get('context', 'personal')
         project_id = request.POST.get('project_id')
         organization_id = request.POST.get('organization_id')
+
+        # Validace - pokud je vybrán kontext projekt/organizace, musí být vybrán i konkrétní projekt/organizace
+        if context == 'project' and not project_id:
+            messages.error(request, "Pokud vytváříte projektový úkol, musíte vybrat konkrétní projekt.")
+            context_data = {
+                'tasks': user_tasks,
+                'user_organizations': user_organizations,
+                'user_projects': user_projects,
+            }
+            return render(request, 'project/task_management.html', context_data)
+
+        if context == 'organization' and not organization_id:
+            messages.error(request, "Pokud vytváříte organizační úkol, musíte vybrat konkrétní organizaci.")
+            context_data = {
+                'tasks': user_tasks,
+                'user_organizations': user_organizations,
+                'user_projects': user_projects,
+            }
+            return render(request, 'project/task_management.html', context_data)
 
         task_data = {
             'title': title,
