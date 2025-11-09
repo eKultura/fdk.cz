@@ -123,7 +123,7 @@
         </div>
 
         <!-- Project selection (hidden by default) -->
-        <div id="project-select-group" class="form-group hidden">
+        <div id="project-select-group" class="form-group" style="display: none;">
           <label for="project_id" class="form-label">Vyberte projekt <span class="required">*</span></label>
           {% if user_projects %}
           <select id="project_id" name="project_id" class="form-control">
@@ -135,13 +135,13 @@
           <div class="form-help">Přiřaďte úkol k projektu</div>
           {% else %}
           <div class="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-            ⚠️ Nemáte žádný projekt. <a href="{% url 'new_project_cs' %}" class="underline font-medium">Vytvořit nový projekt</a>
+            ⚠️ Nejste členem žádného projektu. <a href="{% url 'new_project_cs' %}" class="underline font-medium">Vytvořit nový projekt</a>
           </div>
           {% endif %}
         </div>
 
         <!-- Organization selection (hidden by default) -->
-        <div id="organization-select-group" class="form-group hidden">
+        <div id="organization-select-group" class="form-group" style="display: none;">
           <label for="organization_id" class="form-label">Vyberte organizaci <span class="required">*</span></label>
           {% if user_organizations %}
           <select id="organization_id" name="organization_id" class="form-control">
@@ -153,7 +153,7 @@
           <div class="form-help">Přiřaďte úkol k organizaci</div>
           {% else %}
           <div class="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-            ⚠️ Nejste v žádné organizaci. <a href="{% url 'create_organization' %}" class="underline font-medium">Vytvořit novou organizaci</a>
+            ⚠️ Nejste členem žádné organizace. <a href="{% url 'create_organization' %}" class="underline font-medium">Vytvořit novou organizaci</a>
           </div>
           {% endif %}
         </div>
@@ -175,14 +175,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const value = e.target.value;
 
       // Hide all context-specific fields
-      projectGroup.classList.add('hidden');
-      organizationGroup.classList.add('hidden');
+      projectGroup.style.display = 'none';
+      organizationGroup.style.display = 'none';
 
       // Show relevant field
       if (value === 'project') {
-        projectGroup.classList.remove('hidden');
+        projectGroup.style.display = 'block';
       } else if (value === 'organization') {
-        organizationGroup.classList.remove('hidden');
+        organizationGroup.style.display = 'block';
       }
     });
   });
