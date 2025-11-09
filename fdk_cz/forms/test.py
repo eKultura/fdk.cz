@@ -49,7 +49,7 @@ class test_form(forms.ModelForm):
         ('c1', 'C1'), ('c2', 'C2'), ('c3', 'C3'),
     ]
 
-    grid_location = forms.ChoiceField(choices=GRID_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    grid_location = forms.ChoiceField(choices=GRID_CHOICES, widget=forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}))
 
     class Meta:
         model = Test
@@ -76,9 +76,14 @@ class test_form(forms.ModelForm):
         elif self.instance.pk:
             self.fields['test_type'].queryset = self.instance.project.test_types
 
-        # Bootstrap stylování pro všechny pole
+        # Tailwind stylování pro všechny pole
+        tailwind_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
         for field_name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control'})
+            if field_name == 'description':
+                # Textarea má trochu jiné classes
+                field.widget.attrs.update({'class': tailwind_classes, 'rows': '4'})
+            else:
+                field.widget.attrs.update({'class': tailwind_classes})
 
 
 
@@ -100,10 +105,11 @@ class test_type_form(forms.ModelForm):
         else:
             self.fields['project'].queryset = Project.objects.all()  # Pokud není uživatel, načteme všechny projekty
 
-        # Stylování formulářových polí
-        self.fields['project'].widget.attrs.update({'class': 'form-control'})
-        self.fields['name'].widget.attrs.update({'class': 'form-control'})
-        self.fields['description'].widget.attrs.update({'class': 'form-control'})
+        # Tailwind stylování formulářových polí
+        tailwind_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+        self.fields['project'].widget.attrs.update({'class': tailwind_classes})
+        self.fields['name'].widget.attrs.update({'class': tailwind_classes})
+        self.fields['description'].widget.attrs.update({'class': tailwind_classes, 'rows': '4'})
 
 
 

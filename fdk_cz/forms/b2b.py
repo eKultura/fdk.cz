@@ -58,21 +58,25 @@ class B2BContractForm(forms.ModelForm):
             'start_date', 'end_date', 'signed_date',
             'status', 'categories', 'keywords'
         ]
+
+        # Tailwind CSS styling
+        tw_input = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+
         widgets = {
-            'company': forms.Select(attrs={'class': 'form-control'}),
-            'organization': forms.Select(attrs={'class': 'form-control'}),
-            'project': forms.Select(attrs={'class': 'form-control'}),
-            'contract_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Číslo smlouvy'}),
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Název smlouvy'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'contract_value': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'currency': forms.TextInput(attrs={'class': 'form-control'}),
-            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'signed_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-            'categories': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'kategorie 1, kategorie 2'}),
-            'keywords': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'klíčové slovo 1, klíčové slovo 2'}),
+            'company': forms.Select(attrs={'class': tw_input}),
+            'organization': forms.Select(attrs={'class': tw_input}),
+            'project': forms.Select(attrs={'class': tw_input}),
+            'contract_number': forms.TextInput(attrs={'class': tw_input, 'placeholder': 'Číslo smlouvy'}),
+            'title': forms.TextInput(attrs={'class': tw_input, 'placeholder': 'Název smlouvy'}),
+            'description': forms.Textarea(attrs={'class': tw_input, 'rows': 4}),
+            'contract_value': forms.NumberInput(attrs={'class': tw_input, 'step': '0.01'}),
+            'currency': forms.TextInput(attrs={'class': tw_input}),
+            'start_date': forms.DateInput(attrs={'class': tw_input, 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': tw_input, 'type': 'date'}),
+            'signed_date': forms.DateInput(attrs={'class': tw_input, 'type': 'date'}),
+            'status': forms.Select(attrs={'class': tw_input}),
+            'categories': forms.TextInput(attrs={'class': tw_input, 'placeholder': 'kategorie 1, kategorie 2'}),
+            'keywords': forms.TextInput(attrs={'class': tw_input, 'placeholder': 'klíčové slovo 1, klíčové slovo 2'}),
         }
 
     def __init__(self, *args, **kwargs):
