@@ -8,7 +8,7 @@
 {% block content %}
 <div class="max-w-6xl mx-auto">
   <!-- Actions -->
-  <div class="mb-10 flex gap-3">
+  <div class="mb-6 flex gap-3">
     <a href="{% url 'create_test' %}" class="btn btn-primary">+ {% trans "Nový test" %}</a>
     <a href="{% url 'create_test_type' %}" class="btn btn-outline">+ {% trans "Nový typ testu" %}</a>
     <a href="{% url 'create_test_error' %}" class="btn btn-outline">+ {% trans "Nová chyba" %}</a>
@@ -128,22 +128,6 @@
       <a href="{% url 'create_test_error' %}" class="btn btn-outline btn-sm">+ {% trans "Přidat chybu" %}</a>
     </div>
     {% endif %}
-  </div>
-
-  <!-- Help Card -->
-  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-    <div class="flex items-start">
-      <div class="text-3xl mr-4">💡</div>
-      <div>
-        <h4 class="font-semibold text-gray-800 mb-2">{% trans "Tipy pro správu testování" %}</h4>
-        <ul class="text-sm text-gray-700 space-y-1">
-          <li>• {% trans "Pravidelně vytvářejte a aktualizujte testy pro kritické části aplikace" %}</li>
-          <li>• {% trans "Kategorizujte testy podle typů pro lepší organizaci" %}</li>
-          <li>• {% trans "Sledujte a rychle řešte nahlášené chyby" %}</li>
-          <li>• {% trans "Dokumentujte očekávané výsledky testů" %}</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock %}
