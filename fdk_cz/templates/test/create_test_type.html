@@ -1,71 +1,66 @@
-{% extends 'test/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Přidat typ testu" %}{% endblock %}
+{% block title %}{% trans "Přidat typ testu" %} | FDK.cz{% endblock %}
+{% block header_title %}🧪 {% trans "Nový typ testu" %}{% endblock %}
+{% block header_subtitle %}{% trans "Vytvoření nového typu testu pro projekt" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
-    <!-- Levý blok - Formulář pro přidání typu testu (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-center mb-6 font-semibold text-gray-800">{% trans "Přidat nový typ testu" %}</h1>
-        
-        <form method="POST" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            <!-- Projekt -->
-            <div class="mb-4">
-                <label for="id_project" class="block font-semibold text-gray-600 mb-1">{% trans "Projekt" %}</label>
-                <select id="id_project" name="project" class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                    {% for project in form.fields.project.queryset %}
-                        <option value="{{ project.pk }}" {% if project.pk == form.project.value %}selected{% endif %}>{{ project.name }}</option>
-                    {% endfor %}
-                </select>
-                <div class="form-text mt-1 text-sm text-gray-600">{% trans "Vyberte projekt, ke kterému tento typ testu patří." %}</div>
-            </div>
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'list_test_types' %}" class="btn btn-outline">← {% trans "Zpět na typy testů" %}</a>
+  </div>
 
-            <!-- Název typu testu -->
-            <div class="mb-4">
-                <label for="id_name" class="block font-semibold text-gray-600 mb-1">{% trans "Název typu testu" %}</label>
-                <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}"
-                       class="w-full p-2 border border-gray-300 rounded-lg bg-white" required>
-                {% if form.name.errors %}
-                    <div class="text-red-600 mt-1">{{ form.name.errors }}</div>
-                {% endif %}
-            </div>
+  <!-- Form -->
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
 
-            <!-- Popis typu testu -->
-            <div class="mb-4">
-                <label for="id_description" class="block font-semibold text-gray-600 mb-1">{% trans "Popis" %}</label>
-                <textarea name="description" id="id_description" rows="4"
-                          class="w-full p-2 border border-gray-300 rounded-lg bg-white">{{ form.description.value|default_if_none:'' }}</textarea>
-                <div class="form-text mt-1 text-sm text-gray-600">{% trans "Volitelné - Popis typu testu." %}</div>
-                {% if form.description.errors %}
-                    <div class="text-red-600 mt-1">{{ form.description.errors }}</div>
-                {% endif %}
-            </div>
+      <!-- Projekt -->
+      <div class="mb-6">
+        <label for="id_project" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Projekt" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.project }}
+        {% if form.project.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.project.errors }}</p>
+        {% endif %}
+        <p class="mt-1 text-xs text-gray-500">{% trans "Vyberte projekt, ke kterému tento typ testu patří." %}</p>
+      </div>
 
-            <!-- Tlačítko pro odeslání -->
-            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded font-semibold w-full mt-3">
-                {% trans "Přidat typ testu" %}
-            </button>
-        </form>
-    </div>
+      <!-- Název typu testu -->
+      <div class="mb-6">
+        <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Název typu testu" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.name.errors }}</p>
+        {% endif %}
+      </div>
 
-    <!-- Pravý blok - Pomocný obsah (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Pomocník" %}</h2>
-        <p class="text-sm text-gray-600 mb-4">
-            {% trans "Vyberte projekt a zadejte název a popis typu testu." %}
-        </p>
-        <p class="text-sm text-gray-600 mb-4">
-            {% trans "Popis vám pomůže lépe definovat zaměření testu." %}
-        </p>
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 w-full rounded">
-            <p class="font-semibold text-gray-700"><a href="/">FDK.cz</a></p>
-        </div>
-    </div>
+      <!-- Popis typu testu -->
+      <div class="mb-6">
+        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">
+          {% trans "Popis" %}
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors }}</p>
+        {% endif %}
+        <p class="mt-1 text-xs text-gray-500">{% trans "Volitelné - Popis typu testu." %}</p>
+      </div>
 
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          {% trans "Přidat typ testu" %}
+        </button>
+        <a href="{% url 'list_test_types' %}" class="btn btn-outline">
+          {% trans "Zrušit" %}
+        </a>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

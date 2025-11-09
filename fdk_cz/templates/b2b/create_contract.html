@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Nová B2B smlouva | FDK.cz{% endblock %}
-{% block header_title %}Nová B2B smlouva{% endblock %}
+{% block header_title %}📝 Nová B2B smlouva{% endblock %}
 {% block header_subtitle %}Vytvoření nové obchodní smlouvy{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-5xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-10 flex gap-3">
+    <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">← Zpět na B2B</a>
+    <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline">📋 Všechny smlouvy</a>
+  </div>
+
   <div class="content-card">
     <form method="POST">
       {% csrf_token %}
@@ -12,148 +18,156 @@
       <!-- Basic Info Section -->
       <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Základní informace</h3>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="id_company" class="form-label">Firma <span class="required">*</span></label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="id_company" class="block text-sm font-medium text-gray-700 mb-2">
+            Firma <span class="text-red-500">*</span>
+          </label>
           {{ form.company }}
           {% if form.company.errors %}
-            <p class="form-error">{{ form.company.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.company.errors|join:", " }}</p>
           {% endif %}
-          <div class="form-help">Vyberte B2B firmu</div>
+          <p class="mt-1 text-xs text-gray-500">Vyberte B2B firmu</p>
         </div>
 
-        <div class="form-group">
-          <label for="id_organization" class="form-label">Organizace</label>
+        <div>
+          <label for="id_organization" class="block text-sm font-medium text-gray-700 mb-2">Organizace</label>
           {{ form.organization }}
           {% if form.organization.errors %}
-            <p class="form-error">{{ form.organization.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.organization.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="id_project" class="form-label">Projekt</label>
+      <div class="mb-6">
+        <label for="id_project" class="block text-sm font-medium text-gray-700 mb-2">Projekt</label>
         {{ form.project }}
         {% if form.project.errors %}
-          <p class="form-error">{{ form.project.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.project.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Volitelně přiřaďte smlouvu k projektu</div>
+        <p class="mt-1 text-xs text-gray-500">Volitelně přiřaďte smlouvu k projektu</p>
       </div>
 
       <!-- Contract Details -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Detaily smlouvy</h3>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Detaily smlouvy</h3>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="id_contract_number" class="form-label">Číslo smlouvy <span class="required">*</span></label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="id_contract_number" class="block text-sm font-medium text-gray-700 mb-2">
+            Číslo smlouvy <span class="text-red-500">*</span>
+          </label>
           {{ form.contract_number }}
           {% if form.contract_number.errors %}
-            <p class="form-error">{{ form.contract_number.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.contract_number.errors|join:", " }}</p>
           {% endif %}
         </div>
 
-        <div class="form-group">
-          <label for="id_status" class="form-label">Status <span class="required">*</span></label>
+        <div>
+          <label for="id_status" class="block text-sm font-medium text-gray-700 mb-2">
+            Status <span class="text-red-500">*</span>
+          </label>
           {{ form.status }}
           {% if form.status.errors %}
-            <p class="form-error">{{ form.status.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.status.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="id_title" class="form-label">Název smlouvy <span class="required">*</span></label>
+      <div class="mb-6">
+        <label for="id_title" class="block text-sm font-medium text-gray-700 mb-2">
+          Název smlouvy <span class="text-red-500">*</span>
+        </label>
         {{ form.title }}
         {% if form.title.errors %}
-          <p class="form-error">{{ form.title.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.title.errors|join:", " }}</p>
         {% endif %}
       </div>
 
-      <div class="form-group">
-        <label for="id_description" class="form-label">Popis</label>
+      <div class="mb-6">
+        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">Popis</label>
         {{ form.description }}
         {% if form.description.errors %}
-          <p class="form-error">{{ form.description.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Stručný popis obsahu a účelu smlouvy</div>
+        <p class="mt-1 text-xs text-gray-500">Stručný popis obsahu a účelu smlouvy</p>
       </div>
 
       <!-- Financial Details -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Finanční údaje</h3>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Finanční údaje</h3>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="id_contract_value" class="form-label">Hodnota smlouvy</label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="id_contract_value" class="block text-sm font-medium text-gray-700 mb-2">Hodnota smlouvy</label>
           {{ form.contract_value }}
           {% if form.contract_value.errors %}
-            <p class="form-error">{{ form.contract_value.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.contract_value.errors|join:", " }}</p>
           {% endif %}
         </div>
 
-        <div class="form-group">
-          <label for="id_currency" class="form-label">Měna</label>
+        <div>
+          <label for="id_currency" class="block text-sm font-medium text-gray-700 mb-2">Měna</label>
           {{ form.currency }}
           {% if form.currency.errors %}
-            <p class="form-error">{{ form.currency.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.currency.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
       <!-- Dates -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Důležitá data</h3>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Důležitá data</h3>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="id_start_date" class="form-label">Datum zahájení</label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="id_start_date" class="block text-sm font-medium text-gray-700 mb-2">Datum zahájení</label>
           {{ form.start_date }}
           {% if form.start_date.errors %}
-            <p class="form-error">{{ form.start_date.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.start_date.errors|join:", " }}</p>
           {% endif %}
         </div>
 
-        <div class="form-group">
-          <label for="id_end_date" class="form-label">Datum ukončení</label>
+        <div>
+          <label for="id_end_date" class="block text-sm font-medium text-gray-700 mb-2">Datum ukončení</label>
           {{ form.end_date }}
           {% if form.end_date.errors %}
-            <p class="form-error">{{ form.end_date.errors|join:", " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.end_date.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="id_signed_date" class="form-label">Datum podpisu</label>
+      <div class="mb-6">
+        <label for="id_signed_date" class="block text-sm font-medium text-gray-700 mb-2">Datum podpisu</label>
         {{ form.signed_date }}
         {% if form.signed_date.errors %}
-          <p class="form-error">{{ form.signed_date.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.signed_date.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Datum podepsání smlouvy</div>
+        <p class="mt-1 text-xs text-gray-500">Datum podepsání smlouvy</p>
       </div>
 
       <!-- Additional Info -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-6">Kategorizace</h3>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Kategorizace</h3>
 
-      <div class="form-group">
-        <label for="id_categories" class="form-label">Kategorie</label>
+      <div class="mb-6">
+        <label for="id_categories" class="block text-sm font-medium text-gray-700 mb-2">Kategorie</label>
         {{ form.categories }}
         {% if form.categories.errors %}
-          <p class="form-error">{{ form.categories.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.categories.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Oddělte čárkami, např: "služby, IT, podpora"</div>
+        <p class="mt-1 text-xs text-gray-500">Oddělte čárkami, např: "služby, IT, podpora"</p>
       </div>
 
-      <div class="form-group">
-        <label for="id_keywords" class="form-label">Klíčová slova</label>
+      <div class="mb-6">
+        <label for="id_keywords" class="block text-sm font-medium text-gray-700 mb-2">Klíčová slova</label>
         {{ form.keywords }}
         {% if form.keywords.errors %}
-          <p class="form-error">{{ form.keywords.errors|join:", " }}</p>
+          <p class="mt-1 text-sm text-red-600">{{ form.keywords.errors|join:", " }}</p>
         {% endif %}
-        <div class="form-help">Oddělte čárkami pro lepší vyhledávání</div>
+        <p class="mt-1 text-xs text-gray-500">Oddělte čárkami pro lepší vyhledávání</p>
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-6">
-        <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">Zrušit</a>
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
         <button type="submit" class="btn btn-primary">📝 Vytvořit smlouvu</button>
+        <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">Zrušit</a>
       </div>
     </form>
   </div>
