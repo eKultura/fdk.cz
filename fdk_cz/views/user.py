@@ -63,11 +63,14 @@ def user_settings(request):
 
     # Prepare modules with their preference status
     modules_with_prefs = []
+    default_visible_modules = ['project_management', 'task_management']
     for module in modules:
         pref = user_preferences.get(module.module_id)
+        # Default: only project_management and task_management are visible
+        default_visible = module.name in default_visible_modules
         modules_with_prefs.append({
             'module': module,
-            'is_visible': pref.is_visible if pref else True,  # Default to visible
+            'is_visible': pref.is_visible if pref else default_visible,
             'preference': pref
         })
 
