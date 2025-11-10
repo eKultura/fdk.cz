@@ -1,6 +1,9 @@
 # fdk_cz/context_processors.py
 
 from fdk_cz.models import UserModuleSubscription, Module, UserModulePreference
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def user_modules(request):
@@ -13,6 +16,10 @@ def user_modules(request):
             'all_modules': [],
             'visible_modules': []
         }
+
+    # DEBUG: Log module count
+    module_count = Module.objects.count()
+    logger.warning(f"DEBUG: Total modules in DB: {module_count}")
 
     # Získat všechny aktivní moduly uživatele
     subscriptions = UserModuleSubscription.objects.filter(
@@ -35,6 +42,7 @@ def user_modules(request):
 
     # Všechny moduly
     all_modules = Module.objects.filter(is_active=True).order_by('order')
+    logger.warning(f"DEBUG: Active modules: {all_modules.count()}")
 
     # Získat preferences uživatele
     user_prefs = {}
@@ -54,11 +62,15 @@ def user_modules(request):
                 # Uživatel má nastavenou preferenci
                 if pref.is_visible:
                     visible_modules.append(module)
+                    logger.warning(f"DEBUG: Module {module.name} visible (user pref)")
             else:
                 # Žádná preference - použij default
                 # Pouze projekty a úkoly jsou defaultně viditelné
                 if module.name in ['project_management', 'task_management']:
                     visible_modules.append(module)
+                    logger.warning(f"DEBUG: Module {module.name} visible (default)")
+
+    logger.warning(f"DEBUG: Total visible modules: {len(visible_modules)}")
 
     return {
         'user_has_module': user_has_module,
