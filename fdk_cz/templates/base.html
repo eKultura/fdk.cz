@@ -83,46 +83,40 @@
         {% if user.is_authenticated %}
         <!-- Dynamic Module Sections -->
 
-        <!-- DEBUG OUTPUT -->
-        <div style="background: #fffbeb; border: 2px solid #f59e0b; padding: 8px; margin: 8px; font-size: 11px; border-radius: 4px;">
-          <strong>DEBUG:</strong><br>
-          visible_modules: {{ visible_modules|length }}<br>
-          all_modules: {{ all_modules|length }}<br>
-          {% for m in visible_modules %}
-            - {{ m.name }}<br>
-          {% endfor %}
-        </div>
 
         <!-- Dynamic Module Menu Building -->
 
-        {% comment %}Management Section{% endcomment %}
-        {% with has_management=False %}
-          {% for module in visible_modules %}
-            {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
-              {% if not has_management %}
-                <div class="nav-section">
-                  <div class="nav-section-title">Management</div>
-                {% with has_management=True %}{% endwith %}
-              {% endif %}
-              {% if module.name == 'project_management' %}
-                <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
-              {% elif module.name == 'task_management' %}
-                <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
-              {% elif module.name == 'b2b_management' %}
-                <a href="{% url 'b2b_dashboard' %}" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
-              {% elif module.name == 'hr_management' %}
-                <a href="{% url 'hr_dashboard' %}" class="nav-item"><span class="nav-icon">&#128188;</span> HR Management</a>
-              {% elif module.name == 'risk_management' %}
-                <a href="{% url 'risk_dashboard' %}" class="nav-item"><span class="nav-icon">&#9888;</span> Správa rizik</a>
-              {% elif module.name == 'it_management' %}
-                <a href="{% url 'it_dashboard' %}" class="nav-item"><span class="nav-icon">&#128187;</span> Správa IT</a>
-              {% elif module.name == 'asset_management' %}
-                <a href="{% url 'asset_dashboard' %}" class="nav-item"><span class="nav-icon">&#128203;</span> Správa majetku</a>
-              {% endif %}
+        {% comment %}Management Section - Check if any management modules exist first{% endcomment %}
+        {% for module in visible_modules %}
+          {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
+            {% if forloop.counter == 1 %}
+              <div class="nav-section">
+                <div class="nav-section-title">Management</div>
             {% endif %}
-          {% endfor %}
-          {% if has_management %}</div>{% endif %}
-        {% endwith %}
+          {% endif %}
+        {% endfor %}
+        {% for module in visible_modules %}
+          {% if module.name == 'project_management' %}
+            <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
+          {% elif module.name == 'task_management' %}
+            <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
+          {% elif module.name == 'b2b_management' %}
+            <a href="{% url 'b2b_dashboard' %}" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
+          {% elif module.name == 'hr_management' %}
+            <a href="{% url 'hr_dashboard' %}" class="nav-item"><span class="nav-icon">&#128188;</span> HR Management</a>
+          {% elif module.name == 'risk_management' %}
+            <a href="{% url 'risk_dashboard' %}" class="nav-item"><span class="nav-icon">&#9888;</span> Správa rizik</a>
+          {% elif module.name == 'it_management' %}
+            <a href="{% url 'it_dashboard' %}" class="nav-item"><span class="nav-icon">&#128187;</span> Správa IT</a>
+          {% elif module.name == 'asset_management' %}
+            <a href="{% url 'asset_dashboard' %}" class="nav-item"><span class="nav-icon">&#128203;</span> Správa majetku</a>
+          {% endif %}
+        {% endfor %}
+        {% for module in visible_modules %}
+          {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
+            {% if forloop.last %}</div>{% endif %}
+          {% endif %}
+        {% endfor %}
 
         {% comment %}Business Section - Check if any business modules exist first{% endcomment %}
         {% for module in visible_modules %}
