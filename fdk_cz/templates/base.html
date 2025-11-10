@@ -51,26 +51,45 @@
           </a>
         </div>
 
+        {% if not user.is_authenticated %}
+        <!-- Menu pro nepřihlášené uživatele - vábnička -->
+        <div class="nav-section">
+          <div class="nav-section-title">Oblíbené moduly</div>
+          <a href="{% url 'login_cs' %}" class="nav-item" style="opacity: 0.6;" title="Pro přístup se přihlaste">
+            <span class="nav-icon">&#128295;</span> Správa projektů
+          </a>
+          <a href="{% url 'login_cs' %}" class="nav-item" style="opacity: 0.6;" title="Pro přístup se přihlaste">
+            <span class="nav-icon">&#128176;</span> Granty a dotace
+          </a>
+          <a href="{% url 'login_cs' %}" class="nav-item" style="opacity: 0.6;" title="Pro přístup se přihlaste">
+            <span class="nav-icon">&#128202;</span> Účetnictví
+          </a>
+          <a href="{% url 'login_cs' %}" class="nav-item" style="opacity: 0.6;" title="Pro přístup se přihlaste">
+            <span class="nav-icon">&#9889;</span> AI Právník
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Účet</div>
+          <a href="{% url 'login_cs' %}" class="nav-item">
+            <span class="nav-icon">&#128273;</span> Přihlásit se
+          </a>
+          <a href="{% url 'registration_cs' %}" class="nav-item">
+            <span class="nav-icon">&#128221;</span> Registrace
+          </a>
+        </div>
+        {% endif %}
+
         {% if user.is_authenticated %}
         <!-- Dynamic Module Sections -->
-        {% with module_config='{"project_management":{"url":"index_project_cs","icon":"&#128295;","label":"Správa projektů","category":"Management"},"task_management":{"url":"task_management","icon":"&#10004;","label":"Správa úkolů","category":"Management"},"b2b":{"url":"b2b_dashboard","icon":"&#129309;","label":"Správa B2B","category":"Management"},"hr":{"url":"hr_dashboard","icon":"&#128188;","label":"HR Management","category":"Management"},"risk_management":{"url":"risk_dashboard","icon":"&#9888;","label":"Správa rizik","category":"Management"},"it":{"url":"it_dashboard","icon":"&#128187;","label":"Správa IT","category":"Management"},"asset_management":{"url":"asset_dashboard","icon":"&#128203;","label":"Správa majetku","category":"Management"},"contracts":{"url":"list_contracts","icon":"&#128196;","label":"Smlouvy","category":"Business"},"grants":{"url":"grant_list","icon":"&#128176;","label":"Granty & Dotace","category":"Business"},"contacts":{"url":"my_contacts","icon":"&#128100;","label":"Kontakty","category":"Business"},"accounting":{"url":"accounting_dashboard","icon":"&#128202;","label":"Účetnictví","category":"Business"},"lists":{"url":"index_list","icon":"&#128221;","label":"Seznamy","category":"Nástroje"},"testing":{"url":"list_tests","icon":"&#129514;","label":"Testování","category":"Nástroje"},"warehouse":{"url":"all_stores","icon":"&#128230;","label":"Sklad","category":"Nástroje"},"laws":{"url":"law_list","icon":"&#128220;","label":"Zákony","category":"Nástroje"},"documentation":{"url":"help_index","icon":"&#128218;","label":"Dokumentace","category":"Nástroje"}}'|safe %}
-          {% comment %}Build category groups{% endcomment %}
-          {% with management_modules=list contacts_modules=list business_modules=list tools_modules=list %}
-            {% for module in visible_modules %}
-              {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b' or module.name == 'hr' or module.name == 'risk_management' or module.name == 'it' or module.name == 'asset_management' %}
-                {% comment %}Management category{% endcomment %}
-              {% elif module.name == 'contracts' or module.name == 'grants' or module.name == 'contacts' or module.name == 'accounting' %}
-                {% comment %}Business category{% endcomment %}
-              {% elif module.name == 'lists' or module.name == 'testing' or module.name == 'warehouse' or module.name == 'laws' or module.name == 'documentation' %}
-                {% comment %}Nástroje category{% endcomment %}
-              {% endif %}
-            {% endfor %}
 
-            {% comment %}Management Section{% endcomment %}
+        <!-- Dynamic Module Menu Building -->
+
+        {% comment %}Management Section{% endcomment %}
             {% if visible_modules %}
               {% with show_management=False %}
                 {% for module in visible_modules %}
-                  {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b' or module.name == 'hr' or module.name == 'risk_management' or module.name == 'it' or module.name == 'asset_management' %}
+                  {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
                     {% if not show_management %}
                       <div class="nav-section">
                         <div class="nav-section-title">Management</div>
@@ -80,13 +99,13 @@
                         <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
                       {% elif module.name == 'task_management' %}
                         <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
-                      {% elif module.name == 'b2b' %}
+                      {% elif module.name == 'b2b_management' %}
                         <a href="{% url 'b2b_dashboard' %}" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
-                      {% elif module.name == 'hr' %}
+                      {% elif module.name == 'hr_management' %}
                         <a href="{% url 'hr_dashboard' %}" class="nav-item"><span class="nav-icon">&#128188;</span> HR Management</a>
                       {% elif module.name == 'risk_management' %}
                         <a href="{% url 'risk_dashboard' %}" class="nav-item"><span class="nav-icon">&#9888;</span> Správa rizik</a>
-                      {% elif module.name == 'it' %}
+                      {% elif module.name == 'it_management' %}
                         <a href="{% url 'it_dashboard' %}" class="nav-item"><span class="nav-icon">&#128187;</span> Správa IT</a>
                       {% elif module.name == 'asset_management' %}
                         <a href="{% url 'asset_dashboard' %}" class="nav-item"><span class="nav-icon">&#128203;</span> Správa majetku</a>
@@ -124,7 +143,7 @@
               {% comment %}Nástroje Section{% endcomment %}
               {% with show_tools=False %}
                 {% for module in visible_modules %}
-                  {% if module.name == 'lists' or module.name == 'testing' or module.name == 'warehouse' or module.name == 'laws' or module.name == 'documentation' %}
+                  {% if module.name == 'lists' or module.name == 'test_management' or module.name == 'warehouse' or module.name == 'law_ai' %}
                     {% if not show_tools %}
                       <div class="nav-section">
                         <div class="nav-section-title">Nástroje</div>
@@ -132,14 +151,12 @@
                     {% with show_tools=True %}
                       {% if module.name == 'lists' %}
                         <a href="{% url 'index_list' %}" class="nav-item"><span class="nav-icon">&#128221;</span> Seznamy</a>
-                      {% elif module.name == 'testing' %}
+                      {% elif module.name == 'test_management' %}
                         <a href="{% url 'list_tests' %}" class="nav-item"><span class="nav-icon">&#129514;</span> Testování</a>
                       {% elif module.name == 'warehouse' %}
                         <a href="{% url 'all_stores' %}" class="nav-item"><span class="nav-icon">&#128230;</span> Sklad</a>
-                      {% elif module.name == 'laws' %}
-                        <a href="{% url 'law_list' %}" class="nav-item"><span class="nav-icon">&#128220;</span> Zákony</a>
-                      {% elif module.name == 'documentation' %}
-                        <a href="{% url 'help_index' %}" class="nav-item"><span class="nav-icon">&#128218;</span> Dokumentace</a>
+                      {% elif module.name == 'law_ai' %}
+                        <a href="{% url 'pravo_ai' %}" class="nav-item"><span class="nav-icon">&#9889;</span> AI Právník</a>
                       {% endif %}
                     {% endwith %}
                   {% endif %}
@@ -147,8 +164,6 @@
                 {% if show_tools %}</div>{% endif %}
               {% endwith %}
             {% endif %}
-          {% endwith %}
-        {% endwith %}
 
         <!-- Settings Section -->
         <div class="nav-section">
