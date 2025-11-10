@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}AI Právník - Umělá inteligence pro právní analýzy | FDK.cz{% endblock %}
+{% block header_title %}⚡ AI Právník{% endblock %}
+{% block header_subtitle %}Pokročilá AI pro právní compliance, analýzu smluv a hledání precedentů{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <div class="stats-grid" style="margin-bottom: 3rem;">
+    <div class="stat-card">
+      <div class="stat-value" style="color: #8b5cf6;">24,589</div>
+      <div class="stat-title">Analyzovaných dokumentů</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: #ec4899;">98.7%</div>
+      <div class="stat-title">Přesnost AI analýzy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: #f59e0b;">5 sec</div>
+      <div class="stat-title">Průměrná odpověď AI</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: #10b981;">€180K+</div>
+      <div class="stat-title">Ušetřeno na poradcích</div>
+    </div>
+  </div>
+
+  <div class="content-card" style="margin-bottom: 2rem; text-align: center; padding: 3rem; background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white;">
+    <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">⚖️ AI Právní Asistent</h2>
+    <div style="font-size: 3rem; font-weight: 700; margin: 1rem 0;">
+      499 Kč<span style="font-size: 1.5rem; opacity: 0.8;">/měsíc</span>
+    </div>
+    <p style="margin-bottom: 2rem;">✓ Analýza smluv ✓ Hledání precedentů ✓ Generování dokumentů ✓ Compliance check</p>
+    <a href="{% url 'registration_cs' %}" style="display: inline-block; background: white; color: #8b5cf6; padding: 1rem 2.5rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1.125rem;">
+      Vyzkoušet AI zdarma
+    </a>
+  </div>
+
+</div>
+{% endblock %}
