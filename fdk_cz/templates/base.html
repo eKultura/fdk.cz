@@ -181,8 +181,7 @@
 
             <nav class="breadcrumb">
               <a href="{% url 'index' %}" class="breadcrumb-item">Domů</a>
-              <span class="breadcrumb-separator">/</span>
-              <span class="breadcrumb-item active">{% block breadcrumb %}Dashboard{% endblock %}</span>
+              {% block breadcrumb %}{% endblock %}
             </nav>
           </div>
 
