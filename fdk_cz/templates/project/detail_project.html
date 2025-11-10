@@ -6,11 +6,10 @@
 {% block header_title %}{{ project.name }}{% endblock %}
 {% block header_subtitle %}
 {% if project.organization %}
-Projekt pod organizací <strong>{{ project.organization.name }}</strong> &middot;
+Projekt pod organizací <strong>{{ project.organization.name }}</strong> &middot; {{ project.tasks.count }} úkolů
 {% else %}
-Volný projekt bez organizace &middot;
+Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 {% endif %}
-Vedeno uživatelem <strong>{{ project.owner.username }}</strong> &middot; {{ project.tasks.count }} úkolů
 {% endblock %}
 
 {% block content %}
