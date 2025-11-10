@@ -1,9 +1,6 @@
 # fdk_cz/context_processors.py
 
 from fdk_cz.models import UserModuleSubscription, Module, UserModulePreference
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 def user_modules(request):
@@ -17,9 +14,9 @@ def user_modules(request):
             'visible_modules': []
         }
 
-    # DEBUG: Log module count
+    # DEBUG: Print to stdout (visible in nohup.out)
     module_count = Module.objects.count()
-    logger.warning(f"DEBUG: Total modules in DB: {module_count}")
+    print(f"🔍 DEBUG context_processors: Total modules in DB: {module_count}")
 
     # Získat všechny aktivní moduly uživatele
     subscriptions = UserModuleSubscription.objects.filter(
@@ -40,37 +37,58 @@ def user_modules(request):
         'contacts': True
     })
 
+    print(f"🔍 DEBUG: user_has_module = {user_has_module}")
+
     # Všechny moduly
     all_modules = Module.objects.filter(is_active=True).order_by('order')
-    logger.warning(f"DEBUG: Active modules: {all_modules.count()}")
+    print(f"🔍 DEBUG: Active modules count: {all_modules.count()}")
+
+    # Print all module names
+    for m in all_modules:
+        print(f"   - Module: {m.name} (id={m.module_id}, display={m.display_name})")
 
     # Získat preferences uživatele
     user_prefs = {}
     for pref in UserModulePreference.objects.filter(user=request.user).select_related('module'):
         user_prefs[pref.module.module_id] = pref
+        print(f"🔍 DEBUG: User pref for {pref.module.name}: visible={pref.is_visible}")
 
     # Moduly viditelné v menu (respektuje UserModulePreference)
     visible_modules = []
     for module in all_modules:
+        print(f"🔍 DEBUG: Checking module {module.name}...")
+
         # Kontrola jestli má uživatel přístup k modulu
-        if user_has_module.get(module.name, False):
+        has_access = user_has_module.get(module.name, False)
+        print(f"   - Has access: {has_access}")
+
+        if has_access:
             # Kontrola jestli má uživatel preference pro tento modul
             pref = user_prefs.get(module.module_id)
+            print(f"   - Preference: {pref}")
 
             # Defaultně viditelné jsou jen project_management a task_management
             if pref:
                 # Uživatel má nastavenou preferenci
                 if pref.is_visible:
                     visible_modules.append(module)
-                    logger.warning(f"DEBUG: Module {module.name} visible (user pref)")
+                    print(f"   ✅ Module {module.name} VISIBLE (user pref)")
+                else:
+                    print(f"   ❌ Module {module.name} HIDDEN (user pref)")
             else:
                 # Žádná preference - použij default
                 # Pouze projekty a úkoly jsou defaultně viditelné
                 if module.name in ['project_management', 'task_management']:
                     visible_modules.append(module)
-                    logger.warning(f"DEBUG: Module {module.name} visible (default)")
+                    print(f"   ✅ Module {module.name} VISIBLE (default)")
+                else:
+                    print(f"   ⚪ Module {module.name} HIDDEN (default, no pref)")
+        else:
+            print(f"   ❌ Module {module.name} - NO ACCESS")
 
-    logger.warning(f"DEBUG: Total visible modules: {len(visible_modules)}")
+    print(f"🔍 DEBUG: Total visible modules: {len(visible_modules)}")
+    for m in visible_modules:
+        print(f"   ✅ {m.name}")
 
     return {
         'user_has_module': user_has_module,
