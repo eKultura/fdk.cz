@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Správa projektů - Komplexní projektový management | FDK.cz{% endblock %}
+{% block header_title %}🛠️ Správa projektů{% endblock %}
+{% block header_subtitle %}Komplexní řešení pro efektivní řízení projektů a týmů{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Hero Stats -->
+  <div class="stats-grid" style="margin-bottom: 3rem;">
+    <div class="stat-card">
+      <div class="stat-value" style="color: #3b82f6;">15,234</div>
+      <div class="stat-title">Aktivních projektů</div>
+      <div class="stat-change positive"><span>&#8599;</span> +12% tento měsíc</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-value" style="color: #10b981;">€45M+</div>
+      <div class="stat-title">Hodnota projektů</div>
+      <div class="stat-change positive"><span>&#8599;</span> Spravovaných v FDK</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-value" style="color: #f59e0b;">98.2%</div>
+      <div class="stat-title">Úspěšnost dokončení</div>
+      <div class="stat-change positive"><span>&#8599;</span> Nad průměrem odvětví</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-value" style="color: #8b5cf6;">2,847</div>
+      <div class="stat-title">Spokojených týmů</div>
+      <div class="stat-change positive"><span>&#8599;</span> Používá FDK denně</div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b; text-align: center;">
+      🚀 Vše co potřebujete pro úspěšné projekty
+    </h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+      <!-- Feature 1 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📋</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Kanban & Scrum</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Flexibilní boardy pro agilní řízení projektů s podporou sprintů a epics</p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📊</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Gantt diagramy</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Časové plánování s milníky, závislostmi a kritickou cestou</p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Týmová spolupráce</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Real-time komunikace, komentáře a sdílení dokumentů</p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📈</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Reporting & Analytics</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Detailní reporty o progress, zdrojích a rozpočtu projektu</p>
+      </div>
+
+      <!-- Feature 5 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⏱️</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Time tracking</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Sledování času na úkolech a automatické fakturace</p>
+      </div>
+
+      <!-- Feature 6 -->
+      <div style="padding: 1.5rem; background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border-radius: 12px; color: white;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔄</div>
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Integrace</h3>
+        <p style="opacity: 0.9; font-size: 0.95rem;">Propojení s Git, Slack, Email a dalšími nástroji</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshot/Demo Section -->
+  <div class="content-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+    <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b; text-align: center;">
+      📸 Podívejte se na FDK v akci
+    </h2>
+    <div style="background: #e2e8f0; border-radius: 8px; height: 400px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1.5rem;">
+      [ Zde bude screenshot / demo video ]
+    </div>
+    <p style="text-align: center; color: #64748b; margin-top: 1rem;">
+      Intuitivní rozhraní navržené pro maximální produktivitu
+    </p>
+  </div>
+
+  <!-- Pricing / CTA Section -->
+  <div class="content-card" style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">
+      ✨ Začněte dnes ZDARMA
+    </h2>
+    <p style="font-size: 1.125rem; margin-bottom: 2rem; opacity: 0.9;">
+      Správa projektů je kompletně zdarma pro všechny uživatele.<br>
+      Žádné limity, žádné skryté poplatky.
+    </p>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'registration_cs' %}" style="display: inline-block; background: white; color: #667eea; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1.125rem;">
+        🚀 Vytvořit účet zdarma
+      </a>
+      <a href="{% url 'login_cs' %}" style="display: inline-block; background: rgba(255,255,255,0.2); color: white; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1.125rem; border: 2px solid white;">
+        🔐 Již mám účet
+      </a>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div style="margin-top: 3rem;">
+    <h3 style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: #1e293b;">
+      💬 Co říkají naši uživatelé
+    </h3>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <div class="content-card">
+        <div style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 0.5rem;">⭐⭐⭐⭐⭐</div>
+        <p style="font-style: italic; color: #64748b; margin-bottom: 1rem;">
+          "FDK nám pomohl snížit čas na projekt planning o 60%. Neuvěřitelně intuitivní!"
+        </p>
+        <div style="font-weight: 600; color: #1e293b;">— Jana K., Project Manager</div>
+      </div>
+
+      <div class="content-card">
+        <div style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 0.5rem;">⭐⭐⭐⭐⭐</div>
+        <p style="font-style: italic; color: #64748b; margin-bottom: 1rem;">
+          "Konečně projektový nástroj který opravdu funguje. A ještě je to zdarma!"
+        </p>
+        <div style="font-weight: 600; color: #1e293b;">— Petr M., CEO StartupHub</div>
+      </div>
+
+      <div class="content-card">
+        <div style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 0.5rem;">⭐⭐⭐⭐⭐</div>
+        <p style="font-style: italic; color: #64748b; margin-bottom: 1rem;">
+          "Skvělá podpora českého jazyka a místních standardů. Doporučuji!"
+        </p>
+        <div style="font-weight: 600; color: #1e293b;">— Martin S., IT Lead</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -82,6 +82,11 @@ from fdk_cz.views.asset import (
     edit_category as edit_asset_category, delete_category as delete_asset_category
 )
 
+# Import Module landing pages
+from fdk_cz.views.modules import (
+    project_management_landing, grants_landing, accounting_landing, law_ai_landing
+)
+
 urlpatterns = (
 
     path('', index, name='index'),
@@ -396,6 +401,14 @@ urlpatterns = (
 
     path('clanek/pridat', article_add, name='article_add'),
     path('upravit/<slug:slug>', article_edit, name='article_edit'),
+
+    # ======================================================================
+    # MODULE LANDING PAGES (for anonymous users)
+    # ======================================================================
+    path('modul/sprava-projektu/', project_management_landing, name='module_project_management'),
+    path('modul/granty-dotace/', grants_landing, name='module_grants'),
+    path('modul/ucetnictvi/', accounting_landing, name='module_accounting'),
+    path('modul/ai-pravnik/', law_ai_landing, name='module_law_ai'),
 
     path('<slug:slug>', article_detail, name='article_detail'),
 
