@@ -118,6 +118,12 @@
           {% endif %}
         {% endfor %}
 
+        <!-- Organizace Section (Always visible for authenticated users) -->
+        <div class="nav-section">
+          <div class="nav-section-title">Organizace</div>
+          <a href="{% url 'organization_dashboard' %}" class="nav-item"><span class="nav-icon">&#127970;</span> Moje organizace</a>
+        </div>
+
         {% comment %}Business Section - Check if any business modules exist first{% endcomment %}
         {% for module in visible_modules %}
           {% if module.name == 'contracts' or module.name == 'grants' or module.name == 'contacts' or module.name == 'accounting' %}

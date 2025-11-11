@@ -42,25 +42,20 @@ def user_modules(request):
         user_prefs[pref.module.module_id] = pref
 
     # Moduly viditelné v menu (respektuje UserModulePreference)
+    # Menu zobrazuje moduly podle preference, přístup k funkcím kontroluje middleware
     visible_modules = []
     for module in all_modules:
-        # Kontrola jestli má uživatel přístup k modulu
-        has_access = user_has_module.get(module.name, False)
+        pref = user_prefs.get(module.module_id)
 
-        if has_access:
-            # Kontrola jestli má uživatel preference pro tento modul
-            pref = user_prefs.get(module.module_id)
-
-            # Defaultně viditelné jsou jen project_management a task_management
-            if pref:
-                # Uživatel má nastavenou preferenci
-                if pref.is_visible:
-                    visible_modules.append(module)
-            else:
-                # Žádná preference - použij default
-                # Pouze projekty a úkoly jsou defaultně viditelné
-                if module.name in ['project_management', 'task_management']:
-                    visible_modules.append(module)
+        if pref:
+            # Uživatel má nastavenou preferenci - respektuj ji
+            if pref.is_visible:
+                visible_modules.append(module)
+        else:
+            # Žádná preference - použij default
+            # Pouze projekty a úkoly jsou defaultně viditelné
+            if module.name in ['project_management', 'task_management']:
+                visible_modules.append(module)
 
     return {
         'user_has_module': user_has_module,
