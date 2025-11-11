@@ -7,7 +7,11 @@ from django.forms import formset_factory
 from django.forms.models import modelformset_factory
 from django.utils import timezone
 
-from fdk_cz.models import Invoice, InvoiceItem
+from fdk_cz.models import (
+    Invoice, InvoiceItem,
+    AccountingContext, AccountingAccount, JournalEntry, JournalEntryLine, BalanceSheet,
+    Organization
+)
 
 
 class FreeInvoiceForm(forms.Form):
@@ -173,6 +177,180 @@ InvoiceItemFormSet = modelformset_factory(
     invoice_item,
     form=InvoiceItemForm,
     extra=1,
-    can_delete=True 
+    can_delete=True
 )
 """
+
+
+# -------------------------------------------------------------------
+#                    ACCOUNTING EXPANSION FORMS
+# -------------------------------------------------------------------
+
+class AccountingContextForm(forms.ModelForm):
+    """Form for selecting/creating accounting context (personal vs organizational)"""
+
+    class Meta:
+        model = AccountingContext
+        fields = ['name', 'organization', 'accounting_type', 'accounting_method', 'fiscal_year']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Např. Účetnictví 2025'}),
+            'organization': forms.Select(attrs={'class': 'form-control'}),
+            'accounting_type': forms.Select(attrs={'class': 'form-control'}),
+            'accounting_method': forms.Select(attrs={'class': 'form-control'}),
+            'fiscal_year': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '2025'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        # Filter organizations to only those the user is a member of
+        if self.user:
+            from fdk_cz.models import OrganizationMembership
+            user_orgs = Organization.objects.filter(
+                organizationmembership__user=self.user
+            )
+            self.fields['organization'].queryset = user_orgs
+            self.fields['organization'].required = False
+
+            # Set initial fiscal year to current year
+            if not self.instance.pk:
+                self.fields['fiscal_year'].initial = timezone.now().year
+
+
+class AccountingAccountForm(forms.ModelForm):
+    """Form for creating/editing chart of accounts"""
+
+    class Meta:
+        model = AccountingAccount
+        fields = ['account_number', 'name', 'account_type', 'parent_account', 'description', 'is_active']
+        widgets = {
+            'account_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '221'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bankovní účty'}),
+            'account_type': forms.Select(attrs={'class': 'form-control'}),
+            'parent_account': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.context = kwargs.pop('context', None)
+        super().__init__(*args, **kwargs)
+
+        # Filter parent accounts to only those in the same context
+        if self.context:
+            self.fields['parent_account'].queryset = AccountingAccount.objects.filter(
+                context=self.context,
+                is_active=True
+            )
+
+
+class JournalEntryForm(forms.ModelForm):
+    """Form for creating journal entries"""
+
+    class Meta:
+        model = JournalEntry
+        fields = ['entry_number', 'entry_date', 'description', 'document_number', 'invoice']
+        widgets = {
+            'entry_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Např. 2025001'}),
+            'entry_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Popis účetního případu'}),
+            'document_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Číslo dokladu'}),
+            'invoice': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.context = kwargs.pop('context', None)
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        # Set initial entry date to today
+        if not self.instance.pk:
+            self.fields['entry_date'].initial = timezone.now().date()
+
+        # Filter invoices if needed
+        if self.user:
+            self.fields['invoice'].queryset = Invoice.objects.filter(
+                company__users=self.user
+            )
+            self.fields['invoice'].required = False
+
+
+class JournalEntryLineForm(forms.ModelForm):
+    """Form for journal entry lines (double-entry bookkeeping)"""
+
+    class Meta:
+        model = JournalEntryLine
+        fields = ['account', 'debit_amount', 'credit_amount', 'description']
+        widgets = {
+            'account': forms.Select(attrs={'class': 'form-control'}),
+            'debit_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
+            'credit_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
+            'description': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Popis řádku'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.context = kwargs.pop('context', None)
+        super().__init__(*args, **kwargs)
+
+        # Filter accounts to only active accounts in the current context
+        if self.context:
+            self.fields['account'].queryset = AccountingAccount.objects.filter(
+                context=self.context,
+                is_active=True
+            ).order_by('account_number')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        debit = cleaned_data.get('debit_amount', 0)
+        credit = cleaned_data.get('credit_amount', 0)
+
+        # Only one of debit or credit should have a value
+        if debit > 0 and credit > 0:
+            raise forms.ValidationError('Položka může být buď MD (debit) nebo D (credit), ne obojí.')
+
+        if debit == 0 and credit == 0:
+            raise forms.ValidationError('Musíte vyplnit buď MD (debit) nebo D (credit).')
+
+        return cleaned_data
+
+
+# Formset for multiple journal entry lines
+JournalEntryLineFormSet = modelformset_factory(
+    JournalEntryLine,
+    form=JournalEntryLineForm,
+    extra=2,  # Start with 2 lines (minimum for double-entry)
+    can_delete=True,
+    min_num=2,  # Require at least 2 lines for double-entry
+    validate_min=True
+)
+
+
+class BalanceSheetForm(forms.ModelForm):
+    """Form for creating/editing balance sheet entries"""
+
+    class Meta:
+        model = BalanceSheet
+        fields = ['account', 'balance_type', 'fiscal_year', 'debit_balance', 'credit_balance']
+        widgets = {
+            'account': forms.Select(attrs={'class': 'form-control'}),
+            'balance_type': forms.Select(attrs={'class': 'form-control'}),
+            'fiscal_year': forms.NumberInput(attrs={'class': 'form-control'}),
+            'debit_balance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
+            'credit_balance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.context = kwargs.pop('context', None)
+        super().__init__(*args, **kwargs)
+
+        # Filter accounts to current context
+        if self.context:
+            self.fields['account'].queryset = AccountingAccount.objects.filter(
+                context=self.context,
+                is_active=True
+            ).order_by('account_number')
+
+            # Set initial fiscal year from context
+            if not self.instance.pk and self.context:
+                self.fields['fiscal_year'].initial = self.context.fiscal_year
