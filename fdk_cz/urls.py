@@ -5,7 +5,11 @@
 from django.urls import path
 
 
-from fdk_cz.views.accounting import accounting_dashboard, create_invoice, edit_invoice, delete_invoice, detail_invoice, free_invoice, list_invoices
+from fdk_cz.views.accounting import (
+    accounting_dashboard, create_invoice, edit_invoice, delete_invoice, detail_invoice, free_invoice, list_invoices,
+    select_accounting_context, set_accounting_context, chart_of_accounts, create_account,
+    journal_ledger, create_journal_entry, balance_sheet_view
+)
 from fdk_cz.views.articles import article_detail, article_add, article_edit, article_blog_index, article_help_index, article_page_index
 from fdk_cz.views.contact import create_contact, delete_contact, detail_contact, edit_contact, list_contacts
 from fdk_cz.views.contract import create_contract, edit_contract, detail_contract, list_contracts
@@ -289,6 +293,15 @@ urlpatterns = (
     path('ucetnictvi/faktura/<int:invoice_id>/edit/', edit_invoice, name='edit_invoice'),
     path('ucetnictvi/faktura/<int:invoice_id>/delete/', delete_invoice, name='delete_invoice'),
     path('ucetnictvi/faktura/<int:invoice_id>/', detail_invoice, name='detail_invoice'),
+
+    # Accounting expansion - double-entry bookkeeping
+    path('ucetnictvi/kontext/', select_accounting_context, name='select_accounting_context'),
+    path('ucetnictvi/kontext/<int:context_id>/aktivovat/', set_accounting_context, name='set_accounting_context'),
+    path('ucetnictvi/uctova-osnova/', chart_of_accounts, name='chart_of_accounts'),
+    path('ucetnictvi/uctova-osnova/novy/', create_account, name='create_account'),
+    path('ucetnictvi/denik/', journal_ledger, name='journal_ledger'),
+    path('ucetnictvi/denik/novy/', create_journal_entry, name='create_journal_entry'),
+    path('ucetnictvi/rozvaha/<str:balance_type>/', balance_sheet_view, name='balance_sheet_view'),
 
 
     # ======================================================================
