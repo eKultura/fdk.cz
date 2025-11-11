@@ -101,7 +101,11 @@ def toggle_module_visibility(request, module_id):
 
         messages.success(request, f"Modul {module.display_name} byl {'zapnut' if pref.is_visible else 'vypnut'}.")
 
-    return redirect('user_settings' + '#moduly')
+    # Redirect s fragment (kotva)
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse
+    url = reverse('user_settings') + '#moduly'
+    return HttpResponseRedirect(url)
 
 
 def registration(request):

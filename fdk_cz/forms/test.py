@@ -49,7 +49,7 @@ class test_form(forms.ModelForm):
         ('c1', 'C1'), ('c2', 'C2'), ('c3', 'C3'),
     ]
 
-    grid_location = forms.ChoiceField(choices=GRID_CHOICES, widget=forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}))
+    grid_location = forms.ChoiceField(choices=GRID_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Test
@@ -76,14 +76,12 @@ class test_form(forms.ModelForm):
         elif self.instance.pk:
             self.fields['test_type'].queryset = self.instance.project.test_types
 
-        # Tailwind stylování pro všechny pole
-        tailwind_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+        # Form control styling
         for field_name, field in self.fields.items():
             if field_name == 'description':
-                # Textarea má trochu jiné classes
-                field.widget.attrs.update({'class': tailwind_classes, 'rows': '4'})
-            else:
-                field.widget.attrs.update({'class': tailwind_classes})
+                field.widget.attrs.update({'class': 'form-control', 'rows': '4'})
+            elif field_name != 'grid_location':  # grid_location má už class nastavený
+                field.widget.attrs.update({'class': 'form-control'})
 
 
 
