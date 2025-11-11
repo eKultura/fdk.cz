@@ -13,18 +13,33 @@
   </div>
 
   <!-- Statistics -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pt-6 border-t border-gray-200">
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">📄 Celkem faktur</h3>
-      <p class="text-3xl font-bold text-blue-600">{{ total_invoices|default:invoices|length }}</p>
+  <div class="stats-grid mb-6 pt-6 border-t border-gray-200">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem faktur</div>
+          <div class="stat-value">{{ total_invoices|default:invoices|length|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">📄</div>
+      </div>
     </div>
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">⏳ Nevyřízených</h3>
-      <p class="text-3xl font-bold text-yellow-600">{{ pending_invoices|default:0 }}</p>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Nevyřízených</div>
+          <div class="stat-value">{{ pending_invoices|default:0 }}</div>
+        </div>
+        <div class="stat-icon warning">⏳</div>
+      </div>
     </div>
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">✅ Zaplacených</h3>
-      <p class="text-3xl font-bold text-green-600">{{ paid_invoices|default:0 }}</p>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Zaplacených</div>
+          <div class="stat-value">{{ paid_invoices|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">✅</div>
+      </div>
     </div>
   </div>
 

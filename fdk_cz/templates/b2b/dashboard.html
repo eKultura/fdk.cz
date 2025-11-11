@@ -6,26 +6,41 @@
 {% block content %}
 <div class="max-w-6xl mx-auto">
   <!-- Actions -->
-  <div class="mb-10">
+  <div class="mb-10 flex gap-3">
     <a href="{% url 'create_b2b_company' %}" class="btn btn-primary">+ Nová firma</a>
-    <a href="{% url 'create_b2b_contract' %}" class="btn btn-secondary ml-2">+ Nová smlouva</a>
-    <a href="{% url 'list_b2b_companies' %}" class="btn btn-outline ml-2">Všechny firmy</a>
-    <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline ml-2">Všechny smlouvy</a>
+    <a href="{% url 'create_b2b_contract' %}" class="btn btn-secondary">+ Nová smlouva</a>
+    <a href="{% url 'list_b2b_companies' %}" class="btn btn-outline">Všechny firmy</a>
+    <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline">Všechny smlouvy</a>
   </div>
 
   <!-- Statistics -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pt-6 border-t border-gray-200">
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">📊 Celkem firem</h3>
-      <p class="text-3xl font-bold text-blue-600">{{ total_companies }}</p>
+  <div class="stats-grid mb-6 pt-6 border-t border-gray-200">
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem firem</div>
+          <div class="stat-value">{{ total_companies|default:0 }}</div>
+        </div>
+        <div class="stat-icon primary">📊</div>
+      </div>
     </div>
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">📄 Celkem smluv</h3>
-      <p class="text-3xl font-bold text-green-600">{{ total_contracts }}</p>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Celkem smluv</div>
+          <div class="stat-value">{{ total_contracts|default:0 }}</div>
+        </div>
+        <div class="stat-icon success">📄</div>
+      </div>
     </div>
-    <div class="content-card">
-      <h3 class="text-lg font-semibold mb-2">✅ Aktivních smluv</h3>
-      <p class="text-3xl font-bold text-purple-600">{{ active_contracts }}</p>
+    <div class="stat-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div class="stat-title">Aktivních smluv</div>
+          <div class="stat-value">{{ active_contracts|default:0 }}</div>
+        </div>
+        <div class="stat-icon info">✅</div>
+      </div>
     </div>
   </div>
 
@@ -34,31 +49,35 @@
     <h3 class="text-xl font-semibold mb-4">Nedávno přidané firmy</h3>
     {% if companies %}
     <div class="overflow-x-auto">
-      <table class="w-full">
+      <table class="data-table">
         <thead>
-          <tr class="border-b">
-            <th class="text-left py-2">Název</th>
-            <th class="text-left py-2">Kategorie</th>
-            <th class="text-left py-2">Kontakt</th>
-            <th class="text-right py-2">Smlouvy</th>
-            <th class="text-right py-2">Akce</th>
+          <tr>
+            <th>Název</th>
+            <th>Kategorie</th>
+            <th>Kontakt</th>
+            <th class="text-center">Smlouvy</th>
+            <th class="text-center">Akce</th>
           </tr>
         </thead>
         <tbody>
           {% for company in companies %}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="py-3">
-              <a href="{% url 'detail_b2b_company' company.company_id %}" class="text-blue-600 hover:underline font-semibold">
+          <tr>
+            <td>
+              <a href="{% url 'detail_b2b_company' company.company_id %}" class="text-blue-600 hover:underline font-medium">
                 {{ company.name }}
               </a>
             </td>
-            <td class="py-3">
+            <td>
               <span class="px-2 py-1 bg-gray-200 rounded text-sm">{{ company.get_category_display }}</span>
             </td>
-            <td class="py-3">{{ company.email|default:"-" }}</td>
-            <td class="py-3 text-right">{{ company.contracts_count }}</td>
-            <td class="py-3 text-right">
-              <a href="{% url 'detail_b2b_company' company.company_id %}" class="text-blue-600 hover:underline">Detail</a>
+            <td>{{ company.email|default:"-" }}</td>
+            <td class="text-center">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm font-medium">{{ company.contracts_count }}</span>
+            </td>
+            <td class="text-center">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_b2b_company' company.company_id %}">👁️ Detail</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -66,7 +85,11 @@
       </table>
     </div>
     {% else %}
-    <p class="text-gray-500 text-center py-8">Zatím nejsou žádné B2B firmy. <a href="{% url 'create_b2b_company' %}" class="text-blue-600 hover:underline">Vytvořit první firmu</a></p>
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <div class="text-5xl mb-3">🤝</div>
+      <p class="text-gray-600 mb-4">Zatím nejsou žádné B2B firmy.</p>
+      <a href="{% url 'create_b2b_company' %}" class="btn btn-primary">+ Vytvořit první firmu</a>
+    </div>
     {% endif %}
   </div>
 
@@ -75,31 +98,33 @@
     <h3 class="text-xl font-semibold mb-4">Nedávné smlouvy</h3>
     {% if recent_contracts %}
     <div class="overflow-x-auto">
-      <table class="w-full">
+      <table class="data-table">
         <thead>
-          <tr class="border-b">
-            <th class="text-left py-2">Číslo smlouvy</th>
-            <th class="text-left py-2">Název</th>
-            <th class="text-left py-2">Firma</th>
-            <th class="text-left py-2">Status</th>
-            <th class="text-right py-2">Akce</th>
+          <tr>
+            <th>Číslo smlouvy</th>
+            <th>Název</th>
+            <th>Firma</th>
+            <th>Status</th>
+            <th class="text-center">Akce</th>
           </tr>
         </thead>
         <tbody>
           {% for contract in recent_contracts %}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="py-3">
-              <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline font-semibold">
+          <tr>
+            <td>
+              <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline font-medium">
                 {{ contract.contract_number }}
               </a>
             </td>
-            <td class="py-3">{{ contract.title }}</td>
-            <td class="py-3">{{ contract.company.name }}</td>
-            <td class="py-3">
-              <span class="px-2 py-1 bg-blue-200 rounded text-sm">{{ contract.get_status_display }}</span>
+            <td>{{ contract.title }}</td>
+            <td>{{ contract.company.name }}</td>
+            <td>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{{ contract.get_status_display }}</span>
             </td>
-            <td class="py-3 text-right">
-              <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline">Detail</a>
+            <td class="text-center">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_b2b_contract' contract.contract_id %}">👁️ Detail</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -107,7 +132,11 @@
       </table>
     </div>
     {% else %}
-    <p class="text-gray-500 text-center py-8">Zatím nejsou žádné B2B smlouvy. <a href="{% url 'create_b2b_contract' %}" class="text-blue-600 hover:underline">Vytvořit první smlouvu</a></p>
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <div class="text-5xl mb-3">📄</div>
+      <p class="text-gray-600 mb-4">Zatím nejsou žádné B2B smlouvy.</p>
+      <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary">+ Vytvořit první smlouvu</a>
+    </div>
     {% endif %}
   </div>
 </div>
