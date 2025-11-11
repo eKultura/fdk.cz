@@ -6,14 +6,16 @@
 {% block content %}
 <div class="max-w-6xl mx-auto">
   <!-- Actions -->
-  <div class="mb-10 flex flex-wrap gap-3">
-    <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
-    <a href="{% url 'list_risks' %}" class="btn btn-outline">Všechna rizika</a>
-    <a href="{% url 'risk_matrix' %}" class="btn btn-outline">Riziková matice</a>
+  <div class="content-card mb-6">
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
+      <a href="{% url 'list_risks' %}" class="btn btn-outline">Všechna rizika</a>
+      <a href="{% url 'risk_matrix' %}" class="btn btn-outline">Riziková matice</a>
+    </div>
   </div>
 
   <!-- Statistics -->
-  <div class="stats-grid mb-6 pt-6 border-t border-gray-200">
+  <div class="stats-grid mb-6">
     <div class="stat-card">
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>

@@ -8,38 +8,39 @@
 {% block content %}
 <div class="max-w-6xl mx-auto">
     <!-- Actions -->
-    <div class="mb-6 flex gap-3">
+    <div class="mb-10 flex flex-wrap gap-3">
         <a href="{% url 'list_tests' %}" class="btn btn-outline">← {% trans "Zpět na testy" %}</a>
         <a href="{% url 'create_test_type' %}" class="btn btn-primary">+ {% trans "Nový typ testu" %}</a>
     </div>
 
     <!-- Table -->
     <div class="content-card">
+        <h3 class="text-xl font-semibold mb-4">🧪 {% trans "Seznam typů testů" %}</h3>
         {% if test_types %}
             <div class="overflow-x-auto">
-                <table class="table">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>{% trans "Název" %}</th>
                             <th>{% trans "Popis" %}</th>
                             <th>{% trans "Projekt" %}</th>
-                            <th class="text-center">{% trans "Akce" %}</th>
+                            <th class="text-right">{% trans "Akce" %}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for test_type in test_types %}
                             <tr>
-                                <td class="font-medium">{{ test_type.name }}</td>
+                                <td><strong>{{ test_type.name }}</strong></td>
                                 <td>{{ test_type.description|default:"-" }}</td>
                                 <td>
                                     <a href="{% url 'detail_project' test_type.project.project_id %}" class="text-blue-600 hover:underline">
                                         {{ test_type.project.name }}
                                     </a>
                                 </td>
-                                <td class="text-center">
-                                    <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-sm btn-outline">
-                                        ✏️ {% trans "Upravit" %}
-                                    </a>
+                                <td class="text-right">
+                                    <div class="data-table-actions">
+                                        <a href="{% url 'edit_test_type' test_type.test_type_id %}">✏️ {% trans "Upravit" %}</a>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -47,7 +48,7 @@
                 </table>
             </div>
         {% else %}
-            <div class="text-center py-12">
+            <div class="text-center py-12 bg-gray-50 rounded-lg">
                 <div class="text-5xl mb-3">🧪</div>
                 <p class="text-gray-600 mb-4">{% trans "Zatím nemáte vytvořené žádné typy testů" %}</p>
                 <a href="{% url 'create_test_type' %}" class="btn btn-primary">+ {% trans "Vytvořit první typ testu" %}</a>
