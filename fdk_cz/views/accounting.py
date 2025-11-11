@@ -6,8 +6,14 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from fdk_cz.forms.accounting import FreeInvoiceForm, InvoiceForm, InvoiceItemForm, InvoiceItemFormSet
-from fdk_cz.models import Invoice, InvoiceItem
+from fdk_cz.forms.accounting import (
+    FreeInvoiceForm, InvoiceForm, InvoiceItemForm, InvoiceItemFormSet,
+    AccountingContextForm, AccountingAccountForm, JournalEntryForm, JournalEntryLineFormSet, BalanceSheetForm
+)
+from fdk_cz.models import (
+    Invoice, InvoiceItem,
+    AccountingContext, AccountingAccount, JournalEntry, JournalEntryLine, BalanceSheet
+)
 from urllib.parse import urlencode
 
 # -------------------------------------------------------------------
@@ -158,6 +164,195 @@ def free_invoice(request):
     else:
         return render(request, 'accounting/free_invoice.html', {'form': form, 'item_formset': item_formset, 'today': current_date, 'due_date': due_date})
 
+
+# -------------------------------------------------------------------
+#                    ACCOUNTING EXPANSION VIEWS
+# -------------------------------------------------------------------
+
+@login_required
+def select_accounting_context(request):
+    """View for selecting or creating accounting context"""
+    # Get user's contexts
+    contexts = AccountingContext.objects.filter(
+        user=request.user,
+        is_active=True
+    ).order_by('-fiscal_year', 'name')
+
+    if request.method == 'POST':
+        form = AccountingContextForm(request.POST, user=request.user)
+        if form.is_valid():
+            context = form.save(commit=False)
+            context.user = request.user
+            context.save()
+            # Store selected context in session
+            request.session['accounting_context_id'] = context.context_id
+            return redirect('accounting_dashboard')
+    else:
+        form = AccountingContextForm(user=request.user)
+
+    return render(request, 'accounting/select_context.html', {
+        'form': form,
+        'contexts': contexts
+    })
+
+
+@login_required
+def set_accounting_context(request, context_id):
+    """Set active accounting context in session"""
+    context = get_object_or_404(AccountingContext, context_id=context_id, user=request.user)
+    request.session['accounting_context_id'] = context_id
+    return redirect('accounting_dashboard')
+
+
+def get_current_context(request):
+    """Helper to get current accounting context from session"""
+    context_id = request.session.get('accounting_context_id')
+    if context_id:
+        try:
+            return AccountingContext.objects.get(context_id=context_id, user=request.user)
+        except AccountingContext.DoesNotExist:
+            pass
+    # Return first active context or None
+    return AccountingContext.objects.filter(user=request.user, is_active=True).first()
+
+
+@login_required
+def chart_of_accounts(request):
+    """View chart of accounts"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    accounts = AccountingAccount.objects.filter(
+        context=context,
+        is_active=True
+    ).order_by('account_number')
+
+    return render(request, 'accounting/chart_of_accounts.html', {
+        'context': context,
+        'accounts': accounts
+    })
+
+
+@login_required
+def create_account(request):
+    """Create new account in chart of accounts"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    if request.method == 'POST':
+        form = AccountingAccountForm(request.POST, context=context)
+        if form.is_valid():
+            account = form.save(commit=False)
+            account.context = context
+            account.save()
+            return redirect('chart_of_accounts')
+    else:
+        form = AccountingAccountForm(context=context)
+
+    return render(request, 'accounting/create_account.html', {
+        'form': form,
+        'context': context
+    })
+
+
+@login_required
+def journal_ledger(request):
+    """View journal ledger (účetní deník)"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    entries = JournalEntry.objects.filter(
+        context=context
+    ).prefetch_related('lines__account').order_by('-entry_date', '-entry_number')
+
+    # Calculate totals for each entry
+    for entry in entries:
+        entry.total_debit = sum(line.debit_amount for line in entry.lines.all())
+        entry.total_credit = sum(line.credit_amount for line in entry.lines.all())
+
+    return render(request, 'accounting/journal_ledger.html', {
+        'context': context,
+        'entries': entries
+    })
+
+
+@login_required
+def create_journal_entry(request):
+    """Create new journal entry"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    if request.method == 'POST':
+        form = JournalEntryForm(request.POST, context=context, user=request.user)
+        # Pass context to formset forms via form_kwargs
+        formset = JournalEntryLineFormSet(
+            request.POST,
+            form_kwargs={'context': context}
+        )
+
+        if form.is_valid() and formset.is_valid():
+            # Check that debits equal credits
+            total_debit = sum(f.cleaned_data.get('debit_amount', 0) for f in formset if f.cleaned_data and not f.cleaned_data.get('DELETE'))
+            total_credit = sum(f.cleaned_data.get('credit_amount', 0) for f in formset if f.cleaned_data and not f.cleaned_data.get('DELETE'))
+
+            if total_debit != total_credit:
+                form.add_error(None, f'Součet MD ({total_debit}) se nerovná součtu D ({total_credit}). Podvojný zápis musí být vyrovnaný.')
+            else:
+                entry = form.save(commit=False)
+                entry.context = context
+                entry.created_by = request.user
+                entry.save()
+
+                # Save lines
+                for line_form in formset:
+                    if line_form.cleaned_data and not line_form.cleaned_data.get('DELETE'):
+                        line = line_form.save(commit=False)
+                        line.journal_entry = entry
+                        line.save()
+
+                return redirect('journal_ledger')
+    else:
+        form = JournalEntryForm(context=context, user=request.user)
+        formset = JournalEntryLineFormSet(
+            queryset=JournalEntryLine.objects.none(),
+            form_kwargs={'context': context}
+        )
+
+    return render(request, 'accounting/create_journal_entry.html', {
+        'form': form,
+        'formset': formset,
+        'context': context
+    })
+
+
+@login_required
+def balance_sheet_view(request, balance_type='opening'):
+    """View balance sheet (rozvaha)"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    balances = BalanceSheet.objects.filter(
+        context=context,
+        fiscal_year=context.fiscal_year,
+        balance_type=balance_type
+    ).select_related('account').order_by('account__account_number')
+
+    # Calculate totals
+    total_debit = sum(b.debit_balance for b in balances)
+    total_credit = sum(b.credit_balance for b in balances)
+
+    return render(request, 'accounting/balance_sheet.html', {
+        'context': context,
+        'balances': balances,
+        'balance_type': balance_type,
+        'total_debit': total_debit,
+        'total_credit': total_credit
+    })
 
 
 
