@@ -105,11 +105,10 @@ class test_type_form(forms.ModelForm):
         else:
             self.fields['project'].queryset = Project.objects.all()  # Pokud není uživatel, načteme všechny projekty
 
-        # Tailwind stylování formulářových polí
-        tailwind_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-        self.fields['project'].widget.attrs.update({'class': tailwind_classes})
-        self.fields['name'].widget.attrs.update({'class': tailwind_classes})
-        self.fields['description'].widget.attrs.update({'class': tailwind_classes, 'rows': '4'})
+        # Form control styling
+        self.fields['project'].widget.attrs.update({'class': 'form-control'})
+        self.fields['name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['description'].widget.attrs.update({'class': 'form-control', 'rows': '4'})
 
 
 

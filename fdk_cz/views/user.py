@@ -92,12 +92,16 @@ def toggle_module_visibility(request, module_id):
             user=request.user,
             module=module
         )
-        pref.is_visible = not pref.is_visible
-        pref.save()
+
+        # Pokud byla preference právě vytvořena, je již is_visible=True (default)
+        # Pokud již existuje, toggleneme ji
+        if not created:
+            pref.is_visible = not pref.is_visible
+            pref.save()
 
         messages.success(request, f"Modul {module.display_name} byl {'zapnut' if pref.is_visible else 'vypnut'}.")
 
-    return redirect('user_settings')
+    return redirect('user_settings' + '#moduly')
 
 
 def registration(request):

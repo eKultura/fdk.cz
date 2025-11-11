@@ -18,14 +18,14 @@ from fdk_cz.models import TestType, Test, TestResult, TestError, Project
 
 @login_required
 def get_test_types(request, project_id):
-    test_types = test_type.objects.filter(Project_id=project_id)
-    data = {'test_types': [{'id': TestType.test_type_id, 'name': TestType.name} for test_type in test_types]}
+    test_types = TestType.objects.filter(Project_id=project_id)
+    data = {'test_types': [{'id': test_type.test_type_id, 'name': test_type.name} for test_type in test_types]}
     return JsonResponse(data)
 @login_required
 def get_test_results(request, project_id):
     try:
         project_id = int(project_id)
-        test_results = test_result.objects.filter(project_id=project_id)
+        test_results = TestResult.objects.filter(project_id=project_id)
         data = {'test_results': [{'id': result.pk, 'name': result.result} for result in test_results]}
         return JsonResponse(data)
     except ValueError:
@@ -35,7 +35,7 @@ def get_test_results(request, project_id):
 
 @login_required
 def delete_test_error(request, error_id):
-    error_instance = get_object_or_404(test_error, pk=error_id)
+    error_instance = get_object_or_404(TestError, pk=error_id)
     project_id = error_instance.project.project_id  # Získání ID projektu pro přesměrování
     if request.method == 'POST':
         error_instance.delete()
@@ -48,7 +48,7 @@ def delete_test_error(request, error_id):
 @login_required
 def list_test_types(request):
     user_projects = Project.objects.filter(project_users__user=request.user)
-    test_types = test_type.objects.filter(project__in=user_projects)
+    test_types = TestType.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_types.html', {'test_types': test_types, 'projects': user_projects})
 
 # Přidání nového typu testu
