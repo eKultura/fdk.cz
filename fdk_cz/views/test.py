@@ -67,7 +67,7 @@ def create_test_type(request):
 # Editace typu testu
 @login_required
 def edit_test_type(request, test_type_id):
-    test_type_instance = get_object_or_404(test_type, pk=test_type_id)
+    test_type_instance = get_object_or_404(TestType, pk=test_type_id)
 
     if request.method == 'POST':
         form = test_type_form(request.POST, instance=test_type_instance, user=request.user)  # Předáváme 'user' při POST
