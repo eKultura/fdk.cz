@@ -19,25 +19,25 @@
     <h3 class="text-xl font-semibold mb-4">{% trans "Testy" %}</h3>
     {% if tests %}
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="table">
         <thead>
           <tr>
-            <th class="text-left">{% trans "Název" %}</th>
-            <th class="text-left">{% trans "Popis" %}</th>
-            <th class="text-left">{% trans "Typ" %}</th>
-            <th class="text-left">{% trans "Projekt" %}</th>
-            <th class="text-right">{% trans "Akce" %}</th>
+            <th>{% trans "Název" %}</th>
+            <th>{% trans "Popis" %}</th>
+            <th>{% trans "Typ" %}</th>
+            <th>{% trans "Projekt" %}</th>
+            <th class="text-center">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
           {% for test in tests %}
           <tr>
-            <td class="font-semibold">{{ test.name }}</td>
+            <td class="font-medium">{{ test.name }}</td>
             <td>{{ test.description|truncatewords:10|default:"—" }}</td>
             <td><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{{ test.test_type.name }}</span></td>
             <td>{{ test.project.name }}</td>
-            <td class="text-right">
-              <a href="{% url 'edit_test' test.test_id %}" class="btn btn-outline btn-sm">{% trans "Upravit" %}</a>
+            <td class="text-center">
+              <a href="{% url 'edit_test' test.test_id %}" class="btn btn-outline btn-sm">✏️ {% trans "Upravit" %}</a>
             </td>
           </tr>
           {% endfor %}
@@ -59,23 +59,23 @@
     <h3 class="text-xl font-semibold mb-4">{% trans "Dostupné typy testů" %}</h3>
     {% if test_types %}
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="table">
         <thead>
           <tr>
-            <th class="text-left">{% trans "Název" %}</th>
-            <th class="text-left">{% trans "Popis" %}</th>
-            <th class="text-left">{% trans "Projekt" %}</th>
-            <th class="text-right">{% trans "Akce" %}</th>
+            <th>{% trans "Název" %}</th>
+            <th>{% trans "Popis" %}</th>
+            <th>{% trans "Projekt" %}</th>
+            <th class="text-center">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
           {% for test_type in test_types %}
           <tr>
-            <td class="font-semibold">{{ test_type.name }}</td>
+            <td class="font-medium">{{ test_type.name }}</td>
             <td>{{ test_type.description|truncatewords:10|default:"—" }}</td>
             <td>{{ test_type.project.name }}</td>
-            <td class="text-right">
-              <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-outline btn-sm">{% trans "Upravit" %}</a>
+            <td class="text-center">
+              <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-outline btn-sm">✏️ {% trans "Upravit" %}</a>
             </td>
           </tr>
           {% endfor %}
@@ -95,27 +95,27 @@
     <h3 class="text-xl font-semibold mb-4">{% trans "Posledních 10 aktivních chyb" %}</h3>
     {% if test_errors %}
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="table">
         <thead>
           <tr>
-            <th class="text-left">{% trans "Název chyby" %}</th>
-            <th class="text-left">{% trans "Status" %}</th>
-            <th class="text-left">{% trans "Autor" %}</th>
-            <th class="text-right">{% trans "Akce" %}</th>
+            <th>{% trans "Název chyby" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Autor" %}</th>
+            <th class="text-center">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
           {% for error in test_errors %}
           <tr>
-            <td class="font-semibold">{{ error.error_title }}</td>
+            <td class="font-medium">{{ error.error_title }}</td>
             <td>
               <span class="px-2 py-1 {% if error.status == 'open' %}bg-yellow-100 text-yellow-700{% elif error.status == 'closed' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %} rounded text-sm">
                 {{ error.status }}
               </span>
             </td>
             <td>{% if error.created_by %}{{ error.created_by.username }}{% else %}{% trans "Neznámý" %}{% endif %}</td>
-            <td class="text-right">
-              <a href="{% url 'detail_test_error' error.test_error_id %}" class="btn btn-outline btn-sm">{% trans "Detail" %}</a>
+            <td class="text-center">
+              <a href="{% url 'detail_test_error' error.test_error_id %}" class="btn btn-outline btn-sm">👁️ {% trans "Detail" %}</a>
             </td>
           </tr>
           {% endfor %}

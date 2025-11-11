@@ -18,38 +18,36 @@
       {% csrf_token %}
 
       <!-- Projekt -->
-      <div class="mb-6">
-        <label for="id_project" class="block text-sm font-medium text-gray-700 mb-2">
+      <div class="mb-4">
+        <label for="id_project" class="form-label">
           {% trans "Projekt" %} <span class="text-red-500">*</span>
         </label>
         {{ form.project }}
         {% if form.project.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.project.errors }}</p>
+          <p class="text-red-600 text-sm mt-1">{{ form.project.errors }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">{% trans "Vyberte projekt, ke kterému tento typ testu patří." %}</p>
       </div>
 
       <!-- Název typu testu -->
-      <div class="mb-6">
-        <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">
+      <div class="mb-4">
+        <label for="id_name" class="form-label">
           {% trans "Název typu testu" %} <span class="text-red-500">*</span>
         </label>
         {{ form.name }}
         {% if form.name.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.name.errors }}</p>
+          <p class="text-red-600 text-sm mt-1">{{ form.name.errors }}</p>
         {% endif %}
       </div>
 
       <!-- Popis typu testu -->
-      <div class="mb-6">
-        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">
+      <div class="mb-4">
+        <label for="id_description" class="form-label">
           {% trans "Popis" %}
         </label>
         {{ form.description }}
         {% if form.description.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.description.errors }}</p>
+          <p class="text-red-600 text-sm mt-1">{{ form.description.errors }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">{% trans "Volitelné - Popis typu testu." %}</p>
       </div>
 
       <div class="flex gap-3 pt-6 border-t border-gray-200">
