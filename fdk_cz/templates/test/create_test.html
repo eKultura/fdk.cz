@@ -36,12 +36,11 @@
             + {% trans "Přidat nový typ" %}
           </a>
         </label>
-        <select name="test_type" id="id_test_type" required class="form-control">
-          <option value="">{% trans "Vyberte typ testu" %}</option>
-        </select>
+        {{ form.test_type }}
         {% if form.test_type.errors %}
           <p class="text-red-600 text-sm mt-1">{{ form.test_type.errors }}</p>
         {% endif %}
+        <p class="text-xs text-gray-500 mt-1">{% trans "Nejprve vyberte projekt, poté se načtou dostupné typy testů" %}</p>
       </div>
 
       <!-- Název testu -->

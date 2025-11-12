@@ -97,14 +97,28 @@
         </div>
       </div>
 
-      <div class="mb-6">
-        <label for="{{ form.description.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
-          {% trans "Popis" %}
-        </label>
-        {{ form.description }}
-        {% if form.description.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
-        {% endif %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="{{ form.accounting_type.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Typ účetnictví" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.accounting_type }}
+          <p class="mt-1 text-xs text-gray-500">{% trans "Osobní pro OSVČ, Organizační pro firmy" %}</p>
+          {% if form.accounting_type.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.accounting_type.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.accounting_method.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Metoda účetnictví" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.accounting_method }}
+          <p class="mt-1 text-xs text-gray-500">{% trans "Podvojné účetnictví je standardní metoda" %}</p>
+          {% if form.accounting_method.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.accounting_method.errors|join:", " }}</p>
+          {% endif %}
+        </div>
       </div>
 
       <div class="flex gap-3 pt-6 border-t-2 border-gray-200">
