@@ -37,9 +37,53 @@
     </a>
   </div>
 
+  <!-- Accounting Contexts (Organizace/Osobní) -->
+  {% if accounting_contexts %}
+  <div class="content-card mb-6">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">🏢 Účetní kontexty</h3>
+      <a href="{% url 'select_accounting_context' %}" class="btn btn-primary text-sm">&#10133; Nový kontext</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for ctx in accounting_contexts %}
+      <div class="p-4 border rounded-lg {% if current_context and ctx.context_id == current_context.context_id %}bg-blue-50 border-blue-300{% else %}bg-gray-50 border-gray-200 hover:border-blue-200 transition{% endif %}">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-semibold text-gray-800">{{ ctx.name }}</h4>
+          {% if current_context and ctx.context_id == current_context.context_id %}
+          <span class="px-2 py-1 bg-blue-600 text-white rounded text-xs">Aktivní</span>
+          {% endif %}
+        </div>
+        <p class="text-sm text-gray-600 mb-3">
+          {% if ctx.organization %}🏢 {{ ctx.organization.name }}{% else %}👤 Osobní{% endif %}
+        </p>
+        <p class="text-xs text-gray-500 mb-3">Rok: {{ ctx.fiscal_year }}</p>
+        <div class="flex gap-2">
+          {% if not current_context or ctx.context_id != current_context.context_id %}
+          <a href="{% url 'set_accounting_context' ctx.context_id %}" class="btn btn-outline btn-sm">Aktivovat</a>
+          {% endif %}
+          <a href="{% url 'journal_ledger' %}" class="btn btn-outline btn-sm">Deník</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   <!-- Income Statement (Výsledovka) -->
   <div class="content-card mb-6">
-    <h3 class="text-xl font-semibold mb-4 text-gray-800">📈 Výsledovka – Běžné období</h3>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800">📈 Výsledovka – Běžné období</h3>
+        {% if current_context %}
+        <p class="text-sm text-gray-600 mt-1">Kontext: {{ current_context.name }} ({{ current_context.fiscal_year }})</p>
+        {% else %}
+        <p class="text-sm text-gray-600 mt-1">Vyberte účetní kontext pro zobrazení dat</p>
+        {% endif %}
+      </div>
+      {% if current_context %}
+      <a href="{% url 'balance_sheet_view' 'opening' %}" class="btn btn-outline text-sm">📊 Rozvaha</a>
+      {% endif %}
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Revenues -->
       <div class="p-5 bg-green-50 rounded-lg border border-green-200">
