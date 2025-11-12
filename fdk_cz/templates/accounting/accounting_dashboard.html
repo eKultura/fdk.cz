@@ -4,13 +4,148 @@
 {% block header_subtitle %}Správa faktur a peněžních deníků{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
-  <!-- Actions -->
+<div class="max-w-7xl mx-auto">
+  <!-- Navigation Cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <a href="{% url 'create_invoice' %}" class="content-card hover:shadow-lg transition" style="text-decoration:none;cursor:pointer;">
+      <div class="text-center p-4">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📄</div>
+        <h3 class="font-semibold text-gray-800">Faktury</h3>
+        <p class="text-sm text-gray-600 mt-1">Správa faktur</p>
+      </div>
+    </a>
+    <a href="{% url 'journal_ledger' %}" class="content-card hover:shadow-lg transition" style="text-decoration:none;cursor:pointer;">
+      <div class="text-center p-4">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📚</div>
+        <h3 class="font-semibold text-gray-800">Účetní deník</h3>
+        <p class="text-sm text-gray-600 mt-1">Podvojné účetnictví</p>
+      </div>
+    </a>
+    <a href="{% url 'balance_sheet_view' 'opening' %}" class="content-card hover:shadow-lg transition" style="text-decoration:none;cursor:pointer;">
+      <div class="text-center p-4">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📊</div>
+        <h3 class="font-semibold text-gray-800">Rozvaha</h3>
+        <p class="text-sm text-gray-600 mt-1">Počáteční / Konečná</p>
+      </div>
+    </a>
+    <a href="{% url 'chart_of_accounts' %}" class="content-card hover:shadow-lg transition" style="text-decoration:none;cursor:pointer;">
+      <div class="text-center p-4">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">📋</div>
+        <h3 class="font-semibold text-gray-800">Účtová osnova</h3>
+        <p class="text-sm text-gray-600 mt-1">Správa účtů</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Accounting Contexts (Organizace/Osobní) -->
+  {% if accounting_contexts %}
   <div class="content-card mb-6">
-    <div class="flex flex-wrap gap-3">
-      <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Nová faktura</a>
-      <a href="{% url 'list_invoices' %}" class="btn btn-outline">Všechny faktury</a>
-      <a href="{% url 'free_invoice' %}" class="btn btn-outline">Vytvoř fakturu zdarma</a>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">🏢 Účetní kontexty</h3>
+      <a href="{% url 'select_accounting_context' %}" class="btn btn-primary text-sm">&#10133; Nový kontext</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for ctx in accounting_contexts %}
+      <div class="p-4 border rounded-lg {% if current_context and ctx.context_id == current_context.context_id %}bg-blue-50 border-blue-300{% else %}bg-gray-50 border-gray-200 hover:border-blue-200 transition{% endif %}">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-semibold text-gray-800">{{ ctx.name }}</h4>
+          {% if current_context and ctx.context_id == current_context.context_id %}
+          <span class="px-2 py-1 bg-blue-600 text-white rounded text-xs">Aktivní</span>
+          {% endif %}
+        </div>
+        <p class="text-sm text-gray-600 mb-3">
+          {% if ctx.organization %}🏢 {{ ctx.organization.name }}{% else %}👤 Osobní{% endif %}
+        </p>
+        <p class="text-xs text-gray-500 mb-3">Rok: {{ ctx.fiscal_year }}</p>
+        <div class="flex gap-2">
+          {% if not current_context or ctx.context_id != current_context.context_id %}
+          <a href="{% url 'set_accounting_context' ctx.context_id %}" class="btn btn-outline btn-sm">Aktivovat</a>
+          {% endif %}
+          <a href="{% url 'journal_ledger' %}" class="btn btn-outline btn-sm">Deník</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Income Statement (Výsledovka) -->
+  <div class="content-card mb-6">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800">📈 Výsledovka – Běžné období</h3>
+        {% if current_context %}
+        <p class="text-sm text-gray-600 mt-1">Kontext: {{ current_context.name }} ({{ current_context.fiscal_year }})</p>
+        {% else %}
+        <p class="text-sm text-gray-600 mt-1">Vyberte účetní kontext pro zobrazení dat</p>
+        {% endif %}
+      </div>
+      {% if current_context %}
+      <a href="{% url 'balance_sheet_view' 'opening' %}" class="btn btn-outline text-sm">📊 Rozvaha</a>
+      {% endif %}
+    </div>
+    <div style="overflow-x:auto;margin-bottom:1.5rem;">
+      <table style="width:100%;border-collapse:collapse;background:white;border:1px solid #e5e7eb;">
+        <thead>
+          <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+            <th style="padding:1rem;text-align:left;font-weight:600;color:#4b5563;">Položka</th>
+            <th style="padding:1rem;text-align:right;font-weight:600;color:#4b5563;width:200px;">Částka (Kč)</th>
+            <th style="padding:1rem;text-align:left;font-weight:600;color:#4b5563;width:120px;">Účty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Revenues Section -->
+          <tr style="background:#f0fdf4;border-bottom:1px solid #86efac;">
+            <td style="padding:0.75rem 1rem;font-weight:600;color:#166534;">💰 Výnosy celkem</td>
+            <td style="padding:0.75rem 1rem;text-align:right;font-weight:700;color:#15803d;font-size:1.1rem;">{{ total_revenues|default:0|floatformat:2 }}</td>
+            <td style="padding:0.75rem 1rem;font-size:0.875rem;color:#16a34a;">6xx</td>
+          </tr>
+
+          <!-- Expenses Section -->
+          <tr style="background:#fef2f2;border-bottom:1px solid #fca5a5;">
+            <td style="padding:0.75rem 1rem;font-weight:600;color:#991b1b;">💸 Náklady celkem</td>
+            <td style="padding:0.75rem 1rem;text-align:right;font-weight:700;color:#dc2626;font-size:1.1rem;">{{ total_expenses|default:0|floatformat:2 }}</td>
+            <td style="padding:0.75rem 1rem;font-size:0.875rem;color:#ef4444;">5xx</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr style="background:#f3f4f6;border-top:2px solid #d1d5db;">
+            <td style="padding:1rem;font-weight:700;color:#1f2937;font-size:1.125rem;">
+              {% if profit >= 0 %}
+                📊 Hospodářský výsledek (ZISK)
+              {% else %}
+                📉 Hospodářský výsledek (ZTRÁTA)
+              {% endif %}
+            </td>
+            <td style="padding:1rem;text-align:right;font-weight:700;font-size:1.25rem;{% if profit >= 0 %}color:#1d4ed8;{% else %}color:#ea580c;{% endif %}">
+              {{ profit|default:0|floatformat:2 }}
+            </td>
+            <td style="padding:1rem;font-size:0.875rem;{% if profit >= 0 %}color:#3b82f6;{% else %}color:#f97316;{% endif %}">
+              Výnosy - Náklady
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Summary Cards - Quick Overview -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+      <div style="padding:1rem;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;">
+        <h4 style="font-size:0.875rem;font-weight:600;color:#166534;margin-bottom:0.5rem;">💰 Výnosy</h4>
+        <p style="font-size:1.5rem;font-weight:700;color:#15803d;">{{ total_revenues|default:0|floatformat:2 }} Kč</p>
+      </div>
+      <div style="padding:1rem;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;">
+        <h4 style="font-size:0.875rem;font-weight:600;color:#991b1b;margin-bottom:0.5rem;">💸 Náklady</h4>
+        <p style="font-size:1.5rem;font-weight:700;color:#dc2626;">{{ total_expenses|default:0|floatformat:2 }} Kč</p>
+      </div>
+      <div style="padding:1rem;{% if profit >= 0 %}background:#eff6ff;border:1px solid #93c5fd;{% else %}background:#fff7ed;border:1px solid #fdba74;{% endif %}border-radius:8px;">
+        <h4 style="font-size:0.875rem;font-weight:600;{% if profit >= 0 %}color:#1e40af;{% else %}color:#9a3412;{% endif %}margin-bottom:0.5rem;">
+          {% if profit >= 0 %}📊 Zisk{% else %}📉 Ztráta{% endif %}
+        </h4>
+        <p style="font-size:1.5rem;font-weight:700;{% if profit >= 0 %}color:#1d4ed8;{% else %}color:#ea580c;{% endif %}">
+          {{ profit|default:0|floatformat:2 }} Kč
+        </p>
+      </div>
     </div>
   </div>
 
@@ -47,43 +182,49 @@
 
   <!-- Recent Invoices -->
   <div class="content-card">
-    <h3 class="text-xl font-semibold mb-4">Nedávné faktury</h3>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">📄 Nedávné faktury</h3>
+      <div class="flex gap-2">
+        <a href="{% url 'create_invoice' %}" class="btn btn-primary text-sm">&#10133; Nová faktura</a>
+        <a href="{% url 'list_invoices' %}" class="btn btn-outline text-sm">Všechny faktury</a>
+      </div>
+    </div>
     {% if invoices %}
     <div class="overflow-x-auto">
-      <table class="data-table">
-        <thead>
+      <table class="data-table" style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f9fafb;">
           <tr>
-            <th class="text-left">Číslo faktury</th>
-            <th class="text-left">Datum vystavení</th>
-            <th class="text-left">Datum splatnosti</th>
-            <th class="text-left">Plátce</th>
-            <th class="text-left">Částka</th>
-            <th class="text-left">Stav</th>
-            <th class="text-right">Akce</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold">Číslo faktury</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Datum vystavení</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Datum splatnosti</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden lg:table-cell">Plátce</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold">Částka</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold">Stav</th>
+            <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">Akce</th>
           </tr>
         </thead>
         <tbody>
           {% for invoice in invoices %}
-          <tr>
-            <td class="font-semibold">{{ invoice.invoice_number }}</td>
-            <td>{{ invoice.issue_date|date:"d.m.Y"|default:"—" }}</td>
-            <td>{{ invoice.due_date|date:"d.m.Y"|default:"—" }}</td>
-            <td>{{ invoice.company.name|default:"—" }}</td>
-            <td class="font-semibold">{{ invoice.total_amount|default:"—" }} Kč</td>
-            <td>
+          <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+            <td class="px-4 py-2 text-gray-800 font-medium">{{ invoice.invoice_number }}</td>
+            <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ invoice.issue_date|date:"d.m.Y"|default:"–" }}</td>
+            <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ invoice.due_date|date:"d.m.Y"|default:"–" }}</td>
+            <td class="px-4 py-2 text-gray-500 hidden lg:table-cell">{{ invoice.company.name|default:"–" }}</td>
+            <td class="px-4 py-2 text-right font-semibold text-gray-800">{{ invoice.total_amount|default:"–" }} Kč</td>
+            <td class="px-4 py-2">
               {% if invoice.status == 'paid' %}
-                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">✓ Zaplaceno</span>
+                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-sm">✓ Zaplaceno</span>
               {% elif invoice.status == 'pending' %}
-                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">⏳ Čeká</span>
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-sm">⏳ Čeká</span>
               {% elif invoice.status == 'overdue' %}
-                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium">⚠️ Po splatnosti</span>
+                <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-sm">⚠️ Po splatnosti</span>
               {% else %}
-                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">{{ invoice.get_status_display }}</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">{{ invoice.get_status_display }}</span>
               {% endif %}
             </td>
-            <td class="text-right">
-              <a href="{% url 'detail_invoice' invoice.id %}" class="btn btn-outline btn-sm">Detail</a>
-              <a href="{% url 'edit_invoice' invoice.id %}" class="btn btn-outline btn-sm">Upravit</a>
+            <td class="px-4 py-2 text-center">
+              <a href="{% url 'detail_invoice' invoice.id %}" class="text-blue-600 hover:text-blue-800 text-sm mr-2">Detail</a>
+              <a href="{% url 'edit_invoice' invoice.id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">Upravit</a>
             </td>
           </tr>
           {% endfor %}
@@ -91,11 +232,10 @@
       </table>
     </div>
     {% else %}
-    <div class="text-center py-12 bg-gray-50 rounded-lg">
-      <div class="text-5xl mb-3">📄</div>
-      <h4 class="text-lg font-semibold text-gray-700 mb-2">Žádné faktury</h4>
-      <p class="text-gray-600 mb-4">Zatím nemáte vytvořené žádné faktury.</p>
-      <a href="{% url 'create_invoice' %}" class="btn btn-primary">+ Vytvořit první fakturu</a>
+    <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+      <div style="font-size:2rem;">📄</div>
+      <p style="margin-top:0.5rem;">Zatím nemáte vytvořené žádné faktury.</p>
+      <a href="{% url 'create_invoice' %}" class="btn btn-outline" style="margin-top:1rem;">➕ Vytvořit první fakturu</a>
     </div>
     {% endif %}
   </div>

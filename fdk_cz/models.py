@@ -443,7 +443,7 @@ class TestError(models.Model):
         ('in_progress', 'V procesu'),
     ]
     test_error_id = models.AutoField(primary_key=True, db_column='test_error_id')
-    test_result = models.ForeignKey(TestResult, db_column='test_result_id', on_delete=models.CASCADE, related_name='errors')
+    test_result = models.ForeignKey(TestResult, db_column='test_result_id', on_delete=models.CASCADE, related_name='errors', null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
     error_title = models.CharField(max_length=255, db_column='error_title')
     description = models.TextField(null=True, blank=True, db_column='description')

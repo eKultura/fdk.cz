@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Výběr účetního kontextu" %} | FDK.cz{% endblock %}
+{% block header_title %}🏢 {% trans "Účetní kontexty" %}{% endblock %}
+{% block header_subtitle %}{% trans "Vyberte nebo vytvořte účetní kontext pro podvojné účetnictví" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">← {% trans "Zpět na dashboard" %}</a>
+  </div>
+
+  <!-- Existing Contexts -->
+  {% if contexts %}
+  <div class="content-card mb-6">
+    <h3 class="text-xl font-semibold mb-4">📚 {% trans "Vaše účetní kontexty" %}</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for ctx in contexts %}
+      <div class="p-5 border rounded-lg bg-gray-50 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition">
+        <h4 class="font-semibold text-gray-800 mb-2">{{ ctx.name }}</h4>
+        <div class="mb-3">
+          <p class="text-sm text-gray-600 mb-1">
+            {% if ctx.organization %}
+              🏢 {{ ctx.organization.name }}
+            {% else %}
+              👤 {% trans "Osobní účetnictví" %}
+            {% endif %}
+          </p>
+          <p class="text-xs text-gray-500">{% trans "Rok" %}: {{ ctx.fiscal_year }}</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="{% url 'set_accounting_context' ctx.context_id %}" class="btn btn-primary btn-sm">
+            ✓ {% trans "Aktivovat" %}
+          </a>
+          <a href="{% url 'journal_ledger' %}" onclick="event.preventDefault(); window.location='{% url 'set_accounting_context' ctx.context_id %}'; setTimeout(() => window.location='{% url 'journal_ledger' %}', 100);" class="btn btn-outline btn-sm">
+            {% trans "Deník" %}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Create New Context -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-6">➕ {% trans "Vytvořit nový účetní kontext" %}</h3>
+
+    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <h4 class="font-semibold text-blue-900 mb-2">💡 {% trans "Co je účetní kontext?" %}</h4>
+      <p class="text-sm text-blue-800">
+        {% trans "Účetní kontext odděluje účetnictví pro různé subjekty (organizace) nebo období. Můžete mít:" %}
+      </p>
+      <ul class="list-disc list-inside text-sm text-blue-800 mt-2 ml-2">
+        <li>{% trans "Osobní účetnictví (individuální podnikatel)" %}</li>
+        <li>{% trans "Účetnictví pro každou vaši organizaci zvlášť" %}</li>
+        <li>{% trans "Odděl ené účetnictví pro různé roky" %}</li>
+      </ul>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-6">
+        <label for="{{ form.name.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+          {% trans "Název kontextu" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.name }}
+        <p class="mt-1 text-xs text-gray-500">{% trans "Např. 'Osobní účetnictví 2025', 'eKultura z.s. - 2025'" %}</p>
+        {% if form.name.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="{{ form.fiscal_year.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Účetní rok" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.fiscal_year }}
+          {% if form.fiscal_year.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.fiscal_year.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.organization.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Organizace" %}
+          </label>
+          {{ form.organization }}
+          <p class="mt-1 text-xs text-gray-500">{% trans "Ponechte prázdné pro osobní účetnictví" %}</p>
+          {% if form.organization.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="{{ form.description.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+          {% trans "Popis" %}
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="flex gap-3 pt-6 border-t-2 border-gray-200">
+        <button type="submit" class="btn btn-primary">✓ {% trans "Vytvořit kontext" %}</button>
+        <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">{% trans "Zrušit" %}</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

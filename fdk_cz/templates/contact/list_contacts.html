@@ -31,6 +31,26 @@
   <!-- Contacts Table -->
   <div class="content-card">
     <h3 class="text-xl font-semibold mb-4">👥 Seznam kontaktů</h3>
+  <!-- Contacts Grid -->
+  <div class="content-card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+      <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">👥 Moje kontakty</h3>
+      <div class="flex gap-3 items-center flex-wrap">
+        <!-- Filtrování kontaktů podle projektu -->
+        <form method="GET" class="flex gap-2 items-center">
+          <label for="filter" class="font-medium text-gray-700 text-sm">Projekt:</label>
+          <select name="project_id" id="filter" onchange="this.form.submit()" class="form-control" style="min-width: 180px;">
+            <option value="">Všechny</option>
+            {% for project in projects %}
+              <option value="{{ project.project_id }}" {% if project_id == project.project_id|stringformat:"s" %}selected{% endif %}>
+                {{ project.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+        <a href="{% url 'create_contact_account' %}" class="btn btn-primary text-sm">&#10133; Nový kontakt</a>
+      </div>
+    </div>
     {% if contacts %}
       <div class="overflow-x-auto">
         <table class="data-table">

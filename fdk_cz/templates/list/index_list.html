@@ -5,45 +5,46 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Lists Table (2/3 width) -->
-    <div class="lg:col-span-2">
+  <div class="grid grid-cols-1 gap-6">
+    <!-- Lists Table -->
+    <div>
       <div class="content-card">
-        <h3 class="text-xl font-semibold mb-4">📝 Moje seznamy</h3>
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">📝 Moje seznamy</h3>
+          <a href="{% url 'create_list' %}" class="btn btn-primary text-sm">&#10133; Vytvořit seznam</a>
+        </div>
         {% if lists %}
           <div class="overflow-x-auto">
-            <table class="data-table">
-              <thead>
+            <table class="data-table" style="width:100%;border-collapse:collapse;">
+              <thead style="background:#f9fafb;">
                 <tr>
-                  <th>ID</th>
-                  <th>Název</th>
-                  <th>Popis</th>
-                  <th class="hidden md:table-cell">Položek</th>
-                  <th class="hidden md:table-cell">Vytvořeno</th>
-                  <th class="text-right">Akce</th>
+                  <th class="px-4 py-2 text-left text-gray-600 font-semibold w-1/6">ID</th>
+                  <th class="px-4 py-2 text-left text-gray-600 font-semibold">Název</th>
+                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Popis</th>
+                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Položek</th>
+                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Vytvořeno</th>
+                  <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">Akce</th>
                 </tr>
               </thead>
               <tbody>
                 {% for list in lists %}
-                  <tr>
-                    <td class="text-gray-600">{{ list.list_id }}</td>
-                    <td>
-                      <a href="{% url 'detail_list' list.list_id %}" class="font-semibold text-blue-600 hover:underline">
+                  <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+                    <td class="px-4 py-2 text-gray-700">{{ list.list_id }}</td>
+                    <td class="px-4 py-2 text-gray-800 font-medium">
+                      <a href="{% url 'detail_list' list.list_id %}" class="text-blue-600 hover:underline">
                         {{ list.name }}
                       </a>
                     </td>
-                    <td class="text-gray-600">{{ list.description|default:"—"|truncatewords:10 }}</td>
-                    <td class="hidden md:table-cell text-gray-600">
+                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ list.description|default:"–"|truncatewords:10 }}</td>
+                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">
                       {{ list.items.count|default:0 }}
                     </td>
-                    <td class="hidden md:table-cell text-gray-500 text-sm">
-                      {{ list.created|date:"d.m.Y"|default:"—" }}
+                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">
+                      {{ list.created|date:"d.m.Y"|default:"–" }}
                     </td>
-                    <td class="text-right">
-                      <div class="data-table-actions">
-                        <a href="{% url 'detail_list' list.list_id %}">👁️ Detail</a>
-                        <a href="{% url 'edit_list' list.list_id %}">✏️ Upravit</a>
-                      </div>
+                    <td class="px-4 py-2 text-center">
+                      <a href="{% url 'detail_list' list.list_id %}" class="text-blue-600 hover:text-blue-800 text-sm mr-2">Detail</a>
+                      <a href="{% url 'edit_list' list.list_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">Upravit</a>
                     </td>
                   </tr>
                 {% endfor %}
@@ -51,21 +52,12 @@
             </table>
           </div>
         {% else %}
-          <div class="text-center py-12 bg-gray-50 rounded-lg">
-            <div class="text-5xl mb-3">📝</div>
-            <p class="text-gray-600 mb-4">Zatím nemáte vytvořené žádné seznamy</p>
-            <a href="{% url 'create_list' %}" class="btn btn-primary">+ Vytvořit první seznam</a>
+          <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+            <div style="font-size:2rem;">📝</div>
+            <p style="margin-top:0.5rem;">Zatím nemáte vytvořené žádné seznamy.</p>
+            <a href="{% url 'create_list' %}" class="btn btn-outline" style="margin-top:1rem;">➕ Vytvořit první seznam</a>
           </div>
         {% endif %}
-      </div>
-    </div>
-
-    <!-- Quick Action Card (1/3 width) -->
-    <div>
-      <div class="content-card">
-        <h4 class="text-lg font-semibold text-gray-800 mb-4">➕ Nový seznam</h4>
-        <p class="text-gray-600 text-sm mb-4">Vytvořte nový seznam pro organizaci vašich úkolů a položek.</p>
-        <a href="{% url 'create_list' %}" class="btn btn-primary w-full">+ Vytvořit nový seznam</a>
       </div>
     </div>
   </div>
