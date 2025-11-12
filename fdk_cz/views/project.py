@@ -416,9 +416,19 @@ def update_task_status(request, task_id, status):
     if selected_task.project:
         return redirect('detail_project', project_id=selected_task.project.project_id)
     else:
-        return redirect('task_management')  
+        return redirect('task_management')
 
 
+@login_required
+def take_task(request, task_id):
+    """Převzetí úkolu uživatelem - nastaví přiřazení a status na Probíhá"""
+    selected_task = get_object_or_404(ProjectTask, pk=task_id)
+    selected_task.assigned = request.user
+    selected_task.status = 'Probíhá'
+    selected_task.save()
+
+    # Redirect zpět na detail úkolu
+    return redirect('detail_task', task_id=task_id)
 
 
 @login_required

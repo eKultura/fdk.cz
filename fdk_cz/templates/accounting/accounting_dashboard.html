@@ -71,7 +71,7 @@
 
   <!-- Income Statement (Výsledovka) -->
   <div class="content-card mb-6">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
       <div>
         <h3 class="text-xl font-semibold text-gray-800">📈 Výsledovka – Běžné období</h3>
         {% if current_context %}
@@ -84,28 +84,67 @@
       <a href="{% url 'balance_sheet_view' 'opening' %}" class="btn btn-outline text-sm">📊 Rozvaha</a>
       {% endif %}
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Revenues -->
-      <div class="p-5 bg-green-50 rounded-lg border border-green-200">
-        <h4 class="text-sm font-semibold text-green-800 mb-2">💰 Výnosy</h4>
-        <p class="text-3xl font-bold text-green-700">{{ total_revenues|default:0|floatformat:2 }} Kč</p>
-        <p class="text-xs text-green-600 mt-1">Účty 6xx</p>
+    <div class="overflow-x-auto">
+      <table class="data-table" style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f9fafb;">
+          <tr>
+            <th class="px-4 py-3 text-left text-gray-600 font-semibold">Položka</th>
+            <th class="px-4 py-3 text-right text-gray-600 font-semibold w-48">Částka (Kč)</th>
+            <th class="px-4 py-3 text-left text-gray-600 font-semibold w-32">Účty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Revenues Section -->
+          <tr style="background:#f0fdf4;border-bottom:1px solid #86efac;">
+            <td class="px-4 py-3 font-semibold text-green-800">💰 Výnosy celkem</td>
+            <td class="px-4 py-3 text-right font-bold text-green-700">{{ total_revenues|default:0|floatformat:2 }}</td>
+            <td class="px-4 py-3 text-sm text-green-600">6xx</td>
+          </tr>
+
+          <!-- Expenses Section -->
+          <tr style="background:#fef2f2;border-bottom:1px solid #fca5a5;">
+            <td class="px-4 py-3 font-semibold text-red-800">💸 Náklady celkem</td>
+            <td class="px-4 py-3 text-right font-bold text-red-700">{{ total_expenses|default:0|floatformat:2 }}</td>
+            <td class="px-4 py-3 text-sm text-red-600">5xx</td>
+          </tr>
+        </tbody>
+        <tfoot style="background:#f3f4f6;border-top:2px solid #d1d5db;">
+          <tr>
+            <td class="px-4 py-4 font-bold text-gray-800 text-lg">
+              {% if profit >= 0 %}
+                📊 Hospodářský výsledek (ZISK)
+              {% else %}
+                📉 Hospodářský výsledek (ZTRÁTA)
+              {% endif %}
+            </td>
+            <td class="px-4 py-4 text-right font-bold text-xl {% if profit >= 0 %}text-blue-700{% else %}text-orange-700{% endif %}">
+              {{ profit|default:0|floatformat:2 }}
+            </td>
+            <td class="px-4 py-4 text-sm {% if profit >= 0 %}text-blue-600{% else %}text-orange-600{% endif %}">
+              Výnosy - Náklady
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Summary Cards - Quick Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+        <h4 class="text-sm font-semibold text-green-800 mb-1">💰 Výnosy</h4>
+        <p class="text-2xl font-bold text-green-700">{{ total_revenues|default:0|floatformat:2 }} Kč</p>
       </div>
-      <!-- Expenses -->
-      <div class="p-5 bg-red-50 rounded-lg border border-red-200">
-        <h4 class="text-sm font-semibold text-red-800 mb-2">💸 Náklady</h4>
-        <p class="text-3xl font-bold text-red-700">{{ total_expenses|default:0|floatformat:2 }} Kč</p>
-        <p class="text-xs text-red-600 mt-1">Účty 5xx</p>
+      <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+        <h4 class="text-sm font-semibold text-red-800 mb-1">💸 Náklady</h4>
+        <p class="text-2xl font-bold text-red-700">{{ total_expenses|default:0|floatformat:2 }} Kč</p>
       </div>
-      <!-- Profit/Loss -->
-      <div class="p-5 {% if profit >= 0 %}bg-blue-50 border-blue-200{% else %}bg-orange-50 border-orange-200{% endif %} rounded-lg border">
-        <h4 class="text-sm font-semibold {% if profit >= 0 %}text-blue-800{% else %}text-orange-800{% endif %} mb-2">
+      <div class="p-4 {% if profit >= 0 %}bg-blue-50 border-blue-200{% else %}bg-orange-50 border-orange-200{% endif %} rounded-lg border">
+        <h4 class="text-sm font-semibold {% if profit >= 0 %}text-blue-800{% else %}text-orange-800{% endif %} mb-1">
           {% if profit >= 0 %}📊 Zisk{% else %}📉 Ztráta{% endif %}
         </h4>
-        <p class="text-3xl font-bold {% if profit >= 0 %}text-blue-700{% else %}text-orange-700{% endif %}">
+        <p class="text-2xl font-bold {% if profit >= 0 %}text-blue-700{% else %}text-orange-700{% endif %}">
           {{ profit|default:0|floatformat:2 }} Kč
         </p>
-        <p class="text-xs {% if profit >= 0 %}text-blue-600{% else %}text-orange-600{% endif %} mt-1">Výnosy - Náklady</p>
       </div>
     </div>
   </div>

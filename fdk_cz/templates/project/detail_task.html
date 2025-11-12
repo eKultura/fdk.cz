@@ -204,6 +204,15 @@
     <!-- Akční tlačítka -->
     <div class="task-actions">
       <div class="task-actions-left">
+        {% if not task.assigned or task.assigned.id != user.id %}
+        <form action="{% url 'take_task' task.task_id %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary" style="background:#10b981;border-color:#10b981;">
+            👋 Převzít úkol
+          </button>
+        </form>
+        {% endif %}
+
         {% if task.status != "Hotovo" %}
         <form action="{% url 'update_task_status' task.task_id 'Hotovo' %}" method="post" style="display: inline;">
           {% csrf_token %}
