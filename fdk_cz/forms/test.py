@@ -76,17 +76,34 @@ class test_form(forms.ModelForm):
             user_projects = Project.objects.filter(project_users__user=user)
             self.fields['project'].queryset = user_projects
 
-        # Zpočátku prázdná roletka pro typy testů
-        self.fields['test_type'].queryset = TestType.objects.none()
-
+        # Načíst typy testů podle vybraného projektu
         if 'project' in self.data:
+            # Pokud je projekt v POST datech (formulář byl odeslán)
             try:
                 selected_project_id = int(self.data.get('project'))
                 self.fields['test_type'].queryset = TestType.objects.filter(project_id=selected_project_id)
             except (ValueError, TypeError):
-                pass
+                # Pokud projekt není validní, zobrazit všechny typy testů
+                self.fields['test_type'].queryset = TestType.objects.all()
         elif self.instance.pk:
+            # Pokud editujeme existující test, načíst typy testů pro jeho projekt
             self.fields['test_type'].queryset = self.instance.project.test_types
+        elif self.initial.get('project'):
+            # Pokud je projekt předán v initial (předvybraný)
+            try:
+                project_id = int(self.initial.get('project'))
+                self.fields['test_type'].queryset = TestType.objects.filter(project_id=project_id)
+            except (ValueError, TypeError):
+                self.fields['test_type'].queryset = TestType.objects.all()
+        else:
+            # Pokud není vybrán projekt, zobrazit všechny dostupné typy testů
+            # (uživatel musí nejdřív vybrat projekt)
+            if user:
+                # Zobrazit test types pro projekty uživatele
+                user_project_ids = Project.objects.filter(project_users__user=user).values_list('project_id', flat=True)
+                self.fields['test_type'].queryset = TestType.objects.filter(project_id__in=user_project_ids)
+            else:
+                self.fields['test_type'].queryset = TestType.objects.all()
 
         # Form control styling
         for field_name, field in self.fields.items():

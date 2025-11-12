@@ -201,7 +201,7 @@ def create_test_error(request, project_id=None):
 
 @login_required
 def edit_test_error(request, test_error_id):
-    test_error_instance = get_object_or_404(test_error, pk=test_error_id)
+    test_error_instance = get_object_or_404(TestError, pk=test_error_id)
     if request.method == 'POST':
         form = test_error_form(request.POST, instance=test_error_instance, user=request.user)
         if form.is_valid():

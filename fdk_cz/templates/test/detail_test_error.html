@@ -1,39 +1,106 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Detail chyby" %}{% endblock %}
+{% block title %}{{ error.error_title }} | FDK.cz{% endblock %}
+{% block header_title %}🐛 {{ error.error_title }}{% endblock %}
+{% block header_subtitle %}
+  Testovací chyba v projektu <strong>{{ error.project.name }}</strong>
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="max-w-6xl mx-auto space-y-6">
 
-    <!-- Levý blok - Detail chyby (2/3 šířka) -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Detail chyby" %}</h2>
-        
-        <p><strong>{% trans "Název chyby:" %}</strong> {{ error.error_title }}</p>
-        <p><strong>{% trans "Status:" %}</strong> {{ error.status }}</p>
-        <p><strong>{% trans "Test:" %}</strong> {% if error.test %}{{ error.test.name }}{% else %}{% trans "N/A" %}{% endif %}</p>
-        <p><strong>{% trans "Autor:" %}</strong> {% if error.created_by %}{{ error.created_by.username }}{% else %}{% trans "Neznámý" %}{% endif %}</p>
-        <p><strong>{% trans "Popis:" %}</strong> {{ error.description }}</p>
-
-        <div class="mt-5"><a href="{% url 'edit_test_error' error.pk %}" class="w-full py-2 px-4 bg-yellow-600 text-white font-bold rounded-lg hover:bg-yellow-700 mt-3">
-            {% trans "Upravit chybu" %}
-        </a></div>
-    </div>
-
-    <!-- Pravý blok - Pomocník (1/3 šířka) -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">
-            {% trans "Podrobnosti o chybě jsou zobrazeny nalevo. Chcete-li provést úpravy, klikněte na tlačítko Upravit chybu." %}
-        </p>
-        <p class="text-gray-600">{% trans "Před úpravou se ujistěte, že máte aktuální údaje k testu." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
+  <!-- Status a základní info -->
+  <div class="content-card">
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ error.error_title }}</h2>
+        <div class="flex gap-4 text-sm text-gray-600">
+          <span>📅 Vytvořeno: {{ error.date_created|date:"d.m.Y H:i" }}</span>
+          {% if error.created_by %}
+          <span>👤 Autor: <strong>{{ error.created_by.username }}</strong></span>
+          {% endif %}
         </div>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'edit_test_error' error.test_error_id %}" class="btn btn-primary">✏️ Upravit</a>
+        <a href="{% url 'list_test_errors' %}" class="btn btn-outline">← Zpět na seznam</a>
+      </div>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <!-- Status -->
+      <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <h4 class="text-sm font-semibold text-gray-600 mb-2">Status</h4>
+        <span class="px-3 py-1 rounded text-sm font-medium inline-block
+          {% if error.status == 'closed' %}bg-green-100 text-green-700
+          {% elif error.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+          {% else %}bg-red-100 text-red-700{% endif %}">
+          {{ error.get_status_display }}
+        </span>
+      </div>
+
+      <!-- Projekt -->
+      <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <h4 class="text-sm font-semibold text-gray-600 mb-2">Projekt</h4>
+        <a href="{% url 'detail_project' error.project.project_id %}" class="text-blue-600 hover:text-blue-800 font-medium">
+          {{ error.project.name }}
+        </a>
+      </div>
+
+      <!-- Test Result -->
+      <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <h4 class="text-sm font-semibold text-gray-600 mb-2">Test Result</h4>
+        {% if error.test_result %}
+          <span class="text-gray-800">{{ error.test_result }}</span>
+        {% else %}
+          <span class="text-gray-400">– Není přiřazen –</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Popis chyby -->
+  {% if error.description %}
+  <div class="content-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">📝 Popis chyby</h3>
+    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <p class="text-gray-700 whitespace-pre-wrap">{{ error.description }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Kroky k reprodukci -->
+  {% if error.steps_to_replicate %}
+  <div class="content-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">🔄 Kroky k reprodukci</h3>
+    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <p class="text-gray-700 whitespace-pre-wrap">{{ error.steps_to_replicate }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Akce -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">⚡ Akce</h3>
+    <div class="flex gap-3 flex-wrap">
+      <a href="{% url 'edit_test_error' error.test_error_id %}" class="btn btn-primary">
+        ✏️ Upravit chybu
+      </a>
+      <a href="{% url 'detail_project' error.project.project_id %}" class="btn btn-outline">
+        📁 Zobrazit projekt
+      </a>
+      <a href="{% url 'list_test_errors' %}" class="btn btn-outline">
+        📋 Seznam všech chyb
+      </a>
+      <a href="{% url 'delete_test_error' error.test_error_id %}"
+         class="btn btn-outline"
+         style="border-color:#dc2626;color:#dc2626;"
+         onclick="return confirm('Opravdu chcete smazat tuto chybu?');">
+        🗑️ Smazat chybu
+      </a>
+    </div>
+  </div>
 
 </div>
 {% endblock %}

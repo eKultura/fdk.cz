@@ -306,7 +306,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">👥 Kontakty projektu</h2>
-      <a href="{% url 'create_contact' %}" class="btn btn-primary">＋ Nový kontakt</a>
+      <a href="{% url 'create_contact_project' project.project_id %}" class="btn btn-primary">＋ Nový kontakt</a>
     </div>
     <table class="data-table">
       <thead>
