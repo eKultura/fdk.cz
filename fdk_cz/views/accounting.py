@@ -29,13 +29,50 @@ def accounting_dashboard(request):
         context = {
             'invoices': [],
             'company': None,
+            'accounting_contexts': [],
+            'total_revenues': 0,
+            'total_expenses': 0,
+            'profit': 0,
         }
         return render(request, 'accounting/accounting_dashboard.html', context)
 
-    invoices = Invoice.objects.filter(company__users=request.user)
+    invoices = Invoice.objects.filter(company__users=request.user)[:10]  # Last 10 invoices
+
+    # Get user's accounting contexts
+    accounting_contexts = AccountingContext.objects.filter(
+        user=request.user,
+        is_active=True
+    ).order_by('-fiscal_year', 'name')
+
+    # Calculate income statement (výsledovka) for current context
+    current_context = get_current_context(request)
+    total_revenues = Decimal(0)
+    total_expenses = Decimal(0)
+
+    if current_context:
+        # Get all journal entries for current context
+        entries = JournalEntry.objects.filter(context=current_context).prefetch_related('lines__account')
+
+        for entry in entries:
+            for line in entry.lines.all():
+                account_number = line.account.account_number
+                # Revenue accounts (6xx in Czech accounting)
+                if account_number.startswith('6'):
+                    total_revenues += line.credit_amount - line.debit_amount
+                # Expense accounts (5xx in Czech accounting)
+                elif account_number.startswith('5'):
+                    total_expenses += line.debit_amount - line.credit_amount
+
+    profit = total_revenues - total_expenses
+
     context = {
         'invoices': invoices,
         'company': request.user.companies.first(),
+        'accounting_contexts': accounting_contexts,
+        'current_context': current_context,
+        'total_revenues': total_revenues,
+        'total_expenses': total_expenses,
+        'profit': profit,
     }
     return render(request, 'accounting/accounting_dashboard.html', context)
 
