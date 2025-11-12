@@ -48,6 +48,7 @@ def accounting_dashboard(request):
     current_context = get_current_context(request)
     total_revenues = Decimal(0)
     total_expenses = Decimal(0)
+    recent_journal_entries = []
 
     if current_context:
         # Get all journal entries for current context
@@ -63,6 +64,20 @@ def accounting_dashboard(request):
                 elif account_number.startswith('5'):
                     total_expenses += line.debit_amount - line.credit_amount
 
+        # Get last 10 journal entries for current context
+        recent_entries = JournalEntry.objects.filter(
+            context=current_context
+        ).prefetch_related('lines__account').order_by('-date', '-entry_id')[:10]
+
+        # Add total debit/credit to each entry
+        recent_journal_entries = []
+        for entry in recent_entries:
+            total_debit = sum(line.debit_amount for line in entry.lines.all())
+            total_credit = sum(line.credit_amount for line in entry.lines.all())
+            entry.total_debit = total_debit
+            entry.total_credit = total_credit
+            recent_journal_entries.append(entry)
+
     profit = total_revenues - total_expenses
 
     context = {
@@ -73,6 +88,7 @@ def accounting_dashboard(request):
         'total_revenues': total_revenues,
         'total_expenses': total_expenses,
         'profit': profit,
+        'recent_journal_entries': recent_journal_entries,
     }
     return render(request, 'accounting/accounting_dashboard.html', context)
 

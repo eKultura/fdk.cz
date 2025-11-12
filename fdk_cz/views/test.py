@@ -180,13 +180,20 @@ def create_test_error(request, project_id=None):
         if form.is_valid():
             new_error = form.save(commit=False)
             new_error.created_by = request.user
+            # Pokud byl projekt přednastavený a disabled, nastavit ho ručně
+            if project_id and not new_error.project:
+                new_error.project_id = project_id
             new_error.save()
             # Přesměrování na detail projektu
             return redirect('detail_project', project_id=new_error.project.project_id)
     else:
         form = test_error_form(initial=initial_data, user=request.user)
 
-    return render(request, 'test/create_test_error.html', {'form': form})
+    context = {
+        'form': form,
+        'preselected_project_id': project_id,
+    }
+    return render(request, 'test/create_test_error.html', context)
 
 
 
