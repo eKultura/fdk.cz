@@ -18,12 +18,14 @@ from fdk_cz.forms.contact import contact_form
 
 # Vytvoření nového kontaktu
 @login_required
-def create_contact(request):
+def create_contact(request, project_id=None):
+    """Vytvoření nového kontaktu, s možností přednastavení projektu"""
     # Získáme projekty, kde má uživatel roli (nemusí být admin)
     user_projects = ProjectUser.objects.filter(user=request.user)
     available_projects = Project.objects.filter(project_id__in=[up.project_id for up in user_projects])
 
-    selected_project_id = request.GET.get('id_projektu')
+    # Přednostně použijeme project_id z URL, pak z GET parametru
+    selected_project_id = project_id or request.GET.get('id_projektu')
     selected_project = available_projects.filter(pk=selected_project_id).first() if selected_project_id else None
 
     if request.method == 'POST':
@@ -31,19 +33,24 @@ def create_contact(request):
         if form.is_valid():
             new_contact = form.save(commit=False)
             new_contact.account = request.user
-            if selected_project:
+            # Pokud byl projekt přednastavený z URL a není v POST datech (disabled field)
+            if selected_project and not new_contact.project:
                 new_contact.project = selected_project
             new_contact.save()
+            # Přesměrovat na detail projektu pokud byl projekt přednastavený
+            if selected_project:
+                return redirect('detail_project', project_id=selected_project.project_id)
             return redirect('my_contacts')
     else:
         form = contact_form()
         form.fields['project'].queryset = available_projects
         if selected_project:
-            form.fields['project'].initial = selected_project
+            form.fields['project'].initial = selected_project.project_id
 
     return render(request, 'contact/create_contact.html', {
         'form': form,
-        'projects': available_projects
+        'projects': available_projects,
+        'preselected_project': selected_project,
     })
 
 
