@@ -168,16 +168,24 @@ def list_test_errors(request):
 
 
 # Přidání nové chyby
-# Přidání nové chyby
 @login_required
-def create_test_error(request):
-    form = test_error_form(request.POST or None, user=request.user)
-    if request.method == 'POST' and form.is_valid():
-        new_error = form.save(commit=False)
-        new_error.created_by = request.user  # pokud je potřeba přiřadit autora
-        new_error.save()
-        # Získání ID projektu z nově vytvořené chyby a přesměrování na detail projektu
-        return redirect('detail_project', project_id=new_error.project.project_id)
+def create_test_error(request, project_id=None):
+    """Vytvoření nové testovací chyby, s možností přednastavení projektu"""
+    initial_data = {}
+    if project_id:
+        initial_data['project'] = project_id
+
+    if request.method == 'POST':
+        form = test_error_form(request.POST, user=request.user)
+        if form.is_valid():
+            new_error = form.save(commit=False)
+            new_error.created_by = request.user
+            new_error.save()
+            # Přesměrování na detail projektu
+            return redirect('detail_project', project_id=new_error.project.project_id)
+    else:
+        form = test_error_form(initial=initial_data, user=request.user)
+
     return render(request, 'test/create_test_error.html', {'form': form})
 
 

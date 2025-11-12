@@ -194,7 +194,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">🐛 Chyby z testování</h2>
-      <a href="{% url 'create_test_error' %}" class="btn btn-primary">＋ Nová chyba</a>
+      <a href="{% url 'create_test_error_for_project' project.project_id %}" class="btn btn-primary">＋ Nová chyba</a>
     </div>
     <table class="data-table">
       <thead>
