@@ -19,8 +19,8 @@
       {% csrf_token %}
 
       <!-- Název smlouvy -->
-      <div class="mb-4">
-        <label for="id_name" class="form-label">
+      <div class="mb-6">
+        <label for="id_name" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
           Název smlouvy <span class="text-red-500">*</span>
         </label>
         {{ form.name }}
@@ -30,8 +30,8 @@
       </div>
 
       <!-- Popis -->
-      <div class="mb-4">
-        <label for="id_description" class="form-label">
+      <div class="mb-6">
+        <label for="id_description" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
           Popis smlouvy
         </label>
         {{ form.description }}
@@ -41,11 +41,11 @@
       </div>
 
       <!-- Data -->
-      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6 pb-2 border-b">📅 Důležitá data</h4>
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">📅 Důležitá data</h4>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label for="id_start_date" class="form-label">
+          <label for="id_start_date" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
             Datum zahájení <span class="text-red-500">*</span>
           </label>
           {{ form.start_date }}
@@ -55,7 +55,7 @@
         </div>
 
         <div>
-          <label for="id_end_date" class="form-label">
+          <label for="id_end_date" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
             Datum ukončení
           </label>
           {{ form.end_date }}
@@ -66,19 +66,19 @@
       </div>
 
       <!-- Dokument -->
-      <div class="mb-6">
-        <label for="id_document" class="form-label">
+      <div class="mb-8">
+        <label for="id_document" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
           📎 Dokument smlouvy (PDF, DOC, atd.)
         </label>
         {{ form.document }}
         {% if form.document.errors %}
           <p class="mt-1 text-sm text-red-600">{{ form.document.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Nahrajte soubor smlouvy</p>
+        <p class="mt-2 text-xs text-gray-500">Nahrajte soubor smlouvy</p>
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-3 pt-6 border-t border-gray-200">
+      <div class="flex gap-3 pt-6 border-t-2 border-gray-200">
         <button type="submit" class="btn btn-primary">✓ Vytvořit smlouvu</button>
         <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">Zrušit</a>
       </div>

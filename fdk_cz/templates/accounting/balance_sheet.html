@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+  {% if balance_type == 'opening' %}
+    {% trans "Počáteční rozvaha" %}
+  {% else %}
+    {% trans "Konečná rozvaha" %}
+  {% endif %} | FDK.cz
+{% endblock %}
+
+{% block header_title %}
+  {% if balance_type == 'opening' %}
+    📊 {% trans "Počáteční rozvaha" %}
+  {% else %}
+    📊 {% trans "Konečná rozvaha" %}
+  {% endif %}
+{% endblock %}
+
+{% block header_subtitle %}{{ context.name }} – {% trans "Účetní období" %} {{ context.fiscal_year }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions & Context Info -->
+  <div class="content-card mb-6">
+    <div class="flex justify-between items-center flex-wrap gap-4">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">{% trans "Aktivní kontext" %}: {{ context.name }}</h3>
+        <p class="text-sm text-gray-600">{% trans "Účetní období" %}: {{ context.fiscal_year }}</p>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <a href="{% url 'balance_sheet_view' 'opening' %}" class="btn {% if balance_type == 'opening' %}btn-primary{% else %}btn-outline{% endif %}">
+          📊 {% trans "Počáteční rozvaha" %}
+        </a>
+        <a href="{% url 'balance_sheet_view' 'closing' %}" class="btn {% if balance_type == 'closing' %}btn-primary{% else %}btn-outline{% endif %}">
+          📊 {% trans "Konečná rozvaha" %}
+        </a>
+        <a href="{% url 'journal_ledger' %}" class="btn btn-outline">📚 {% trans "Deník" %}</a>
+        <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">📋 {% trans "Účtová osnova" %}</a>
+        <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance Sheet -->
+  <div class="content-card">
+    <div class="card-header" style="margin-bottom:1.5rem;">
+      <h3 class="text-2xl font-semibold text-gray-800">
+        {% if balance_type == 'opening' %}
+          📊 {% trans "Počáteční rozvaha" %}
+        {% else %}
+          📊 {% trans "Konečná rozvaha" %}
+        {% endif %}
+      </h3>
+      <p class="text-sm text-gray-600 mt-1">
+        {% trans "Stav k" %} {% now "d.m.Y" %}
+      </p>
+    </div>
+
+    {% if balances %}
+    <div class="overflow-x-auto">
+      <table class="data-table" style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f9fafb;">
+          <tr>
+            <th class="px-4 py-3 text-left text-gray-600 font-semibold w-32">{% trans "Číslo účtu" %}</th>
+            <th class="px-4 py-3 text-left text-gray-600 font-semibold">{% trans "Název účtu" %}</th>
+            <th class="px-4 py-3 text-right text-gray-600 font-semibold w-40">{% trans "Má dáti (MD)" %}</th>
+            <th class="px-4 py-3 text-right text-gray-600 font-semibold w-40">{% trans "Dal (D)" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for balance in balances %}
+          <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+            <td class="px-4 py-3 text-gray-700 font-medium">{{ balance.account.account_number }}</td>
+            <td class="px-4 py-3 text-gray-800">{{ balance.account.name }}</td>
+            <td class="px-4 py-3 text-right font-medium {% if balance.debit_balance > 0 %}text-blue-700{% else %}text-gray-400{% endif %}">
+              {{ balance.debit_balance|floatformat:2 }} Kč
+            </td>
+            <td class="px-4 py-3 text-right font-medium {% if balance.credit_balance > 0 %}text-green-700{% else %}text-gray-400{% endif %}">
+              {{ balance.credit_balance|floatformat:2 }} Kč
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot style="background:#f3f4f6;border-top:2px solid #d1d5db;">
+          <tr>
+            <td colspan="2" class="px-4 py-3 text-right font-bold text-gray-800">{% trans "Celkem" %}:</td>
+            <td class="px-4 py-3 text-right font-bold text-blue-800">{{ total_debit|floatformat:2 }} Kč</td>
+            <td class="px-4 py-3 text-right font-bold text-green-800">{{ total_credit|floatformat:2 }} Kč</td>
+          </tr>
+          <tr>
+            <td colspan="2" class="px-4 py-3 text-right font-semibold text-gray-700">{% trans "Rozdíl" %}:</td>
+            <td colspan="2" class="px-4 py-3 text-right font-semibold {% if total_debit == total_credit %}text-green-700{% else %}text-red-700{% endif %}">
+              {% widthratio total_debit 1 1 %}{% widthratio total_credit -1 1 %}{% widthratio 0 1 1 %} Kč
+              {% if total_debit == total_credit %}
+                <span class="text-xs ml-2">✓ {% trans "Vyrovnáno" %}</span>
+              {% else %}
+                <span class="text-xs ml-2">⚠️ {% trans "Nevyrovnáno" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h4 class="text-sm font-semibold text-blue-800 mb-1">{% trans "Celkem MD" %}</h4>
+        <p class="text-2xl font-bold text-blue-700">{{ total_debit|floatformat:2 }} Kč</p>
+      </div>
+      <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+        <h4 class="text-sm font-semibold text-green-800 mb-1">{% trans "Celkem D" %}</h4>
+        <p class="text-2xl font-bold text-green-700">{{ total_credit|floatformat:2 }} Kč</p>
+      </div>
+      <div class="p-4 {% if total_debit == total_credit %}bg-gray-50 border-gray-200{% else %}bg-red-50 border-red-200{% endif %} rounded-lg border">
+        <h4 class="text-sm font-semibold {% if total_debit == total_credit %}text-gray-800{% else %}text-red-800{% endif %} mb-1">{% trans "Stav" %}</h4>
+        <p class="text-xl font-bold {% if total_debit == total_credit %}text-green-700{% else %}text-red-700{% endif %}">
+          {% if total_debit == total_credit %}
+            ✓ {% trans "Vyrovnáno" %}
+          {% else %}
+            ⚠️ {% trans "Nevyrovnáno" %}
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="empty-state" style="text-align:center;padding:3rem;color:#6b7280;">
+      <div style="font-size:2.5rem;">📊</div>
+      <p style="margin-top:0.5rem;font-size:1.1rem;">
+        {% if balance_type == 'opening' %}
+          {% trans "Počáteční rozvaha zatím není k dispozici." %}
+        {% else %}
+          {% trans "Konečná rozvaha zatím není k dispozici." %}
+        {% endif %}
+      </p>
+      <p class="text-sm text-gray-500 mt-2">{% trans "Pro vytvoření rozvahy je potřeba nejprve vytvořit účetní záznamy v deníku." %}</p>
+      <div class="flex gap-3 justify-center mt-4">
+        <a href="{% url 'journal_ledger' %}" class="btn btn-primary">📚 {% trans "Přejít na deník" %}</a>
+        <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">📋 {% trans "Účtová osnova" %}</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
