@@ -29,7 +29,7 @@ from fdk_cz.views.grants import (
 
 from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
-from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, remove_project_user, task_management, update_task_status
+from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, remove_project_user, take_task, task_management, update_task_status
 
 from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types
 
@@ -176,10 +176,11 @@ urlpatterns = (
     path('projekt/<int:project_id>/edit/', edit_project, name='edit_project_cs'),
 
     path('projekt/<int:project_id>/novy-ukol/', create_task, name='create_task'),
-    path('projekt/ukol/<int:task_id>/', detail_task, name='detail_task'),  
+    path('projekt/ukol/<int:task_id>/', detail_task, name='detail_task'),
     path('projekt/ukol/<int:task_id>/upravit/', edit_task, name='edit_task'),
     path('projekt/ukol/<int:task_id>/smazat/', delete_task, name='delete_task'),
     path('projekt/ukol/<int:task_id>/status/<str:status>/', update_task_status, name='update_task_status'),
+    path('projekt/ukol/<int:task_id>/prevzit/', take_task, name='take_task'),
 
 
     path('projekt/<int:project_id>/delete/', delete_project, name='delete_project'),
