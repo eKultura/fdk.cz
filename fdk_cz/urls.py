@@ -280,6 +280,7 @@ urlpatterns = (
     # Test Errors
     path('testy/chyby/', list_test_errors, name='list_test_errors'),
     path('testy/chyby/novy/', create_test_error, name='create_test_error'),
+    path('projekt/<int:project_id>/chyby/novy/', create_test_error, name='create_test_error_for_project'),
     path('testy/chyby/<int:test_error_id>/upravit/', edit_test_error, name='edit_test_error'),
     path('testy/chyba/<int:test_error_id>/', detail_test_error, name='detail_test_error'),
     path('testy/delete/<int:error_id>/', delete_test_error, name='delete_test_error'),
