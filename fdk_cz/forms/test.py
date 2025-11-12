@@ -20,6 +20,11 @@ class test_error_form(forms.ModelForm):
             user_projects = Project.objects.filter(project_users__user=user)
             self.fields['project'].queryset = user_projects
 
+        # Pokud je projekt přednastavený (z initial), zamknout pole
+        if self.initial.get('project'):
+            self.fields['project'].disabled = True
+            self.fields['project'].widget.attrs['readonly'] = True
+
         # Nastavení pole test_result jako nepovinného
         self.fields['test_result'].required = False
         self.fields['test_result'].queryset = TestResult.objects.none()
@@ -32,6 +37,13 @@ class test_error_form(forms.ModelForm):
                 self.fields['test_result'].queryset = TestResult.objects.none()
         elif self.instance.pk:
             self.fields['test_result'].queryset = self.instance.project.test_results
+        elif self.initial.get('project'):
+            # Načíst test results pro přednastavený projekt
+            try:
+                project_id = int(self.initial.get('project'))
+                self.fields['test_result'].queryset = TestResult.objects.filter(project_id=project_id)
+            except (ValueError, TypeError):
+                pass
 
 
 
