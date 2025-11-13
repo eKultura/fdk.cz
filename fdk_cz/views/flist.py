@@ -101,7 +101,7 @@ def detail_list(request, list_id):
 
 @login_required
 def add_item(request, list_id):
-    flist_instance = get_object_or_404(flist, pk=list_id)
+    flist_instance = get_object_or_404(Flist, pk=list_id)
     
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -127,7 +127,7 @@ def edit_item(request, item_id):
 
 @login_required
 def delete_item(request, item_id):
-    item = get_object_or_404(list_item, pk=item_id)
+    item = get_object_or_404(ListItem, pk=item_id)
     flist_id = item.flist.list_id
     item.delete()
     return redirect('detail_list', list_id=flist_id)
