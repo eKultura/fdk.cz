@@ -84,3 +84,32 @@ def markdown_format(text):
     text = text.replace('\n', '<br>')
 
     return mark_safe(text)
+
+@register.filter
+def filter_by_score(queryset, min_score):
+    """
+    Filters queryset by risk_score >= min_score.
+    Usage: {{ risks|filter_by_score:20 }}
+    """
+    try:
+        min_score = int(min_score)
+        return [risk for risk in queryset if hasattr(risk, 'risk_score') and risk.risk_score >= min_score]
+    except (ValueError, TypeError, AttributeError):
+        return queryset
+
+@register.filter
+def filter_by_score_range(queryset, score_range):
+    """
+    Filters queryset by risk_score within a range.
+    Usage: {{ risks|filter_by_score_range:"13:19" }}
+    """
+    try:
+        # Split the range string "13:19" into min and max
+        if isinstance(score_range, str) and ':' in score_range:
+            min_score, max_score = map(int, score_range.split(':'))
+        else:
+            return queryset
+
+        return [risk for risk in queryset if hasattr(risk, 'risk_score') and min_score <= risk.risk_score <= max_score]
+    except (ValueError, TypeError, AttributeError):
+        return queryset

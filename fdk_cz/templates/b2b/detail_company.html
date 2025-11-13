@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 {{ company.name }}{% endblock %}
+{% block header_subtitle %}Detail B2B firmy{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_b2b_companies' %}" class="btn btn-outline">← Seznam firem</a>
+    <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">📊 Dashboard</a>
+    <a href="{% url 'edit_b2b_company' company.company_id %}" class="btn btn-secondary">✏️ Upravit</a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Info -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Basic Information -->
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📋 Základní informace</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Název firmy</label>
+            <p class="text-gray-900 mt-1">{{ company.name }}</p>
+          </div>
+
+          {% if company.legal_name %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Právní název</label>
+            <p class="text-gray-900 mt-1">{{ company.legal_name }}</p>
+          </div>
+          {% endif %}
+
+          {% if company.company_id_number %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">IČO</label>
+            <p class="text-gray-900 mt-1">{{ company.company_id_number }}</p>
+          </div>
+          {% endif %}
+
+          {% if company.tax_id %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">DIČ</label>
+            <p class="text-gray-900 mt-1">{{ company.tax_id }}</p>
+          </div>
+          {% endif %}
+
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Kategorie</label>
+            <p class="text-gray-900 mt-1">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold
+                {% if company.category == 'supplier' %}bg-blue-100 text-blue-700
+                {% elif company.category == 'customer' %}bg-green-100 text-green-700
+                {% elif company.category == 'partner' %}bg-purple-100 text-purple-700
+                {% elif company.category == 'competitor' %}bg-red-100 text-red-700
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ company.get_category_display }}
+              </span>
+            </p>
+          </div>
+
+          {% if company.organization %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Organizace</label>
+            <p class="text-gray-900 mt-1">
+              <a href="{% url 'detail_organization' company.organization.organization_id %}" class="text-blue-600 hover:underline">
+                {{ company.organization.name }}
+              </a>
+            </p>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if company.tags %}
+        <div class="mt-4">
+          <label class="text-sm font-semibold text-gray-600">Tagy</label>
+          <div class="flex flex-wrap gap-2 mt-2">
+            {% for tag in company.tags.split %}
+              <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Contact Information -->
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📞 Kontaktní údaje</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% if company.email %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Email</label>
+            <p class="text-gray-900 mt-1">
+              <a href="mailto:{{ company.email }}" class="text-blue-600 hover:underline">{{ company.email }}</a>
+            </p>
+          </div>
+          {% endif %}
+
+          {% if company.phone %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Telefon</label>
+            <p class="text-gray-900 mt-1">
+              <a href="tel:{{ company.phone }}" class="text-blue-600 hover:underline">{{ company.phone }}</a>
+            </p>
+          </div>
+          {% endif %}
+
+          {% if company.website %}
+          <div class="md:col-span-2">
+            <label class="text-sm font-semibold text-gray-600">Webové stránky</label>
+            <p class="text-gray-900 mt-1">
+              <a href="{{ company.website }}" target="_blank" class="text-blue-600 hover:underline">{{ company.website }}</a>
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Address -->
+      {% if company.street or company.city %}
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📍 Adresa</h3>
+
+        <div class="space-y-1 text-gray-900">
+          {% if company.street %}<p>{{ company.street }}</p>{% endif %}
+          {% if company.city or company.postal_code %}
+          <p>
+            {% if company.postal_code %}{{ company.postal_code }}{% endif %}
+            {% if company.city %}{{ company.city }}{% endif %}
+          </p>
+          {% endif %}
+          {% if company.country %}<p>{{ company.country }}</p>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Notes -->
+      {% if company.notes %}
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📝 Poznámky</h3>
+        <div class="text-gray-700 whitespace-pre-wrap">{{ company.notes }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Contracts -->
+      <div class="content-card">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-800">📄 Smlouvy</h3>
+          <a href="{% url 'create_b2b_contract' %}" class="btn btn-primary btn-sm">+ Nová smlouva</a>
+        </div>
+
+        {% if contracts %}
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Číslo smlouvy</th>
+                <th>Název</th>
+                <th>Status</th>
+                <th class="hidden md:table-cell">Hodnota</th>
+                <th class="hidden lg:table-cell">Zahájení</th>
+                <th class="text-right">Akce</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for contract in contracts %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline font-medium">
+                    {{ contract.contract_number }}
+                  </a>
+                </td>
+                <td>{{ contract.title }}</td>
+                <td>
+                  <span class="px-2 py-1 rounded text-xs font-semibold
+                    {% if contract.status == 'active' %}bg-green-100 text-green-700
+                    {% elif contract.status == 'draft' %}bg-gray-100 text-gray-700
+                    {% elif contract.status == 'signed' %}bg-blue-100 text-blue-700
+                    {% elif contract.status == 'expired' %}bg-red-100 text-red-700
+                    {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                    {{ contract.get_status_display }}
+                  </span>
+                </td>
+                <td class="hidden md:table-cell">
+                  {% if contract.contract_value %}
+                    {{ contract.contract_value|floatformat:2 }} {{ contract.currency }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="hidden lg:table-cell">{{ contract.start_date|date:"d.m.Y" }}</td>
+                <td class="text-right">
+                  <a href="{% url 'detail_b2b_contract' contract.contract_id %}" class="text-blue-600 hover:underline text-sm">Detail</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+          <div class="text-4xl mb-2">📄</div>
+          <p>Žádné smlouvy</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Documents -->
+      {% if documents %}
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📎 Dokumenty</h3>
+
+        <div class="space-y-2">
+          {% for document in documents %}
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+            <div class="flex-1">
+              <p class="font-medium text-gray-900">{{ document.title }}</p>
+              {% if document.description %}
+              <p class="text-sm text-gray-600 mt-1">{{ document.description|truncatewords:20 }}</p>
+              {% endif %}
+              <p class="text-xs text-gray-500 mt-1">
+                {{ document.document_type|default:"Dokument" }} •
+                {{ document.uploaded_at|date:"d.m.Y H:i" }}
+              </p>
+            </div>
+            <div class="ml-4">
+              {% if document.file_url %}
+              <a href="{{ document.file_url }}" target="_blank" class="btn btn-outline btn-sm">Otevřít</a>
+              {% elif document.file_path %}
+              <span class="text-xs text-gray-500">Soubor: {{ document.file_path|truncatechars:30 }}</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Quick Stats -->
+      <div class="content-card">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Přehled</h3>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div>
+              <p class="text-xs text-blue-600 font-semibold uppercase">Smluv</p>
+              <p class="text-2xl font-bold text-blue-700">{{ contracts.count }}</p>
+            </div>
+            <div class="text-3xl">📄</div>
+          </div>
+
+          {% if documents %}
+          <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+            <div>
+              <p class="text-xs text-purple-600 font-semibold uppercase">Dokumentů</p>
+              <p class="text-2xl font-bold text-purple-700">{{ documents.count }}</p>
+            </div>
+            <div class="text-3xl">📎</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div class="content-card">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">ℹ️ Metadata</h3>
+
+        <div class="space-y-3 text-sm">
+          {% if company.created_by %}
+          <div>
+            <label class="text-gray-600 font-semibold">Vytvořil</label>
+            <p class="text-gray-900 mt-1">{{ company.created_by.get_full_name|default:company.created_by.username }}</p>
+          </div>
+          {% endif %}
+
+          <div>
+            <label class="text-gray-600 font-semibold">Vytvořeno</label>
+            <p class="text-gray-900 mt-1">{{ company.created_at|date:"d.m.Y H:i" }}</p>
+          </div>
+
+          <div>
+            <label class="text-gray-600 font-semibold">Aktualizováno</label>
+            <p class="text-gray-900 mt-1">{{ company.updated_at|date:"d.m.Y H:i" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

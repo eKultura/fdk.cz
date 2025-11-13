@@ -103,6 +103,54 @@
 
   </div>
 
+  <!-- Extended Statistics -->
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+
+    <!-- Task Statistics -->
+    <div class="content-card">
+      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+        ✅ Statistiky úkolů
+      </h3>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+        <div style="background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 1.75rem; font-weight: 700; color: #2563eb;">{{ tasks_created }}</div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Vytvořil</div>
+        </div>
+
+        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 1.75rem; font-weight: 700; color: #d97706;">{{ tasks_in_progress }}</div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Probíhá</div>
+        </div>
+
+        <div style="background: #d1fae5; border: 2px solid #10b981; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 1.75rem; font-weight: 700; color: #059669;">{{ tasks_completed }}</div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Dokončil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Statistics -->
+    <div class="content-card">
+      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+        🐛 Statistiky chyb z testování
+      </h3>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+        <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #dc2626;">{{ errors_created }}</div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Celkem nalezených chyb</div>
+        </div>
+
+        <div style="background: #fff7ed; border: 2px solid #f97316; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700; color: #ea580c;">{{ errors_open }}</div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Otevřené chyby</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- Active Modules -->
   <div class="content-card" style="margin-top: 1.5rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">

@@ -87,6 +87,14 @@
       <a href="{% url 'edit_test_error' error.test_error_id %}" class="btn btn-primary">
         ✏️ Upravit chybu
       </a>
+      {% if error.status != 'closed' %}
+      <a href="{% url 'mark_error_fixed' error.test_error_id %}"
+         class="btn btn-primary"
+         style="background-color:#16a34a;border-color:#16a34a;"
+         onclick="return confirm('Označit tuto chybu jako opravenou?');">
+        ✓ OPRAVENO
+      </a>
+      {% endif %}
       <a href="{% url 'detail_project' error.project.project_id %}" class="btn btn-outline">
         📁 Zobrazit projekt
       </a>

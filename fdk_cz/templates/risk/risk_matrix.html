@@ -185,7 +185,7 @@
           <div>
             <div class="text-xs text-orange-600 font-semibold uppercase">Vysoká rizika</div>
             <div class="text-2xl font-bold text-orange-700">
-              {{ risks|filter_by_score_range:13:19|length }}
+              {{ risks|filter_by_score_range:"13:19"|length }}
             </div>
           </div>
           <div class="text-3xl">🟠</div>
@@ -195,7 +195,7 @@
           <div>
             <div class="text-xs text-yellow-600 font-semibold uppercase">Střední rizika</div>
             <div class="text-2xl font-bold text-yellow-700">
-              {{ risks|filter_by_score_range:7:12|length }}
+              {{ risks|filter_by_score_range:"7:12"|length }}
             </div>
           </div>
           <div class="text-3xl">🟡</div>
