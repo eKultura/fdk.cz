@@ -77,7 +77,7 @@ def new_project(request):
 @login_required
 def detail_project(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
-    all_errors = TestError.objects.filter(project=proj)    
+    all_errors = TestError.objects.filter(project=proj).exclude(status='closed').exclude(deleted=True)    
     members = ProjectUser.objects.filter(project=proj)
     milestones = proj.milestones.all()
     documents = proj.documents.all()
