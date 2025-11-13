@@ -77,7 +77,7 @@ def new_project(request):
 @login_required
 def detail_project(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
-    all_errors = TestError.objects.filter(project=proj).exclude(status='closed')    
+    all_errors = TestError.objects.filter(project=proj).exclude(status='closed').exclude(deleted=True)    
     members = ProjectUser.objects.filter(project=proj)
     milestones = proj.milestones.all()
     documents = proj.documents.all()
@@ -190,7 +190,7 @@ def index_project(request):
     user_projects = Project.objects.filter(
         project_users__user=request.user
     ).distinct() 
-    assigned_tasks = ProjectTask.objects.filter(assigned=request.user).order_by('-created')
+    assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
 
     return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})
 
@@ -388,16 +388,11 @@ def edit_task(request, task_id):
 
 @login_required
 def delete_task(request, task_id):
-    from django.utils import timezone
-
-    # Načtení úkolu
     selected_task = get_object_or_404(ProjectTask, pk=task_id)
 
     if request.method == 'POST':
-        # Soft delete - mark as deleted instead of physically deleting
+        # Soft delete
         selected_task.deleted = True
-        selected_task.deleted_by = request.user
-        selected_task.deleted_at = timezone.now()
         selected_task.save()
         messages.success(request, "Úkol byl úspěšně smazán.")
 
@@ -442,7 +437,7 @@ def task_management(request):
     # Zobraz úkoly přiřazené uživateli NEBO vytvořené uživatelem
     user_tasks = ProjectTask.objects.filter(
         Q(assigned=user) | Q(creator=user)
-    ).exclude(status='Hotovo').distinct().order_by('priority', '-status')
+    ).exclude(status='Hotovo').exclude(deleted=True).distinct().order_by('priority', '-status')
 
     # Get organizations where user is member or creator
     user_organizations = Organization.objects.filter(
