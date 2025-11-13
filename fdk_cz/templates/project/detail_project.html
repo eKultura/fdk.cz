@@ -196,42 +196,44 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <h2 class="text-xl font-semibold text-gray-800">🐛 Chyby z testování</h2>
       <a href="{% url 'create_test_error_for_project' project.project_id %}" class="btn btn-primary">＋ Nová chyba</a>
     </div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Název chyby</th>
-          <th>Status</th>
-          <th class="hidden md:table-cell">Vytvořil</th>
-          <th class="hidden md:table-cell">Vytvořeno</th>
-          <th class="text-right">Akce</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for error in project.test_errors.all %}
-        <tr>
-          <td><strong>{{ error.error_title }}</strong></td>
-          <td>
-            <span class="px-2 py-1 rounded text-xs font-medium
-              {% if error.status == 'closed' %}bg-green-100 text-green-700
-              {% elif error.status == 'in_progress' %}bg-yellow-100 text-yellow-800
-              {% else %}bg-red-100 text-red-700{% endif %}">
-              {{ error.get_status_display }}
-            </span>
-          </td>
-          <td class="hidden md:table-cell">{{ error.created_by.username|default:"–" }}</td>
-          <td class="hidden md:table-cell">{{ error.date_created|date:"d.m.Y H:i" }}</td>
-          <td class="text-right">
-            <div class="data-table-actions">
-              <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ Detail</a>
-              <a href="{% url 'edit_test_error' error.test_error_id %}">✏️ Upravit</a>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="data-table-empty">Zatím nejsou žádné chyby z testování</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název chyby</th>
+            <th>Status</th>
+            <th class="hidden md:table-cell">Vytvořil</th>
+            <th class="hidden md:table-cell">Vytvořeno</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for error in project.test_errors.all %}
+          <tr>
+            <td><strong>{{ error.error_title }}</strong></td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-medium
+                {% if error.status == 'closed' %}bg-green-100 text-green-700
+                {% elif error.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-red-100 text-red-700{% endif %}">
+                {{ error.get_status_display }}
+              </span>
+            </td>
+            <td class="hidden md:table-cell">{{ error.created_by.username|default:"–" }}</td>
+            <td class="hidden md:table-cell">{{ error.date_created|date:"d.m.Y H:i" }}</td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ Detail</a>
+                <a href="{% url 'edit_test_error' error.test_error_id %}">✏️ Upravit</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="data-table-empty">Zatím nejsou žádné chyby z testování</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Sekce: Milníky -->

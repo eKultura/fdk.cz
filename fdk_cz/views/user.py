@@ -48,7 +48,7 @@ def user_profile(request):
     errors_created = TestError.objects.filter(created_by=request.user).count()
     errors_open = TestError.objects.filter(created_by=request.user, status='open').count()
 
-    tasks_created = ProjectTask.objects.filter(created_by=request.user).count()
+    tasks_created = ProjectTask.objects.filter(creator=request.user).count()
     tasks_completed = ProjectTask.objects.filter(assigned=request.user, status='Hotovo').count()
     tasks_in_progress = ProjectTask.objects.filter(assigned=request.user, status='Probíhá').count()
 
