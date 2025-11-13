@@ -9,31 +9,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Add project and organization fields to Warehouse
-        migrations.AddField(
-            model_name='warehouse',
-            name='project',
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='stores',
-                to='fdk_cz.project',
-                db_column='project_id'
-            ),
-        ),
-        migrations.AddField(
-            model_name='warehouse',
-            name='organization',
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name='stores',
-                to='fdk_cz.organization',
-                db_column='organization_id'
-            ),
-        ),
+        # NOTE: project_id and organization_id columns already exist in database
+        # Skipping AddField operations for these fields to avoid duplicate column error
+
+        # Alter location field
         migrations.AlterField(
             model_name='warehouse',
             name='location',
