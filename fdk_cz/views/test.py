@@ -218,3 +218,12 @@ def detail_test_error(request, test_error_id):
     error = get_object_or_404(TestError, pk=test_error_id)
     return render(request, 'test/detail_test_error.html', {'error': error})
 
+
+@login_required
+def mark_error_fixed(request, test_error_id):
+    """Označit chybu jako opravenou (změní status na 'closed')"""
+    error = get_object_or_404(TestError, pk=test_error_id)
+    error.status = 'closed'
+    error.save()
+    return redirect('detail_test_error', test_error_id=test_error_id)
+
