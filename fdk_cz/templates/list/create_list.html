@@ -1,72 +1,73 @@
-{% extends 'list/base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Vytvořit nový seznam{% endblock %}
+{% block title %}Vytvořit nový seznam | FDK.cz{% endblock %}
+{% block header_title %}📝 Vytvořit nový seznam{% endblock %}
+{% block header_subtitle %}
+  Vytvořte nový seznam pro organizaci úkolů a položek
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Formulář vlevo -->
-        <form method="POST" class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Vytvořit nový seznam</h2>
-            {% csrf_token %}
-            
-            <!-- Název seznamu -->
-            <div class="mb-4">
-                <label for="id_name" class="form-label" style="font-weight: 600; color: #555;">Název seznamu</label>
-                <input type="text" name="name" id="id_name" class="form-control" required 
-                       placeholder="Zadejte název seznamu" 
-                       style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                {% if form.name.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Popis seznamu -->
-            <div class="mb-4">
-                <label for="id_description" class="form-label" style="font-weight: 600; color: #555;">Popis</label>
-                <textarea name="description" id="id_description" class="form-control" rows="3" 
-                          placeholder="Zadejte popis seznamu (volitelné)" 
-                          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;"></textarea>
-                {% if form.description.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
-                {% endif %}
-            </div>
+<div class="max-w-3xl mx-auto">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
 
-            <!-- Výběr projektu (pokud existují možnosti) -->
-            {% if form.project.field.choices %}
-            <div class="mb-4">
-                <label for="id_project" class="form-label" style="font-weight: 600; color: #555;">Projekt <span style="color:#999">(volitelně)</span></label>
-                <select name="project" id="id_project" class="form-control" 
-                        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e0; background-color: #fff;">
-                    {% for choice in form.project.field.choices %}
-                        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                    {% endfor %}
-                </select>
-                {% if form.project.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.project.errors|join:", " }}</p>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <!-- Soukromý seznam -->
-            <div class="form-check form-switch d-flex align-items-center mb-4" style="gap: 8px;">
-                <input type="checkbox" name="is_private" id="id_is_private" class="form-check-input" style="transform: scale(1.3);">
-                <label for="id_is_private" class="form-label" style="font-weight: 600; color: #555; margin: 0;">Soukromý seznam</label>
-            </div>
-            
-            <button type="submit" class="btn btn-primary w-full mt-3" style="padding: 10px; font-weight: bold; background-color: #4a90e2; border: none; border-radius: 6px;">
-                Vytvořit seznam
-            </button>
-        </form>
+      <!-- Název seznamu -->
+      <div class="form-group">
+        <label for="id_name" class="form-label">Název seznamu <span class="required">*</span></label>
+        <input type="text" id="id_name" name="name" required
+               placeholder="Zadejte název seznamu"
+               class="form-control">
+        {% if form.name.errors %}
+          <p class="form-error">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Krátký výstižný název pro váš seznam</div>
+      </div>
 
-        <!-- SVG obrázek vpravo -->
-        <div class="bg-white p-6 rounded-lg shadow-md flex justify-center items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="200" height="200" class="text-blue-600">
-                <!-- Příklad SVG ikony seznamu -->
-                <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+      <!-- Popis seznamu -->
+      <div class="form-group">
+        <label for="id_description" class="form-label">Popis</label>
+        <textarea id="id_description" name="description" rows="4"
+                  placeholder="Volitelný popis účelu seznamu..."
+                  class="form-control"></textarea>
+        {% if form.description.errors %}
+          <p class="form-error">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Detailnější informace o tom, k čemu seznam slouží</div>
+      </div>
+
+      <!-- Projekt -->
+      {% if form.project.field.choices %}
+      <div class="form-group">
+        <label for="id_project" class="form-label">Projekt</label>
+        <select id="id_project" name="project" class="form-control">
+          {% for choice in form.project.field.choices %}
+            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+          {% endfor %}
+        </select>
+        {% if form.project.errors %}
+          <p class="form-error">{{ form.project.errors|join:", " }}</p>
+        {% endif %}
+        <div class="form-help">Volitelně přiřaďte seznam k projektu</div>
+      </div>
+      {% endif %}
+
+      <!-- Soukromý seznam -->
+      <div class="form-group">
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="id_is_private" name="is_private"
+                 class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+          <label for="id_is_private" class="form-label mb-0">Soukromý seznam</label>
         </div>
-    </div>
+        <div class="form-help">Soukromý seznam je viditelný pouze vám a členům týmu</div>
+      </div>
+
+      <!-- Tlačítka -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'index_list' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Vytvořit seznam</button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}
