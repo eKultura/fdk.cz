@@ -45,12 +45,12 @@ def user_profile(request):
     from django.db.models import Count, Q
 
     # Calculate statistics
-    errors_created = TestError.objects.filter(created_by=request.user).count()
-    errors_open = TestError.objects.filter(created_by=request.user, status='open').count()
+    errors_created = TestError.objects.filter(created_by=request.user).exclude(deleted=True).count()
+    errors_open = TestError.objects.filter(created_by=request.user, status='open').exclude(deleted=True).count()
 
-    tasks_created = ProjectTask.objects.filter(creator=request.user).count()
-    tasks_completed = ProjectTask.objects.filter(assigned=request.user, status='Hotovo').count()
-    tasks_in_progress = ProjectTask.objects.filter(assigned=request.user, status='Probíhá').count()
+    tasks_created = ProjectTask.objects.filter(creator=request.user).exclude(deleted=True).count()
+    tasks_completed = ProjectTask.objects.filter(assigned=request.user, status='Hotovo').exclude(deleted=True).count()
+    tasks_in_progress = ProjectTask.objects.filter(assigned=request.user, status='Probíhá').exclude(deleted=True).count()
 
     context = {
         'user': request.user,
