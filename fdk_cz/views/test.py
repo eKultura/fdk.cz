@@ -157,11 +157,21 @@ def create_test_result(request):
 # Výpis chyb
 @login_required
 def list_test_errors(request):
+    from django.core.paginator import Paginator
+
     user_projects = Project.objects.filter(project_users__user=request.user)
-    test_errors = TestError.objects.filter(project__in=user_projects).order_by('-date_created')[:10]  # Posledních 10 chyb
+    test_errors_list = TestError.objects.filter(project__in=user_projects).order_by('-date_created')
+
+    # Pagination
+    paginator = Paginator(test_errors_list, 20)  # Show 20 errors per page
+    page_number = request.GET.get('page')
+    test_errors = paginator.get_page(page_number)
+
     return render(request, 'test/list_test_errors.html', {
         'test_errors': test_errors,
-        'projects': user_projects
+        'projects': user_projects,
+        'is_paginated': test_errors.has_other_pages(),
+        'page_obj': test_errors
     })
 
 

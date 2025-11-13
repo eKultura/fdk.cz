@@ -67,7 +67,7 @@ def accounting_dashboard(request):
         # Get last 10 journal entries for current context
         recent_entries = JournalEntry.objects.filter(
             context=current_context
-        ).prefetch_related('lines__account').order_by('-date', '-entry_id')[:10]
+        ).prefetch_related('lines__account').order_by('-entry_date', '-entry_id')[:10]
 
         # Add total debit/credit to each entry
         recent_journal_entries = []
