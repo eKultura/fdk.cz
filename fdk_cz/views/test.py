@@ -35,17 +35,13 @@ def get_test_results(request, project_id):
 
 @login_required
 def delete_test_error(request, error_id):
-    from django.utils import timezone
-
     error_instance = get_object_or_404(TestError, pk=error_id)
-    project_id = error_instance.project.project_id  # Získání ID projektu pro přesměrování
+    project_id = error_instance.project.project_id
     if request.method == 'POST':
-        # Soft delete - mark as deleted instead of physically deleting
+        # Soft delete
         error_instance.deleted = True
-        error_instance.deleted_by = request.user
-        error_instance.deleted_at = timezone.now()
         error_instance.save()
-        return redirect('detail_project', project_id=project_id)  # Přesměrování na detail projektu
+        return redirect('detail_project', project_id=project_id)
     return render(request, 'test/delete_test_error.html', {'error': error_instance})
 
 
@@ -95,7 +91,7 @@ def list_tests(request):
     user_projects = Project.objects.filter(project_users__user=request.user)
     tests = Test.objects.filter(project__in=user_projects)
     test_types = TestType.objects.filter(project__in=user_projects)
-    test_errors = TestError.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
+    test_errors = TestError.objects.filter(status='open', project__in=user_projects).exclude(deleted=True).order_by('-date_created')[:10]
 
     return render(request, 'test/list_tests.html', {
         'tests': tests,
@@ -166,7 +162,7 @@ def list_test_errors(request):
     from django.core.paginator import Paginator
 
     user_projects = Project.objects.filter(project_users__user=request.user)
-    test_errors_list = TestError.objects.filter(project__in=user_projects).order_by('-date_created')
+    test_errors_list = TestError.objects.filter(project__in=user_projects).exclude(deleted=True).exclude(status='closed').order_by('-date_created')
 
     # Pagination
     paginator = Paginator(test_errors_list, 20)  # Show 20 errors per page
