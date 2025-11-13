@@ -269,6 +269,18 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     </table>
   </div>
 
+  <!-- Sekce: Sklady -->
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">📦 Sklady projektu</h2>
+      <a href="{% url 'project_stores' project.project_id %}" class="btn btn-primary">📦 Zobrazit sklady</a>
+    </div>
+    <p class="text-gray-600">
+      Spravujte skladové zásoby a položky přiřazené k tomuto projektu.
+      Můžete sledovat stav zásob, přidávat nové položky a evidovat pohyby materiálu.
+    </p>
+  </div>
+
   <!-- Sekce: Dokumenty -->
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
