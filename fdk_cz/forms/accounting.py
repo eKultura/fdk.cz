@@ -217,6 +217,21 @@ class AccountingContextForm(forms.ModelForm):
             if not self.instance.pk:
                 self.fields['fiscal_year'].initial = timezone.now().year
 
+    def clean(self):
+        cleaned_data = super().clean()
+        accounting_type = cleaned_data.get('accounting_type')
+        organization = cleaned_data.get('organization')
+
+        # If organizational accounting is selected, organization must be provided
+        if accounting_type == 'organizational' and not organization:
+            self.add_error('organization', 'Pro organizační účetnictví musíte vybrat organizaci.')
+
+        # If personal accounting is selected, organization should be null
+        if accounting_type == 'personal' and organization:
+            cleaned_data['organization'] = None
+
+        return cleaned_data
+
 
 class AccountingAccountForm(forms.ModelForm):
     """Form for creating/editing chart of accounts"""

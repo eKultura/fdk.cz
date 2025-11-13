@@ -29,7 +29,8 @@ def project_stores(request, project_id):
 
 @login_required
 def organization_stores(request, organization_id):
-    organization = get_object_or_404(Compmany, pk=organization_id)
+    from fdk_cz.models import Organization
+    organization = get_object_or_404(Organization, pk=organization_id)
     stores = organization.stores.all()
     return render(request, 'warehouse/organization_stores.html', {'stores': stores, 'organization': organization})
 
