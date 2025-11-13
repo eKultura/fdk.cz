@@ -41,7 +41,27 @@ def logout(request):
 
 @login_required
 def user_profile(request):
-    return render(request, 'user/profile.html', {'user': request.user})
+    from fdk_cz.models import TestError, ProjectTask
+    from django.db.models import Count, Q
+
+    # Calculate statistics
+    errors_created = TestError.objects.filter(created_by=request.user).count()
+    errors_open = TestError.objects.filter(created_by=request.user, status='open').count()
+
+    tasks_created = ProjectTask.objects.filter(created_by=request.user).count()
+    tasks_completed = ProjectTask.objects.filter(assigned=request.user, status='Hotovo').count()
+    tasks_in_progress = ProjectTask.objects.filter(assigned=request.user, status='Probíhá').count()
+
+    context = {
+        'user': request.user,
+        'errors_created': errors_created,
+        'errors_open': errors_open,
+        'tasks_created': tasks_created,
+        'tasks_completed': tasks_completed,
+        'tasks_in_progress': tasks_in_progress,
+    }
+
+    return render(request, 'user/profile.html', context)
 
 @login_required
 def user_settings(request):
