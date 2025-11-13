@@ -9,7 +9,7 @@
 <div class="max-w-4xl mx-auto">
   <!-- Actions -->
   <div class="mb-6 flex gap-3">
-    <a href="{% url 'detail_test_error' test_error.error_id %}" class="btn btn-outline">← {% trans "Zpět na detail" %}</a>
+    <a href="{% url 'detail_test_error' test_error.test_error_id %}" class="btn btn-outline">← {% trans "Zpět na detail" %}</a>
     <a href="{% url 'list_test_errors' %}" class="btn btn-outline">📋 {% trans "Všechny chyby" %}</a>
   </div>
 
@@ -124,7 +124,7 @@
         <button type="submit" class="btn btn-primary">
           ✓ {% trans "Uložit změny" %}
         </button>
-        <a href="{% url 'detail_test_error' test_error.error_id %}" class="btn btn-outline">
+        <a href="{% url 'detail_test_error' test_error.test_error_id %}" class="btn btn-outline">
           {% trans "Zrušit" %}
         </a>
       </div>
