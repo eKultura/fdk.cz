@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Nový sklad" %} | FDK.cz{% endblock %}
+{% block header_title %}📦 {% trans "Nový sklad" %}{% endblock %}
+{% block header_subtitle %}{% trans "Vytvořte nový sklad pro správu zásob" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'all_stores' %}" class="btn btn-outline">← {% trans "Zpět na seznam" %}</a>
+    {% if project %}
+    <a href="{% url 'project_stores' project.project_id %}" class="btn btn-outline">📁 {% trans "Sklady projektu" %}</a>
+    {% endif %}
+    {% if organization %}
+    <a href="{% url 'organization_stores' organization.organization_id %}" class="btn btn-outline">🏢 {% trans "Sklady organizace" %}</a>
+    {% endif %}
+  </div>
+
+  <div class="content-card">
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 font-semibold mb-2">{% trans "Formulář obsahuje chyby:" %}</p>
+        <ul class="list-disc list-inside text-red-600 text-sm">
+          {% for field, errors in form.errors.items %}
+            <li>{{ field }}: {{ errors|join:", " }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Basic Information -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">{% trans "Základní informace" %}</h3>
+
+        <!-- Název skladu -->
+        <div class="mb-4">
+          <label for="id_name" class="form-label">
+            {% trans "Název skladu" %} <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="id_name" name="name"
+                 value="{{ form.name.value|default_if_none:'' }}"
+                 class="form-control"
+                 placeholder="{% trans 'Např: Hlavní sklad' %}"
+                 required>
+          {% if form.name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Umístění -->
+        <div class="mb-4">
+          <label for="id_location" class="form-label">
+            {% trans "Umístění" %}
+          </label>
+          <input type="text" id="id_location" name="location"
+                 value="{{ form.location.value|default_if_none:'' }}"
+                 class="form-control"
+                 placeholder="{% trans 'Např: Praha, Sklad A' %}">
+          {% if form.location.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.location.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">{% trans "Volitelné - fyzické umístění skladu" %}</p>
+        </div>
+      </div>
+
+      <!-- Association -->
+      {% if not for_project and not for_organization %}
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">{% trans "Přiřazení" %}</h3>
+
+        <!-- Projekt -->
+        <div class="mb-4">
+          <label for="id_project" class="form-label">
+            {% trans "Projekt" %}
+          </label>
+          {{ form.project }}
+          {% if form.project.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.project.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">{% trans "Volitelné - přiřaďte sklad ke konkrétnímu projektu" %}</p>
+        </div>
+
+        <!-- Organizace -->
+        <div class="mb-4">
+          <label for="id_organization" class="form-label">
+            {% trans "Organizace" %}
+          </label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">{% trans "Volitelné - přiřaďte sklad k organizaci" %}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          ✓ {% trans "Vytvořit sklad" %}
+        </button>
+        <a href="{% url 'all_stores' %}" class="btn btn-outline">
+          {% trans "Zrušit" %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

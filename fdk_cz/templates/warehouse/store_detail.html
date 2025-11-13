@@ -10,7 +10,8 @@
 
   <!-- Actions -->
   <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem;">
-    <a href="{% url 'store_transactions' store.id %}" class="btn btn-primary">📊 {% trans "Zobrazit transakce" %}</a>
+    <a href="{% url 'create_warehouse_item' store.warehouse_id %}" class="btn btn-primary">+ {% trans "Přidat položku" %}</a>
+    <a href="{% url 'store_transactions' store.warehouse_id %}" class="btn btn-secondary">📊 {% trans "Transakce" %}</a>
     <a href="{% url 'all_stores' %}" class="btn btn-outline">← {% trans "Zpět na sklady" %}</a>
   </div>
 
@@ -44,7 +45,89 @@
         <div style="color: #1e293b; font-weight: 600;">{{ store.capacity }} {% trans "jednotek" %}</div>
       </div>
       {% endif %}
+
+      {% if store.project %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Přiřazeno k projektu" %}</div>
+        <div style="color: #1e293b;">
+          <a href="{% url 'detail_project' store.project.project_id %}" class="text-blue-600 hover:underline">
+            📁 {{ store.project.name }}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if store.organization %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">{% trans "Přiřazeno k organizaci" %}</div>
+        <div style="color: #1e293b;">
+          <a href="{% url 'organization_detail' store.organization.organization_id %}" class="text-blue-600 hover:underline">
+            🏢 {{ store.organization.name }}
+          </a>
+        </div>
+      </div>
+      {% endif %}
     </div>
+  </div>
+
+  <!-- Items in Warehouse -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">📦 {% trans "Položky ve skladu" %}</h3>
+      <a href="{% url 'create_warehouse_item' store.warehouse_id %}" class="btn btn-primary btn-sm">+ {% trans "Přidat položku" %}</a>
+    </div>
+
+    {% if store.items.all %}
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Název" %}</th>
+            <th class="hidden md:table-cell">{% trans "Kategorie" %}</th>
+            <th class="text-center">{% trans "Množství" %}</th>
+            <th class="hidden lg:table-cell">{% trans "Vytvořeno" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in store.items.all %}
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: #1e293b;">{{ item.name }}</div>
+              {% if item.description %}
+              <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ item.description|truncatewords:10 }}</div>
+              {% endif %}
+            </td>
+            <td class="hidden md:table-cell">
+              {% if item.category %}
+              <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                🏷️ {{ item.category.name }}
+              </span>
+              {% else %}
+              <span style="color: #94a3b8;">-</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <span style="padding: 6px 16px; background: #dcfce7; color: #166534; border-radius: 12px; font-weight: 700; font-size: 1rem;">
+                {{ item.quantity }}
+              </span>
+            </td>
+            <td class="hidden lg:table-cell" style="color: #64748b; font-size: 0.875rem;">
+              {{ item.created|date:"d.m.Y H:i" }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+      <p style="color: #64748b; margin-bottom: 1rem;">{% trans "Ve skladu zatím nejsou žádné položky" %}</p>
+      <a href="{% url 'create_warehouse_item' store.warehouse_id %}" class="btn btn-primary">
+        + {% trans "Přidat první položku" %}
+      </a>
+    </div>
+    {% endif %}
   </div>
 
 </div>

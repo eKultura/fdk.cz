@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Kategorie skladu" %} | FDK.cz{% endblock %}
+{% block header_title %}🏷️ {% trans "Kategorie skladu" %}{% endblock %}
+{% block header_subtitle %}{% trans "Správa kategorií pro skladové položky" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_warehouse_category' %}" class="btn btn-primary">+ {% trans "Nová kategorie" %}</a>
+    <a href="{% url 'all_stores' %}" class="btn btn-outline">← {% trans "Zpět na sklady" %}</a>
+  </div>
+
+  <!-- Categories List -->
+  <div class="content-card">
+    {% if categories %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Název kategorie" %}</th>
+            <th class="hidden md:table-cell">{% trans "Popis" %}</th>
+            <th class="text-center">{% trans "Počet položek" %}</th>
+            <th class="text-right">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for category in categories %}
+          <tr>
+            <td>
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🏷️</span>
+                <span class="font-medium">{{ category.name }}</span>
+              </div>
+            </td>
+            <td class="hidden md:table-cell">
+              {% if category.description %}
+              <p class="text-sm text-gray-600">{{ category.description|truncatewords:15 }}</p>
+              {% else %}
+              <span class="text-gray-400">-</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">
+                {{ category.items.count }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="flex gap-2 justify-end">
+                <button class="btn btn-outline btn-sm" onclick="alert('Úprava kategorie - bude implementována později')">
+                  ✏️ {% trans "Upravit" %}
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">🏷️</div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">
+        {% trans "Žádné kategorie" %}
+      </h3>
+      <p class="text-gray-600 mb-6">
+        {% trans "Vytvořte kategorie pro lepší organizaci skladových položek" %}
+      </p>
+      <a href="{% url 'create_warehouse_category' %}" class="btn btn-primary">
+        + {% trans "Vytvořit první kategorii" %}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Quick Stats -->
+  {% if categories %}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Celkem kategorií" %}</p>
+          <p class="text-2xl font-bold text-blue-600">
+            {{ categories.count }}
+          </p>
+        </div>
+        <div class="text-3xl">🏷️</div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Kategorie s položkami" %}</p>
+          <p class="text-2xl font-bold text-green-600">
+            {% for category in categories %}{% if category.items.count > 0 %}1{% endif %}{% endfor %}
+          </p>
+        </div>
+        <div class="text-3xl">✓</div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Prázdné kategorie" %}</p>
+          <p class="text-2xl font-bold text-gray-600">
+            {% for category in categories %}{% if category.items.count == 0 %}1{% endif %}{% endfor %}
+          </p>
+        </div>
+        <div class="text-3xl">📭</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
