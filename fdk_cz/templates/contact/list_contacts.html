@@ -6,6 +6,31 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto">
+  <!-- Actions and Filter -->
+  <div class="content-card mb-6">
+    <div class="flex flex-col md:flex-row justify-between gap-4">
+      <div class="flex gap-3">
+        <a href="{% url 'create_contact_account' %}" class="btn btn-primary">+ Nový kontakt</a>
+      </div>
+
+      <!-- Filtrování kontaktů podle projektu -->
+      <form method="GET" class="flex gap-2 items-center">
+        <label for="filter" class="font-medium text-gray-700 text-sm">Filtrovat:</label>
+        <select name="project_id" id="filter" onchange="this.form.submit()" class="form-control" style="min-width: 200px;">
+          <option value="">Všechny projekty</option>
+          {% for project in projects %}
+            <option value="{{ project.project_id }}" {% if project_id == project.project_id|stringformat:"s" %}selected{% endif %}>
+              {{ project.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contacts Table -->
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-4">👥 Seznam kontaktů</h3>
   <!-- Contacts Grid -->
   <div class="content-card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
@@ -27,77 +52,70 @@
       </div>
     </div>
     {% if contacts %}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {% for contact in contacts %}
-          <div class="border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-md transition-shadow">
-            <!-- Contact Header - Compact -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 text-white">
-              <div class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-base font-bold text-blue-600 flex-shrink-0">
-                  {{ contact.first_name|default:""|first }}{{ contact.last_name|default:""|first }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h5 class="font-semibold text-sm truncate">
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Jméno</th>
+              <th>Firma / Pozice</th>
+              <th class="hidden md:table-cell">Email</th>
+              <th class="hidden md:table-cell">Telefon</th>
+              <th class="hidden lg:table-cell">Projekt</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for contact in contacts %}
+            <tr>
+              <td>
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600 flex-shrink-0">
+                    {{ contact.first_name|default:""|first }}{{ contact.last_name|default:""|first }}
+                  </div>
+                  <a href="{% url 'detail_contact' contact.contact_id %}" class="font-semibold text-blue-600 hover:underline">
                     {{ contact.first_name }} {{ contact.last_name }}
-                  </h5>
-                  {% if contact.position %}
-                    <p class="text-xs text-blue-100 truncate">{{ contact.position }}</p>
-                  {% endif %}
+                  </a>
                 </div>
-              </div>
-            </div>
-
-            <!-- Contact Details - Compact -->
-            <div class="p-3">
-              <div class="space-y-1.5 mb-3 text-xs">
-                {% if contact.company %}
-                  <div class="flex items-center gap-1.5 text-gray-600 truncate">
-                    <span class="flex-shrink-0">🏢</span>
-                    <span class="truncate">{{ contact.company }}</span>
-                  </div>
-                {% endif %}
-
+              </td>
+              <td>
+                <div class="text-sm">
+                  {% if contact.company %}<div class="font-medium text-gray-800">{{ contact.company }}</div>{% endif %}
+                  {% if contact.position %}<div class="text-gray-500">{{ contact.position }}</div>{% endif %}
+                  {% if not contact.company and not contact.position %}—{% endif %}
+                </div>
+              </td>
+              <td class="hidden md:table-cell">
                 {% if contact.email %}
-                  <div class="flex items-center gap-1.5 text-gray-600 truncate">
-                    <span class="flex-shrink-0">✉️</span>
-                    <a href="mailto:{{ contact.email }}" class="text-blue-600 hover:underline truncate">
-                      {{ contact.email }}
-                    </a>
-                  </div>
+                  <a href="mailto:{{ contact.email }}" class="text-blue-600 hover:underline text-sm">{{ contact.email }}</a>
+                {% else %}
+                  —
                 {% endif %}
-
+              </td>
+              <td class="hidden md:table-cell">
                 {% if contact.phone %}
-                  <div class="flex items-center gap-1.5 text-gray-600 truncate">
-                    <span class="flex-shrink-0">📞</span>
-                    <a href="tel:{{ contact.phone }}" class="text-blue-600 hover:underline truncate">
-                      {{ contact.phone }}
-                    </a>
-                  </div>
+                  <a href="tel:{{ contact.phone }}" class="text-blue-600 hover:underline text-sm">{{ contact.phone }}</a>
+                {% else %}
+                  —
                 {% endif %}
-
+              </td>
+              <td class="hidden lg:table-cell">
                 {% if contact.project %}
-                  <div class="flex items-center gap-1.5 text-gray-600 truncate">
-                    <span class="flex-shrink-0">📁</span>
-                    <span class="truncate">{{ contact.project.name }}</span>
-                  </div>
+                  <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">{{ contact.project.name }}</span>
+                {% else %}
+                  —
                 {% endif %}
-              </div>
-
-              <!-- Actions - Compact -->
-              <div class="flex gap-1.5 pt-2 border-t border-gray-200">
-                <a href="{% url 'detail_contact' contact.contact_id %}" class="flex-1 text-center px-2 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition text-xs font-medium">
-                  👁️
-                </a>
-                <a href="{% url 'edit_contact' contact.contact_id %}" class="flex-1 text-center px-2 py-1.5 bg-yellow-50 text-yellow-700 rounded hover:bg-yellow-100 transition text-xs font-medium">
-                  ✏️
-                </a>
-                <a href="{% url 'delete_contact' contact.contact_id %}" class="px-2 py-1.5 bg-red-50 text-red-700 rounded hover:bg-red-100 transition text-xs font-medium">
-                  🗑️
-                </a>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
+              </td>
+              <td class="text-right">
+                <div class="data-table-actions">
+                  <a href="{% url 'detail_contact' contact.contact_id %}">👁️ Detail</a>
+                  <a href="{% url 'edit_contact' contact.contact_id %}">✏️ Upravit</a>
+                  <a href="{% url 'delete_contact' contact.contact_id %}">🗑️ Smazat</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
       <!-- Pagination -->
