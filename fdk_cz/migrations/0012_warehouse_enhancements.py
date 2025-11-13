@@ -1,5 +1,3 @@
-# Generated migration for warehouse enhancements
-
 from django.db import migrations, models
 import django.db.models.deletion
 
@@ -7,7 +5,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fdk_cz', '0004_add_soft_delete_fields'),
+        ('fdk_cz', '0011_remove_projecttask_deleted_and_more'),
     ]
 
     operations = [

@@ -95,7 +95,7 @@ def list_tests(request):
     user_projects = Project.objects.filter(project_users__user=request.user)
     tests = Test.objects.filter(project__in=user_projects)
     test_types = TestType.objects.filter(project__in=user_projects)
-    test_errors = TestError.objects.filter(status='open', project__in=user_projects).exclude(deleted=True).order_by('-date_created')[:10]
+    test_errors = TestError.objects.filter(status='open', project__in=user_projects).order_by('-date_created')[:10]
 
     return render(request, 'test/list_tests.html', {
         'tests': tests,
@@ -166,7 +166,7 @@ def list_test_errors(request):
     from django.core.paginator import Paginator
 
     user_projects = Project.objects.filter(project_users__user=request.user)
-    test_errors_list = TestError.objects.filter(project__in=user_projects).exclude(deleted=True).order_by('-date_created')
+    test_errors_list = TestError.objects.filter(project__in=user_projects).order_by('-date_created')
 
     # Pagination
     paginator = Paginator(test_errors_list, 20)  # Show 20 errors per page
