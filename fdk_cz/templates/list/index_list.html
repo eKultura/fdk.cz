@@ -5,61 +5,64 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
-  <div class="grid grid-cols-1 gap-6">
-    <!-- Lists Table -->
-    <div>
-      <div class="content-card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-          <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">📝 Moje seznamy</h3>
-          <a href="{% url 'create_list' %}" class="btn btn-primary text-sm">&#10133; Vytvořit seznam</a>
-        </div>
-        {% if lists %}
-          <div class="overflow-x-auto">
-            <table class="data-table" style="width:100%;border-collapse:collapse;">
-              <thead style="background:#f9fafb;">
-                <tr>
-                  <th class="px-4 py-2 text-left text-gray-600 font-semibold w-1/6">ID</th>
-                  <th class="px-4 py-2 text-left text-gray-600 font-semibold">Název</th>
-                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Popis</th>
-                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Položek</th>
-                  <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Vytvořeno</th>
-                  <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">Akce</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for list in lists %}
-                  <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
-                    <td class="px-4 py-2 text-gray-700">{{ list.list_id }}</td>
-                    <td class="px-4 py-2 text-gray-800 font-medium">
-                      <a href="{% url 'detail_list' list.list_id %}" class="text-blue-600 hover:underline">
-                        {{ list.name }}
-                      </a>
-                    </td>
-                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ list.description|default:"–"|truncatewords:10 }}</td>
-                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">
-                      {{ list.items.count|default:0 }}
-                    </td>
-                    <td class="px-4 py-2 text-gray-500 hidden md:table-cell">
-                      {{ list.created|date:"d.m.Y"|default:"–" }}
-                    </td>
-                    <td class="px-4 py-2 text-center">
-                      <a href="{% url 'detail_list' list.list_id %}" class="text-blue-600 hover:text-blue-800 text-sm mr-2">Detail</a>
-                      <a href="{% url 'edit_list' list.list_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">Upravit</a>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
-            <div style="font-size:2rem;">📝</div>
-            <p style="margin-top:0.5rem;">Zatím nemáte vytvořené žádné seznamy.</p>
-            <a href="{% url 'create_list' %}" class="btn btn-outline" style="margin-top:1rem;">➕ Vytvořit první seznam</a>
-          </div>
-        {% endif %}
+  <!-- Create Button -->
+  <div class="mb-6">
+    <a href="{% url 'create_list' %}" class="btn btn-primary">+ Vytvořit nový seznam</a>
+  </div>
+
+  <!-- Lists Table -->
+  <div class="content-card">
+    {% if lists %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="w-20">ID</th>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Popis</th>
+              <th class="hidden md:table-cell text-center w-24">Položek</th>
+              <th class="hidden lg:table-cell w-32">Vytvořeno</th>
+              <th class="text-center w-40">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for list in lists %}
+              <tr>
+                <td>{{ list.list_id }}</td>
+                <td>
+                  <a href="{% url 'detail_list' list.list_id %}" class="font-medium text-blue-600 hover:text-blue-800">
+                    {{ list.name }}
+                  </a>
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {{ list.description|default:"–"|truncatewords:10 }}
+                </td>
+                <td class="hidden md:table-cell text-center">
+                  <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                    {{ list.items.count|default:0 }}
+                  </span>
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {{ list.created|date:"d.m.Y"|default:"–" }}
+                </td>
+                <td class="text-center">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_list' list.list_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_list' list.list_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-    </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-5xl mb-3">📝</div>
+        <p class="text-gray-600 mb-4">Zatím nemáte vytvořené žádné seznamy.</p>
+        <a href="{% url 'create_list' %}" class="btn btn-outline">+ Vytvořit první seznam</a>
+      </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
