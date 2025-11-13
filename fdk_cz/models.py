@@ -228,6 +228,11 @@ class ProjectTask(models.Model):
     created = models.DateTimeField(null=True, blank=True, db_column='created')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks', db_column='parent_id')
 
+    # Soft delete fields
+    deleted = models.BooleanField(default=False, db_column='deleted')
+    deleted_at = models.DateTimeField(null=True, blank=True, db_column='deleted_at')
+    deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='deleted_tasks', db_column='deleted_by_id')
+
     class Meta:
         db_table = 'FDK_tasks'
 
@@ -340,11 +345,28 @@ class Contact(models.Model):
 class Warehouse(models.Model):
     warehouse_id = models.AutoField(primary_key=True, db_column='warehouse_id')
     name = models.CharField(max_length=255, db_column='name')
-    location = models.CharField(max_length=255, db_column='location')
+    location = models.CharField(max_length=255, db_column='location', null=True, blank=True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, null=True, blank=True, related_name='stores', db_column='project_id')
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, null=True, blank=True, related_name='stores', db_column='organization_id')
     created = models.DateTimeField(auto_now_add=True, db_column='created')
 
     class Meta:
         db_table = 'FDK_warehouse'
+
+    def __str__(self):
+        return self.name
+
+class WarehouseCategory(models.Model):
+    category_id = models.AutoField(primary_key=True, db_column='category_id')
+    name = models.CharField(max_length=255, db_column='name')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    class Meta:
+        db_table = 'FDK_warehouse_category'
+        verbose_name_plural = 'Warehouse Categories'
+
+    def __str__(self):
+        return self.name
 
 class WarehouseItem(models.Model):
     item_id = models.AutoField(primary_key=True, db_column='item_id')
@@ -352,10 +374,14 @@ class WarehouseItem(models.Model):
     description = models.TextField(null=True, blank=True, db_column='description')
     quantity = models.PositiveIntegerField(default=0, db_column='quantity')
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='items', db_column='warehouse_id')
+    category = models.ForeignKey(WarehouseCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='items', db_column='category_id')
     created = models.DateTimeField(auto_now_add=True, db_column='created')
 
     class Meta:
         db_table = 'FDK_warehouse_item'
+
+    def __str__(self):
+        return self.name
 
 class WarehouseTransaction(models.Model):
     transaction_id = models.AutoField(primary_key=True, db_column='transaction_id')
@@ -451,6 +477,11 @@ class TestError(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='open')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_errors')
     date_created = models.DateTimeField(auto_now_add=True, db_column='date_created')
+
+    # Soft delete fields
+    deleted = models.BooleanField(default=False, db_column='deleted')
+    deleted_at = models.DateTimeField(null=True, blank=True, db_column='deleted_at')
+    deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='deleted_test_errors', db_column='deleted_by_id')
 
     class Meta:
         db_table = 'FDK_test_errors'

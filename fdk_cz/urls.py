@@ -45,6 +45,12 @@ from fdk_cz.views.warehouse import (
     store_transactions,
     create_transaction,
     transaction_detail,
+    create_warehouse,
+    create_warehouse_for_project,
+    create_warehouse_for_organization,
+    create_warehouse_item,
+    create_warehouse_category,
+    list_warehouse_categories,
 )
 
 from fdk_cz.views import subscription
@@ -220,9 +226,15 @@ urlpatterns = (
 
     # SKLAD
     path('sklady/', all_stores, name='all_stores'),
+    path('sklady/novy/', create_warehouse, name='create_warehouse'),
+    path('sklady/kategorie/', list_warehouse_categories, name='list_warehouse_categories'),
+    path('sklady/kategorie/nova/', create_warehouse_category, name='create_warehouse_category'),
     path('projekty/<int:project_id>/sklad/', project_stores, name='project_stores'),
+    path('projekty/<int:project_id>/sklad/novy/', create_warehouse_for_project, name='create_warehouse_for_project'),
     path('organizace/<int:organization_id>/sklad/', organization_stores, name='organization_stores'),
+    path('organizace/<int:organization_id>/sklad/novy/', create_warehouse_for_organization, name='create_warehouse_for_organization'),
     path('sklad/<int:store_id>/', store_detail, name='store_detail'),
+    path('sklad/<int:store_id>/polozka/nova/', create_warehouse_item, name='create_warehouse_item'),
     path('sklad/<int:store_id>/transakce/', store_transactions, name='store_transactions'),
     path('sklad/<int:store_id>/transakce/nova/', create_transaction, name='create_transaction'),
     path('transakce/<int:transaction_id>/', transaction_detail, name='transaction_detail'),

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Nová kategorie" %} | FDK.cz{% endblock %}
+{% block header_title %}🏷️ {% trans "Nová kategorie skladu" %}{% endblock %}
+{% block header_subtitle %}{% trans "Vytvořte novou kategorii pro skladové položky" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_warehouse_categories' %}" class="btn btn-outline">← {% trans "Zpět na seznam" %}</a>
+    <a href="{% url 'all_stores' %}" class="btn btn-outline">📦 {% trans "Všechny sklady" %}</a>
+  </div>
+
+  <div class="content-card">
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 font-semibold mb-2">{% trans "Formulář obsahuje chyby:" %}</p>
+        <ul class="list-disc list-inside text-red-600 text-sm">
+          {% for field, errors in form.errors.items %}
+            <li>{{ field }}: {{ errors|join:", " }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Basic Information -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">{% trans "Informace o kategorii" %}</h3>
+
+        <!-- Název kategorie -->
+        <div class="mb-4">
+          <label for="id_name" class="form-label">
+            {% trans "Název kategorie" %} <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="id_name" name="name"
+                 value="{{ form.name.value|default_if_none:'' }}"
+                 class="form-control"
+                 placeholder="{% trans 'Např: Spojovací materiál' %}"
+                 required>
+          {% if form.name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Popis -->
+        <div class="mb-4">
+          <label for="id_description" class="form-label">
+            {% trans "Popis" %}
+          </label>
+          <textarea id="id_description" name="description"
+                    class="form-control"
+                    rows="4"
+                    placeholder="{% trans 'Popis kategorie...' %}">{{ form.description.value|default_if_none:'' }}</textarea>
+          {% if form.description.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">{% trans "Volitelné - detailní popis kategorie" %}</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          ✓ {% trans "Vytvořit kategorii" %}
+        </button>
+        <a href="{% url 'list_warehouse_categories' %}" class="btn btn-outline">
+          {% trans "Zrušit" %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

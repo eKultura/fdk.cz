@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Sklady organizace" %} {{ organization.name }} | FDK.cz{% endblock %}
+{% block header_title %}📦 {% trans "Sklady organizace" %}: {{ organization.name }}{% endblock %}
+{% block header_subtitle %}{% trans "Správa skladů přiřazených k této organizaci" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_warehouse_for_organization' organization.organization_id %}" class="btn btn-primary">+ {% trans "Nový sklad" %}</a>
+    <a href="{% url 'organization_detail' organization.organization_id %}" class="btn btn-outline">← {% trans "Zpět na organizaci" %}</a>
+    <a href="{% url 'all_stores' %}" class="btn btn-outline">📦 {% trans "Všechny sklady" %}</a>
+  </div>
+
+  <!-- Organization Info Card -->
+  <div class="content-card mb-6">
+    <div class="flex items-center gap-4">
+      <div class="text-4xl">🏢</div>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800">{{ organization.name }}</h3>
+        {% if organization.description %}
+        <p class="text-sm text-gray-600 mt-1">{{ organization.description|truncatewords:20 }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Stores Grid -->
+  {% if stores %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for store in stores %}
+    <a href="{% url 'store_detail' store.warehouse_id %}" class="block">
+      <div class="content-card hover:shadow-lg transition-shadow">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="text-3xl">📦</div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ store.name }}</h3>
+            {% if store.location %}
+            <p class="text-sm text-gray-600 flex items-center gap-1">
+              <span>📍</span>{{ store.location }}
+            </p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-200">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">{% trans "Položky:" %}</span>
+            <span class="font-semibold text-blue-600">{{ store.items.count }}</span>
+          </div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Empty State -->
+  <div class="content-card">
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">📦</div>
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">
+        {% trans "Žádné sklady" %}
+      </h3>
+      <p class="text-gray-600 mb-6">
+        {% trans "Tato organizace zatím nemá žádné sklady. Vytvořte první sklad pro správu zásob." %}
+      </p>
+      <a href="{% url 'create_warehouse_for_organization' organization.organization_id %}" class="btn btn-primary">
+        + {% trans "Vytvořit první sklad" %}
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quick Stats -->
+  {% if stores %}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Počet skladů" %}</p>
+          <p class="text-2xl font-bold text-blue-600">
+            {{ stores.count }}
+          </p>
+        </div>
+        <div class="text-3xl">📦</div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Celkem položek" %}</p>
+          <p class="text-2xl font-bold text-green-600">
+            {% for store in stores %}{{ store.items.count }}{% if not forloop.last %}+{% endif %}{% endfor %}
+          </p>
+        </div>
+        <div class="text-3xl">📊</div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">{% trans "Organizace" %}</p>
+          <p class="text-lg font-bold text-gray-700">
+            {{ organization.name }}
+          </p>
+        </div>
+        <div class="text-3xl">🏢</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
