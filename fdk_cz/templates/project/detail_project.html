@@ -208,7 +208,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           </tr>
         </thead>
         <tbody>
-          {% for error in project.test_errors.all %}
+          {% for error in all_errors %}
           <tr>
             <td><strong>{{ error.error_title }}</strong></td>
             <td>
@@ -229,7 +229,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="5" class="data-table-empty">Zatím nejsou žádné chyby z testování</td></tr>
+          <tr><td colspan="5" class="data-table-empty">Zatím nejsou žádné otevřené chyby z testování</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -439,37 +439,39 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card mt-6">
     <h2 class="text-xl font-semibold text-gray-800 mb-2">💡 Nice to Have úkoly</h2>
     <p class="text-sm text-gray-600 mb-4">Úkoly s nízkou prioritou, které by bylo hezké mít, ale nejsou nezbytné</p>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Název úkolu</th>
-          <th class="hidden md:table-cell">Přiřazeno</th>
-          <th class="hidden md:table-cell">Kategorie</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for task in nice_to_have_tasks %}
-        <tr>
-          <td>
-            <a href="{% url 'detail_task' task.task_id %}">
-              <strong>{{ task.title }}</strong>
-            </a>
-          </td>
-          <td class="hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
-          <td class="hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
-          <td>
-            <span class="px-2 py-1 rounded text-xs font-medium
-              {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
-              {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
-              {% else %}bg-gray-100 text-gray-700{% endif %}">
-              {{ task.status|default:"Nezahájeno" }}
-            </span>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název úkolu</th>
+            <th class="hidden md:table-cell">Přiřazeno</th>
+            <th class="hidden md:table-cell">Kategorie</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in nice_to_have_tasks %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_task' task.task_id %}">
+                <strong>{{ task.title }}</strong>
+              </a>
+            </td>
+            <td class="hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
+            <td class="hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-medium
+                {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+                {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ task.status|default:"Nezahájeno" }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   {% endif %}
 
