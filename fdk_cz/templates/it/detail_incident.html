@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}{{ incident.incident_number }} | FDK.cz{% endblock %}
+{% block header_title %}🚨 {{ incident.incident_number }}{% endblock %}
+{% block header_subtitle %}{{ incident.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_it_incidents' %}" class="btn btn-outline">← Seznam incidentů</a>
+    <a href="{% url 'edit_it_incident' incident.incident_id %}" class="btn btn-secondary">✏️ Upravit</a>
+  </div>
+
+  <!-- Základní informace -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Základní informace</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Číslo incidentu</label>
+        <p class="text-lg font-semibold text-gray-900">{{ incident.incident_number }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Organizace</label>
+        <p class="text-gray-900">{{ incident.organization.name|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Priorita</label>
+        <p>
+          <span class="px-3 py-1 rounded-full text-sm font-medium
+            {% if incident.priority == 'critical' %}bg-red-100 text-red-700
+            {% elif incident.priority == 'high' %}bg-orange-100 text-orange-700
+            {% elif incident.priority == 'medium' %}bg-yellow-100 text-yellow-800
+            {% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ incident.get_priority_display }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Status</label>
+        <p>
+          <span class="px-3 py-1 rounded-full text-sm font-medium
+            {% if incident.status == 'closed' %}bg-gray-100 text-gray-700
+            {% elif incident.status == 'resolved' %}bg-green-100 text-green-700
+            {% elif incident.status == 'in_progress' %}bg-blue-100 text-blue-700
+            {% elif incident.status == 'assigned' %}bg-purple-100 text-purple-700
+            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+            {{ incident.get_status_display }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Nahlášeno</label>
+        <p class="text-gray-900">{{ incident.reported_by.username|default:"—" }}</p>
+        <p class="text-sm text-gray-500">{{ incident.reported_at|date:"d.m.Y H:i" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Přiřazeno</label>
+        <p class="text-gray-900">{{ incident.assigned_to.username|default:"—" }}</p>
+      </div>
+
+      {% if incident.affected_asset %}
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-600 mb-1">Postižené aktivum</label>
+        <p class="text-gray-900">{{ incident.affected_asset.name }} ({{ incident.affected_asset.asset_tag }})</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Popis incidentu -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📝 Popis incidentu</h2>
+    <div class="prose max-w-none">
+      <p class="text-gray-700 whitespace-pre-wrap">{{ incident.description }}</p>
+    </div>
+  </div>
+
+  <!-- Řešení a poznámky -->
+  {% if incident.resolution_notes or incident.resolved_at %}
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">✅ Řešení incidentu</h2>
+
+    {% if incident.resolved_at %}
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-600 mb-1">Vyřešeno dne</label>
+      <p class="text-gray-900">{{ incident.resolved_at|date:"d.m.Y H:i" }}</p>
+    </div>
+    {% endif %}
+
+    {% if incident.closed_at %}
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-600 mb-1">Uzavřeno dne</label>
+      <p class="text-gray-900">{{ incident.closed_at|date:"d.m.Y H:i" }}</p>
+    </div>
+    {% endif %}
+
+    {% if incident.resolution_notes %}
+    <div>
+      <label class="block text-sm font-medium text-gray-600 mb-2">Poznámky k řešení</label>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-gray-700 whitespace-pre-wrap">{{ incident.resolution_notes }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Časová osa -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">⏱️ Časová osa</h2>
+    <div class="space-y-4">
+      <div class="flex items-start gap-4">
+        <div class="w-2 h-2 mt-2 bg-blue-500 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-900">Nahlášeno</p>
+          <p class="text-sm text-gray-600">{{ incident.reported_at|date:"d.m.Y H:i" }}</p>
+        </div>
+      </div>
+
+      {% if incident.resolved_at %}
+      <div class="flex items-start gap-4">
+        <div class="w-2 h-2 mt-2 bg-green-500 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-900">Vyřešeno</p>
+          <p class="text-sm text-gray-600">{{ incident.resolved_at|date:"d.m.Y H:i" }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if incident.closed_at %}
+      <div class="flex items-start gap-4">
+        <div class="w-2 h-2 mt-2 bg-gray-500 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-900">Uzavřeno</p>
+          <p class="text-sm text-gray-600">{{ incident.closed_at|date:"d.m.Y H:i" }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

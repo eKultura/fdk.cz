@@ -80,6 +80,14 @@ class ITIncidentForm(forms.ModelForm):
         self.fields['assigned_to'].required = False
         self.fields['resolution_notes'].required = False
 
+        # Auto-generate incident number for new incidents
+        if not self.instance.pk:
+            # Get next ID by counting existing incidents + 1
+            from fdk_cz.models import ITIncident
+            next_id = ITIncident.objects.count() + 1
+            self.fields['incident_number'].initial = f'INC-{next_id:06d}'
+            self.fields['incident_number'].widget.attrs['readonly'] = True
+
         # Filter organizations to only those the user has access to
         if user:
             from django.db.models import Q
