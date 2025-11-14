@@ -6,12 +6,12 @@
 {% block header_subtitle %}{{ user.first_name }} {{ user.last_name }} · {{ user.email }}{% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
+<div class="max-w-6xl mx-auto">
 
   <!-- Profile Header Card -->
   <div class="content-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6;">
-    <div style="display: flex; align-items: center; gap: 2rem;">
-      <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: 700; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: 700; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-shrink: 0;">
         {% if user.profile.photo %}
           <img src="{{ user.profile.photo.url }}" alt="Foto" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
         {% else %}
@@ -19,15 +19,15 @@
         {% endif %}
       </div>
 
-      <div style="flex: 1;">
-        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">
+      <div class="flex-1 text-center md:text-left">
+        <h2 class="text-2xl md:text-3xl font-bold mb-2 text-gray-900">
           {{ user.first_name }} {{ user.last_name }}
         </h2>
-        <p style="color: #475569; margin-bottom: 1rem;">
+        <p class="text-gray-600 mb-4">
           @{{ user.username }} · {{ user.email }}
         </p>
 
-        <div style="display: flex; gap: 1rem;">
+        <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
           <a href="{% url 'user_settings' %}" class="btn btn-primary">⚙️ Upravit profil</a>
           <a href="{% url 'logout_cs' %}" class="btn btn-outline">🚪 Odhlásit se</a>
         </div>
@@ -36,11 +36,11 @@
   </div>
 
   <!-- Profile Information Grid -->
-  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
 
     <!-- Personal Information -->
     <div class="content-card">
-      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+      <h3 class="text-xl font-semibold mb-4 text-gray-900">
         📋 Osobní informace
       </h3>
 
@@ -59,7 +59,7 @@
         </div>
         <div class="data-row">
           <span class="data-label">Email</span>
-          <span class="data-value">{{ user.email|default:"Není nastaven" }}</span>
+          <span class="data-value break-words">{{ user.email|default:"Není nastaven" }}</span>
         </div>
         <div class="data-row">
           <span class="data-label">Telefon</span>
@@ -74,29 +74,29 @@
 
     <!-- Account Stats -->
     <div class="content-card">
-      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+      <h3 class="text-xl font-semibold mb-4 text-gray-900">
         📊 Statistiky účtu
       </h3>
 
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">{{ user.owned_projects.count }}</div>
-          <div style="font-size: 0.875rem; color: #64748b;">Vlastněné projekty</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-gray-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-blue-600">{{ user.owned_projects.count }}</div>
+          <div class="text-sm text-gray-600 mt-1">Vlastněné projekty</div>
         </div>
 
-        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #10b981;">{{ user.project_memberships.count }}</div>
-          <div style="font-size: 0.875rem; color: #64748b;">Členství v projektech</div>
+        <div class="bg-gray-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-green-600">{{ user.project_memberships.count }}</div>
+          <div class="text-sm text-gray-600 mt-1">Členství v projektech</div>
         </div>
 
-        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;">{{ user.assigned_tasks.count }}</div>
-          <div style="font-size: 0.875rem; color: #64748b;">Přiřazené úkoly</div>
+        <div class="bg-gray-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-amber-600">{{ user.assigned_tasks.count }}</div>
+          <div class="text-sm text-gray-600 mt-1">Přiřazené úkoly</div>
         </div>
 
-        <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;">{{ user.created_organizations.count }}</div>
-          <div style="font-size: 0.875rem; color: #64748b;">Organizace</div>
+        <div class="bg-gray-50 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-purple-600">{{ user.created_organizations.count }}</div>
+          <div class="text-sm text-gray-600 mt-1">Organizace</div>
         </div>
       </div>
     </div>
@@ -104,47 +104,47 @@
   </div>
 
   <!-- Extended Statistics -->
-  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
 
     <!-- Task Statistics -->
     <div class="content-card">
-      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+      <h3 class="text-xl font-semibold mb-4 text-gray-900">
         ✅ Statistiky úkolů
       </h3>
 
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-        <div style="background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 1.75rem; font-weight: 700; color: #2563eb;">{{ tasks_created }}</div>
-          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Vytvořil</div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-blue-50 border-2 border-blue-600 rounded-lg p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold text-blue-700">{{ tasks_created }}</div>
+          <div class="text-xs text-gray-600 font-semibold mt-1">Vytvořil</div>
         </div>
 
-        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 1.75rem; font-weight: 700; color: #d97706;">{{ tasks_in_progress }}</div>
-          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Probíhá</div>
+        <div class="bg-amber-50 border-2 border-amber-500 rounded-lg p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold text-amber-700">{{ tasks_in_progress }}</div>
+          <div class="text-xs text-gray-600 font-semibold mt-1">Probíhá</div>
         </div>
 
-        <div style="background: #d1fae5; border: 2px solid #10b981; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 1.75rem; font-weight: 700; color: #059669;">{{ tasks_completed }}</div>
-          <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Dokončil</div>
+        <div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold text-green-700">{{ tasks_completed }}</div>
+          <div class="text-xs text-gray-600 font-semibold mt-1">Dokončil</div>
         </div>
       </div>
     </div>
 
     <!-- Error Statistics -->
     <div class="content-card">
-      <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">
+      <h3 class="text-xl font-semibold mb-4 text-gray-900">
         🐛 Statistiky chyb z testování
       </h3>
 
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-        <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #dc2626;">{{ errors_created }}</div>
-          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Celkem nalezených chyb</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-red-50 border-2 border-red-500 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-red-700">{{ errors_created }}</div>
+          <div class="text-sm text-gray-600 font-semibold mt-1">Celkem nalezených chyb</div>
         </div>
 
-        <div style="background: #fff7ed; border: 2px solid #f97316; border-radius: 8px; padding: 1rem; text-align: center;">
-          <div style="font-size: 2rem; font-weight: 700; color: #ea580c;">{{ errors_open }}</div>
-          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Otevřené chyby</div>
+        <div class="bg-orange-50 border-2 border-orange-500 rounded-lg p-4 text-center">
+          <div class="text-3xl font-bold text-orange-700">{{ errors_open }}</div>
+          <div class="text-sm text-gray-600 font-semibold mt-1">Otevřené chyby</div>
         </div>
       </div>
     </div>
@@ -152,25 +152,25 @@
   </div>
 
   <!-- Active Modules -->
-  <div class="content-card" style="margin-top: 1.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">
+  <div class="content-card mt-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold text-gray-900">
         🔧 Aktivní moduly
       </h3>
       <a href="{% url 'user_settings' %}" class="btn btn-outline btn-sm">Spravovat moduly</a>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for module in user.visible_modules.all %}
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-          <span style="font-size: 1.5rem;">{{ module.icon|default:"📦" }}</span>
-          <div style="flex: 1;">
-            <div style="font-weight: 600; color: #1e293b;">{{ module.display_name }}</div>
-            <div style="font-size: 0.75rem; color: #64748b;">{{ module.description|truncatewords:5 }}</div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center gap-3">
+          <span class="text-2xl flex-shrink-0">{{ module.icon|default:"📦" }}</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-gray-900 truncate">{{ module.display_name }}</div>
+            <div class="text-xs text-gray-600 truncate">{{ module.description|truncatewords:5 }}</div>
           </div>
         </div>
       {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #64748b;">
+        <div class="col-span-full text-center py-8 text-gray-600">
           Nemáte žádné aktivní moduly
         </div>
       {% endfor %}
@@ -191,6 +191,7 @@
     justify-content: space-between;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #f1f5f9;
+    gap: 1rem;
   }
 
   .data-row:last-child {
@@ -204,10 +205,13 @@
   .data-label {
     font-weight: 600;
     color: #475569;
+    flex-shrink: 0;
   }
 
   .data-value {
     color: #1e293b;
+    text-align: right;
+    word-break: break-word;
   }
 </style>
 {% endblock %}

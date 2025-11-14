@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}Nový zaměstnanec | FDK.cz{% endblock %}
+{% block header_title %}👨‍💼 Nový zaměstnanec{% endblock %}
+{% block header_subtitle %}Přidání nového zaměstnance do organizace{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6">
+    <a href="{% url 'list_hr_employees' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Základní údaje -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200">
+        📋 Základní údaje
+      </h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}" class="form-label">
+            Jméno <span class="required">*</span>
+          </label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}
+            <p class="form-error">{{ form.first_name.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}" class="form-label">
+            Příjmení <span class="required">*</span>
+          </label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}
+            <p class="form-error">{{ form.last_name.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.personal_id_number.id_for_label }}" class="form-label">
+          Rodné číslo
+        </label>
+        {{ form.personal_id_number }}
+        {% if form.personal_id_number.errors %}
+          <p class="form-error">{{ form.personal_id_number.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Kontaktní údaje -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200 mt-8">
+        📧 Kontaktní údaje
+      </h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.email.id_for_label }}" class="form-label">
+            Email
+          </label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <p class="form-error">{{ form.email.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.phone.id_for_label }}" class="form-label">
+            Telefon
+          </label>
+          {{ form.phone }}
+          {% if form.phone.errors %}
+            <p class="form-error">{{ form.phone.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Pracovní údaje -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200 mt-8">
+        💼 Pracovní údaje
+      </h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.organization.id_for_label }}" class="form-label">
+            Organizace <span class="required">*</span>
+          </label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="form-error">{{ form.organization.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.department.id_for_label }}" class="form-label">
+            Oddělení
+          </label>
+          {{ form.department }}
+          {% if form.department.errors %}
+            <p class="form-error">{{ form.department.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.position.id_for_label }}" class="form-label">
+            Pozice
+          </label>
+          {{ form.position }}
+          {% if form.position.errors %}
+            <p class="form-error">{{ form.position.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.employee_number.id_for_label }}" class="form-label">
+            Číslo zaměstnance
+          </label>
+          {{ form.employee_number }}
+          {% if form.employee_number.errors %}
+            <p class="form-error">{{ form.employee_number.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Pracovní poměr -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200 mt-8">
+        📝 Pracovní poměr
+      </h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.employment_type.id_for_label }}" class="form-label">
+            Typ úvazku <span class="required">*</span>
+          </label>
+          {{ form.employment_type }}
+          {% if form.employment_type.errors %}
+            <p class="form-error">{{ form.employment_type.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.status.id_for_label }}" class="form-label">
+            Status <span class="required">*</span>
+          </label>
+          {{ form.status }}
+          {% if form.status.errors %}
+            <p class="form-error">{{ form.status.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.hire_date.id_for_label }}" class="form-label">
+            Datum nástupu
+          </label>
+          {{ form.hire_date }}
+          {% if form.hire_date.errors %}
+            <p class="form-error">{{ form.hire_date.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.termination_date.id_for_label }}" class="form-label">
+            Datum ukončení
+          </label>
+          {{ form.termination_date }}
+          {% if form.termination_date.errors %}
+            <p class="form-error">{{ form.termination_date.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Mzda -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200 mt-8">
+        💰 Mzda
+      </h3>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="{{ form.salary.id_for_label }}" class="form-label">
+            Mzda
+          </label>
+          {{ form.salary }}
+          {% if form.salary.errors %}
+            <p class="form-error">{{ form.salary.errors }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group" style="max-width: 150px;">
+          <label for="{{ form.currency.id_for_label }}" class="form-label">
+            Měna
+          </label>
+          {{ form.currency }}
+          {% if form.currency.errors %}
+            <p class="form-error">{{ form.currency.errors }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Propojení s účtem -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-3 border-b border-gray-200 mt-8">
+        🔗 Propojení s účtem (volitelné)
+      </h3>
+
+      <div class="form-group">
+        <label for="{{ form.user.id_for_label }}" class="form-label">
+          Uživatelský účet
+        </label>
+        {{ form.user }}
+        <div class="form-help">Pokud má zaměstnanec přístup do systému, vyberte jeho účet</div>
+        {% if form.user.errors %}
+          <p class="form-error">{{ form.user.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Poznámky -->
+      <div class="form-group mt-6">
+        <label for="{{ form.notes.id_for_label }}" class="form-label">
+          Poznámky
+        </label>
+        {{ form.notes }}
+        {% if form.notes.errors %}
+          <p class="form-error">{{ form.notes.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200 mt-8">
+        <button type="submit" class="btn btn-primary">💾 Vytvořit zaměstnance</button>
+        <a href="{% url 'list_hr_employees' %}" class="btn btn-outline">Zrušit</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
