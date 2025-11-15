@@ -108,7 +108,8 @@ def grant_list(request):
         grants = grants.filter(
             Q(title__icontains=search_query) |
             Q(description__icontains=search_query) |
-            Q(keywords__icontains=search_query)
+            Q(program__icontains=search_query) |
+            Q(eligibility__icontains=search_query)
         )
 
     # Rozdělení dotací podle typu pro zobrazení v template
