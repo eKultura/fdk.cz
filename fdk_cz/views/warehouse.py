@@ -179,3 +179,41 @@ def list_warehouse_categories(request):
     """List all warehouse categories"""
     categories = WarehouseCategory.objects.all()
     return render(request, 'warehouse/list_categories.html', {'categories': categories})
+
+
+# WAREHOUSE ITEM DETAIL
+
+@login_required
+def item_detail(request, item_id):
+    """Detail skladové položky"""
+    item = get_object_or_404(WarehouseItem.objects.select_related('warehouse', 'category'), pk=item_id)
+
+    # Get all transactions for this item
+    transactions = item.transactions.all().order_by('-date')
+
+    return render(request, 'warehouse/item_detail.html', {
+        'item': item,
+        'transactions': transactions
+    })
+
+
+# EDIT WAREHOUSE ITEM
+
+@login_required
+def edit_warehouse_item(request, item_id):
+    """Edit warehouse item"""
+    item = get_object_or_404(WarehouseItem, pk=item_id)
+
+    if request.method == 'POST':
+        form = WarehouseItemForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f'Položka "{item.name}" byla úspěšně aktualizována.')
+            return redirect('item_detail', item_id=item.item_id)
+    else:
+        form = WarehouseItemForm(instance=item)
+
+    return render(request, 'warehouse/edit_item.html', {
+        'form': form,
+        'item': item
+    })

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ item.name }} | FDK.cz{% endblock %}
+{% block header_title %}📦 {{ item.name }}{% endblock %}
+{% block header_subtitle %}{% trans "Detail skladové položky" %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_warehouse_item' item.item_id %}" class="btn btn-primary">✏️ {% trans "Upravit položku" %}</a>
+    <a href="{% url 'store_detail' item.warehouse.warehouse_id %}" class="btn btn-outline">← {% trans "Zpět na sklad" %}</a>
+  </div>
+
+  <!-- Item Details -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">ℹ️ {% trans "Informace o položce" %}</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Název -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Název položky" %}</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ item.name }}</div>
+      </div>
+
+      <!-- Sklad -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Sklad" %}</div>
+        <a href="{% url 'store_detail' item.warehouse.warehouse_id %}" class="font-semibold text-blue-600 hover:underline">
+          {{ item.warehouse.name }}
+        </a>
+      </div>
+
+      <!-- Kategorie -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Kategorie" %}</div>
+        {% if item.category %}
+          <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+            🏷️ {{ item.category.name }}
+          </span>
+        {% else %}
+          <span style="color: #64748b;">—</span>
+        {% endif %}
+      </div>
+
+      <!-- Množství -->
+      <div style="padding: 1rem; background: #dcfce7; border-radius: 8px; border: 2px solid #16a34a;">
+        <div style="color: #15803d; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 600;">{% trans "Aktuální množství" %}</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #166534;">{{ item.quantity }}</div>
+      </div>
+
+      <!-- Vytvořeno -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Vytvořeno" %}</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ item.created|date:"d.m.Y H:i" }}</div>
+      </div>
+    </div>
+
+    <!-- Popis -->
+    {% if item.description %}
+    <div style="margin-top: 1.5rem;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Popis" %}</div>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #475569; white-space: pre-wrap;">{{ item.description }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Transactions History -->
+  <div class="content-card">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">📊 {% trans "Historie transakcí" %}</h2>
+
+    {% if transactions %}
+      <div style="overflow-x-auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>{% trans "Typ" %}</th>
+              <th class="text-center">{% trans "Množství" %}</th>
+              <th class="hidden md:table-cell">{% trans "Datum" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in transactions %}
+              <tr>
+                <td>
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; {% if transaction.transaction_type == 'IN' %}background: #d1fae5; color: #065f46;{% else %}background: #fee2e2; color: #991b1b;{% endif %}">
+                    {% if transaction.transaction_type == 'IN' %}
+                      ⬇️ {% trans "Příjem" %}
+                    {% else %}
+                      ⬆️ {% trans "Výdej" %}
+                    {% endif %}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span style="padding: 6px 16px; {% if transaction.transaction_type == 'IN' %}background: #dcfce7; color: #166534;{% else %}background: #fee2e2; color: #991b1b;{% endif %} border-radius: 12px; font-weight: 700;">
+                    {% if transaction.transaction_type == 'IN' %}+{% else %}-{% endif %}{{ transaction.quantity }}
+                  </span>
+                </td>
+                <td class="hidden md:table-cell" style="color: #64748b; font-size: 0.875rem;">
+                  {{ transaction.date|date:"d.m.Y H:i" }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+        <p style="color: #64748b;">{% trans "Zatím nebyly provedeny žádné transakce s touto položkou" %}</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
