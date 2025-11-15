@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}{{ department.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 {{ department.name }}{% endblock %}
+{% block header_subtitle %}Detail oddělení{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_departments' %}" class="btn btn-outline">← Seznam oddělení</a>
+    <a href="{% url 'hr_dashboard' %}" class="btn btn-outline">📊 Dashboard</a>
+    <a href="{% url 'edit_department' department.department_id %}" class="btn btn-secondary">✏️ Upravit</a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Info -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Basic Information -->
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📋 Základní informace</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Název oddělení</label>
+            <p class="text-gray-900 mt-1">{{ department.name }}</p>
+          </div>
+
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Organizace</label>
+            <p class="text-gray-900 mt-1">
+              <a href="{% url 'organization_detail' department.organization.organization_id %}" class="text-blue-600 hover:underline">
+                {{ department.organization.name }}
+              </a>
+            </p>
+          </div>
+
+          {% if department.manager %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Manažer oddělení</label>
+            <p class="text-gray-900 mt-1">
+              {{ department.manager.get_full_name|default:department.manager.username }}
+            </p>
+          </div>
+          {% endif %}
+
+          {% if department.parent_department %}
+          <div>
+            <label class="text-sm font-semibold text-gray-600">Nadřazené oddělení</label>
+            <p class="text-gray-900 mt-1">
+              <a href="{% url 'detail_department' department.parent_department.department_id %}" class="text-blue-600 hover:underline">
+                {{ department.parent_department.name }}
+              </a>
+            </p>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if department.description %}
+        <div class="mt-4">
+          <label class="text-sm font-semibold text-gray-600">Popis</label>
+          <p class="text-gray-700 mt-2 whitespace-pre-wrap">{{ department.description }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Employees in Department -->
+      <div class="content-card">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-800">👥 Zaměstnanci oddělení</h3>
+          <a href="{% url 'create_employee' %}" class="btn btn-primary btn-sm">+ Nový zaměstnanec</a>
+        </div>
+
+        {% if employees %}
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Jméno</th>
+                <th class="hidden md:table-cell">Email</th>
+                <th class="hidden md:table-cell">Pozice</th>
+                <th>Status</th>
+                <th class="text-right">Akce</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for employee in employees %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_employee' employee.employee_id %}" class="text-blue-600 hover:underline font-medium">
+                    {{ employee.first_name }} {{ employee.last_name }}
+                  </a>
+                  {% if employee.user %}
+                  <span class="ml-2 text-xs text-gray-500">🔗 {{ employee.user.username }}</span>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell">{{ employee.email|default:"-" }}</td>
+                <td class="hidden md:table-cell">{{ employee.position|default:"-" }}</td>
+                <td>
+                  <span class="px-2 py-1 rounded text-xs font-semibold
+                    {% if employee.status == 'active' %}bg-green-100 text-green-700
+                    {% elif employee.status == 'on_leave' %}bg-yellow-100 text-yellow-800
+                    {% elif employee.status == 'suspended' %}bg-orange-100 text-orange-700
+                    {% elif employee.status == 'terminated' %}bg-red-100 text-red-700
+                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                    {{ employee.get_status_display }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <a href="{% url 'detail_employee' employee.employee_id %}" class="text-blue-600 hover:underline text-sm">Detail</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+          <div class="text-4xl mb-2">👥</div>
+          <p>V tomto oddělení zatím nejsou žádní zaměstnanci</p>
+          <p class="text-sm mt-2">
+            <a href="{% url 'create_employee' %}" class="text-blue-600 hover:underline">Přidat prvního zaměstnance</a>
+          </p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sub-departments -->
+      {% if department.sub_departments.all %}
+      <div class="content-card">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📂 Podřízená oddělení</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {% for sub_dept in department.sub_departments.all %}
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <a href="{% url 'detail_department' sub_dept.department_id %}" class="font-semibold text-gray-800 hover:text-blue-600 block mb-2">
+              🏢 {{ sub_dept.name }}
+            </a>
+            {% if sub_dept.manager %}
+            <p class="text-sm text-gray-600">
+              Manažer: {{ sub_dept.manager.get_full_name|default:sub_dept.manager.username }}
+            </p>
+            {% endif %}
+            <p class="text-xs text-gray-500 mt-1">
+              Zaměstnanců: {{ sub_dept.employees.count }}
+            </p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Quick Stats -->
+      <div class="content-card">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Přehled</h3>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div>
+              <p class="text-xs text-blue-600 font-semibold uppercase">Zaměstnanců</p>
+              <p class="text-2xl font-bold text-blue-700">{{ employees.count }}</p>
+            </div>
+            <div class="text-3xl">👥</div>
+          </div>
+
+          {% if department.sub_departments.all %}
+          <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+            <div>
+              <p class="text-xs text-purple-600 font-semibold uppercase">Podřízených oddělení</p>
+              <p class="text-2xl font-bold text-purple-700">{{ department.sub_departments.count }}</p>
+            </div>
+            <div class="text-3xl">📂</div>
+          </div>
+          {% endif %}
+
+          {% if department.manager %}
+          <div class="p-3 bg-green-50 rounded-lg">
+            <p class="text-xs text-green-600 font-semibold uppercase mb-2">Manažer</p>
+            <p class="text-sm font-bold text-green-700">
+              {{ department.manager.get_full_name|default:department.manager.username }}
+            </p>
+            {% if department.manager.email %}
+            <p class="text-xs text-green-600 mt-1">
+              <a href="mailto:{{ department.manager.email }}" class="hover:underline">{{ department.manager.email }}</a>
+            </p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div class="content-card">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">ℹ️ Metadata</h3>
+
+        <div class="space-y-3 text-sm">
+          <div>
+            <label class="text-gray-600 font-semibold">Vytvořeno</label>
+            <p class="text-gray-900 mt-1">{{ department.created_at|date:"d.m.Y H:i" }}</p>
+          </div>
+
+          <div>
+            <label class="text-gray-600 font-semibold">Aktualizováno</label>
+            <p class="text-gray-900 mt-1">{{ department.updated_at|date:"d.m.Y H:i" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
