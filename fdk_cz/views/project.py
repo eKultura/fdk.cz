@@ -190,13 +190,13 @@ def edit_project(request, project_id):
 def index_project(request):
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
-    # Vyhledáme projekty, kde je aktuální uživatel vlastníkem
+    # Vyhledáme projekty, kde je aktuální uživatel vlastníkem NEBO členem
     # Vyfiltrujeme projekty, které mají nastavený end_date (ukončené projekty)
     user_projects = Project.objects.filter(
-        project_users__user=request.user
+        Q(project_users__user=request.user) | Q(owner=request.user)  # Člen nebo vlastník
     ).filter(
         Q(end_date__isnull=True)  # Projekty bez end_date
-    ).distinct()
+    ).distinct().order_by('-created')
     assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
 
     return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})

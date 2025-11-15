@@ -134,9 +134,9 @@
       {% for document in documents %}
       <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <div style="font-weight: 600; color: #1e293b;">{{ document.title }}</div>
+          <div style="font-weight: 600; color: #1e293b;">{{ document.title|safe }}</div>
           {% if document.description %}
-          <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ document.description }}</div>
+          <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ document.description|safe }}</div>
           {% endif %}
           <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
             Nahráno {{ document.uploaded_at|date:"d.m.Y" }}

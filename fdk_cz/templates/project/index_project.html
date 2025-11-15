@@ -18,32 +18,48 @@
 
       {% if user_projects %}
       <div style="overflow-x:auto;">
-        <table class="data-table" style="width:100%;border-collapse:collapse;">
-          <thead style="background:#f9fafb;">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold w-1/6">ID</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Název projektu" %}</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Popis" %}</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Datum vytvoření" %}</th>
-              <th class="px-4 py-2 text-right text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
+              <th>{% trans "Název" %}</th>
+              <th class="hidden md:table-cell">{% trans "Organizace" %}</th>
+              <th class="hidden lg:table-cell">{% trans "Vlastník" %}</th>
+              <th class="hidden lg:table-cell">{% trans "Vytvořeno" %}</th>
             </tr>
           </thead>
           <tbody>
             {% for project in user_projects %}
-            <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
-              <td class="px-4 py-2 text-gray-700">{{ project.project_id }}</td>
-              <td class="px-4 py-2 text-gray-800 font-medium">
-                <a href="{% url 'detail_project' project.project_id %}" class="text-blue-600 hover:underline">
-                  {{ project.name }}
+            <tr>
+              <td>
+                <a href="{% url 'detail_project' project.project_id %}" class="font-semibold text-blue-600 hover:underline">
+                  {{ project.name|safe }}
                 </a>
+                {% if project.description %}
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ project.description|truncatewords:10|safe }}</div>
+                {% endif %}
               </td>
-              <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ project.description|default:"–" }}</td>
-              <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ project.created|date:"d.m.Y" }}</td>
-              <td class="px-4 py-2 text-right">
-                <div class="data-table-actions">
-                  <a href="{% url 'detail_project' project.project_id %}">👁️ {% trans "Detail" %}</a>
-                  <a href="{% url 'edit_project' project.project_id %}">✏️ {% trans "Upravit" %}</a>
-                </div>
+              <td class="hidden md:table-cell text-gray-600">
+                {% if project.organization %}
+                  <a href="{% url 'organization_detail' project.organization.organization_id %}" class="text-blue-600 hover:underline">
+                    🏢 {{ project.organization.name }}
+                  </a>
+                {% else %}
+                  <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                    👤 Osobní
+                  </span>
+                {% endif %}
+              </td>
+              <td class="hidden lg:table-cell text-gray-600">
+                {% if project.owner %}
+                  <span style="padding: 4px 12px; background: #e0e7ff; color: #3730a3; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                    👤 {{ project.owner.get_full_name|default:project.owner.username }}
+                  </span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="hidden lg:table-cell" style="color: #64748b; font-size: 0.875rem;">
+                {{ project.created|date:"d.m.Y" }}
               </td>
             </tr>
             {% endfor %}

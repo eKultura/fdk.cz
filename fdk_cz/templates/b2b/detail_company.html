@@ -216,9 +216,9 @@
           {% for document in documents %}
           <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
             <div class="flex-1">
-              <p class="font-medium text-gray-900">{{ document.title }}</p>
+              <p class="font-medium text-gray-900">{{ document.title|safe }}</p>
               {% if document.description %}
-              <p class="text-sm text-gray-600 mt-1">{{ document.description|truncatewords:20 }}</p>
+              <p class="text-sm text-gray-600 mt-1">{{ document.description|truncatewords:20|safe }}</p>
               {% endif %}
               <p class="text-xs text-gray-500 mt-1">
                 {{ document.document_type|default:"Dokument" }} •
