@@ -100,6 +100,11 @@ from fdk_cz.views.asset import (
     edit_category as edit_asset_category, delete_category as delete_asset_category
 )
 
+# Import DMS views
+from fdk_cz.views.dms import (
+    dms_public, dms_dashboard, dms_create_document
+)
+
 # Import Module landing pages
 from fdk_cz.views.modules import (
     project_management_landing, grants_landing, accounting_landing, law_ai_landing
@@ -428,6 +433,10 @@ urlpatterns = (
     path('majetek/kategorie/<int:category_id>/upravit/', edit_asset_category, name='edit_asset_category'),
     path('majetek/kategorie/<int:category_id>/smazat/', delete_asset_category, name='delete_asset_category'),
 
+    # DMS - Document Management System
+    path('dms/', dms_public, name='dms_public'),
+    path('dms/dashboard/', dms_dashboard, name='dms_dashboard'),
+    path('dms/dokument/novy/', dms_create_document, name='dms_create_document'),
 
     # Help & Documentation System
     path('dokumentace/', help_index, name='help_index'),

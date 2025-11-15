@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}{{ asset.name }} | FDK.cz{% endblock %}
+{% block header_title %}💻 {{ asset.name }}{% endblock %}
+{% block header_subtitle %}{{ asset.asset_tag }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_it_assets' %}" class="btn btn-outline">← Seznam aktiv</a>
+    <a href="{% url 'edit_it_asset' asset.asset_id %}" class="btn btn-secondary">✏️ Upravit</a>
+    <a href="{% url 'delete_it_asset' asset.asset_id %}" class="btn btn-danger">🗑️ Smazat</a>
+  </div>
+
+  <!-- Základní informace -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Základní informace</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Název</label>
+        <p class="text-lg font-semibold text-gray-900">{{ asset.name }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Asset Tag</label>
+        <p class="text-gray-900 font-mono">{{ asset.asset_tag }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Typ zařízení</label>
+        <p>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+            {{ asset.get_asset_type_display }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Status</label>
+        <p>
+          <span class="px-3 py-1 rounded-full text-sm font-medium
+            {% if asset.status == 'active' %}bg-green-100 text-green-700
+            {% elif asset.status == 'in_repair' %}bg-orange-100 text-orange-700
+            {% elif asset.status == 'stored' %}bg-gray-100 text-gray-700
+            {% else %}bg-red-100 text-red-700{% endif %}">
+            {{ asset.get_status_display }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Organizace</label>
+        <p class="text-gray-900">{{ asset.organization.name|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Přiřazeno</label>
+        <p class="text-gray-900">
+          {% if asset.assigned_to %}
+            <a href="{% url 'public_profile' asset.assigned_to.username %}" class="text-blue-600 hover:text-blue-900">
+              {{ asset.assigned_to.get_full_name|default:asset.assigned_to.username }}
+            </a>
+          {% else %}
+            —
+          {% endif %}
+        </p>
+      </div>
+
+      {% if asset.description %}
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-600 mb-1">Popis</label>
+        <p class="text-gray-900 whitespace-pre-wrap">{{ asset.description }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Technické údaje -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">🔧 Technické údaje</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Výrobce</label>
+        <p class="text-gray-900">{{ asset.manufacturer|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Model</label>
+        <p class="text-gray-900">{{ asset.model|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Sériové číslo</label>
+        <p class="text-gray-900 font-mono">{{ asset.serial_number|default:"—" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finanční údaje -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">💰 Finanční údaje a životní cyklus</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Datum nákupu</label>
+        <p class="text-gray-900">{{ asset.purchase_date|date:"d.m.Y"|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Pořizovací cena</label>
+        <p class="text-gray-900">
+          {% if asset.purchase_price %}
+            {{ asset.purchase_price|floatformat:2 }} Kč
+          {% else %}
+            —
+          {% endif %}
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Konec záruky</label>
+        <p class="text-gray-900">
+          {{ asset.warranty_expiry|date:"d.m.Y"|default:"—" }}
+          {% if asset.warranty_expiry %}
+            {% now "Y-m-d" as today %}
+            {% if asset.warranty_expiry|date:"Y-m-d" < today %}
+              <span class="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Propadlá</span>
+            {% else %}
+              <span class="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Aktivní</span>
+            {% endif %}
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incidenty spojené s tímto aktivem -->
+  {% if incidents %}
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">🚨 Incidenty</h2>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Číslo incidentu
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Název
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Priorita
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Nahlášeno
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Akce
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for incident in incidents %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ incident.incident_number }}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-900">
+              {{ incident.title }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <span class="px-2 py-1 rounded-full text-xs font-medium
+                {% if incident.priority == 'critical' %}bg-red-100 text-red-700
+                {% elif incident.priority == 'high' %}bg-orange-100 text-orange-700
+                {% elif incident.priority == 'medium' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ incident.get_priority_display }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <span class="px-2 py-1 rounded-full text-xs font-medium
+                {% if incident.status == 'closed' %}bg-gray-100 text-gray-700
+                {% elif incident.status == 'resolved' %}bg-green-100 text-green-700
+                {% elif incident.status == 'in_progress' %}bg-blue-100 text-blue-700
+                {% elif incident.status == 'assigned' %}bg-purple-100 text-purple-700
+                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                {{ incident.get_status_display }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ incident.reported_at|date:"d.m.Y H:i" }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <a href="{% url 'detail_it_incident' incident.incident_id %}" class="text-blue-600 hover:text-blue-900">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Metadata -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">⏱️ Metadata</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Vytvořeno</label>
+        <p class="text-sm text-gray-900">{{ asset.created_at|date:"d.m.Y H:i" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Aktualizováno</label>
+        <p class="text-sm text-gray-900">{{ asset.updated_at|date:"d.m.Y H:i" }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

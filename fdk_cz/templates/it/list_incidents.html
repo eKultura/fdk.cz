@@ -14,42 +14,67 @@
 
   <div class="content-card">
     {% if incidents %}
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Číslo</th>
-            <th>Název</th>
-            <th>Organizace</th>
-            <th>Priorita</th>
-            <th>Status</th>
-            <th>Nahlášeno</th>
-            <th style="text-align: center;">Akce</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for incident in incidents %}
-          <tr>
-            <td><strong>{{ incident.incident_number }}</strong></td>
-            <td>{{ incident.title }}</td>
-            <td>{{ incident.organization.name|default:"—" }}</td>
-            <td>
-              <span class="badge {% if incident.priority == 'critical' %}badge-danger{% elif incident.priority == 'high' %}badge-warning{% else %}badge-info{% endif %}">
-                {{ incident.get_priority_display|default:incident.priority }}
-              </span>
-            </td>
-            <td>
-              <span class="badge {% if incident.status == 'resolved' %}badge-success{% elif incident.status == 'in_progress' %}badge-warning{% else %}badge-secondary{% endif %}">
-                {{ incident.get_status_display|default:incident.status }}
-              </span>
-            </td>
-            <td>{{ incident.created_at|date:"d.m.Y H:i"|default:"—" }}</td>
-            <td style="text-align: center;">
-              <a href="{% url 'detail_it_incident' incident.incident_id %}" class="btn btn-sm btn-outline">Detail</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Číslo incidentu</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Název</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizace</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priorita</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nahlásil</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nahlášeno</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Akce</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for incident in incidents %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold text-gray-900">
+                {{ incident.incident_number }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">{{ incident.title }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ incident.organization.name|default:"—" }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-3 py-1 rounded-full text-xs font-medium
+                  {% if incident.priority == 'critical' %}bg-red-600 text-white
+                  {% elif incident.priority == 'high' %}bg-orange-500 text-white
+                  {% elif incident.priority == 'medium' %}bg-yellow-400 text-gray-900
+                  {% else %}bg-blue-100 text-blue-700{% endif %}">
+                  {{ incident.get_priority_display }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-3 py-1 rounded-full text-xs font-medium
+                  {% if incident.status == 'closed' %}bg-gray-100 text-gray-700
+                  {% elif incident.status == 'resolved' %}bg-green-100 text-green-700
+                  {% elif incident.status == 'in_progress' %}bg-blue-100 text-blue-700
+                  {% elif incident.status == 'assigned' %}bg-purple-100 text-purple-700
+                  {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                  {{ incident.get_status_display }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {% if incident.reported_by %}
+                  <a href="{% url 'public_profile' incident.reported_by.username %}" class="text-blue-600 hover:text-blue-900">
+                    {{ incident.reported_by.get_full_name|default:incident.reported_by.username }}
+                  </a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ incident.reported_at|date:"d.m.Y H:i" }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <a href="{% url 'detail_it_incident' incident.incident_id %}" class="text-blue-600 hover:text-blue-900">Detail</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
       <div style="text-align: center; padding: 3rem;">
         <div style="font-size: 4rem; margin-bottom: 1rem;">🚨</div>
