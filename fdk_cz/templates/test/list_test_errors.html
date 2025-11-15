@@ -69,15 +69,9 @@
               {{ error.date_created|date:"d.m.Y" }}
             </td>
             <td class="text-right">
-              <div class="flex gap-2 justify-end">
-                <a href="{% url 'detail_test_error' error.test_error_id %}"
-                   class="btn btn-outline btn-sm">
-                  👁️ {% trans "Detail" %}
-                </a>
-                <a href="{% url 'edit_test_error' error.test_error_id %}"
-                   class="btn btn-secondary btn-sm">
-                  ✏️ {% trans "Upravit" %}
-                </a>
+              <div class="data-table-actions">
+                <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ {% trans "Detail" %}</a>
+                <a href="{% url 'edit_test_error' error.test_error_id %}">✏️ {% trans "Upravit" %}</a>
               </div>
             </td>
           </tr>

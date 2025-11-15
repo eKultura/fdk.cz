@@ -6,31 +6,6 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto">
-  <!-- Actions and Filter -->
-  <div class="content-card mb-6">
-    <div class="flex flex-col md:flex-row justify-between gap-4">
-      <div class="flex gap-3">
-        <a href="{% url 'create_contact_account' %}" class="btn btn-primary">+ Nový kontakt</a>
-      </div>
-
-      <!-- Filtrování kontaktů podle projektu -->
-      <form method="GET" class="flex gap-2 items-center">
-        <label for="filter" class="font-medium text-gray-700 text-sm">Filtrovat:</label>
-        <select name="project_id" id="filter" onchange="this.form.submit()" class="form-control" style="min-width: 200px;">
-          <option value="">Všechny projekty</option>
-          {% for project in projects %}
-            <option value="{{ project.project_id }}" {% if project_id == project.project_id|stringformat:"s" %}selected{% endif %}>
-              {{ project.name }}
-            </option>
-          {% endfor %}
-        </select>
-      </form>
-    </div>
-  </div>
-
-  <!-- Contacts Table -->
-  <div class="content-card">
-    <h3 class="text-xl font-semibold mb-4">👥 Seznam kontaktů</h3>
   <!-- Contacts Grid -->
   <div class="content-card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">

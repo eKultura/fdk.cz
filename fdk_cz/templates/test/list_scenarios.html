@@ -64,7 +64,7 @@
               <th>Priorita</th>
               <th>Status</th>
               <th>Vytvořeno</th>
-              <th style="text-align: center;">Akce</th>
+              <th class="text-right">Akce</th>
             </tr>
           </thead>
           <tbody>
@@ -124,10 +124,10 @@
                     </div>
                   {% endif %}
                 </td>
-                <td style="text-align: center;">
-                  <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                    <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="btn btn-sm btn-outline">👁️</a>
-                    <a href="{% url 'edit_test_scenario' scenario.scenario_id %}" class="btn btn-sm btn-outline">✏️</a>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_test_scenario' scenario.scenario_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_test_scenario' scenario.scenario_id %}">✏️ Upravit</a>
                   </div>
                 </td>
               </tr>

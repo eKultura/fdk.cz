@@ -4,12 +4,14 @@ from fdk_cz.models import Warehouse, WarehouseItem, WarehouseTransaction, Wareho
 class transaction_form(forms.ModelForm):
     class Meta:
         model = WarehouseTransaction
-        fields = ['transaction_type', 'quantity']
+        fields = ['item', 'transaction_type', 'quantity']
         labels = {
+            'item': 'Položka',
             'transaction_type': 'Typ transakce',
             'quantity': 'Množství',
         }
         widgets = {
+            'item': forms.Select(attrs={'class': 'form-control'}),
             'transaction_type': forms.Select(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
@@ -18,8 +20,15 @@ class transaction_form(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        warehouse = kwargs.pop('warehouse', None)
         super().__init__(*args, **kwargs)
+        self.fields['item'].empty_label = "Vyberte položku"
         self.fields['transaction_type'].empty_label = "Vyberte typ transakce"
+
+        # Filter items to only those in the current warehouse
+        if warehouse:
+            from fdk_cz.models import WarehouseItem
+            self.fields['item'].queryset = WarehouseItem.objects.filter(warehouse=warehouse)
 
 
 class WarehouseForm(forms.ModelForm):

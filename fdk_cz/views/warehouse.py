@@ -54,14 +54,13 @@ def store_transactions(request, store_id):
 def create_transaction(request, store_id):
     store = get_object_or_404(Warehouse, pk=store_id)
     if request.method == 'POST':
-        form = transaction_form(request.POST)
+        form = transaction_form(request.POST, warehouse=store)
         if form.is_valid():
-            transaction = form.save(commit=False)
-            transaction.store = store
-            transaction.save()
+            transaction = form.save()
+            messages.success(request, f'Transakce byla úspěšně vytvořena.')
             return redirect('store_transactions', store_id=store.warehouse_id)
     else:
-        form = transaction_form()
+        form = transaction_form(warehouse=store)
     return render(request, 'warehouse/create_transaction.html', {'form': form, 'store': store})
 
 @login_required
