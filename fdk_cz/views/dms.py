@@ -68,9 +68,9 @@ def dms_dashboard(request):
         Q(created_by=request.user) | Q(members=request.user)
     ).distinct()
 
-    # Získání projektů kde je uživatel členem
+    # Získání projektů kde je uživatel členem nebo vlastníkem
     user_projects = Project.objects.filter(
-        Q(organization__in=user_orgs) | Q(members=request.user)
+        Q(organization__in=user_orgs) | Q(owner=request.user) | Q(project_users__user=request.user)
     ).distinct()
 
     # Získání všech dokumentů z těchto projektů
@@ -125,7 +125,7 @@ def dms_create_document(request):
     ).distinct()
 
     user_projects = Project.objects.filter(
-        Q(organization__in=user_orgs) | Q(members=request.user)
+        Q(organization__in=user_orgs) | Q(owner=request.user) | Q(project_users__user=request.user)
     ).distinct()
 
     if request.method == 'POST':

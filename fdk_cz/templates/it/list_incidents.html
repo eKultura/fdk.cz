@@ -57,9 +57,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {% if incident.reported_by %}
-                  <a href="{% url 'public_profile' incident.reported_by.username %}" class="text-blue-600 hover:text-blue-900">
-                    {{ incident.reported_by.get_full_name|default:incident.reported_by.username }}
-                  </a>
+                  {{ incident.reported_by.get_full_name|default:incident.reported_by.username }}
                 {% else %}
                   —
                 {% endif %}
