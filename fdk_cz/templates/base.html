@@ -17,6 +17,7 @@
   </style>
 
   {% block extra_head %}{% endblock %}
+  {% block meta %}{% endblock %}
 </head>
 
 <body>
@@ -66,6 +67,9 @@
           </a>
           <a href="{% url 'module_law_ai' %}" class="nav-item" title="Zjistit více o AI Právníkovi">
             <span class="nav-icon">&#9889;</span> AI Právník
+          </a>
+          <a href="{% url 'dms_public' %}" class="nav-item" title="Zjistit více o DMS">
+            <span class="nav-icon">&#128193;</span> DMS
           </a>
         </div>
 
@@ -179,6 +183,10 @@
             {% endif %}
           {% endif %}
         {% endfor %}
+        {% if not visible_modules|length or not visible_modules.0.name == 'lists' and not visible_modules.0.name == 'warehouse' and not visible_modules.0.name == 'law_ai' %}
+          <div class="nav-section">
+            <div class="nav-section-title">Nástroje</div>
+        {% endif %}
         {% for module in visible_modules %}
           {% if module.name == 'lists' %}
             <a href="{% url 'index_list' %}" class="nav-item"><span class="nav-icon">&#128221;</span> Seznamy</a>
@@ -188,6 +196,14 @@
             <a href="{% url 'pravo_ai' %}" class="nav-item"><span class="nav-icon">&#9889;</span> AI Právník</a>
           {% endif %}
         {% endfor %}
+
+        <!-- DMS - Document Management System (vždy viditelné) -->
+        {% if user.is_authenticated %}
+          <a href="{% url 'dms_dashboard' %}" class="nav-item"><span class="nav-icon">&#128193;</span> DMS</a>
+        {% else %}
+          <a href="{% url 'dms_public' %}" class="nav-item"><span class="nav-icon">&#128193;</span> DMS</a>
+        {% endif %}
+
         {% for module in visible_modules %}
           {% if module.name == 'lists' or module.name == 'warehouse' or module.name == 'law_ai' %}
             {% if forloop.last %}</div>{% endif %}
