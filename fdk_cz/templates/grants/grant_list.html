@@ -192,28 +192,31 @@
             {% for grant in active_dotace|slice:":10" %}
             <tr>
               <td>
-                <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                <a href="{% url 'grant_detail' grant.call_id %}" class="font-semibold text-blue-600 hover:underline">
                   {{ grant.title|safe|truncatechars:50 }}
                 </a>
-                <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                <div class="text-xs text-gray-500 mt-1">
                   {{ grant.type|capfirst }}
                 </div>
               </td>
-              <td class="hidden md:table-cell" style="color: #6b7280;">
+              <td class="hidden md:table-cell text-gray-600">
                 {{ grant.provider }}
               </td>
               <td>
-                <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %}; font-weight: 500;">
+                <span class="{% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}text-red-600{% elif grant.end_date|timeuntil|slice:':2' < '7' %}text-orange-600{% else %}text-green-600{% endif %} font-semibold">
                   {{ grant.end_date|date:"d.m.Y" }}
                 </span>
-                <div style="font-size: 0.75rem; color: #6b7280;">
+                <div class="text-xs text-gray-500">
                   {{ grant.end_date|timeuntil }}
                 </div>
               </td>
               <td class="text-right">
-                <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
-                  Podat žádost
-                </a>
+                <div class="data-table-actions">
+                  <a href="{% url 'grant_detail' grant.call_id %}">👁️ Detail</a>
+                  <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-semibold">
+                    Podat žádost
+                  </a>
+                </div>
               </td>
             </tr>
             {% endfor %}
@@ -247,28 +250,31 @@
             {% for grant in active_granty|slice:":10" %}
             <tr>
               <td>
-                <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                <a href="{% url 'grant_detail' grant.call_id %}" class="font-semibold text-blue-600 hover:underline">
                   {{ grant.title|safe|truncatechars:50 }}
                 </a>
-                <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                <div class="text-xs text-gray-500 mt-1">
                   {{ grant.type|capfirst }}
                 </div>
               </td>
-              <td class="hidden md:table-cell" style="color: #6b7280;">
+              <td class="hidden md:table-cell text-gray-600">
                 {{ grant.provider }}
               </td>
               <td>
-                <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %}; font-weight: 500;">
+                <span class="{% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}text-red-600{% elif grant.end_date|timeuntil|slice:':2' < '7' %}text-orange-600{% else %}text-green-600{% endif %} font-semibold">
                   {{ grant.end_date|date:"d.m.Y" }}
                 </span>
-                <div style="font-size: 0.75rem; color: #6b7280;">
+                <div class="text-xs text-gray-500">
                   {{ grant.end_date|timeuntil }}
                 </div>
               </td>
               <td class="text-right">
-                <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
-                  Podat žádost
-                </a>
+                <div class="data-table-actions">
+                  <a href="{% url 'grant_detail' grant.call_id %}">👁️ Detail</a>
+                  <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-semibold">
+                    Podat žádost
+                  </a>
+                </div>
               </td>
             </tr>
             {% endfor %}
@@ -309,14 +315,14 @@
           {% for app in user_applications|slice:":10" %}
           <tr>
             <td>
-              <a href="{% url 'grant_detail' app.grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+              <a href="{% url 'grant_detail' app.grant.call_id %}" class="font-semibold text-blue-600 hover:underline">
                 {{ app.grant.title|safe|truncatechars:40 }}
               </a>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">
+            <td class="hidden md:table-cell text-gray-600">
               {{ app.project.name|default:"--" }}
             </td>
-            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">
+            <td class="hidden lg:table-cell text-right font-semibold text-gray-700">
               {% if app.requested_amount %}
                 {{ app.requested_amount|floatformat:0 }} Kč
               {% else %}
@@ -324,7 +330,7 @@
               {% endif %}
             </td>
             <td>
-              <span class="px-2 py-1 rounded text-xs font-medium
+              <span class="px-2 py-1 rounded text-xs font-semibold
                            {% if app.status == 'approved' %}bg-green-100 text-green-700
                            {% elif app.status == 'rejected' %}bg-red-100 text-red-700
                            {% elif app.status == 'submitted' %}bg-blue-100 text-blue-700
@@ -336,7 +342,7 @@
                 {% else %}Koncept{% endif %}
               </span>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">
+            <td class="hidden md:table-cell text-gray-600">
               {{ app.submission_date|date:"d.m.Y"|default:"--" }}
             </td>
           </tr>
@@ -401,70 +407,70 @@
         <tbody>
           <tr>
             <td>
-              <span style="color: #3b82f6; font-weight: 500;">Podpora kulturních projektů 2025</span>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+              <span class="font-semibold text-blue-600">Podpora kulturních projektů 2025</span>
+              <div class="text-xs text-gray-500 mt-1">
                 Financování kulturních a uměleckých aktivit
               </div>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">MKČR</td>
+            <td class="hidden md:table-cell text-gray-600">MKČR</td>
             <td class="hidden lg:table-cell">
-              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold">
                 Dotace
               </span>
             </td>
-            <td style="color: #059669; font-weight: 500;">31.3.2025</td>
-            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">500 000 Kč</td>
+            <td class="text-green-600 font-semibold">31.3.2025</td>
+            <td class="hidden lg:table-cell text-right font-semibold text-gray-700">500 000 Kč</td>
           </tr>
 
           <tr>
             <td>
-              <span style="color: #3b82f6; font-weight: 500;">Horizont Evropa - Excellent Science</span>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+              <span class="font-semibold text-blue-600">Horizont Evropa - Excellent Science</span>
+              <div class="text-xs text-gray-500 mt-1">
                 Evropský program pro výzkum a inovace
               </div>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">Evropská komise</td>
+            <td class="hidden md:table-cell text-gray-600">Evropská komise</td>
             <td class="hidden lg:table-cell">
-              <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">
                 Grant
               </span>
             </td>
-            <td style="color: #f59e0b; font-weight: 500;">15.4.2025</td>
-            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">2 mil. EUR</td>
+            <td class="text-orange-600 font-semibold">15.4.2025</td>
+            <td class="hidden lg:table-cell text-right font-semibold text-gray-700">2 mil. EUR</td>
           </tr>
 
           <tr>
             <td>
-              <span style="color: #3b82f6; font-weight: 500;">Podpora MSP v digitalizaci</span>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+              <span class="font-semibold text-blue-600">Podpora MSP v digitalizaci</span>
+              <div class="text-xs text-gray-500 mt-1">
                 Digitální transformace malých podniků
               </div>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">MPO ČR</td>
+            <td class="hidden md:table-cell text-gray-600">MPO ČR</td>
             <td class="hidden lg:table-cell">
-              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold">
                 Dotace
               </span>
             </td>
-            <td style="color: #059669; font-weight: 500;">30.6.2025</td>
-            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">1 mil. Kč</td>
+            <td class="text-green-600 font-semibold">30.6.2025</td>
+            <td class="hidden lg:table-cell text-right font-semibold text-gray-700">1 mil. Kč</td>
           </tr>
 
           <tr>
             <td>
-              <span style="color: #3b82f6; font-weight: 500;">Stipendia pro doktorandy</span>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+              <span class="font-semibold text-blue-600">Stipendia pro doktorandy</span>
+              <div class="text-xs text-gray-500 mt-1">
                 Podpora mladých výzkumníků
               </div>
             </td>
-            <td class="hidden md:table-cell" style="color: #6b7280;">GAČR</td>
+            <td class="hidden md:table-cell text-gray-600">GAČR</td>
             <td class="hidden lg:table-cell">
-              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
+              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">
                 Stipendium
               </span>
             </td>
-            <td style="color: #dc2626; font-weight: 500;">28.2.2025</td>
-            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">180 000 Kč/rok</td>
+            <td class="text-red-600 font-semibold">28.2.2025</td>
+            <td class="hidden lg:table-cell text-right font-semibold text-gray-700">180 000 Kč/rok</td>
           </tr>
         </tbody>
       </table>
