@@ -14,50 +14,53 @@
 
   <div class="content-card">
     {% if risks %}
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Název rizika</th>
-            <th>Kategorie</th>
-            <th style="text-align: center;">Závažnost</th>
-            <th style="text-align: center;">Pravděpodobnost</th>
-            <th style="text-align: center;">Akce</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for risk in risks %}
-          <tr>
-            <td>
-              <a href="{% url 'detail_risk' risk.risk_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
-                {{ risk.title }}
-              </a>
-              {% if risk.project %}
-              <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
-                📁 {{ risk.project.name }}
-              </div>
-              {% endif %}
-            </td>
-            <td>{{ risk.get_category_display }}</td>
-            <td style="text-align: center;">
-              <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.impact >= 4 %}#dc2626{% elif risk.impact >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
-                {{ risk.get_impact_display }}
-              </span>
-            </td>
-            <td style="text-align: center;">
-              <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.probability >= 4 %}#dc2626{% elif risk.probability >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
-                {{ risk.get_probability_display }}
-              </span>
-            </td>
-            <td style="text-align: center;">
-              <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                <a href="{% url 'detail_risk' risk.risk_id %}" class="btn btn-sm btn-outline">👁️ Detail</a>
-                <a href="{% url 'edit_risk' risk.risk_id %}" class="btn btn-sm btn-outline">✏️</a>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <!-- POVINNÝ overflow wrapper podle metodiky sekce 3.5 -->
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název rizika</th>
+              <th class="hidden md:table-cell">Kategorie</th>
+              <th class="hidden lg:table-cell text-center">Závažnost</th>
+              <th class="hidden lg:table-cell text-center">Pravděpodobnost</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for risk in risks %}
+            <tr>
+              <td>
+                <a href="{% url 'detail_risk' risk.risk_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                  {{ risk.title|safe }}
+                </a>
+                {% if risk.project %}
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                  📁 {{ risk.project.name }}
+                </div>
+                {% endif %}
+              </td>
+              <td class="hidden md:table-cell">{{ risk.get_category_display }}</td>
+              <td class="hidden lg:table-cell text-center">
+                <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.impact >= 4 %}#dc2626{% elif risk.impact >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
+                  {{ risk.get_impact_display }}
+                </span>
+              </td>
+              <td class="hidden lg:table-cell text-center">
+                <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.probability >= 4 %}#dc2626{% elif risk.probability >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
+                  {{ risk.get_probability_display }}
+                </span>
+              </td>
+              <td class="text-right">
+                <div class="data-table-actions">
+                  <a href="{% url 'detail_risk' risk.risk_id %}">👁️ Detail</a>
+                  <a href="{% url 'edit_risk' risk.risk_id %}">✏️ Upravit</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
       <div style="text-align: center; padding: 3rem;">
         <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>

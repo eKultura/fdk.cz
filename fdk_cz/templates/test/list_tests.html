@@ -22,7 +22,7 @@
             <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Popis" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Typ" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Projekt" %}</th>
-            <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -32,8 +32,10 @@
             <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ test.description|truncatewords:10|default:"–" }}</td>
             <td class="px-4 py-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">{{ test.test_type.name }}</span></td>
             <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ test.project.name }}</td>
-            <td class="px-4 py-2 text-center">
-              <a href="{% url 'edit_test' test.test_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">{% trans "Upravit" %}</a>
+            <td class="px-4 py-2 text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'edit_test' test.test_id %}">✏️ {% trans "Upravit" %}</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -63,7 +65,7 @@
             <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Název" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Popis" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Projekt" %}</th>
-            <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,8 +74,10 @@
             <td class="px-4 py-2 text-gray-800 font-medium">{{ test_type.name }}</td>
             <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ test_type.description|truncatewords:10|default:"–" }}</td>
             <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{{ test_type.project.name }}</td>
-            <td class="px-4 py-2 text-center">
-              <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">{% trans "Upravit" %}</a>
+            <td class="px-4 py-2 text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'edit_test_type' test_type.test_type_id %}">✏️ {% trans "Upravit" %}</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
@@ -103,7 +107,7 @@
             <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Název chyby" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Status" %}</th>
             <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">{% trans "Autor" %}</th>
-            <th class="px-4 py-2 text-center text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold w-1/6">{% trans "Akce" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -116,9 +120,11 @@
               </span>
             </td>
             <td class="px-4 py-2 text-gray-500 hidden md:table-cell">{% if error.created_by %}{{ error.created_by.username }}{% else %}{% trans "Neznámý" %}{% endif %}</td>
-            <td class="px-4 py-2 text-center">
-              <a href="{% url 'detail_test_error' error.test_error_id %}" class="text-blue-600 hover:text-blue-800 text-sm mr-2">{% trans "Detail" %}</a>
-              <a href="{% url 'edit_test_error' error.test_error_id %}" class="text-yellow-600 hover:text-yellow-800 text-sm">{% trans "Upravit" %}</a>
+            <td class="px-4 py-2 text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ {% trans "Detail" %}</a>
+                <a href="{% url 'edit_test_error' error.test_error_id %}">✏️ {% trans "Upravit" %}</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
