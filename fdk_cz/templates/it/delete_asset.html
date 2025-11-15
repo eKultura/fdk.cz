@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Smazat IT aktivum {{ asset.name }} | FDK.cz{% endblock %}
+{% block header_title %}🗑️ Smazat IT aktivum{% endblock %}
+{% block header_subtitle %}Potvrzení smazání{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="content-card">
+    <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+      <h3 style="color: #991b1b; font-weight: 600; margin-bottom: 0.5rem;">⚠️ Varování</h3>
+      <p style="color: #7f1d1d; margin: 0;">
+        Opravdu chcete smazat IT aktivum <strong>{{ asset.name }}</strong>?
+        Tato akce je nevratná.
+      </p>
+    </div>
+
+    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+      <h4 style="font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Detail IT aktiva:</h4>
+
+      <div style="display: grid; gap: 0.75rem;">
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Název:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.name }}</p>
+        </div>
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Asset Tag:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.asset_tag }}</p>
+        </div>
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Typ zařízení:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.get_asset_type_display }}</p>
+        </div>
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Organizace:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.organization.name }}</p>
+        </div>
+
+        {% if asset.assigned_to %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Přiřazeno:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.assigned_to.get_full_name|default:asset.assigned_to.username }}</p>
+        </div>
+        {% endif %}
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Status:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.get_status_display }}</p>
+        </div>
+
+        {% if asset.manufacturer %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Výrobce:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.manufacturer }}</p>
+        </div>
+        {% endif %}
+
+        {% if asset.model %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Model:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.model }}</p>
+        </div>
+        {% endif %}
+
+        {% if asset.serial_number %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Sériové číslo:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ asset.serial_number }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <a href="{% url 'detail_it_asset' asset.asset_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary" style="background: #dc2626; border-color: #dc2626;">
+          🗑️ Ano, smazat aktivum
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

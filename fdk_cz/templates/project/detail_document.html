@@ -66,14 +66,20 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Vytvořeno</label>
-        <p class="text-sm text-gray-900">{{ document.created_at|date:"d.m.Y H:i" }}</p>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Nahráno</label>
+        <p class="text-sm text-gray-900">
+          {{ document.uploaded_at|date:"d.m.Y H:i" }}
+        </p>
       </div>
 
+      {% if document.uploaded_by %}
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Poslední úprava</label>
-        <p class="text-sm text-gray-900">{{ document.updated_at|date:"d.m.Y H:i" }}</p>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Nahrál</label>
+        <p class="text-sm text-gray-900">
+          {{ document.uploaded_by.get_full_name|default:document.uploaded_by.username }}
+        </p>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

@@ -128,6 +128,9 @@ def detail_project(request, project_id):
     nice_to_have_tasks = proj.tasks.filter(priority='Nice to have')
     can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
 
+    # Kontrola, zda je projekt ukončen (má nastavený end_date)
+    is_project_closed = proj.end_date is not None
+
     # Přenesení inicializovaných formulářů do šablony
     return render(request, 'project/detail_project.html', {
         'project': proj,
@@ -141,9 +144,10 @@ def detail_project(request, project_id):
         'nice_to_have_tasks': nice_to_have_tasks,
         'can_view_contacts': can_view_contacts,
         'members': members,
-        'form': form, 
-        'project_status_counts': project_status_counts, 
-        'project_total_tasks': project_total_tasks, 
+        'form': form,
+        'project_status_counts': project_status_counts,
+        'project_total_tasks': project_total_tasks,
+        'is_project_closed': is_project_closed,
     })
 
 
@@ -187,9 +191,12 @@ def index_project(request):
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
     # Vyhledáme projekty, kde je aktuální uživatel vlastníkem
+    # Vyfiltrujeme projekty, které mají nastavený end_date (ukončené projekty)
     user_projects = Project.objects.filter(
         project_users__user=request.user
-    ).distinct() 
+    ).filter(
+        Q(end_date__isnull=True)  # Projekty bez end_date
+    ).distinct()
     assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
 
     return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})
