@@ -18,7 +18,7 @@
 
       <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
         <button type="submit" class="btn btn-primary">✓ {% trans "Uložit transakci" %}</button>
-        <a href="{% url 'store_transactions' store.id %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+        <a href="{% url 'store_transactions' store.warehouse_id %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
       </div>
     </form>
   </div>

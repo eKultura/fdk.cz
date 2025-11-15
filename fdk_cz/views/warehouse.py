@@ -59,7 +59,7 @@ def create_transaction(request, store_id):
             transaction = form.save(commit=False)
             transaction.store = store
             transaction.save()
-            return redirect('store_transactions', store_id=store.id)
+            return redirect('store_transactions', store_id=store.warehouse_id)
     else:
         form = transaction_form()
     return render(request, 'warehouse/create_transaction.html', {'form': form, 'store': store})
