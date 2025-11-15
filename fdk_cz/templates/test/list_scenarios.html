@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Testovací scénáře | FDK.cz{% endblock %}
+{% block header_title %}📋 Testovací scénáře{% endblock %}
+{% block header_subtitle %}Správa testovacích scénářů a případů použití{% endblock %}
+
+{% block content %}
+<div style="max-width: 1600px; margin: 0 auto;">
+  <!-- Actions and Filters -->
+  <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'create_test_scenario' %}" class="btn btn-primary">➕ Nový scénář</a>
+      <a href="{% url 'list_tests' %}" class="btn btn-outline">🧪 Testy</a>
+    </div>
+
+    <!-- Filters -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <!-- Priority Filter -->
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        <select name="priority" onchange="this.form.submit()" class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <option value="">Všechny priority</option>
+          {% for value, label in priority_choices %}
+            <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Status Filter -->
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_priority %}<input type="hidden" name="priority" value="{{ selected_priority }}">{% endif %}
+        <select name="status" onchange="this.form.submit()" class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <option value="">Všechny statusy</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Search -->
+      <form method="GET" style="display: flex; gap: 0.5rem;">
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        {% if selected_priority %}<input type="hidden" name="priority" value="{{ selected_priority }}">{% endif %}
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat scénář..." class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <button type="submit" class="btn btn-outline">🔍</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scenarios Table -->
+  <div class="content-card">
+    {% if scenarios %}
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název scénáře</th>
+              <th>Kontext</th>
+              <th>Priorita</th>
+              <th>Status</th>
+              <th>Vytvořeno</th>
+              <th style="text-align: center;">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for scenario in scenarios %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                    {{ scenario.name }}
+                  </a>
+                  {% if scenario.description %}
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                      {{ scenario.description|truncatewords:15 }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if scenario.organization %}
+                    <span style="padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      🏛️ {{ scenario.organization.name }}
+                    </span>
+                  {% elif scenario.project %}
+                    <span style="padding: 4px 8px; background: #d1fae5; color: #065f46; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      📁 {{ scenario.project.name }}
+                    </span>
+                  {% elif scenario.owner %}
+                    <span style="padding: 4px 8px; background: #f3e8ff; color: #6b21a8; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      👤 Osobní
+                    </span>
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+                    {% if scenario.priority == 'critical' %}background: #fee2e2; color: #991b1b;
+                    {% elif scenario.priority == 'high' %}background: #fed7aa; color: #9a3412;
+                    {% elif scenario.priority == 'medium' %}background: #fef3c7; color: #92400e;
+                    {% elif scenario.priority == 'low' %}background: #e0e7ff; color: #3730a3;
+                    {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+                    {{ scenario.get_priority_display }}
+                  </span>
+                </td>
+                <td>
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+                    {% if scenario.status == 'active' %}background: #d1fae5; color: #065f46;
+                    {% elif scenario.status == 'draft' %}background: #f1f5f9; color: #475569;
+                    {% elif scenario.status == 'deprecated' %}background: #fee2e2; color: #991b1b;
+                    {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+                    {{ scenario.get_status_display }}
+                  </span>
+                </td>
+                <td style="color: #64748b; font-size: 0.875rem;">
+                  {{ scenario.created_at|date:"d.m.Y" }}
+                  {% if scenario.created_by %}
+                    <div style="font-size: 0.75rem; color: #94a3b8;">
+                      {{ scenario.created_by.get_full_name }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td style="text-align: center;">
+                  <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="btn btn-sm btn-outline">👁️</a>
+                    <a href="{% url 'edit_test_scenario' scenario.scenario_id %}" class="btn btn-sm btn-outline">✏️</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">📋</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+          {% if search_query or selected_status or selected_priority %}
+            Žádné scénáře odpovídající vašemu hledání
+          {% else %}
+            Zatím nemáte žádné testovací scénáře
+          {% endif %}
+        </p>
+        {% if search_query or selected_status or selected_priority %}
+          <a href="{% url 'list_test_scenarios' %}" class="btn btn-outline" style="margin-right: 0.5rem;">Zrušit filtr</a>
+        {% endif %}
+        <a href="{% url 'create_test_scenario' %}" class="btn btn-primary">➕ Vytvořit první scénář</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 2rem;">💡</div>
+      <div>
+        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Tipy pro testovací scénáře</h4>
+        <ul style="font-size: 0.875rem; color: #475569; line-height: 1.6; list-style: disc; padding-left: 1.5rem;">
+          <li>Scénáře mohou být organizační (sdílené), projektové nebo osobní</li>
+          <li>Definujte jasné kroky a očekávané výsledky</li>
+          <li>Používejte priority pro identifikaci kritických testů</li>
+          <li>Pravidelně aktualizujte scénáře podle změn v aplikaci</li>
+          <li>Označujte zastaralé scénáře, místo jejich smazání</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ scenario.name }} | FDK.cz{% endblock %}
+{% block header_title %}📋 {{ scenario.name }}{% endblock %}
+{% block header_subtitle %}Detail testovacího scénáře{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_test_scenario' scenario.scenario_id %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'list_test_scenarios' %}" class="btn btn-outline">← Zpět na seznam</a>
+    <a href="{% url 'delete_test_scenario' scenario.scenario_id %}" class="btn btn-outline" style="color: #dc2626;">🗑️ Smazat</a>
+  </div>
+
+  <!-- Status Card -->
+  <div class="content-card" style="margin-bottom: 1.5rem; background: {% if scenario.priority == 'critical' %}linear-gradient(135deg, #fef2f2, #fee2e2){% elif scenario.priority == 'high' %}linear-gradient(135deg, #fef3c7, #fde68a){% else %}linear-gradient(135deg, #eff6ff, #dbeafe){% endif %}; border-left: 4px solid {% if scenario.priority == 'critical' %}#dc2626{% elif scenario.priority == 'high' %}#f59e0b{% else %}#3b82f6{% endif %};">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Status a priorita</div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <span style="padding: 6px 14px; border-radius: 12px; font-weight: 600; color: white; background: {% if scenario.status == 'active' %}#10b981{% elif scenario.status == 'draft' %}#64748b{% else %}#ef4444{% endif %};">
+            {{ scenario.get_status_display }}
+          </span>
+          <span style="padding: 6px 14px; border-radius: 12px; font-weight: 600; color: white; background: {% if scenario.priority == 'critical' %}#dc2626{% elif scenario.priority == 'high' %}#f59e0b{% elif scenario.priority == 'medium' %}#3b82f6{% else %}#6b7280{% endif %};">
+            {{ scenario.get_priority_display }}
+          </span>
+        </div>
+      </div>
+      {% if scenario.organization or scenario.project or scenario.owner %}
+      <div style="text-align: right;">
+        <div style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Kontext</div>
+        <div>
+          {% if scenario.organization %}
+            <span style="padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">
+              🏛️ {{ scenario.organization.name }}
+            </span>
+          {% elif scenario.project %}
+            <span style="padding: 4px 12px; background: #d1fae5; color: #065f46; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">
+              📁 {{ scenario.project.name }}
+            </span>
+          {% elif scenario.owner %}
+            <span style="padding: 4px 12px; background: #f3e8ff; color: #6b21a8; border-radius: 12px; font-size: 0.875rem; font-weight: 600;">
+              👤 {{ scenario.owner.get_full_name }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Basic Info -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📋 Základní informace</h3>
+
+    <div style="margin-bottom: 1.5rem;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Název scénáře</div>
+      <div style="font-weight: 600; color: #1e293b; font-size: 1.125rem;">{{ scenario.name }}</div>
+    </div>
+
+    {% if scenario.description %}
+    <div style="margin-bottom: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ scenario.description|linebreaks }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Scenario Steps -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📝 Kroky testu</h3>
+    <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; color: #1e293b; line-height: 1.8; white-space: pre-wrap;">{{ scenario.steps }}</div>
+  </div>
+
+  <!-- Expected Result -->
+  {% if scenario.expected_result %}
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">✓ Očekávaný výsledek</h3>
+    <div style="padding: 1rem; background: #ecfdf5; border-left: 4px solid #10b981; border-radius: 8px; color: #065f46; line-height: 1.6;">
+      {{ scenario.expected_result|linebreaks }}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Metadata -->
+  <div class="content-card" style="margin-top: 1.5rem; background: #f8fafc;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <div style="color: #64748b;">Vytvořeno</div>
+        <div style="color: #1e293b;">{{ scenario.created_at|date:"d.m.Y H:i" }}</div>
+        {% if scenario.created_by %}
+        <div style="color: #64748b; font-size: 0.75rem;">{{ scenario.created_by.get_full_name }}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div style="color: #64748b;">Aktualizováno</div>
+        <div style="color: #1e293b;">{{ scenario.updated_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">ID scénáře</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ scenario.scenario_id }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -31,7 +31,15 @@ from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
 from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, remove_project_user, take_task, task_management, update_task_status
 
-from fdk_cz.views.test import  create_test, create_test_error, create_test_result, create_test_type, delete_test_error, detail_test_error, edit_test, edit_test_error,  edit_test_type, list_test_errors, get_test_types, list_tests, list_test_results, list_test_types, mark_error_fixed
+from fdk_cz.views.test import (
+    create_test, create_test_error, create_test_result, create_test_type,
+    delete_test_error, detail_test_error, edit_test, edit_test_error, edit_test_type,
+    list_test_errors, get_test_types, list_tests, list_test_results, list_test_types,
+    mark_error_fixed,
+    # Test Scenarios
+    list_test_scenarios, create_test_scenario, detail_test_scenario,
+    edit_test_scenario, delete_test_scenario
+)
 
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
@@ -298,6 +306,12 @@ urlpatterns = (
     path('testy/chyba/<int:test_error_id>/opraveno/', mark_error_fixed, name='mark_error_fixed'),
     path('testy/delete/<int:error_id>/', delete_test_error, name='delete_test_error'),
 
+    # Test Scenarios
+    path('testy/scenare/', list_test_scenarios, name='list_test_scenarios'),
+    path('testy/scenare/novy/', create_test_scenario, name='create_test_scenario'),
+    path('testy/scenare/<int:scenario_id>/', detail_test_scenario, name='detail_test_scenario'),
+    path('testy/scenare/<int:scenario_id>/upravit/', edit_test_scenario, name='edit_test_scenario'),
+    path('testy/scenare/<int:scenario_id>/smazat/', delete_test_scenario, name='delete_test_scenario'),
 
     # Invoice management
     path('ucetnictvi/', accounting_dashboard, name='accounting_dashboard'),

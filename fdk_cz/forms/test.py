@@ -2,7 +2,8 @@
  
  
 from django import forms
-from fdk_cz.models import Test, Project, ProjectUser, TestError, TestResult, TestType
+from django.db.models import Q
+from fdk_cz.models import Test, Project, ProjectUser, TestError, TestResult, TestType, TestScenario, Organization
 
 
 
@@ -149,3 +150,55 @@ class test_result_form(forms.ModelForm):
     class Meta:
         model = TestResult
         fields = ['project', 'test', 'executed_by', 'result']
+
+class TestScenarioForm(forms.ModelForm):
+    """Formulář pro vytváření a editaci testovacích scénářů"""
+    
+    class Meta:
+        model = TestScenario
+        fields = ['name', 'description', 'steps', 'expected_result', 
+                  'organization', 'project', 'owner', 'priority', 'status']
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(TestScenarioForm, self).__init__(*args, **kwargs)
+        
+        # Filtrování organizací a projektů podle uživatele
+        if user:
+            # Organizace, kde je uživatel členem
+            user_orgs = Organization.objects.filter(
+                Q(created_by=user) | Q(members=user)
+            ).distinct()
+            self.fields['organization'].queryset = user_orgs
+
+            # Projekty uživatele
+            user_projects = Project.objects.filter(project_users__user=user)
+            self.fields['project'].queryset = user_projects
+
+            # Uživatelé pro pole owner - filtrujeme pouze z organizací uživatele
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            self.fields['owner'].queryset = User.objects.filter(
+                Q(created_organizations__in=user_orgs) |
+                Q(member_of_organizations__in=user_orgs)
+            ).distinct()
+            
+            # Nastavení výchozího ownera na aktuálního uživatele
+            if not self.instance.pk:
+                self.fields['owner'].initial = user
+        
+        # Volitelná pole
+        self.fields['organization'].required = False
+        self.fields['project'].required = False
+        self.fields['owner'].required = False
+        self.fields['description'].required = False
+        self.fields['expected_result'].required = False
+        
+        # Styling
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({'class': 'form-control', 'rows': '4'})
+            elif isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-control'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})

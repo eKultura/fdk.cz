@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Smazat {{ scenario.name }} | FDK.cz{% endblock %}
+{% block header_title %}🗑️ Smazat scénář{% endblock %}
+{% block header_subtitle %}{{ scenario.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <!-- Warning Card -->
+  <div class="content-card" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #dc2626;">
+    <div style="text-align: center; padding: 2rem;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+      <h3 style="font-size: 1.5rem; font-weight: 700; color: #991b1b; margin-bottom: 1rem;">
+        Opravdu chcete smazat tento scénář?
+      </h3>
+      <p style="color: #7f1d1d; font-size: 1.125rem; margin-bottom: 2rem; font-weight: 600;">
+        {{ scenario.name }}
+      </p>
+      <p style="color: #991b1b; margin-bottom: 2rem;">
+        Tato akce je nevratná. Veškeré informace o scénáři budou trvale odstraněny.
+      </p>
+
+      <!-- Scenario Info -->
+      <div style="background: white; border-radius: 8px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+        <div style="margin-bottom: 1rem;">
+          <span style="color: #64748b; font-size: 0.875rem;">Status:</span>
+          <span style="margin-left: 0.5rem; padding: 4px 12px; background: {% if scenario.status == 'active' %}#d1fae5; color: #065f46{% else %}#f1f5f9; color: #475569{% endif %}; border-radius: 8px; font-size: 0.875rem; font-weight: 600;">
+            {{ scenario.get_status_display }}
+          </span>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <span style="color: #64748b; font-size: 0.875rem;">Priorita:</span>
+          <span style="margin-left: 0.5rem; padding: 4px 12px; background: {% if scenario.priority == 'critical' %}#fee2e2; color: #991b1b{% elif scenario.priority == 'high' %}#fef3c7; color: #92400e{% else %}#e0e7ff; color: #3730a3{% endif %}; border-radius: 8px; font-size: 0.875rem; font-weight: 600;">
+            {{ scenario.get_priority_display }}
+          </span>
+        </div>
+        {% if scenario.description %}
+        <div>
+          <span style="color: #64748b; font-size: 0.875rem;">Popis:</span>
+          <p style="margin-top: 0.5rem; color: #1e293b;">{{ scenario.description|truncatewords:30 }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Actions -->
+      <form method="POST" style="display: inline;">
+        {% csrf_token %}
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+          <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="btn btn-outline">
+            Zrušit
+          </a>
+          <button type="submit" class="btn" style="background: #dc2626; color: white; padding: 0.5rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            🗑️ Ano, smazat scénář
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

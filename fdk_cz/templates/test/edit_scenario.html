@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Upravit {{ scenario.name }} | FDK.cz{% endblock %}
+{% block header_title %}✏️ Upravit scénář{% endblock %}
+{% block header_subtitle %}{{ scenario.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="btn btn-outline">← Zpět na detail</a>
+    <a href="{% url 'list_test_scenarios' %}" class="btn btn-outline">📋 Všechny scénáře</a>
+  </div>
+
+  <!-- Form Card -->
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Info -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Základní informace</h3>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_name" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Název scénáře <span style="color: #ef4444;">*</span>
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_description" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Popis</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Scenario Content -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Obsah scénáře</h3>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_steps" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Kroky testu <span style="color: #ef4444;">*</span>
+        </label>
+        {{ form.steps }}
+        {% if form.steps.errors %}
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.steps.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_expected_result" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Očekávaný výsledek</label>
+        {{ form.expected_result }}
+        {% if form.expected_result.errors %}
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.expected_result.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Context -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Kontext</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+          <label for="id_organization" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Organizace</label>
+          {{ form.organization }}
+        </div>
+
+        <div>
+          <label for="id_project" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Projekt</label>
+          {{ form.project }}
+        </div>
+
+        <div>
+          <label for="id_owner" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Vlastník</label>
+          {{ form.owner }}
+        </div>
+      </div>
+
+      <!-- Priority and Status -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Klasifikace</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+          <label for="id_priority" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Priorita</label>
+          {{ form.priority }}
+        </div>
+
+        <div>
+          <label for="id_status" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Status</label>
+          {{ form.status }}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">💾 Uložit změny</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

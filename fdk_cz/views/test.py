@@ -121,7 +121,7 @@ def create_test(request):
 # Editace testu
 @login_required
 def edit_test(request, test_id):
-    test_instance = get_object_or_404(test, pk=test_id)
+    test_instance = get_object_or_404(Test, pk=test_id)
     if request.method == 'POST':
         form = test_form(request.POST, instance=test_instance, user=request.user)
         if form.is_valid():
@@ -139,7 +139,7 @@ def edit_test(request, test_id):
 @login_required
 def list_test_results(request):
     user_projects = Project.objects.filter(project_users__user=request.user)
-    test_results = test_result.objects.filter(project__in=user_projects)
+    test_results = TestResult.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_results.html', {'test_results': test_results, 'projects': user_projects})
 
 # Přidání nového výsledku testu
@@ -239,3 +239,131 @@ def mark_error_fixed(request, test_error_id):
     error.save()
     return redirect('detail_test_error', test_error_id=test_error_id)
 
+
+# -------------------------------------------------------------------
+#                    TEST SCENARIOS
+# -------------------------------------------------------------------
+
+@login_required
+def list_test_scenarios(request):
+    """Seznam testovacích scénářů"""
+    from django.db.models import Q
+    from fdk_cz.models import Organization, TestScenario
+    
+    # Získat organizace uživatele
+    user_orgs = Organization.objects.filter(
+        Q(created_by=request.user) | Q(members=request.user)
+    ).distinct()
+    
+    # Získat projekty uživatele
+    user_projects = Project.objects.filter(project_users__user=request.user)
+    
+    # Filtrovat scénáře podle trojjediného kontextu
+    scenarios = TestScenario.objects.filter(
+        Q(organization__in=user_orgs) |  # Organizační
+        Q(project__in=user_projects) |   # Projektové
+        Q(owner=request.user)             # Osobní
+    ).select_related('organization', 'project', 'owner', 'created_by').distinct().order_by('-created_at')
+    
+    # Filtrování podle statusu
+    status = request.GET.get('status')
+    if status:
+        scenarios = scenarios.filter(status=status)
+    
+    # Filtrování podle priority
+    priority = request.GET.get('priority')
+    if priority:
+        scenarios = scenarios.filter(priority=priority)
+    
+    # Vyhledávání
+    search = request.GET.get('search')
+    if search:
+        scenarios = scenarios.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(steps__icontains=search)
+        )
+    
+    context = {
+        'scenarios': scenarios,
+        'status_choices': TestScenario.STATUS_CHOICES,
+        'priority_choices': TestScenario.PRIORITY_CHOICES,
+        'selected_status': status,
+        'selected_priority': priority,
+        'search_query': search,
+    }
+    return render(request, 'test/list_scenarios.html', context)
+
+
+@login_required
+def create_test_scenario(request):
+    """Vytvoření nového testovacího scénáře"""
+    from fdk_cz.forms.test import TestScenarioForm
+    from django.contrib import messages
+    
+    if request.method == 'POST':
+        form = TestScenarioForm(request.POST, user=request.user)
+        if form.is_valid():
+            scenario = form.save(commit=False)
+            scenario.created_by = request.user
+            scenario.save()
+            messages.success(request, f'Scénář "{scenario.name}" byl úspěšně vytvořen.')
+            return redirect('list_test_scenarios')
+    else:
+        form = TestScenarioForm(user=request.user)
+    
+    return render(request, 'test/create_scenario.html', {'form': form})
+
+
+@login_required
+def detail_test_scenario(request, scenario_id):
+    """Detail testovacího scénáře"""
+    from fdk_cz.models import TestScenario
+    
+    scenario = get_object_or_404(
+        TestScenario.objects.select_related('organization', 'project', 'owner', 'created_by'),
+        pk=scenario_id
+    )
+    
+    context = {
+        'scenario': scenario,
+    }
+    return render(request, 'test/detail_scenario.html', context)
+
+
+@login_required
+def edit_test_scenario(request, scenario_id):
+    """Editace testovacího scénáře"""
+    from fdk_cz.models import TestScenario
+    from fdk_cz.forms.test import TestScenarioForm
+    from django.contrib import messages
+    
+    scenario = get_object_or_404(TestScenario, pk=scenario_id)
+    
+    if request.method == 'POST':
+        form = TestScenarioForm(request.POST, instance=scenario, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Scénář "{scenario.name}" byl úspěšně aktualizován.')
+            return redirect('detail_test_scenario', scenario_id=scenario.scenario_id)
+    else:
+        form = TestScenarioForm(instance=scenario, user=request.user)
+    
+    return render(request, 'test/edit_scenario.html', {'form': form, 'scenario': scenario})
+
+
+@login_required
+def delete_test_scenario(request, scenario_id):
+    """Smazání testovacího scénáře"""
+    from fdk_cz.models import TestScenario
+    from django.contrib import messages
+    
+    scenario = get_object_or_404(TestScenario, pk=scenario_id)
+    
+    if request.method == 'POST':
+        scenario_name = scenario.name
+        scenario.delete()
+        messages.success(request, f'Scénář "{scenario_name}" byl smazán.')
+        return redirect('list_test_scenarios')
+    
+    return render(request, 'test/delete_scenario.html', {'scenario': scenario})
