@@ -263,12 +263,12 @@
               {% for task in user_tasks|slice:":5" %}
               <li class="item">
                 <div class="item-header">
-                  <a href="{% url 'detail_task' task.task_id %}" class="item-title">{{ task.title }}</a>
+                  <a href="{% url 'detail_task' task.task_id %}" class="item-title">{{ task.title|safe }}</a>
                   <span class="item-meta {% if task.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}negative{% endif %}">
                     {{ task.due_date|date:"d.m.Y" }}
                   </span>
                 </div>
-                <div class="item-meta">{{ task.description|truncatewords:10 }}</div>
+                <div class="item-meta">{{ task.description|truncatewords:10|safe }}</div>
               </li>
               {% endfor %}
             </ul>

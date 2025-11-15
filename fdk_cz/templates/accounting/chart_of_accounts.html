@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Účtová osnova" %} | FDK.cz{% endblock %}
+{% block header_title %}📋 {% trans "Účtová osnova" %}{% endblock %}
+{% block header_subtitle %}{{ context.name }} – {% trans "Přehled účtů" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Actions & Context Info -->
+  <div class="content-card mb-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">{% trans "Aktivní kontext" %}: {{ context.name }}</h3>
+        <p class="text-sm text-gray-600">{% trans "Účetní období" %}: {{ context.fiscal_year }}</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="{% url 'select_accounting_context' %}" class="btn btn-outline">🔄 {% trans "Změnit kontext" %}</a>
+        <a href="{% url 'journal_ledger' %}" class="btn btn-outline">📚 {% trans "Účetní deník" %}</a>
+        <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart of Accounts -->
+  <div class="content-card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">📋 {% trans "Účtová osnova" %}</h3>
+      <a href="{% url 'create_account' %}" class="btn btn-primary text-sm">&#10133; {% trans "Nový účet" %}</a>
+    </div>
+
+    {% if accounts %}
+    <div class="overflow-x-auto">
+      <table class="data-table" style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f9fafb;">
+          <tr>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold w-32">{% trans "Číslo účtu" %}</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Název" %}</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell w-40">{% trans "Typ" %}</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden lg:table-cell w-40">{% trans "Nadřazený účet" %}</th>
+            <th class="px-4 py-2 text-center text-gray-600 font-semibold w-24">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for account in accounts %}
+          <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+            <td class="px-4 py-2 font-semibold text-blue-600">
+              {{ account.account_number }}
+            </td>
+            <td class="px-4 py-2 text-gray-800">
+              <div class="font-medium">{{ account.name }}</div>
+              {% if account.description %}
+                <div class="text-sm text-gray-500 mt-1">{{ account.description|truncatewords:15 }}</div>
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold
+                {% if account.account_type == 'asset' %}bg-blue-100 text-blue-700
+                {% elif account.account_type == 'liability' %}bg-red-100 text-red-700
+                {% elif account.account_type == 'equity' %}bg-purple-100 text-purple-700
+                {% elif account.account_type == 'revenue' %}bg-green-100 text-green-700
+                {% elif account.account_type == 'expense' %}bg-orange-100 text-orange-700
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ account.get_account_type_display }}
+              </span>
+            </td>
+            <td class="px-4 py-2 text-gray-600 hidden lg:table-cell">
+              {% if account.parent_account %}
+                {{ account.parent_account.account_number }} - {{ account.parent_account.name }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 text-center">
+              <div class="data-table-actions">
+                <a href="{% url 'account_detail' account.account_id %}" class="text-blue-600 hover:underline text-sm">👁️ Detail</a>
+                <a href="{% url 'edit_account' account.account_id %}" class="text-blue-600 hover:underline text-sm">✏️ Upravit</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Statistics -->
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">{% trans "Aktiva" %}</div>
+          <div class="text-2xl font-bold text-blue-600">
+            {{ accounts|length|add:0 }}
+          </div>
+        </div>
+        <div class="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-red-700 uppercase tracking-wide mb-1">{% trans "Pasiva" %}</div>
+          <div class="text-2xl font-bold text-red-600">
+            {{ accounts|length|add:0 }}
+          </div>
+        </div>
+        <div class="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-1">{% trans "Kapitál" %}</div>
+          <div class="text-2xl font-bold text-purple-600">
+            {{ accounts|length|add:0 }}
+          </div>
+        </div>
+        <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">{% trans "Výnosy" %}</div>
+          <div class="text-2xl font-bold text-green-600">
+            {{ accounts|length|add:0 }}
+          </div>
+        </div>
+        <div class="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-1">{% trans "Náklady" %}</div>
+          <div class="text-2xl font-bold text-orange-600">
+            {{ accounts|length|add:0 }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+      <p style="color: #64748b; margin-bottom: 1rem;">{% trans "Zatím nemáte žádné účty v účtové osnově." %}</p>
+      <a href="{% url 'create_account' %}" class="btn btn-primary">
+        + {% trans "Vytvořit první účet" %}
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
