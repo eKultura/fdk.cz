@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}DMS - Document Management System | FDK.cz{% endblock %}
+{% block header_title %}📁 DMS - Správa dokumentů{% endblock %}
+{% block header_subtitle %}Centralizovaný systém pro správu všech dokumentů{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+
+  {% if is_demo %}
+  <!-- Demo banner pro anonymní uživatele -->
+  <div class="content-card mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-4xl mr-4">📚</div>
+      <div>
+        <h3 class="font-bold text-xl text-gray-800 mb-2">Vítejte v Document Management System</h3>
+        <p class="text-gray-700 mb-3">
+          DMS vám umožňuje centralizovanou správu všech dokumentů napříč projekty a organizacemi.
+          Níže vidíte ukázkové dokumenty pro demonstraci funkcí systému.
+        </p>
+        <p class="text-sm text-gray-600">
+          Pro plný přístup k vašim dokumentům se prosím <a href="{% url 'login_cs' %}" class="text-blue-600 hover:text-blue-900 font-semibold">přihlaste</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo dokumenty -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6">📄 Ukázkové dokumenty</h2>
+
+    <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dokument</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizace</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for doc in sample_documents %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              📄 {{ doc.title }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                {{ doc.document_type }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-900">{{ doc.project_name }}</td>
+            <td class="px-6 py-4 text-sm text-gray-900">{{ doc.organization_name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ doc.uploaded_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 text-center">
+      <a href="{% url 'login_cs' %}" class="btn btn-primary">🔑 Přihlásit se a zobrazit své dokumenty</a>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Pro přihlášené uživatele -->
+
+  <!-- Actions a filtry -->
+  <div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex gap-3">
+        <a href="{% url 'dms_create_document' %}" class="btn btn-primary">+ Nový dokument</a>
+      </div>
+
+      <!-- Filtry -->
+      <form method="GET" class="flex gap-3 items-end">
+        <div>
+          <label class="block text-xs text-gray-600 mb-1">Organizace</label>
+          <select name="organization" class="form-control text-sm">
+            <option value="">Všechny organizace</option>
+            {% for org in user_orgs %}
+              <option value="{{ org.organization_id }}" {% if selected_org == org.organization_id|stringformat:"s" %}selected{% endif %}>
+                {{ org.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-600 mb-1">Projekt</label>
+          <select name="project" class="form-control text-sm">
+            <option value="">Všechny projekty</option>
+            {% for project in user_projects %}
+              <option value="{{ project.project_id }}" {% if selected_project == project.project_id|stringformat:"s" %}selected{% endif %}>
+                {{ project.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-600 mb-1">Hledat</label>
+          <input type="text" name="search" value="{{ search_query }}" placeholder="Název dokumentu..." class="form-control text-sm">
+        </div>
+
+        <button type="submit" class="btn btn-secondary">🔍 Filtrovat</button>
+        <a href="{% url 'dms_dashboard' %}" class="btn btn-outline">✕ Zrušit</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dokumenty -->
+  <div class="content-card">
+    {% if documents %}
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">📄 Vaše dokumenty ({{ documents.count }})</h2>
+
+      <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dokument</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projekt</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizace</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nahrál</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Akce</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for doc in documents %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                <a href="{% url 'detail_document' doc.document_id %}" class="text-blue-600 hover:text-blue-900">
+                  📄 {{ doc.title }}
+                </a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                  {{ doc.document_type }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                <a href="{% url 'detail_project' doc.project.project_id %}" class="text-blue-600 hover:text-blue-900">
+                  {{ doc.project.name }}
+                </a>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                {% if doc.project.organization %}
+                  <a href="{% url 'organization_detail' doc.project.organization.organization_id %}" class="text-blue-600 hover:text-blue-900">
+                    {{ doc.project.organization.name }}
+                  </a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {% if doc.uploaded_by %}
+                  {{ doc.uploaded_by.get_full_name|default:doc.uploaded_by.username }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ doc.uploaded_at|date:"d.m.Y" }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <a href="{% url 'detail_document' doc.document_id %}" class="text-blue-600 hover:text-blue-900">Detail</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-6xl mb-4">📁</div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Zatím nemáte žádné dokumenty</h3>
+        <p class="text-gray-600 mb-6">
+          {% if selected_org or selected_project or search_query %}
+            Zkuste změnit filtry nebo vyhledávací kritéria.
+          {% else %}
+            Začněte tím, že vytvoříte svůj první dokument.
+          {% endif %}
+        </p>
+        <a href="{% url 'dms_create_document' %}" class="btn btn-primary">+ Vytvořit první dokument</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info box -->
+  <div class="content-card mt-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro efektivní správu dokumentů</h4>
+        <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+          <li>Používejte popisné názvy dokumentů pro snadné vyhledávání</li>
+          <li>Kategorizujte dokumenty podle typu (smlouvy, specifikace, zápisy...)</li>
+          <li>Pravidelně aktualizujte a udržujte dokumenty aktuální</li>
+          <li>Využívejte filtrování podle projektů a organizací</li>
+          <li>Ukládejte důležité dokumenty vždy do správného projektu</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}

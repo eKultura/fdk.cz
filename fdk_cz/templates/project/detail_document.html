@@ -8,27 +8,72 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto">
-  <div class="content-card">
-    <!-- Základní informace -->
-    <div class="mb-6">
-      <p><strong>Kategorie:</strong> {{ document.category.name|default:"–" }}</p>
-      <p><strong>Typ dokumentu:</strong> {{ document.document_type|default:"–" }}</p>
-      <p><strong>Vytvořeno:</strong> {{ document.created_at|date:"d.m.Y"|default:"–" }}</p>
-      <p><strong>Poslední úprava:</strong> {{ document.updated_at|date:"d.m.Y"|default:"–" }}</p>
-    </div>
+<div class="max-w-5xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'detail_project' document.project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
+    <a href="{% url 'edit_document' document.pk %}" class="btn btn-secondary">✏️ Upravit</a>
+    <a href="{% url 'delete_document' document.pk %}" class="btn btn-danger"
+       onclick="return confirm('Opravdu chcete smazat tento dokument?');">🗑️ Smazat</a>
+  </div>
 
-    <!-- Obsah dokumentu -->
+  <!-- Základní informace -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Informace o dokumentu</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Název dokumentu</label>
+        <p class="text-lg font-semibold text-gray-900">{{ document.title }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Typ dokumentu</label>
+        <p class="text-gray-900">
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+            {{ document.document_type|default:"—" }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Kategorie</label>
+        <p class="text-gray-900">{{ document.category.name|default:"—" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Projekt</label>
+        <p class="text-gray-900">
+          <a href="{% url 'detail_project' document.project.project_id %}" class="text-blue-600 hover:text-blue-900">
+            {{ document.project.name }}
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Obsah dokumentu -->
+  <div class="content-card mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📄 Obsah dokumentu</h2>
     <div class="prose max-w-none text-gray-800 leading-relaxed">
       {{ document.description|safe|default:"<p class='text-gray-500 italic'>Žádný obsah.</p>" }}
     </div>
+  </div>
 
-    <!-- Akce -->
-    <div class="flex flex-wrap gap-3 mt-8 border-t border-gray-200 pt-4">
-      <a href="{% url 'edit_document' document.pk %}" class="btn btn-primary">✏️ Upravit</a>
-      <a href="{% url 'delete_document' document.pk %}" class="btn btn-danger"
-         onclick="return confirm('Opravdu chcete smazat tento dokument?');">🗑️ Smazat</a>
-      <a href="{% url 'detail_project' document.project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
+  <!-- Metadata -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">⏱️ Metadata</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Vytvořeno</label>
+        <p class="text-sm text-gray-900">{{ document.created_at|date:"d.m.Y H:i" }}</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Poslední úprava</label>
+        <p class="text-sm text-gray-900">{{ document.updated_at|date:"d.m.Y H:i" }}</p>
+      </div>
     </div>
   </div>
 </div>

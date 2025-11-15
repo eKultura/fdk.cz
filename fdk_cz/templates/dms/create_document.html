@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Nový dokument | DMS | FDK.cz{% endblock %}
+{% block header_title %}📄 Nový dokument{% endblock %}
+{% block header_subtitle %}Vytvořte nový dokument v Document Management System{% endblock %}
+
+{% block meta %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'dms_dashboard' %}" class="btn btn-outline">← Zpět na DMS</a>
+  </div>
+
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Projekt -->
+      <div class="form-group">
+        <label for="id_project" class="form-label">Projekt <span class="text-red-500">*</span></label>
+        <select name="project" id="id_project" required class="form-control">
+          <option value="">-- Vyberte projekt --</option>
+          {% for project in user_projects %}
+            <option value="{{ project.project_id }}">
+              {{ project.name }} ({{ project.organization.name|default:"Bez organizace" }})
+            </option>
+          {% endfor %}
+        </select>
+        <div class="text-xs text-gray-500 mt-1">
+          Vyberte projekt, do kterého chcete dokument přiřadit
+        </div>
+      </div>
+
+      <!-- Název -->
+      <div class="form-group">
+        <label for="id_title" class="form-label">Název dokumentu <span class="text-red-500">*</span></label>
+        <input type="text" name="title" id="id_title" required
+               placeholder="Např. Projektová smlouva, Technická dokumentace"
+               class="form-control">
+      </div>
+
+      <!-- Typ dokumentu -->
+      <div class="form-group">
+        <label for="id_document_type" class="form-label">Typ dokumentu <span class="text-red-500">*</span></label>
+        <input type="text" name="document_type" id="id_document_type" required
+               placeholder="Např. smlouva, specifikace, zápis"
+               class="form-control">
+        <div class="text-xs text-gray-500 mt-1">
+          Kategorizace typu dokumentu pro snadné filtrování
+        </div>
+      </div>
+
+      <!-- Obsah -->
+      <div class="form-group">
+        <label for="id_description" class="form-label">Obsah dokumentu</label>
+        <textarea name="description" id="id_description"
+                  class="form-control"
+                  rows="8"
+                  placeholder="Zadejte obsah dokumentu..."></textarea>
+        <div class="text-xs text-gray-500 mt-1">
+          Textový editor s podporou formátování
+        </div>
+      </div>
+
+      <!-- Akce -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <a href="{% url 'dms_dashboard' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">📄 Vytvořit dokument</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Info box -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro vytváření dokumentů</h4>
+        <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+          <li>Používejte jasné a popisné názvy dokumentů</li>
+          <li>Vyberte správný projekt pro snadné vyhledávání</li>
+          <li>Kategorizujte dokumenty pomocí typu (smlouva, specifikace, zápis...)</li>
+          <li>Využívejte formátování textu pro lepší přehlednost</li>
+          <li>Dokumenty jsou automaticky přiřazeny k organizaci skrze projekt</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inicializace Summernote -->
+<script>
+  $(document).ready(function() {
+    $('#id_description').summernote({
+      placeholder: 'Zadejte obsah dokumentu...',
+      tabsize: 2,
+      height: 300,
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['fontsize', 'color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['table', ['table']],
+        ['insert', ['link']],
+        ['view', ['fullscreen', 'codeview']]
+      ]
+    });
+  });
+</script>
+{% endblock %}
