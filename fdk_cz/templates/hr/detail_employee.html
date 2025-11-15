@@ -1,266 +1,177 @@
 {% extends "base.html" %}
-{% block title %}{{ employee.first_name }} {{ employee.last_name }} | FDK.cz{% endblock %}
-{% block header_title %}👤 {{ employee.first_name }} {{ employee.last_name }}{% endblock %}
+{% block title %}{{ employee.get_full_name }} | FDK.cz{% endblock %}
+{% block header_title %}👤 {{ employee.get_full_name }}{% endblock %}
 {% block header_subtitle %}Detail zaměstnance{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
+<div style="max-width: 1200px; margin: 0 auto;">
+
   <!-- Actions -->
-  <div class="mb-6 flex gap-3">
-    <a href="{% url 'list_employees' %}" class="btn btn-outline">← Seznam zaměstnanců</a>
-    <a href="{% url 'hr_dashboard' %}" class="btn btn-outline">📊 Dashboard</a>
-    <a href="{% url 'edit_employee' employee.employee_id %}" class="btn btn-secondary">✏️ Upravit</a>
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_employee' employee.employee_id %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'list_employees' %}" class="btn btn-outline">← Zpět na seznam</a>
+    <a href="{% url 'hr_dashboard' %}" class="btn btn-outline">📊 HR Dashboard</a>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Main Info -->
-    <div class="lg:col-span-2 space-y-6">
-      <!-- Basic Information -->
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📋 Základní údaje</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Jméno</label>
-            <p class="text-gray-900 mt-1">{{ employee.first_name }}</p>
-          </div>
-
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Příjmení</label>
-            <p class="text-gray-900 mt-1">{{ employee.last_name }}</p>
-          </div>
-
-          {% if employee.personal_id_number %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Rodné číslo</label>
-            <p class="text-gray-900 mt-1">{{ employee.personal_id_number }}</p>
-          </div>
-          {% endif %}
-
-          {% if employee.employee_number %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Číslo zaměstnance</label>
-            <p class="text-gray-900 mt-1">{{ employee.employee_number }}</p>
-          </div>
-          {% endif %}
+  <!-- Status Card -->
+  <div class="content-card" style="margin-bottom: 1.5rem; background: {% if employee.status == 'active' %}linear-gradient(135deg, #ecfdf5, #d1fae5){% elif employee.status == 'on_leave' %}linear-gradient(135deg, #fef3c7, #fde68a){% elif employee.status == 'terminated' %}linear-gradient(135deg, #fef2f2, #fee2e2){% else %}linear-gradient(135deg, #f1f5f9, #e2e8f0){% endif %}; border-left: 4px solid {% if employee.status == 'active' %}#10b981{% elif employee.status == 'on_leave' %}#f59e0b{% elif employee.status == 'terminated' %}#ef4444{% else %}#64748b{% endif %};">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Status zaměstnance</div>
+        <div style="display: inline-block; padding: 8px 16px; border-radius: 12px; font-weight: 600; color: white; background: {% if employee.status == 'active' %}#10b981{% elif employee.status == 'on_leave' %}#f59e0b{% elif employee.status == 'terminated' %}#ef4444{% else %}#64748b{% endif %};">
+          {{ employee.get_status_display }}
         </div>
       </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.875rem; color: #64748b;">Typ pracovního poměru</div>
+        <div style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-top: 0.25rem;">
+          {{ employee.get_employment_type_display }}
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <!-- Contact Information -->
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📞 Kontaktní údaje</h3>
+  <!-- Basic Information -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📋 Základní informace</h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Jméno a příjmení</div>
+        <div style="font-weight: 600; color: #1e293b; font-size: 1.125rem;">{{ employee.first_name }} {{ employee.last_name }}</div>
+      </div>
+
+      {% if employee.employee_number %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Číslo zaměstnance</div>
+        <div style="font-family: monospace; font-weight: 600; color: #1e293b;">{{ employee.employee_number }}</div>
+      </div>
+      {% endif %}
+
+      {% if employee.personal_id_number %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Rodné číslo</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ employee.personal_id_number }}</div>
+      </div>
+      {% endif %}
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Email</div>
+        <div style="color: #1e293b;">
           {% if employee.email %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Email</label>
-            <p class="text-gray-900 mt-1">
-              <a href="mailto:{{ employee.email }}" class="text-blue-600 hover:underline">{{ employee.email }}</a>
-            </p>
-          </div>
+            <a href="mailto:{{ employee.email }}" style="color: #3b82f6; text-decoration: none;">{{ employee.email }}</a>
+          {% else %}
+            —
           {% endif %}
+        </div>
+      </div>
 
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Telefon</div>
+        <div style="color: #1e293b;">
           {% if employee.phone %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Telefon</label>
-            <p class="text-gray-900 mt-1">
-              <a href="tel:{{ employee.phone }}" class="text-blue-600 hover:underline">{{ employee.phone }}</a>
-            </p>
-          </div>
+            <a href="tel:{{ employee.phone }}" style="color: #3b82f6; text-decoration: none;">{{ employee.phone }}</a>
+          {% else %}
+            —
           {% endif %}
         </div>
       </div>
 
-      <!-- Work Information -->
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">💼 Pracovní údaje</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Organizace</label>
-            <p class="text-gray-900 mt-1">
-              <a href="{% url 'organization_detail' employee.organization.organization_id %}" class="text-blue-600 hover:underline">
-                {{ employee.organization.name }}
-              </a>
-            </p>
-          </div>
-
-          {% if employee.department %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Oddělení</label>
-            <p class="text-gray-900 mt-1">
-              <a href="{% url 'detail_department' employee.department.department_id %}" class="text-blue-600 hover:underline">
-                {{ employee.department.name }}
-              </a>
-            </p>
-          </div>
-          {% endif %}
-
-          {% if employee.position %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Pozice</label>
-            <p class="text-gray-900 mt-1">{{ employee.position }}</p>
-          </div>
-          {% endif %}
-
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Typ úvazku</label>
-            <p class="text-gray-900 mt-1">
-              <span class="px-3 py-1 rounded-full text-xs font-semibold
-                {% if employee.employment_type == 'full_time' %}bg-blue-100 text-blue-700
-                {% elif employee.employment_type == 'part_time' %}bg-green-100 text-green-700
-                {% elif employee.employment_type == 'contract' %}bg-purple-100 text-purple-700
-                {% elif employee.employment_type == 'temporary' %}bg-yellow-100 text-yellow-700
-                {% elif employee.employment_type == 'intern' %}bg-orange-100 text-orange-700
-                {% else %}bg-gray-100 text-gray-700{% endif %}">
-                {{ employee.get_employment_type_display }}
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Employment Status -->
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📝 Pracovní poměr</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Status</label>
-            <p class="text-gray-900 mt-1">
-              <span class="px-3 py-1 rounded-full text-sm font-semibold
-                {% if employee.status == 'active' %}bg-green-100 text-green-700
-                {% elif employee.status == 'on_leave' %}bg-yellow-100 text-yellow-800
-                {% elif employee.status == 'suspended' %}bg-orange-100 text-orange-700
-                {% elif employee.status == 'terminated' %}bg-red-100 text-red-700
-                {% else %}bg-gray-100 text-gray-700{% endif %}">
-                {{ employee.get_status_display }}
-              </span>
-            </p>
-          </div>
-
-          {% if employee.hire_date %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Datum nástupu</label>
-            <p class="text-gray-900 mt-1">{{ employee.hire_date|date:"d.m.Y" }}</p>
-          </div>
-          {% endif %}
-
-          {% if employee.termination_date %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Datum ukončení</label>
-            <p class="text-gray-900 mt-1">{{ employee.termination_date|date:"d.m.Y" }}</p>
-          </div>
-          {% endif %}
-
-          {% if employee.salary %}
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Mzda</label>
-            <p class="text-gray-900 mt-1">{{ employee.salary|floatformat:2 }} {{ employee.currency }}</p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- User Account -->
       {% if employee.user %}
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">🔗 Propojení s účtem</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Uživatelské jméno</label>
-            <p class="text-gray-900 mt-1">{{ employee.user.username }}</p>
-          </div>
-
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Celé jméno</label>
-            <p class="text-gray-900 mt-1">{{ employee.user.get_full_name|default:"-" }}</p>
-          </div>
-
-          <div>
-            <label class="text-sm font-semibold text-gray-600">Email účtu</label>
-            <p class="text-gray-900 mt-1">
-              <a href="mailto:{{ employee.user.email }}" class="text-blue-600 hover:underline">{{ employee.user.email }}</a>
-            </p>
-          </div>
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Propojený uživatelský účet</div>
+        <div style="color: #1e293b;">
+          <span style="padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 8px; font-size: 0.875rem; font-weight: 500;">
+            ✓ {{ employee.user.username }}
+          </span>
         </div>
-      </div>
-      {% endif %}
-
-      <!-- Notes -->
-      {% if employee.notes %}
-      <div class="content-card">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-3 border-b-2 border-gray-200">📝 Poznámky</h3>
-        <div class="text-gray-700 whitespace-pre-wrap">{{ employee.notes }}</div>
       </div>
       {% endif %}
     </div>
+  </div>
 
-    <!-- Sidebar -->
-    <div class="lg:col-span-1 space-y-6">
-      <!-- Quick Info Card -->
-      <div class="content-card">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Přehled</h3>
+  <!-- Work Information -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">💼 Pracovní informace</h3>
 
-        <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 {% if employee.status == 'active' %}bg-green-50{% else %}bg-gray-50{% endif %} rounded-lg">
-            <div>
-              <p class="text-xs {% if employee.status == 'active' %}text-green-600{% else %}text-gray-600{% endif %} font-semibold uppercase">Status</p>
-              <p class="text-2xl font-bold {% if employee.status == 'active' %}text-green-700{% else %}text-gray-700{% endif %}">
-                {{ employee.get_status_display }}
-              </p>
-            </div>
-            <div class="text-3xl">
-              {% if employee.status == 'active' %}✅
-              {% elif employee.status == 'on_leave' %}🏖️
-              {% elif employee.status == 'suspended' %}⏸️
-              {% elif employee.status == 'terminated' %}🚫
-              {% else %}❓{% endif %}
-            </div>
-          </div>
-
-          {% if employee.department %}
-          <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-            <div>
-              <p class="text-xs text-blue-600 font-semibold uppercase">Oddělení</p>
-              <p class="text-sm font-bold text-blue-700">{{ employee.department.name }}</p>
-            </div>
-            <div class="text-3xl">🏢</div>
-          </div>
-          {% endif %}
-
-          {% if employee.hire_date %}
-          <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-            <div>
-              <p class="text-xs text-purple-600 font-semibold uppercase">Ve firmě</p>
-              <p class="text-sm font-bold text-purple-700">
-                {% widthratio employee.hire_date|timesince:"days" 365 1 %} let
-              </p>
-            </div>
-            <div class="text-3xl">📅</div>
-          </div>
-          {% endif %}
-        </div>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Organizace</div>
+        <div style="font-weight: 600; color: #1e293b;">🏛️ {{ employee.organization.name }}</div>
       </div>
 
-      <!-- Metadata -->
-      <div class="content-card">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">ℹ️ Metadata</h3>
+      {% if employee.department %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Oddělení</div>
+        <div style="font-weight: 600; color: #1e293b;">📁 {{ employee.department.name }}</div>
+      </div>
+      {% endif %}
 
-        <div class="space-y-3 text-sm">
-          <div>
-            <label class="text-gray-600 font-semibold">Vytvořeno</label>
-            <p class="text-gray-900 mt-1">{{ employee.created_at|date:"d.m.Y H:i" }}</p>
-          </div>
+      {% if employee.position %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Pozice</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ employee.position }}</div>
+      </div>
+      {% endif %}
 
-          <div>
-            <label class="text-gray-600 font-semibold">Aktualizováno</label>
-            <p class="text-gray-900 mt-1">{{ employee.updated_at|date:"d.m.Y H:i" }}</p>
-          </div>
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Typ pracovního poměru</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ employee.get_employment_type_display }}</div>
+      </div>
+
+      {% if employee.hire_date %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Datum nástupu</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ employee.hire_date|date:"d.m.Y" }}</div>
+        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+          V organizaci {{ employee.hire_date|timesince }}
         </div>
+      </div>
+      {% endif %}
+
+      {% if employee.termination_date %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Datum ukončení</div>
+        <div style="font-weight: 600; color: #ef4444;">{{ employee.termination_date|date:"d.m.Y" }}</div>
+      </div>
+      {% endif %}
+
+      {% if employee.salary %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Mzda</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ employee.salary|floatformat:0 }} {{ employee.currency }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Notes -->
+  {% if employee.notes %}
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📝 Poznámky</h3>
+    <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; color: #1e293b; line-height: 1.6;">
+      {{ employee.notes|linebreaks }}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Metadata -->
+  <div class="content-card" style="margin-top: 1.5rem; background: #f8fafc;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <div style="color: #64748b;">Vytvořeno</div>
+        <div style="color: #1e293b;">{{ employee.created_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">Aktualizováno</div>
+        <div style="color: #1e293b;">{{ employee.updated_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">ID zaměstnance</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ employee.employee_id }}</div>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

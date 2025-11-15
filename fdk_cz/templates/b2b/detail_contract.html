@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ contract.title }} | FDK.cz{% endblock %}
+{% block header_title %}📄 {{ contract.title }}{% endblock %}
+{% block header_subtitle %}Detail B2B smlouvy{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_b2b_contract' contract.contract_id %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline">← Zpět na seznam</a>
+    {% if contract.company %}
+      <a href="{% url 'detail_b2b_company' contract.company.company_id %}" class="btn btn-outline">🏢 Detail firmy</a>
+    {% endif %}
+  </div>
+
+  <!-- Contract Details -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📋 Základní informace</h3>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Číslo smlouvy</div>
+        <div style="font-family: monospace; font-weight: 600; color: #1e293b;">{{ contract.contract_number }}</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Název smlouvy</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contract.title }}</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Status</div>
+        <div>
+          <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
+            {% if contract.status == 'active' %}background: #d1fae5; color: #065f46;
+            {% elif contract.status == 'signed' %}background: #dbeafe; color: #1e40af;
+            {% elif contract.status == 'negotiation' %}background: #fef3c7; color: #92400e;
+            {% elif contract.status == 'draft' %}background: #f1f5f9; color: #475569;
+            {% elif contract.status == 'completed' %}background: #e0e7ff; color: #3730a3;
+            {% elif contract.status == 'terminated' %}background: #fee2e2; color: #991b1b;
+            {% elif contract.status == 'cancelled' %}background: #fee2e2; color: #991b1b;
+            {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+            {{ contract.get_status_display }}
+          </span>
+        </div>
+      </div>
+
+      {% if contract.company %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Firma</div>
+        <div style="font-weight: 600; color: #1e293b;">
+          <a href="{% url 'detail_b2b_company' contract.company.company_id %}" style="color: #3b82f6; text-decoration: none;">
+            {{ contract.company.name }}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Hodnota smlouvy</div>
+        <div style="font-weight: 600; color: #1e293b;">
+          {% if contract.contract_value %}
+            {{ contract.contract_value|floatformat:0 }} {{ contract.currency }}
+          {% else %}
+            —
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Datum začátku</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contract.start_date|date:"d.m.Y" }}</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Datum ukončení</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contract.end_date|date:"d.m.Y"|default:"—" }}</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Datum podpisu</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contract.signed_date|date:"d.m.Y"|default:"—" }}</div>
+      </div>
+
+      {% if contract.project %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Projekt</div>
+        <div style="font-weight: 600; color: #1e293b;">📁 {{ contract.project.name }}</div>
+      </div>
+      {% endif %}
+
+      {% if contract.organization %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Organizace</div>
+        <div style="font-weight: 600; color: #1e293b;">🏛️ {{ contract.organization.name }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if contract.description %}
+    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis smlouvy</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ contract.description|linebreaks }}</div>
+    </div>
+    {% endif %}
+
+    {% if contract.categories or contract.keywords %}
+    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+        {% if contract.categories %}
+        <div>
+          <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Kategorie</div>
+          <div style="color: #1e293b;">{{ contract.categories }}</div>
+        </div>
+        {% endif %}
+        {% if contract.keywords %}
+        <div>
+          <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Klíčová slova</div>
+          <div style="color: #1e293b;">{{ contract.keywords }}</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Documents -->
+  {% if documents %}
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📎 Dokumenty</h3>
+    <div style="display: grid; gap: 1rem;">
+      {% for document in documents %}
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-weight: 600; color: #1e293b;">{{ document.title }}</div>
+          {% if document.description %}
+          <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ document.description }}</div>
+          {% endif %}
+          <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
+            Nahráno {{ document.uploaded_at|date:"d.m.Y" }}
+            {% if document.uploaded_by %} • {{ document.uploaded_by.get_full_name }}{% endif %}
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          {% if document.file_url %}
+          <a href="{{ document.file_url }}" target="_blank" class="btn btn-sm btn-outline">📥 Stáhnout</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Metadata -->
+  <div class="content-card" style="margin-top: 1.5rem; background: #f8fafc;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <div style="color: #64748b;">Vytvořeno</div>
+        <div style="color: #1e293b;">{{ contract.created_at|date:"d.m.Y H:i" }}</div>
+        {% if contract.created_by %}
+        <div style="color: #64748b; font-size: 0.75rem;">{{ contract.created_by.get_full_name }}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div style="color: #64748b;">Aktualizováno</div>
+        <div style="color: #1e293b;">{{ contract.updated_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">ID smlouvy</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ contract.contract_id }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

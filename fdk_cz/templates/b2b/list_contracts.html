@@ -99,8 +99,8 @@
                   {% endif %}
                 </td>
                 <td style="color: #64748b; font-size: 0.875rem;">
-                  {% if contract.signature_date %}
-                    {{ contract.signature_date|date:"d.m.Y" }}
+                  {% if contract.signed_date %}
+                    {{ contract.signed_date|date:"d.m.Y" }}
                   {% else %}
                     —
                   {% endif %}

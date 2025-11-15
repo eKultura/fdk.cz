@@ -47,7 +47,7 @@ def store_detail(request, store_id):
 @login_required
 def store_transactions(request, store_id):
     store = get_object_or_404(Warehouse, pk=store_id)
-    transactions = store.transactions.all()
+    transactions = WarehouseTransaction.objects.filter(item__warehouse=store).select_related('item').order_by('-date')
     return render(request, 'warehouse/transactions.html', {'transactions': transactions, 'store': store})
 
 @login_required

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ risk.title }} | FDK.cz{% endblock %}
+{% block header_title %}⚠️ {{ risk.title }}{% endblock %}
+{% block header_subtitle %}Detail rizika{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_risk' risk.risk_id %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'list_risks' %}" class="btn btn-outline">← Zpět na seznam</a>
+    <a href="{% url 'risk_matrix' %}" class="btn btn-outline">📊 Riziková matice</a>
+  </div>
+
+  <!-- Risk Score Card -->
+  <div class="content-card" style="margin-bottom: 1.5rem; background: {% if risk.risk_score >= 15 %}linear-gradient(135deg, #fef2f2, #fee2e2){% elif risk.risk_score >= 9 %}linear-gradient(135deg, #fef3c7, #fde68a){% else %}linear-gradient(135deg, #ecfdf5, #d1fae5){% endif %}; border-left: 4px solid {% if risk.risk_score >= 15 %}#dc2626{% elif risk.risk_score >= 9 %}#f59e0b{% else %}#10b981{% endif %};">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">Skóre rizika</div>
+        <div style="font-size: 2.5rem; font-weight: 700; color: {% if risk.risk_score >= 15 %}#dc2626{% elif risk.risk_score >= 9 %}#f59e0b{% else %}#10b981{% endif %};">
+          {{ risk.risk_score }}
+        </div>
+        <div style="font-size: 0.875rem; color: #64748b;">
+          Pravděpodobnost: {{ risk.get_probability_display }} ({{ risk.probability }}) × Dopad: {{ risk.get_impact_display }} ({{ risk.impact }})
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Úroveň rizika</div>
+        <div style="display: inline-block; padding: 8px 16px; border-radius: 12px; font-weight: 600; color: white; background: {% if risk.risk_score >= 15 %}#dc2626{% elif risk.risk_score >= 9 %}#f59e0b{% else %}#10b981{% endif %};">
+          {% if risk.risk_score >= 15 %}VYSOKÉ{% elif risk.risk_score >= 9 %}STŘEDNÍ{% else %}NÍZKÉ{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Basic Information -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📋 Základní informace</h3>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Název rizika</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ risk.title }}</div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Status</div>
+        <div>
+          <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
+            {% if risk.status == 'identified' %}background: #f1f5f9; color: #475569;
+            {% elif risk.status == 'assessed' %}background: #dbeafe; color: #1e40af;
+            {% elif risk.status == 'mitigated' %}background: #d1fae5; color: #065f46;
+            {% elif risk.status == 'accepted' %}background: #fef3c7; color: #92400e;
+            {% elif risk.status == 'closed' %}background: #e0e7ff; color: #3730a3;
+            {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+            {{ risk.get_status_display }}
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Kategorie</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ risk.get_category_display }}</div>
+      </div>
+
+      {% if risk.owner %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Zodpovědná osoba</div>
+        <div style="font-weight: 600; color: #1e293b;">👤 {{ risk.owner.get_full_name }}</div>
+      </div>
+      {% endif %}
+
+      {% if risk.project %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Projekt</div>
+        <div style="font-weight: 600; color: #1e293b;">📁 {{ risk.project.name }}</div>
+      </div>
+      {% endif %}
+
+      {% if risk.organization %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Organizace</div>
+        <div style="font-weight: 600; color: #1e293b;">🏛️ {{ risk.organization.name }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis rizika</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ risk.description|linebreaks }}</div>
+    </div>
+  </div>
+
+  <!-- Risk Assessment -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📊 Hodnocení rizika</h3>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Pravděpodobnost výskytu</div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">{{ risk.probability }}</div>
+          <div>
+            <div style="font-weight: 600; color: #1e293b;">{{ risk.get_probability_display }}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">1 (velmi nízká) - 5 (velmi vysoká)</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Dopad na projekt</div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;">{{ risk.impact }}</div>
+          <div>
+            <div style="font-weight: 600; color: #1e293b;">{{ risk.get_impact_display }}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">1 (zanedbatelný) - 5 (kritický)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mitigation Strategy -->
+  <div class="content-card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">🛡️ Strategie řízení rizika</h3>
+
+    {% if risk.mitigation_strategy %}
+    <div style="margin-bottom: 1.5rem;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Strategie zmírnění</div>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; color: #1e293b; line-height: 1.6;">
+        {{ risk.mitigation_strategy|linebreaks }}
+      </div>
+    </div>
+    {% else %}
+    <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 1.5rem;">
+      <div style="color: #92400e; font-weight: 600; margin-bottom: 0.25rem;">⚠️ Strategie zmírnění nebyla definována</div>
+      <div style="font-size: 0.875rem; color: #78350f;">Doporučujeme definovat strategii pro snížení dopadu nebo pravděpodobnosti rizika.</div>
+    </div>
+    {% endif %}
+
+    {% if risk.contingency_plan %}
+    <div>
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Plán záchrany (Contingency Plan)</div>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; color: #1e293b; line-height: 1.6;">
+        {{ risk.contingency_plan|linebreaks }}
+      </div>
+    </div>
+    {% else %}
+    <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+      <div style="color: #92400e; font-weight: 600; margin-bottom: 0.25rem;">⚠️ Plán záchrany nebyl definován</div>
+      <div style="font-size: 0.875rem; color: #78350f;">Doporučujeme připravit plán pro případ, že se riziko realizuje.</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Metadata -->
+  <div class="content-card" style="margin-top: 1.5rem; background: #f8fafc;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <div style="color: #64748b;">Vytvořeno</div>
+        <div style="color: #1e293b;">{{ risk.created_at|date:"d.m.Y H:i" }}</div>
+        {% if risk.created_by %}
+        <div style="color: #64748b; font-size: 0.75rem;">{{ risk.created_by.get_full_name }}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div style="color: #64748b;">Aktualizováno</div>
+        <div style="color: #1e293b;">{{ risk.updated_at|date:"d.m.Y H:i" }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">ID rizika</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ risk.risk_id }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
