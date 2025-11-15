@@ -15,12 +15,33 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 {% block content %}
 <div class="max-w-6xl mx-auto space-y-8">
 
+  <!-- Hláška o ukončení projektu -->
+  {% if is_project_closed %}
+  <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-md">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-lg font-semibold text-red-800">⚠️ Tento projekt je UKONČEN</h3>
+        <p class="text-sm text-red-700 mt-1">
+          Projekt byl ukončen dne <strong>{{ project.end_date|date:"d.m.Y" }}</strong>. Nelze přidávat nový obsah.
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <!-- Sekce: Úkoly -->
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">✅ Úkoly projektu</h2>
       <div class="flex gap-3">
+        {% if not is_project_closed %}
         <a href="novy-ukol/" class="btn btn-primary">＋ Nový úkol</a>
+        {% endif %}
         <button id="toggleView" class="btn btn-outline">📊 Zobrazit Kanban</button>
       </div>
     </div>
@@ -194,7 +215,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">🐛 Chyby z testování</h2>
+      {% if not is_project_closed %}
       <a href="{% url 'create_test_error_for_project' project.project_id %}" class="btn btn-primary">＋ Nová chyba</a>
+      {% endif %}
     </div>
     <div class="overflow-x-auto">
       <table class="data-table">
@@ -240,7 +263,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">📍 Milníky</h2>
+      {% if not is_project_closed %}
       <a href="novy-milnik/" class="btn btn-primary">＋ Přidat milník</a>
+      {% endif %}
     </div>
     <table class="data-table">
       <thead>
@@ -285,7 +310,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">📄 Dokumenty</h2>
+      {% if not is_project_closed %}
       <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat dokument</a>
+      {% endif %}
     </div>
     <table class="data-table">
       <thead>
@@ -320,7 +347,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold text-gray-800">👥 Kontakty projektu</h2>
+      {% if not is_project_closed %}
       <a href="{% url 'create_contact_project' project.project_id %}" class="btn btn-primary">＋ Nový kontakt</a>
+      {% endif %}
     </div>
     <table class="data-table">
       <thead>
@@ -363,7 +392,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     <div class="content-card">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold text-gray-800">Členové týmu</h2>
+        {% if not is_project_closed %}
         <a href="uzivatele/" class="btn btn-outline">Spravovat</a>
+        {% endif %}
       </div>
       <ul class="content-list">
         {% for member in members %}
@@ -381,7 +412,9 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     <div class="content-card">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold text-gray-800">Kategorie projektu</h2>
+        {% if not is_project_closed %}
         <a href="{% url 'create_category' project.project_id %}" class="btn btn-outline">＋ Přidat</a>
+        {% endif %}
       </div>
       <ul class="content-list">
         {% for category in project.categories.all %}
