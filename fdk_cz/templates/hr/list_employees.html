@@ -4,21 +4,168 @@
 {% block header_subtitle %}Správa zaměstnanců a pracovních pozic{% endblock %}
 
 {% block content %}
-<div style="max-width: 1400px; margin: 0 auto;">
+<div class="max-w-7xl mx-auto">
+  <!-- Actions and Filters -->
+  <div class="mb-6 flex flex-col md:flex-row justify-between gap-4">
+    <div class="flex gap-3">
+      <a href="{% url 'create_employee' %}" class="btn btn-primary">+ Nový zaměstnanec</a>
+      <a href="{% url 'hr_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-2">
+      <!-- Status Filter -->
+      <form method="GET" class="flex gap-2 items-center">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_department %}<input type="hidden" name="department" value="{{ selected_department }}">{% endif %}
+        <select name="status" onchange="this.form.submit()" class="form-control">
+          <option value="">Všechny statusy</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Department Filter -->
+      <form method="GET" class="flex gap-2 items-center">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        <select name="department" onchange="this.form.submit()" class="form-control">
+          <option value="">Všechna oddělení</option>
+          {% for dept in departments %}
+            <option value="{{ dept.department_id }}" {% if selected_department == dept.department_id|stringformat:"s" %}selected{% endif %}>
+              {{ dept.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Search -->
+      <form method="GET" class="flex gap-2">
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        {% if selected_department %}<input type="hidden" name="department" value="{{ selected_department }}">{% endif %}
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat zaměstnance..." class="form-control">
+        <button type="submit" class="btn btn-secondary">🔍</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Employees Table -->
   <div class="content-card">
-    <div style="text-align: center; padding: 4rem;">
-      <div style="font-size: 5rem; margin-bottom: 1.5rem;">👥</div>
-      <h3 style="font-size: 1.5rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">Modul Zaměstnanci</h3>
-      <p style="color: #64748b; margin-bottom: 2rem;">Tento modul je v přípravě. Brzy zde bude k dispozici kompletní správa zaměstnanců.</p>
-      <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;">
-        <p style="font-size: 0.875rem; color: #1e40af; margin: 0;">
-          <strong>Plánované funkce:</strong><br>
-          • Evidence zaměstnanců a jejich kontaktů<br>
-          • Pracovní pozice a organizační struktura<br>
-          • Docházka a pracovní doba<br>
-          • Dovolené a nepřítomnost<br>
-          • Hodnocení výkonu
+    {% if employees %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Jméno</th>
+              <th class="hidden md:table-cell">Email</th>
+              <th class="hidden lg:table-cell">Oddělení</th>
+              <th class="hidden lg:table-cell">Pozice</th>
+              <th>Status</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for employee in employees %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_employee' employee.employee_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ employee.first_name }} {{ employee.last_name }}
+                  </a>
+                  {% if employee.user %}
+                    <div class="text-xs text-gray-500 mt-1">
+                      🔗 {{ employee.user.username }}
+                    </div>
+                  {% endif %}
+                  {% if employee.employee_number %}
+                    <div class="text-xs text-gray-500 mt-1">
+                      #{{ employee.employee_number }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  {% if employee.email %}
+                    <a href="mailto:{{ employee.email }}" class="text-blue-600 hover:underline">
+                      {{ employee.email }}
+                    </a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {% if employee.department %}
+                    <a href="{% url 'detail_department' employee.department.department_id %}" class="text-blue-600 hover:underline">
+                      {{ employee.department.name }}
+                    </a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {{ employee.position|default:"—" }}
+                </td>
+                <td>
+                  <span class="px-2 py-1 rounded text-xs font-semibold
+                    {% if employee.status == 'active' %}bg-green-100 text-green-700
+                    {% elif employee.status == 'on_leave' %}bg-yellow-100 text-yellow-800
+                    {% elif employee.status == 'suspended' %}bg-orange-100 text-orange-700
+                    {% elif employee.status == 'terminated' %}bg-red-100 text-red-700
+                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                    {{ employee.get_status_display }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_employee' employee.employee_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_employee' employee.employee_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Results Summary -->
+      <div class="mt-4 text-sm text-gray-600 text-center">
+        Zobrazeno {{ employees.count }} zaměstnanců
+        {% if selected_status or selected_department or search_query %}
+          • <a href="{% url 'list_employees' %}" class="text-blue-600 hover:underline">Zrušit filtry</a>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-5xl mb-3">👥</div>
+        <p class="text-gray-600 mb-4">
+          {% if search_query or selected_status or selected_department %}
+            Žádní zaměstnanci odpovídající vašemu hledání
+          {% else %}
+            Zatím nemáte přidané žádné zaměstnance
+          {% endif %}
         </p>
+        {% if search_query or selected_status or selected_department %}
+          <a href="{% url 'list_employees' %}" class="btn btn-outline mr-2">Zrušit filtry</a>
+        {% endif %}
+        <a href="{% url 'create_employee' %}" class="btn btn-primary">+ Přidat prvního zaměstnance</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro správu zaměstnanců</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Udržujte aktuální kontaktní údaje všech zaměstnanců</li>
+          <li>• Propojte zaměstnance s jejich uživatelskými účty pro přístup do systému</li>
+          <li>• Organizujte zaměstnance do oddělení pro lepší přehled</li>
+          <li>• Sledujte statusy zaměstnanců (aktivní, na dovolené, ukončeno)</li>
+          <li>• Používejte poznámky pro důležité informace o zaměstnancích</li>
+        </ul>
       </div>
     </div>
   </div>
