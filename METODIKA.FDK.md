@@ -127,42 +127,81 @@ owner = ForeignKey(User)
 - UI texty (label, help_text) jsou česky pro koncové uživatele
 - Dokumentace může být česky
 
-## 3.5 Tabulky - jednotný styl
+## 3.5 Tabulky - jednotný styl a responsivita
 
 ### Základní pravidla:
+- **VŽDY** obalit tabulku v `<div class="overflow-x-auto">` - KRITICKÉ pro responzivitu!
+- Používat třídu `data-table` pro jednotný styl
+- Responzivní sloupce: `hidden md:table-cell`, `hidden lg:table-cell`
+- Akce vpravo: `text-right` třída na poslední sloupec
 - Každá tabulka je v **bílém boxu** s padding a stínem
-- Jednotné TailwindCSS třídy pro všechny tabulky
 
-### Standardní struktura tabulky:
+### Vzorová struktura (POUŽÍT VŠUDE):
 
 ```html
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sloupec 1
-                </th>
-                <!-- další sloupce -->
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    Data
-                </td>
-                <!-- další buňky -->
-            </tr>
-        </tbody>
-    </table>
+<!-- Card wrapper (volitelné, ale doporučené) -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Název tabulky</h2>
+
+    <!-- POVINNÝ overflow wrapper - zabraňuje přetékání -->
+    <div class="overflow-x-auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hlavní sloupec (vždy viditelný)</th>
+                    <th class="hidden md:table-cell">Tablet+ (768px+)</th>
+                    <th class="hidden lg:table-cell">Desktop (1024px+)</th>
+                    <th class="text-right">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>Primární data</strong>
+                        <div class="text-xs text-gray-500 mt-1">Pomocné info na mobilu</div>
+                    </td>
+                    <td class="hidden md:table-cell">Data</td>
+                    <td class="hidden lg:table-cell">Data</td>
+                    <td class="text-right">
+                        <div class="data-table-actions">
+                            <a href="#">👁️ Detail</a>
+                            <a href="#">✏️ Upravit</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty state (když není žádná data) -->
+    {% if not items %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📋</span>
+        <p style="color: #64748b;">Žádná data k zobrazení</p>
+    </div>
+    {% endif %}
 </div>
 ```
 
 ### Povinné vlastnosti:
-- `bg-white rounded-lg shadow-md` - bílý box se stínem
-- `divide-y divide-gray-200` - horizontální dělící čáry
-- `hover:bg-gray-50` - hover efekt na řádcích
-- `px-6 py-4` - jednotný padding v buňkách
+- `overflow-x-auto` - **KRITICKÉ!** Musí být na wrapperu kolem každé tabulky
+- `data-table` - třída pro automatické styly tabulky
+- `hidden md:table-cell` - skrýt sloupce na mobilu (< 768px)
+- `hidden lg:table-cell` - skrýt sloupce na tabletu (< 1024px)
+- `text-right` - zarovnání akcí vpravo
+- `data-table-actions` - wrapper pro akční tlačítka
+
+### Responzivní strategie:
+1. **Mobil (< 768px)**: Zobrazit pouze nejdůležitější sloupce
+2. **Tablet (768px+)**: Zobrazit střední prioritu
+3. **Desktop (1024px+)**: Zobrazit všechny sloupce
+
+### CSS třída data-table (v base.css):
+Automaticky aplikuje jednotný styl na všechny tabulky:
+- Šedé pozadí hlavičky
+- Hover efekt na řádcích
+- Správný padding a zarovnání
+- Dělící čáry mezi řádky
 
 ## 3.6 Formuláře - jednotný styl
 
