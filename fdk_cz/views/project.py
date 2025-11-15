@@ -719,11 +719,14 @@ def project_log(request, project_id):
     """
     Project activity log - visible only to project administrators
     Shows:
-    - Task changes (created, status changes)
+    - Task changes (created, status changes, completed)
     - New documents and edits
-    - Errors (including deleted ones)
+    - Errors (including deleted and resolved ones)
     - Comments on tasks
+    Paginated by 100 items per page
     """
+    from django.core.paginator import Paginator
+
     project = get_object_or_404(Project, pk=project_id)
 
     # Check if user is project administrator
@@ -739,9 +742,10 @@ def project_log(request, project_id):
     # Gather all activities
     activities = []
 
-    # 1. Tasks (including deleted)
+    # 1. Tasks (including deleted and completed)
     tasks = ProjectTask.objects.filter(project=project).order_by('-created')
     for task in tasks:
+        # Task creation
         activities.append({
             'type': 'task_deleted' if task.deleted else 'task_created',
             'timestamp': task.created,
@@ -752,6 +756,19 @@ def project_log(request, project_id):
             'object': task,
             'deleted': task.deleted
         })
+
+        # Task completion (if status is "Hotovo" and task has been updated)
+        if task.status == 'Hotovo' and hasattr(task, 'updated') and task.updated:
+            activities.append({
+                'type': 'task_completed',
+                'timestamp': task.updated,
+                'title': task.title,
+                'description': f'Úkol dokončen',
+                'status': task.status,
+                'user': task.creator,
+                'object': task,
+                'deleted': False
+            })
 
     # 2. Documents
     documents = ProjectDocument.objects.filter(project=project).order_by('-uploaded_at')
@@ -766,9 +783,10 @@ def project_log(request, project_id):
             'deleted': False
         })
 
-    # 3. Test Errors (including deleted)
+    # 3. Test Errors (including deleted and resolved)
     errors = TestError.objects.filter(project=project).order_by('-date_created')
     for error in errors:
+        # Error creation
         activities.append({
             'type': 'error_deleted' if error.deleted else 'error_created',
             'timestamp': error.date_created,
@@ -779,6 +797,19 @@ def project_log(request, project_id):
             'object': error,
             'deleted': error.deleted
         })
+
+        # Error resolution (if status is "Vyřešeno" and has resolution date)
+        if error.status == 'resolved' and hasattr(error, 'date_resolved') and error.date_resolved:
+            activities.append({
+                'type': 'error_resolved',
+                'timestamp': error.date_resolved,
+                'title': error.error_title,
+                'description': f'Chyba vyřešena',
+                'status': error.get_status_display(),
+                'user': error.created_by,
+                'object': error,
+                'deleted': False
+            })
 
     # 4. Comments on tasks
     comments = ProjectComment.objects.filter(project=project).order_by('-posted')
@@ -796,8 +827,15 @@ def project_log(request, project_id):
     # Sort all activities by timestamp (newest first)
     activities.sort(key=lambda x: x['timestamp'] if x['timestamp'] else timezone.now(), reverse=True)
 
+    # Paginate activities (100 per page)
+    paginator = Paginator(activities, 100)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'project/project_log.html', {
         'project': project,
-        'activities': activities
+        'activities': page_obj.object_list,
+        'page_obj': page_obj,
+        'is_paginated': paginator.num_pages > 1
     })
 

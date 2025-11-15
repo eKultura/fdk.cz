@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ asset.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 {{ asset.name }}{% endblock %}
+{% block header_subtitle %}Detail majetku{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_asset' asset.asset_id %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'delete_asset' asset.asset_id %}" class="btn btn-outline" style="border-color:#dc2626;color:#dc2626;">🗑️ Smazat</a>
+    <a href="{% url 'list_assets' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <!-- Základní informace -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">ℹ️ Základní informace</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Název -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Název majetku</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ asset.name }}</div>
+      </div>
+
+      <!-- Evidenční číslo -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Evidenční číslo</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ asset.asset_number }}</div>
+      </div>
+
+      <!-- Kategorie -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Kategorie</div>
+        {% if asset.category %}
+          <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+            🏷️ {{ asset.category.name }}
+          </span>
+        {% else %}
+          <span style="color: #64748b;">—</span>
+        {% endif %}
+      </div>
+
+      <!-- Organizace -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Organizace</div>
+        <a href="{% url 'organization_detail' asset.organization.organization_id %}" class="font-semibold text-blue-600 hover:underline">
+          🏢 {{ asset.organization.name }}
+        </a>
+      </div>
+
+      <!-- Umístění -->
+      {% if asset.location %}
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Umístění</div>
+        <div style="font-weight: 600; color: #1e293b;">📍 {{ asset.location }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Odpovědná osoba -->
+      {% if asset.responsible_person %}
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Odpovědná osoba</div>
+        <div style="font-weight: 600; color: #1e293b;">👤 {{ asset.responsible_person.get_full_name|default:asset.responsible_person.username }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Status -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Status</div>
+        <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+          {% if asset.status == 'active' %}background: #d1fae5; color: #065f46;
+          {% elif asset.status == 'maintenance' %}background: #fef3c7; color: #92400e;
+          {% elif asset.status == 'stored' %}background: #e0e7ff; color: #3730a3;
+          {% else %}background: #fee2e2; color: #991b1b;{% endif %}">
+          {{ asset.get_status_display }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Popis -->
+    {% if asset.description %}
+    <div style="margin-top: 1.5rem;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis</div>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #475569; white-space: pre-wrap;">{{ asset.description }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Finanční údaje -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">💰 Finanční údaje</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Datum pořízení -->
+      {% if asset.purchase_date %}
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Datum pořízení</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ asset.purchase_date|date:"d.m.Y" }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Pořizovací cena -->
+      {% if asset.purchase_price %}
+      <div style="padding: 1rem; background: #eff6ff; border-radius: 8px; border: 2px solid #3b82f6;">
+        <div style="color: #1e40af; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 600;">Pořizovací cena</div>
+        <div style="font-size: 1.5rem; font-weight: 700; color: #1e40af;">{{ asset.purchase_price|floatformat:2 }} {{ asset.currency }}</div>
+      </div>
+      {% endif %}
+
+      <!-- Současná hodnota -->
+      {% if asset.current_value %}
+      <div style="padding: 1rem; background: #dcfce7; border-radius: 8px; border: 2px solid #16a34a;">
+        <div style="color: #15803d; font-size: 0.875rem; margin-bottom: 0.5rem; font-weight: 600;">Současná hodnota</div>
+        <div style="font-size: 1.5rem; font-weight: 700; color: #166534;">{{ asset.current_value|floatformat:2 }} {{ asset.currency }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Poznámky -->
+  {% if asset.notes %}
+  <div class="content-card">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">📝 Poznámky</h2>
+    <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+      <p style="color: #78350f; white-space: pre-wrap;">{{ asset.notes }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

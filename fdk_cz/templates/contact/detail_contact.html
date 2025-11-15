@@ -1,48 +1,98 @@
-{% extends 'contact/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Detail kontaktu{% endblock %}
+{% block title %}{{ contact.first_name }} {{ contact.last_name|default:"" }} | FDK.cz{% endblock %}
+{% block header_title %}👤 {{ contact.first_name }} {{ contact.last_name|default:"" }}{% endblock %}
+{% block header_subtitle %}{% trans "Detail kontaktu" %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-5 px-4 max-w-screen-lg grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
-    <!-- Levý blok 2/3 - Detail kontaktu -->
-    <div class="col-span-2 bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">{{ contact.first_name }} {{ contact.last_name }}</h2>
+<div style="max-width: 1400px; margin: 0 auto;">
 
-        <p class="text-gray-600"><strong>{% trans "Email" %}:</strong> {{ contact.email|default:"-" }}</p>
-        <p class="text-gray-600"><strong>{% trans "Telefon" %}:</strong> {{ contact.phone|default:"-" }}</p>
-        <p class="text-gray-600"><strong>{% trans "Společnost" %}:</strong> {{ contact.company|default:"-" }}</p>
-        <p class="text-gray-600"><strong>{% trans "Popis" %}:</strong> {{ contact.description|default:"-" }}</p>
-        <p class="text-gray-600"><strong>{% trans "Projekt" %}:</strong> 
-            {% if contact.project %}{{ contact.project.name }}{% else %}–{% endif %}
-        </p>
-        <p class="text-gray-600"><strong>{% trans "Typ kontaktu" %}:</strong> 
-            {% if contact.is_private %}{% trans "Soukromý" %}{% else %}{% trans "Veřejný" %}{% endif %}
-        </p>
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_contact' contact.contact_id %}" class="btn btn-primary">✏️ {% trans "Upravit kontakt" %}</a>
+    <a href="{% url 'delete_contact' contact.contact_id %}" class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;" onclick="return confirm('{% trans "Opravdu chcete smazat tento kontakt?" %}')">🗑️ {% trans "Smazat" %}</a>
+    {% if contact.project %}
+      <a href="{% url 'detail_project' contact.project.project_id %}" class="btn btn-outline">← {% trans "Zpět na projekt" %}</a>
+    {% else %}
+      <a href="{% url 'my_contacts' %}" class="btn btn-outline">← {% trans "Zpět na kontakty" %}</a>
+    {% endif %}
+  </div>
 
-        <!-- Tlačítka pro akce -->
-        <div class="mt-6 flex gap-3">
-            <a href="{% url 'edit_contact' contact.contact_id %}" class="py-2 px-4 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600">
-                {% trans "Upravit" %}
-            </a>
-            <a href="{% url 'delete_contact' contact.contact_id %}" class="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700" onclick="return confirm('{% trans "Opravdu chcete smazat tento kontakt?" %}');">
-                {% trans "Smazat" %}
-            </a>
-        </div>
+  <!-- Contact Details -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">ℹ️ {% trans "Informace o kontaktu" %}</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Jméno -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Celé jméno" %}</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contact.first_name }} {{ contact.last_name|default:"" }}</div>
+      </div>
+
+      <!-- Email -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Email" %}</div>
+        {% if contact.email %}
+          <a href="mailto:{{ contact.email }}" style="font-weight: 600; color: #2563eb;">{{ contact.email }}</a>
+        {% else %}
+          <span style="color: #64748b;">—</span>
+        {% endif %}
+      </div>
+
+      <!-- Telefon -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Telefon" %}</div>
+        {% if contact.phone %}
+          <a href="tel:{{ contact.phone }}" style="font-weight: 600; color: #2563eb;">{{ contact.phone }}</a>
+        {% else %}
+          <span style="color: #64748b;">—</span>
+        {% endif %}
+      </div>
+
+      <!-- Společnost -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Společnost" %}</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ contact.company|default:"—" }}</div>
+      </div>
+
+      <!-- Projekt -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Projekt" %}</div>
+        {% if contact.project %}
+          <a href="{% url 'detail_project' contact.project.project_id %}" class="font-semibold text-blue-600 hover:underline">
+            {{ contact.project.name }}
+          </a>
+        {% else %}
+          <span style="color: #64748b;">—</span>
+        {% endif %}
+      </div>
+
+      <!-- Soukromý kontakt -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Typ kontaktu" %}</div>
+        {% if contact.is_private %}
+          <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+            🔒 {% trans "Soukromý" %}
+          </span>
+        {% else %}
+          <span style="padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+            🏢 {% trans "Firemní" %}
+          </span>
+        {% endif %}
+      </div>
     </div>
 
-    <!-- Pravý blok 1/3 - Pomocník s informacemi -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-md text-center">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">{% trans "Pomocník" %}</h2>
-        <p class="text-gray-600 mb-4">{% trans "Na této stránce vidíte podrobné informace o kontaktu." %}</p>
-        <p class="text-gray-600">{% trans "Můžete kontakt upravit nebo smazat podle potřeby." %}</p>
-
-        <!-- FDK.cz v šedé barvě -->
-        <div class="mt-8 text-center bg-gray-200 py-3 rounded">
-            <p class="font-semibold text-gray-700"><a href="https://fdk.cz">FDK.cz</a></p>
-        </div>
+    <!-- Popis -->
+    {% if contact.description %}
+    <div style="margin-top: 1.5rem;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">{% trans "Popis" %}</div>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #475569; white-space: pre-wrap;">{{ contact.description }}</p>
+      </div>
     </div>
+    {% endif %}
+  </div>
 
 </div>
 {% endblock %}

@@ -217,3 +217,44 @@ def edit_warehouse_item(request, item_id):
         'form': form,
         'item': item
     })
+
+
+# DELETE WAREHOUSE ITEM
+
+@login_required
+def delete_warehouse_item(request, item_id):
+    """Delete warehouse item"""
+    item = get_object_or_404(WarehouseItem, pk=item_id)
+    warehouse_id = item.warehouse.warehouse_id
+    item_name = item.name
+
+    if request.method == 'POST':
+        item.delete()
+        messages.success(request, f'Položka "{item_name}" byla úspěšně smazána.')
+        return redirect('store_detail', store_id=warehouse_id)
+
+    return render(request, 'warehouse/delete_item.html', {
+        'item': item
+    })
+
+
+# BULK DELETE WAREHOUSE ITEMS
+
+@login_required
+def bulk_delete_warehouse_items(request, store_id):
+    """Bulk delete warehouse items"""
+    store = get_object_or_404(Warehouse, pk=store_id)
+
+    if request.method == 'POST':
+        item_ids = request.POST.getlist('item_ids')
+        if item_ids:
+            deleted_count = WarehouseItem.objects.filter(
+                item_id__in=item_ids,
+                warehouse=store
+            ).delete()[0]
+            messages.success(request, f'Bylo smazáno {deleted_count} položek.')
+        else:
+            messages.warning(request, 'Nebyly vybrány žádné položky ke smazání.')
+        return redirect('store_detail', store_id=store_id)
+
+    return redirect('store_detail', store_id=store_id)

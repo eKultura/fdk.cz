@@ -11,6 +11,7 @@
   <!-- Actions -->
   <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
     <a href="{% url 'edit_warehouse_item' item.item_id %}" class="btn btn-primary">✏️ {% trans "Upravit položku" %}</a>
+    <a href="{% url 'delete_warehouse_item' item.item_id %}" class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;">🗑️ {% trans "Smazat" %}</a>
     <a href="{% url 'store_detail' item.warehouse.warehouse_id %}" class="btn btn-outline">← {% trans "Zpět na sklad" %}</a>
   </div>
 
