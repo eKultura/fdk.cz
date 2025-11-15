@@ -58,9 +58,7 @@
         <label class="block text-sm font-medium text-gray-600 mb-1">Přiřazeno</label>
         <p class="text-gray-900">
           {% if asset.assigned_to %}
-            <a href="{% url 'public_profile' asset.assigned_to.username %}" class="text-blue-600 hover:text-blue-900">
-              {{ asset.assigned_to.get_full_name|default:asset.assigned_to.username }}
-            </a>
+            {{ asset.assigned_to.get_full_name|default:asset.assigned_to.username }}
           {% else %}
             —
           {% endif %}

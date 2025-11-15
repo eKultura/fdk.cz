@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Upravit IT aktivum" %} | FDK.cz{% endblock %}
+{% block header_title %}💻 {% trans "Upravit IT aktivum" %}{% endblock %}
+{% block header_subtitle %}{{ asset.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'detail_it_asset' asset.asset_id %}" class="btn btn-outline">← {% trans "Zpět na detail" %}</a>
+    <a href="{% url 'list_it_assets' %}" class="btn btn-outline">📋 {% trans "Seznam aktiv" %}</a>
+  </div>
+
+  <div class="content-card">
+    <h3 class="text-xl font-semibold mb-6">✏️ {% trans "Úprava IT aktiva" %}</h3>
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Information -->
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6 pb-2 border-b-2 border-gray-200">📝 {% trans "Základní informace" %}</h4>
+
+      <div class="mb-6">
+        <label for="{{ form.name.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+          {% trans "Název aktiva" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="{{ form.asset_tag.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Asset Tag" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.asset_tag }}
+          <p class="mt-1 text-xs text-gray-500">{% trans "Unikátní identifikátor aktiva" %}</p>
+          {% if form.asset_tag.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.asset_tag.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.asset_type.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Typ aktiva" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.asset_type }}
+          {% if form.asset_type.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.asset_type.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="{{ form.description.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+          {% trans "Popis" %}
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Technical Details -->
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">🔧 {% trans "Technické údaje" %}</h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <label for="{{ form.manufacturer.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Výrobce" %}
+          </label>
+          {{ form.manufacturer }}
+          {% if form.manufacturer.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.manufacturer.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.model.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Model" %}
+          </label>
+          {{ form.model }}
+          {% if form.model.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.model.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.serial_number.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Sériové číslo" %}
+          </label>
+          {{ form.serial_number }}
+          {% if form.serial_number.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.serial_number.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Assignment -->
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">👥 {% trans "Přiřazení" %}</h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="{{ form.organization.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Organizace" %} <span class="text-red-500">*</span>
+          </label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.assigned_to.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Přiřazeno uživateli" %}
+          </label>
+          {{ form.assigned_to }}
+          {% if form.assigned_to.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.assigned_to.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label for="{{ form.status.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+          {% trans "Status" %} <span class="text-red-500">*</span>
+        </label>
+        {{ form.status }}
+        {% if form.status.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.status.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Financial Information -->
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">💰 {% trans "Finanční údaje" %}</h4>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div>
+          <label for="{{ form.purchase_date.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Datum nákupu" %}
+          </label>
+          {{ form.purchase_date }}
+          {% if form.purchase_date.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.purchase_date.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.purchase_price.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Pořizovací cena" %}
+          </label>
+          {{ form.purchase_price }}
+          <p class="mt-1 text-xs text-gray-500">{% trans "Cena v Kč" %}</p>
+          {% if form.purchase_price.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.purchase_price.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="{{ form.warranty_expiry.id_for_label }}" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
+            {% trans "Konec záruky" %}
+          </label>
+          {{ form.warranty_expiry }}
+          {% if form.warranty_expiry.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.warranty_expiry.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t-2 border-gray-200">
+        <button type="submit" class="btn btn-primary">💾 {% trans "Uložit změny" %}</button>
+        <a href="{% url 'detail_it_asset' asset.asset_id %}" class="btn btn-outline">{% trans "Zrušit" %}</a>
+        <a href="{% url 'delete_it_asset' asset.asset_id %}" class="btn btn-danger ml-auto">🗑️ {% trans "Smazat" %}</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

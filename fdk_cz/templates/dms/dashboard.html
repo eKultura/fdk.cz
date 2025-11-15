@@ -18,7 +18,7 @@
           Níže vidíte ukázkové dokumenty pro demonstraci funkcí systému.
         </p>
         <p class="text-sm text-gray-600">
-          Pro plný přístup k vašim dokumentům se prosím <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-900 font-semibold">přihlaste</a>.
+          Pro plný přístup k vašim dokumentům se prosím <a href="{% url 'login_cs' %}" class="text-blue-600 hover:text-blue-900 font-semibold">přihlaste</a>.
         </p>
       </div>
     </div>
@@ -60,7 +60,7 @@
     </div>
 
     <div class="mt-6 text-center">
-      <a href="{% url 'login' %}" class="btn btn-primary">🔑 Přihlásit se a zobrazit své dokumenty</a>
+      <a href="{% url 'login_cs' %}" class="btn btn-primary">🔑 Přihlásit se a zobrazit své dokumenty</a>
     </div>
   </div>
 
@@ -158,9 +158,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {% if doc.uploaded_by %}
-                  <a href="{% url 'public_profile' doc.uploaded_by.username %}" class="text-blue-600 hover:text-blue-900">
-                    {{ doc.uploaded_by.get_full_name|default:doc.uploaded_by.username }}
-                  </a>
+                  {{ doc.uploaded_by.get_full_name|default:doc.uploaded_by.username }}
                 {% else %}
                   —
                 {% endif %}
