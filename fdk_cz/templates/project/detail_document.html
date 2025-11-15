@@ -2,85 +2,110 @@
 {% load i18n %}
 
 {% block title %}{{ document.title }} | Dokument | FDK.cz{% endblock %}
-{% block header_title %}{{ document.title }}{% endblock %}
+{% block header_title %}📄 {{ document.title }}{% endblock %}
 {% block header_subtitle %}
 Dokument v projektu <strong>{{ document.project.name }}</strong>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div style="max-width: 1200px; margin: 0 auto;">
+
   <!-- Actions -->
-  <div class="mb-6 flex gap-3">
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
     <a href="{% url 'detail_project' document.project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
-    <a href="{% url 'edit_document' document.pk %}" class="btn btn-secondary">✏️ Upravit</a>
-    <a href="{% url 'delete_document' document.pk %}" class="btn btn-danger"
-       onclick="return confirm('Opravdu chcete smazat tento dokument?');">🗑️ Smazat</a>
+    <a href="{% url 'edit_document' document.pk %}" class="btn btn-primary">✏️ Upravit</a>
+    <a href="{% url 'delete_document' document.pk %}" class="btn btn-outline"
+       onclick="return confirm('Opravdu chcete smazat tento dokument?');" style="color: #dc2626;">🗑️ Smazat</a>
   </div>
 
   <!-- Základní informace -->
-  <div class="content-card mb-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Informace o dokumentu</h2>
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📋 Základní informace</h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Název dokumentu</label>
-        <p class="text-lg font-semibold text-gray-900">{{ document.title }}</p>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Název dokumentu</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ document.title }}</div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Typ dokumentu</label>
-        <p class="text-gray-900">
-          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Typ dokumentu</div>
+        <div>
+          <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500; background: #dbeafe; color: #1e40af;">
             {{ document.document_type|default:"—" }}
           </span>
-        </p>
+        </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Kategorie</label>
-        <p class="text-gray-900">{{ document.category.name|default:"—" }}</p>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Kategorie</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ document.category.name|default:"—" }}</div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Projekt</label>
-        <p class="text-gray-900">
-          <a href="{% url 'detail_project' document.project.project_id %}" class="text-blue-600 hover:text-blue-900">
-            {{ document.project.name }}
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Projekt</div>
+        <div style="font-weight: 600; color: #1e293b;">
+          <a href="{% url 'detail_project' document.project.project_id %}" style="color: #3b82f6; text-decoration: none;">
+            📁 {{ document.project.name }}
           </a>
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Obsah dokumentu -->
-  <div class="content-card mb-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">📄 Obsah dokumentu</h2>
-    <div class="prose max-w-none text-gray-800 leading-relaxed">
-      {{ document.description|safe|default:"<p class='text-gray-500 italic'>Žádný obsah.</p>" }}
-    </div>
-  </div>
-
-  <!-- Metadata -->
-  <div class="content-card">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">⏱️ Metadata</h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Nahráno</label>
-        <p class="text-sm text-gray-900">
-          {{ document.uploaded_at|date:"d.m.Y H:i" }}
-        </p>
+        </div>
       </div>
 
-      {% if document.uploaded_by %}
+      {% if document.url %}
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Nahrál</label>
-        <p class="text-sm text-gray-900">
-          {{ document.uploaded_by.get_full_name|default:document.uploaded_by.username }}
-        </p>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">URL</div>
+        <div style="font-weight: 600; color: #1e293b;">
+          <a href="{{ document.url }}" target="_blank" style="color: #3b82f6; text-decoration: none;">
+            🔗 {{ document.url }}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if document.file_path %}
+      <div>
+        <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Soubor</div>
+        <div style="font-weight: 600; color: #1e293b; font-family: monospace; font-size: 0.875rem;">
+          📎 {{ document.file_path }}
+        </div>
       </div>
       {% endif %}
     </div>
+
+    {% if document.description %}
+    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+      <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis dokumentu</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ document.description|linebreaks }}</div>
+    </div>
+    {% endif %}
   </div>
+
+  <!-- Metadata -->
+  <div class="content-card" style="margin-top: 1.5rem; background: #f8fafc;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">⏱️ Metadata a informace</h3>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <div style="color: #64748b;">Nahráno</div>
+        <div style="color: #1e293b;">{{ document.uploaded_at|date:"d.m.Y H:i" }}</div>
+        {% if document.uploaded_by %}
+        <div style="color: #64748b; font-size: 0.75rem;">{{ document.uploaded_by.get_full_name|default:document.uploaded_by.username }}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div style="color: #64748b;">ID dokumentu</div>
+        <div style="font-family: monospace; color: #1e293b;">{{ document.document_id }}</div>
+      </div>
+      <div>
+        <div style="color: #64748b;">Přístupnost</div>
+        <div style="color: #1e293b;">
+          <span style="padding: 2px 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 500; background: #d1fae5; color: #065f46;">
+            Projektová úroveň
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
