@@ -59,6 +59,7 @@
   <div class="content-card mb-6">
     <h3 class="text-xl font-semibold mb-4">💻 Nedávno přidaná IT aktiva</h3>
     {% if assets %}
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -97,6 +98,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
     {% else %}
     <div class="text-center py-8 bg-gray-50 rounded-lg">
       <p class="text-gray-500">Zatím nejsou žádná IT aktiva. <a href="{% url 'create_it_asset' %}" class="text-blue-600 hover:underline">Vytvořit první aktivum</a></p>
@@ -108,6 +110,7 @@
   <div class="content-card">
     <h3 class="text-xl font-semibold mb-4">⚠️ Nedávné incidenty</h3>
     {% if incidents %}
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -162,6 +165,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
     {% else %}
     <div class="text-center py-8 bg-gray-50 rounded-lg">
       <p class="text-gray-500">Zatím nejsou žádné incidenty. <a href="{% url 'create_it_incident' %}" class="text-blue-600 hover:underline">Nahlásit první incident</a></p>

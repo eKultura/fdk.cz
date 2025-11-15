@@ -7,24 +7,19 @@ class transaction_form(forms.ModelForm):
         fields = ['transaction_type', 'quantity']
         labels = {
             'transaction_type': 'Typ transakce',
-            'quantity': 'Částka',
+            'quantity': 'Množství',
         }
         widgets = {
-            'type': forms.Select(attrs={'class': 'form-control'}),
-            'amount': forms.NumberInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Zadejte částku'
-            }),
-            'description': forms.Textarea(attrs={
+            'transaction_type': forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'rows': 3,
-                'placeholder': 'Popis transakce'
+                'placeholder': 'Zadejte množství'
             }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['type'].empty_label = "Vyberte typ transakce"
+        self.fields['transaction_type'].empty_label = "Vyberte typ transakce"
 
 
 class WarehouseForm(forms.ModelForm):
