@@ -126,7 +126,7 @@ def edit_test(request, test_id):
         form = test_form(request.POST, instance=test_instance, user=request.user)
         if form.is_valid():
             form.save()
-            return redirect('list_test')
+            return redirect('list_tests')
     else:
         form = test_form(instance=test_instance, user=request.user)
     return render(request, 'test/edit_test.html', {'form': form, 'test': test_instance})

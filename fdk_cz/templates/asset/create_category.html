@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Nová kategorie majetku | FDK.cz{% endblock %}
+{% block header_title %}🏷️ Nová kategorie majetku{% endblock %}
+{% block header_subtitle %}Vytvořte novou kategorii pro evidenci majetku{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_asset_categories' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <div class="content-card">
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 font-semibold mb-2">Formulář obsahuje chyby:</p>
+        <ul class="list-disc list-inside text-red-600 text-sm">
+          {% for field, errors in form.errors.items %}
+            <li>{{ field }}: {{ errors|join:", " }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Informace o kategorii -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Informace o kategorii</h3>
+
+        <div class="form-group">
+          <label for="id_name" class="form-label">
+            Název kategorie <span class="text-red-500">*</span>
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_description" class="form-label">Popis</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">Volitelný popis kategorie majetku</p>
+        </div>
+
+        <div class="form-group">
+          <label for="id_organization" class="form-label">
+            Organizace <span class="text-red-500">*</span>
+          </label>
+          {{ form.organization }}
+          {% if form.organization.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.organization.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">Vyberte organizaci, ke které patří tato kategorie</p>
+        </div>
+
+        <div class="form-group">
+          <label for="id_parent_category" class="form-label">Nadřazená kategorie</label>
+          {{ form.parent_category }}
+          {% if form.parent_category.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.parent_category.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">Volitelné - vytvořte hierarchii kategorií</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          💾 Vytvořit kategorii
+        </button>
+        <a href="{% url 'list_asset_categories' %}" class="btn btn-outline">
+          Zrušit
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
