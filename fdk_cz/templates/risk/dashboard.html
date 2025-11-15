@@ -58,6 +58,7 @@
   <div class="content-card">
     <h3 class="text-xl font-semibold mb-4">⚠️ Nedávná rizika (seřazeno podle skóre)</h3>
     {% if risks %}
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -117,6 +118,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
     {% else %}
     <div class="text-center py-8 bg-gray-50 rounded-lg">
       <p class="text-gray-500">Zatím nejsou žádná identifikovaná rizika. <a href="{% url 'create_risk' %}" class="text-blue-600 hover:underline">Vytvořit první riziko</a></p>

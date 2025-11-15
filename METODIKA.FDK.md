@@ -279,6 +279,93 @@ owner = ForeignKey(User)
 - Nad tlačítky ve formuláři: `mt-6`
 - Uvnitř tlačítka: `px-4 py-2` (padding)
 
+## 3.8 Responzivní tabulky - JEDNOTNÝ STANDARD
+
+### KRITICKÉ PRAVIDLO:
+**KAŽDÁ TABULKA MUSÍ BÝT ZABALENÁ V `<div class="overflow-x-auto">`**
+
+Toto je POVINNÉ pro všechny tabulky v systému, aby se zabránilo přetékání tabulek přes okraj stránky na mobilních zařízeních.
+
+### Standardní struktura responzivní tabulky:
+
+```html
+<!-- SPRÁVNĚ: Tabulka s overflow wrapperem -->
+<div class="content-card">
+    <h3>Nadpis tabulky</h3>
+
+    <div class="overflow-x-auto">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Sloupec 1</th>
+                <th class="hidden md:table-cell">Sloupec 2 (skrytý na mobilu)</th>
+                <th class="text-right">Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Data</td>
+                <td class="hidden md:table-cell">Data 2</td>
+                <td class="text-right">
+                    <div class="data-table-actions">
+                        <a href="#">Detail</a>
+                        <a href="#">Upravit</a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+```
+
+### Povinné vlastnosti:
+
+1. **Overflow wrapper**
+   - VŽDY obalit `<table>` v `<div class="overflow-x-auto">`
+   - Wrapper musí být uvnitř `.content-card`, ale venku z nadpisu
+
+2. **Responzivní sloupce**
+   - Méně důležité sloupce: `class="hidden md:table-cell"`
+   - Důležité sloupce: bez hidden třídy
+   - Minimálně 2-3 sloupce musí být viditelné na mobilu
+
+3. **Table class**
+   - Použít `class="data-table"` pro jednotný styl
+
+4. **Akce v pravém sloupci**
+   - Sloupec s akcemi: `class="text-right"`
+   - Akce zabalit v `<div class="data-table-actions">`
+
+### Příklady chyb:
+
+```html
+<!-- ❌ ŠPATNĚ: Bez overflow wrapperu -->
+<div class="content-card">
+    <h3>Tabulka</h3>
+    <table class="data-table">
+        <!-- Tabulka přeteče na mobilu! -->
+    </table>
+</div>
+
+<!-- ✅ SPRÁVNĚ: S overflow wrapperem -->
+<div class="content-card">
+    <h3>Tabulka</h3>
+    <div class="overflow-x-auto">
+    <table class="data-table">
+        <!-- Tabulka bude scrollovatelná na mobilu -->
+    </table>
+    </div>
+</div>
+```
+
+### Kontrolní seznam:
+- [ ] Tabulka je zabalená v `<div class="overflow-x-auto">`
+- [ ] Wrapper je UVNITŘ `.content-card`
+- [ ] Wrapper je KOLEM `<table>`, ne kolem celého content-cardu
+- [ ] Méně důležité sloupce mají `hidden md:table-cell`
+- [ ] Tabulka používá `class="data-table"`
+
 ---
 
 # 🔄 4. TROJJEDINÝ KONTEXT (ORGANIZACE–PROJEKT–OSOBA)

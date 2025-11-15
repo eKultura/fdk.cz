@@ -267,6 +267,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <a href="novy-milnik/" class="btn btn-primary">＋ Přidat milník</a>
       {% endif %}
     </div>
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -292,6 +293,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- Sekce: Sklady -->
@@ -314,6 +316,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat dokument</a>
       {% endif %}
     </div>
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -341,6 +344,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- Sekce: Kontakty projektu -->
@@ -351,6 +355,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <a href="{% url 'create_contact_project' project.project_id %}" class="btn btn-primary">＋ Nový kontakt</a>
       {% endif %}
     </div>
+    <div class="overflow-x-auto">
     <table class="data-table">
       <thead>
         <tr>
@@ -385,6 +390,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- Sekce: Tým a kategorie -->
