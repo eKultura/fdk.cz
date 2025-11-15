@@ -112,14 +112,12 @@
 
   {% if user.is_authenticated %}
   <!-- Filtrování a vyhledávání -->
-  <div class="bg-white rounded-lg shadow-md p-6" style="margin-bottom: 2rem;">
-    <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">🔍 Filtrování a vyhledávání</h3>
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">🔍 Filtrování a vyhledávání</h3>
     <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
-          Typ výzvy
-        </label>
-        <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="form-group">
+        <label for="type" class="form-label">Typ výzvy</label>
+        <select name="type" id="type" class="form-control">
           <option value="">Všechny typy</option>
           <option value="dotace" {% if request.GET.type == 'dotace' %}selected{% endif %}>Dotace</option>
           <option value="grant" {% if request.GET.type == 'grant' %}selected{% endif %}>Granty</option>
@@ -127,11 +125,9 @@
         </select>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="provider">
-          Poskytovatel
-        </label>
-        <select name="provider" id="provider" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="form-group">
+        <label for="provider" class="form-label">Poskytovatel</label>
+        <select name="provider" id="provider" class="form-control">
           <option value="">Všichni poskytovatelé</option>
           <option value="MKČR" {% if request.GET.provider == 'MKČR' %}selected{% endif %}>MKČR</option>
           <option value="EU" {% if request.GET.provider == 'EU' %}selected{% endif %}>EU fondy</option>
@@ -140,16 +136,14 @@
         </select>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="search">
-          Hledat
-        </label>
-        <input type="text" name="search" id="search" value="{{ request.GET.search }}" placeholder="Název, klíčová slova..."
-               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="form-group">
+        <label for="search" class="form-label">Hledat</label>
+        <input type="text" name="search" id="search" value="{{ request.GET.search }}"
+               placeholder="Název, klíčová slova..." class="form-control">
       </div>
 
       <div style="display: flex; align-items: flex-end;">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full font-medium">
+        <button type="submit" class="btn btn-primary w-full">
           🔎 Filtrovat
         </button>
       </div>

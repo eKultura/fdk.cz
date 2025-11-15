@@ -30,8 +30,12 @@
                     <tbody>
                         {% for test_type in test_types %}
                             <tr>
-                                <td><strong>{{ test_type.name }}</strong></td>
-                                <td>{{ test_type.description|default:"-" }}</td>
+                                <td>
+                                    <a href="{% url 'detail_test_type' test_type.test_type_id %}" class="font-semibold text-blue-600 hover:underline">
+                                        {{ test_type.name }}
+                                    </a>
+                                </td>
+                                <td style="color: #64748b;">{{ test_type.description|default:"—" }}</td>
                                 <td>
                                     <a href="{% url 'detail_project' test_type.project.project_id %}" class="text-blue-600 hover:underline">
                                         {{ test_type.project.name }}
@@ -39,6 +43,7 @@
                                 </td>
                                 <td class="text-right">
                                     <div class="data-table-actions">
+                                        <a href="{% url 'detail_test_type' test_type.test_type_id %}">👁️ {% trans "Detail" %}</a>
                                         <a href="{% url 'edit_test_type' test_type.test_type_id %}">✏️ {% trans "Upravit" %}</a>
                                     </div>
                                 </td>

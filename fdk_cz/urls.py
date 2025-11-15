@@ -33,7 +33,8 @@ from fdk_cz.views.project import create_category, create_document, create_task, 
 
 from fdk_cz.views.test import (
     create_test, create_test_error, create_test_result, create_test_type,
-    delete_test_error, detail_test_error, edit_test, edit_test_error, edit_test_type,
+    delete_test_error, detail_test_error, detail_test, detail_test_type,
+    edit_test, edit_test_error, edit_test_type,
     list_test_errors, get_test_types, list_tests, list_test_results, list_test_types,
     mark_error_fixed,
     # Test Scenarios
@@ -292,11 +293,13 @@ urlpatterns = (
 
     path('testy/typy/', list_test_types, name='list_test_types'),
     path('testy/typy/novy/', create_test_type, name='create_test_type'),
+    path('testy/typy/<int:test_type_id>/', detail_test_type, name='detail_test_type'),
     path('testy/typy/<int:test_type_id>/edit/', edit_test_type, name='edit_test_type'),
 
     # Tests
     path('testy/', list_tests, name='list_tests'),
     path('testy/novy-test/', create_test, name='create_test'),
+    path('testy/<int:test_id>/', detail_test, name='detail_test'),
     path('testy/<int:test_id>/edit/', edit_test, name='edit_test'),
 
     # Test Results
