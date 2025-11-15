@@ -94,7 +94,13 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
             </td>
             <td class="hidden md:table-cell text-gray-600">{{ task.priority }}</td>
             <td class="hidden sm:table-cell text-gray-600">{{ task.assigned.username|default:"–" }}</td>
-            <td class="hidden md:table-cell text-gray-600">{{ task.category.name|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">
+              {% if task.category %}
+                <a href="{% url 'detail_category' task.category.category_id %}" class="text-blue-600 hover:underline">{{ task.category.name }}</a>
+              {% else %}
+                –
+              {% endif %}
+            </td>
             <td class="text-right">
               <div class="data-table-actions">
                 <a href="{% url 'detail_task' task.task_id %}">👁️ Detail</a>
@@ -440,7 +446,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <ul class="content-list">
         {% for member in members %}
         <li class="content-list-item">
-          <span class="content-list-item-text">{{ member.user.username }}</span>
+          <a href="{% url 'user_profile' %}?user_id={{ member.user.pk }}" class="content-list-item-text text-blue-600 hover:underline">{{ member.user.username }}</a>
           <a href="{% url 'remove_project_user' project.project_id member.user.pk %}"
              class="content-list-item-action danger">✖ Odebrat</a>
         </li>
@@ -460,7 +466,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <ul class="content-list">
         {% for category in project.categories.all %}
         <li class="content-list-item">
-          <span class="content-list-item-text">{{ category.name }}</span>
+          <a href="{% url 'detail_category' category.category_id %}" class="content-list-item-text text-blue-600 hover:underline">{{ category.name }}</a>
           <a href="{% url 'edit_category' category.category_id %}"
              class="content-list-item-action">✏️ Upravit</a>
         </li>

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Nový účetní zápis" %} | FDK.cz{% endblock %}
+{% block header_title %}📝 {% trans "Nový účetní zápis" %}{% endblock %}
+{% block header_subtitle %}{{ context.name }} – {% trans "Podvojné účetnictví" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="text-sm text-gray-600 mb-4">
+    <a href="{% url 'accounting_dashboard' %}" class="hover:text-blue-600">{% trans "Účetnictví" %}</a>
+    <span class="mx-2">›</span>
+    <a href="{% url 'journal_ledger' %}" class="hover:text-blue-600">{% trans "Účetní deník" %}</a>
+    <span class="mx-2">›</span>
+    <span class="text-gray-900 font-semibold">{% trans "Nový zápis" %}</span>
+  </nav>
+
+  <!-- Context Info -->
+  <div class="content-card mb-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">{% trans "Aktivní kontext" %}: {{ context.name }}</h3>
+        <p class="text-sm text-gray-600">{% trans "Účetní období" %}: {{ context.fiscal_year }}</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="{% url 'select_accounting_context' %}" class="btn btn-outline">🔄 {% trans "Změnit kontext" %}</a>
+        <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">📋 {% trans "Účtová osnova" %}</a>
+        <a href="{% url 'journal_ledger' %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informační panel o podvojném účetnictví -->
+  <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-md mb-6">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <span class="text-2xl">ℹ️</span>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-lg font-semibold text-blue-800">{% trans "Podvojné účetnictví" %}</h3>
+        <p class="text-sm text-blue-700 mt-1">
+          {% trans "Každý účetní zápis musí mít vyrovnanou stranu MD (má dáti) a D (dal). Celková suma MD se musí rovnat celkové sumě D." %}
+        </p>
+        <ul class="text-sm text-blue-700 mt-2 list-disc list-inside">
+          <li><strong>MD (má dáti)</strong> - {% trans "levá strana účtu, zvýšení aktiv nebo nákladů" %}</li>
+          <li><strong>D (dal)</strong> - {% trans "pravá strana účtu, zvýšení pasiv nebo výnosů" %}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📝 {% trans "Vytvořit účetní zápis" %}</h2>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Display form errors -->
+      {% if form.non_field_errors %}
+      <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <span class="text-2xl">⚠️</span>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-lg font-semibold text-red-800">{% trans "Chyba" %}</h3>
+            <ul class="text-sm text-red-700 mt-1">
+              {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Main form fields -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.entry_number.id_for_label }}">
+            {{ form.entry_number.label }} <span class="text-red-500">*</span>
+          </label>
+          {{ form.entry_number }}
+          {% if form.entry_number.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.entry_number.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.entry_date.id_for_label }}">
+            {{ form.entry_date.label }} <span class="text-red-500">*</span>
+          </label>
+          {{ form.entry_date }}
+          {% if form.entry_date.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.entry_date.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.description.id_for_label }}">
+          {{ form.description.label }} <span class="text-red-500">*</span>
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.notes.id_for_label }}">
+          {{ form.notes.label }}
+        </label>
+        {{ form.notes }}
+        {% if form.notes.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.notes.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Journal Entry Lines (Podvojné zápisy) -->
+      <div class="border-t border-gray-200 pt-6 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 {% trans "Účetní položky (MD/D)" %}</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          {% trans "Přidejte řádky účetního zápisu. Součet MD musí být roven součtu D." %}
+        </p>
+
+        {{ formset.management_form }}
+
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>{% trans "Účet" %}</th>
+                <th>{% trans "Popis" %}</th>
+                <th class="hidden md:table-cell">{% trans "MD (má dáti)" %}</th>
+                <th class="hidden md:table-cell">{% trans "D (dal)" %}</th>
+                <th class="text-right">{% trans "Smazat" %}</th>
+              </tr>
+            </thead>
+            <tbody id="formset-container">
+              {% for line_form in formset %}
+              <tr class="formset-row">
+                <td>
+                  {{ line_form.account }}
+                  {% if line_form.account.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ line_form.account.errors.0 }}</p>
+                  {% endif %}
+                </td>
+                <td>
+                  {{ line_form.description }}
+                  {% if line_form.description.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ line_form.description.errors.0 }}</p>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell">
+                  {{ line_form.debit_amount }}
+                  {% if line_form.debit_amount.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ line_form.debit_amount.errors.0 }}</p>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell">
+                  {{ line_form.credit_amount }}
+                  {% if line_form.credit_amount.errors %}
+                  <p class="text-red-500 text-xs mt-1">{{ line_form.credit_amount.errors.0 }}</p>
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  {{ line_form.DELETE }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary row -->
+        <div class="mt-4 bg-gray-50 p-4 rounded-lg">
+          <div class="grid grid-cols-2 gap-4 text-center">
+            <div>
+              <p class="text-sm text-gray-600 font-semibold">{% trans "Celkem MD" %}</p>
+              <p class="text-2xl font-bold text-blue-600" id="total-debit">0.00</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600 font-semibold">{% trans "Celkem D" %}</p>
+              <p class="text-2xl font-bold text-green-600" id="total-credit">0.00</p>
+            </div>
+          </div>
+          <div class="mt-3 text-center">
+            <p class="text-sm font-semibold" id="balance-status">
+              <span class="text-gray-600">{% trans "Rozdíl:" %}</span>
+              <span id="difference" class="text-lg">0.00</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex justify-end space-x-2 mt-6">
+        <a href="{% url 'journal_ledger' %}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+          {% trans "Zrušit" %}
+        </a>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          {% trans "Uložit zápis" %}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Help section -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">❓ {% trans "Nápověda" %}</h3>
+    <div class="text-sm text-gray-700 space-y-2">
+      <p><strong>{% trans "Jak vytvořit účetní zápis?" %}</strong></p>
+      <ol class="list-decimal list-inside ml-4 space-y-1">
+        <li>{% trans "Vyplňte číslo zápisu a datum účetního případu" %}</li>
+        <li>{% trans "Popište účetní případ" %}</li>
+        <li>{% trans "Přidejte řádky s účty a částkami (MD nebo D)" %}</li>
+        <li>{% trans "Ujistěte se, že součet MD = součet D" %}</li>
+        <li>{% trans "Uložte zápis" %}</li>
+      </ol>
+      <p class="mt-3"><strong>{% trans "Příklad:" %}</strong></p>
+      <p class="ml-4">
+        {% trans "Nákup zboží za hotovost 10 000 Kč:" %}<br>
+        - {% trans "MD 132 (Zboží na skladě): 10 000 Kč" %}<br>
+        - {% trans "D 211 (Pokladna): 10 000 Kč" %}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Calculate totals
+  function calculateTotals() {
+    let totalDebit = 0;
+    let totalCredit = 0;
+
+    document.querySelectorAll('.formset-row').forEach(row => {
+      const deleteCheckbox = row.querySelector('input[type="checkbox"][id*="DELETE"]');
+      if (deleteCheckbox && deleteCheckbox.checked) {
+        return; // Skip deleted rows
+      }
+
+      const debitInput = row.querySelector('input[id*="debit_amount"]');
+      const creditInput = row.querySelector('input[id*="credit_amount"]');
+
+      if (debitInput) {
+        const debitValue = parseFloat(debitInput.value) || 0;
+        totalDebit += debitValue;
+      }
+
+      if (creditInput) {
+        const creditValue = parseFloat(creditInput.value) || 0;
+        totalCredit += creditValue;
+      }
+    });
+
+    const difference = totalDebit - totalCredit;
+
+    // Update UI
+    document.getElementById('total-debit').textContent = totalDebit.toFixed(2);
+    document.getElementById('total-credit').textContent = totalCredit.toFixed(2);
+    document.getElementById('difference').textContent = Math.abs(difference).toFixed(2);
+
+    const balanceStatus = document.getElementById('balance-status');
+    if (Math.abs(difference) < 0.01) {
+      balanceStatus.querySelector('span:last-child').className = 'text-lg text-green-600 font-bold';
+      balanceStatus.querySelector('span:last-child').textContent = '✓ Vyrovnáno';
+    } else {
+      balanceStatus.querySelector('span:last-child').className = 'text-lg text-red-600 font-bold';
+      balanceStatus.querySelector('span:last-child').textContent = difference.toFixed(2) + ' Kč';
+    }
+  }
+
+  // Attach event listeners
+  document.querySelectorAll('input[id*="debit_amount"], input[id*="credit_amount"]').forEach(input => {
+    input.addEventListener('input', calculateTotals);
+  });
+
+  document.querySelectorAll('input[type="checkbox"][id*="DELETE"]').forEach(checkbox => {
+    checkbox.addEventListener('change', calculateTotals);
+  });
+
+  // Initial calculation
+  calculateTotals();
+});
+</script>
+{% endblock %}
