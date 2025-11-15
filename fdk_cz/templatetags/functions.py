@@ -51,7 +51,13 @@ def markdown_format(text):
     if not text:
         return ''
 
-    # Escape HTML first
+    # Import html module for unescape
+    from html import unescape
+
+    # Unescape any existing HTML entities first (to prevent double-escaping)
+    text = unescape(str(text))
+
+    # Escape HTML to prevent XSS
     text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
     # Headings (must come before bold/italic)

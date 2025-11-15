@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Log projektu {{ project.name }} | FDK.cz{% endblock %}
+{% block header_title %}📊 Log aktivit projektu{% endblock %}
+{% block header_subtitle %}
+Historie změn a aktivit v projektu <strong>{{ project.name }}</strong>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Breadcrumbs -->
+  <div style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+    <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none;">📁 Projekty</a>
+    <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+    <a href="{% url 'detail_project' project.project_id %}" style="color: #3b82f6; text-decoration: none;">{{ project.name }}</a>
+    <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+    <span style="color: #64748b;">Log aktivit</span>
+  </div>
+
+  <!-- Action buttons -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <a href="{% url 'detail_project' project.project_id %}" class="btn btn-outline">← Zpět na projekt</a>
+  </div>
+
+  <!-- Info box -->
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+      <span style="color: #64748b;">ℹ️ Informace:</span>
+      <span style="color: #1e293b;">Tento log je přístupný pouze administrátorům projektu. Zobrazuje všechny aktivity včetně smazaných položek.</span>
+    </div>
+  </div>
+
+  <!-- Activities table -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Historie aktivit ({{ activities|length }})</h2>
+
+    {% if activities %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Datum a čas</th>
+            <th>Typ aktivity</th>
+            <th>Název / Popis</th>
+            <th class="hidden md:table-cell">Uživatel</th>
+            <th class="hidden lg:table-cell">Status</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for activity in activities %}
+          <tr class="{% if activity.deleted %}bg-red-50{% endif %}">
+            <td class="whitespace-nowrap">
+              <div style="font-size: 0.875rem;">
+                <div style="font-weight: 600;">{{ activity.timestamp|date:"d.m.Y" }}</div>
+                <div style="color: #64748b; font-size: 0.75rem;">{{ activity.timestamp|date:"H:i" }}</div>
+              </div>
+            </td>
+            <td>
+              {% if activity.type == 'task_created' %}
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">📋 Úkol vytvořen</span>
+              {% elif activity.type == 'task_deleted' %}
+                <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">🗑️ Úkol smazán</span>
+              {% elif activity.type == 'document_created' %}
+                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">📄 Dokument</span>
+              {% elif activity.type == 'error_created' %}
+                <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">🐛 Chyba</span>
+              {% elif activity.type == 'error_deleted' %}
+                <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">🗑️ Chyba smazána</span>
+              {% elif activity.type == 'comment_created' %}
+                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">💬 Komentář</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="max-width: 400px;">
+                <div style="font-weight: 600; color: #1e293b; {% if activity.deleted %}text-decoration: line-through;{% endif %}">
+                  {{ activity.title|safe }}
+                </div>
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                  {{ activity.description|safe|truncatewords:15 }}
+                </div>
+              </div>
+            </td>
+            <td class="hidden md:table-cell">
+              {% if activity.user %}
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
+                    👤 {{ activity.user.username }}
+                  </span>
+                </div>
+              {% else %}
+                <span style="color: #9ca3af; font-size: 0.75rem;">—</span>
+              {% endif %}
+            </td>
+            <td class="hidden lg:table-cell">
+              {% if activity.status %}
+                <span class="px-2 py-1 rounded text-xs font-medium
+                  {% if activity.status == 'Hotovo' or activity.status == 'Uzavřená' %}bg-green-100 text-green-700
+                  {% elif activity.status == 'Probíhá' or activity.status == 'V procesu' %}bg-yellow-100 text-yellow-800
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ activity.status }}
+                </span>
+              {% else %}
+                <span style="color: #9ca3af; font-size: 0.75rem;">—</span>
+              {% endif %}
+            </td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                {% if activity.type == 'task_created' or activity.type == 'task_deleted' %}
+                  {% if not activity.deleted %}
+                    <a href="{% url 'detail_task' activity.object.task_id %}" style="color: #3b82f6;">👁️ Detail</a>
+                  {% else %}
+                    <span style="color: #9ca3af; font-size: 0.75rem;">Smazáno</span>
+                  {% endif %}
+                {% elif activity.type == 'document_created' %}
+                  <a href="{% url 'detail_document' activity.object.document_id %}" style="color: #3b82f6;">👁️ Detail</a>
+                {% elif activity.type == 'error_created' or activity.type == 'error_deleted' %}
+                  {% if not activity.deleted %}
+                    <a href="{% url 'detail_test_error' activity.object.test_error_id %}" style="color: #3b82f6;">👁️ Detail</a>
+                  {% else %}
+                    <span style="color: #9ca3af; font-size: 0.75rem;">Smazáno</span>
+                  {% endif %}
+                {% elif activity.type == 'comment_created' %}
+                  <a href="{% url 'detail_task' activity.object.task.task_id %}" style="color: #3b82f6;">👁️ Úkol</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📊</span>
+      <p style="color: #64748b; font-size: 1rem;">Zatím žádné aktivity v tomto projektu.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Statistics -->
+  <div class="content-card" style="margin-top: 2rem;">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📈 Statistika aktivit</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+      {% with tasks_count=activities|length %}
+      {% with tasks_created=0 tasks_deleted=0 docs_created=0 errors_created=0 errors_deleted=0 comments_created=0 %}
+      {% for activity in activities %}
+        {% if activity.type == 'task_created' %}{% with tasks_created=tasks_created|add:1 %}{% endwith %}{% endif %}
+        {% if activity.type == 'task_deleted' %}{% with tasks_deleted=tasks_deleted|add:1 %}{% endwith %}{% endif %}
+        {% if activity.type == 'document_created' %}{% with docs_created=docs_created|add:1 %}{% endwith %}{% endif %}
+        {% if activity.type == 'error_created' %}{% with errors_created=errors_created|add:1 %}{% endwith %}{% endif %}
+        {% if activity.type == 'error_deleted' %}{% with errors_deleted=errors_deleted|add:1 %}{% endwith %}{% endif %}
+        {% if activity.type == 'comment_created' %}{% with comments_created=comments_created|add:1 %}{% endwith %}{% endif %}
+      {% endfor %}
+
+      <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Celkem aktivit</div>
+        <div class="text-3xl font-bold text-gray-700">{{ activities|length }}</div>
+      </div>
+
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+        <div class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Úkoly</div>
+        <div class="text-3xl font-bold text-blue-600">
+          {{ project.tasks.count }}
+        </div>
+      </div>
+
+      <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+        <div class="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Dokumenty</div>
+        <div class="text-3xl font-bold text-green-600">
+          {{ project.documents.count }}
+        </div>
+      </div>
+
+      <div class="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
+        <div class="text-xs font-semibold text-orange-700 uppercase tracking-wide mb-1">Chyby z testování</div>
+        <div class="text-3xl font-bold text-orange-600">
+          {{ project.test_errors.count }}
+        </div>
+      </div>
+      {% endwith %}
+      {% endwith %}
+      {% endwith %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

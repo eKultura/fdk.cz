@@ -169,19 +169,23 @@
 <div class="content-card" style="margin-bottom: 2rem;">
   <h3 style="margin-bottom: 1rem;">Filtrování a vyhledávání</h3>
   <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
-    <div>
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Typ výzvy</label>
-      <select name="type" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
+        Typ výzvy
+      </label>
+      <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="">Všechny typy</option>
         <option value="dotace" {% if request.GET.type == 'dotace' %}selected{% endif %}>Dotace</option>
         <option value="grant" {% if request.GET.type == 'grant' %}selected{% endif %}>Granty</option>
         <option value="stipendium" {% if request.GET.type == 'stipendium' %}selected{% endif %}>Stipendia</option>
       </select>
     </div>
-    
-    <div>
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Poskytovatel</label>
-      <select name="provider" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="provider">
+        Poskytovatel
+      </label>
+      <select name="provider" id="provider" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="">Všichni poskytovatelé</option>
         <option value="MKČR" {% if request.GET.provider == 'MKČR' %}selected{% endif %}>MKČR</option>
         <option value="EU" {% if request.GET.provider == 'EU' %}selected{% endif %}>EU fondy</option>
@@ -190,14 +194,16 @@
       </select>
     </div>
 
-    <div>
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Hledat</label>
-      <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Název, klíčová slova..." 
-             style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="search">
+        Hledat
+      </label>
+      <input type="text" name="search" id="search" value="{{ request.GET.search }}" placeholder="Název, klíčová slova..."
+             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
 
     <div>
-      <button type="submit" class="btn btn-primary" style="width: 100%;">
+      <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">
         &#128269; Filtrovat
       </button>
     </div>

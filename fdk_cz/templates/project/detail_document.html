@@ -25,7 +25,7 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
       <div>
         <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.25rem;">Název dokumentu</div>
-        <div style="font-weight: 600; color: #1e293b;">{{ document.title }}</div>
+        <div style="font-weight: 600; color: #1e293b;">{{ document.title|safe }}</div>
       </div>
 
       <div>
@@ -75,7 +75,7 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
     {% if document.description %}
     <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
       <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis dokumentu</div>
-      <div style="color: #1e293b; line-height: 1.6;">{{ document.description|linebreaks }}</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ document.description|linebreaks|safe }}</div>
     </div>
     {% endif %}
   </div>

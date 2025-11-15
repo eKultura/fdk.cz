@@ -34,6 +34,25 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   </div>
   {% endif %}
 
+  <!-- Quick actions for administrators -->
+  {% if user.is_authenticated %}
+    {% for member in members %}
+      {% if member.user.id == user.id and member.role.role_name == 'Administrator' %}
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #fef3c7, #fde68a); border: 2px solid #fbbf24; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.25rem;">🔑</span>
+        <span style="color: #92400e; font-weight: 600;">Administrátorské funkce:</span>
+      </div>
+      <a href="{% url 'project_log' project.project_id %}" class="btn btn-primary" style="background: #f59e0b; border-color: #f59e0b;">
+        📊 Zobrazit log aktivit
+      </a>
+    </div>
+  </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
   <!-- Sekce: Úkoly -->
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">
@@ -63,7 +82,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% for task in tasks_to_do %}
           <tr>
             <td>
-              <a href="{% url 'detail_task' task.task_id %}"><strong>{{ task.title }}</strong></a>
+              <a href="{% url 'detail_task' task.task_id %}"><strong>{{ task.title|safe }}</strong></a>
             </td>
             <td>
               <span class="px-2 py-1 rounded text-xs font-medium
@@ -101,7 +120,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% for task in tasks_by_status.Nezahájeno|slice:":20" %}
           <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.2s;">
             <a href="{% url 'detail_task' task.task_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none; display: block; margin-bottom: 0.5rem;">
-              {{ task.title }}
+              {{ task.title|safe }}
             </a>
             <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">
               <span style="font-weight: 500;">{{ task.priority }}</span>
@@ -130,7 +149,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% for task in tasks_by_status.Probíhá|slice:":20" %}
           <div style="background: white; border: 1px solid #fde047; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.2s;">
             <a href="{% url 'detail_task' task.task_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none; display: block; margin-bottom: 0.5rem;">
-              {{ task.title }}
+              {{ task.title|safe }}
             </a>
             <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">
               <span style="font-weight: 500;">{{ task.priority }}</span>
@@ -159,7 +178,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% for task in tasks_by_status.Hotovo|slice:":20" %}
           <div style="background: white; border: 1px solid #86efac; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); opacity: 0.85;">
             <a href="{% url 'detail_task' task.task_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none; display: block; margin-bottom: 0.25rem;">
-              {{ task.title }}
+              {{ task.title|safe }}
             </a>
             <div style="font-size: 0.75rem; color: #64748b;">
               <span style="font-weight: 500;">{{ task.priority }}</span>
@@ -233,7 +252,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <tbody>
           {% for error in all_errors %}
           <tr>
-            <td><strong>{{ error.error_title }}</strong></td>
+            <td><strong>{{ error.error_title|safe }}</strong></td>
             <td>
               <span class="px-2 py-1 rounded text-xs font-medium
                 {% if error.status == 'closed' %}bg-green-100 text-green-700
@@ -279,7 +298,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <tbody>
         {% for milestone in project.milestones.all %}
         <tr>
-          <td><strong>{{ milestone.title }}</strong></td>
+          <td><strong>{{ milestone.title|safe }}</strong></td>
           <td>{{ milestone.due_date|date:"d.m.Y" }}</td>
           <td class="text-right">
             <div class="data-table-actions">
@@ -329,7 +348,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <tbody>
         {% for document in project.documents.all %}
         <tr>
-          <td><a href="{% url 'detail_document' document.pk %}"><strong>{{ document.title }}</strong></a></td>
+          <td><a href="{% url 'detail_document' document.pk %}"><strong>{{ document.title|safe }}</strong></a></td>
           <td class="hidden md:table-cell">{{ document.category|default:"–" }}</td>
           <td class="hidden md:table-cell">{{ document.document_type|default:"–" }}</td>
           <td class="text-right">
@@ -448,12 +467,12 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
                 <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; transition: box-shadow 0.2s;">
                   <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
                     <a href="{% url 'detail_task' task.task_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
-                      {{ task.title }}
+                      {{ task.title|safe }}
                     </a>
                     <span style="font-size: 0.75rem; color: #9ca3af; margin-left: 0.5rem;">{{ last_comment.posted|date:"d.m.Y H:i" }}</span>
                   </div>
                   <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px; padding: 0.75rem;">
-                    <p style="font-size: 0.875rem; color: #374151; line-height: 1.5; margin-bottom: 0.5rem;">{{ last_comment.comment|truncatewords:30 }}</p>
+                    <p style="font-size: 0.875rem; color: #374151; line-height: 1.5; margin-bottom: 0.5rem;">{{ last_comment.comment|truncatewords:30|safe }}</p>
                     <div style="display: flex; align-items: center; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0;">
                       <span style="font-size: 0.75rem; font-weight: 500; color: #64748b;">{{ last_comment.user.username }}</span>
                       <span style="font-size: 0.75rem; color: #cbd5e1; margin: 0 0.5rem;">•</span>
@@ -493,7 +512,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           <tr>
             <td>
               <a href="{% url 'detail_task' task.task_id %}">
-                <strong>{{ task.title }}</strong>
+                <strong>{{ task.title|safe }}</strong>
               </a>
             </td>
             <td class="hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
