@@ -14,6 +14,8 @@ from fdk_cz.forms.project import add_user_form, document_form, category_form, in
 
 from fdk_cz.models import (
     Company,
+    Department,
+    Employee,
     Organization,
     ProjectCategory,
     ProjectComment,
@@ -606,13 +608,75 @@ def edit_category(request, category_id):
 
 
 @login_required
+def detail_category(request, category_id):
+    """Detail kategorie projektu s úkoly a případně informacemi z HR"""
+    category = get_object_or_404(ProjectCategory, pk=category_id)
+    project = category.project
+
+    # Kontrola přístupu - uživatel musí být členem projektu
+    if not ProjectUser.objects.filter(project=project, user=request.user).exists() and project.owner != request.user:
+        messages.error(request, "Nemáte přístup k této kategorii.")
+        return redirect('index')
+
+    # Získání úkolů v této kategorii
+    category_tasks = ProjectTask.objects.filter(category=category, deleted=False).order_by('-created')
+
+    # Rozdělení úkolů podle statusu pro kanban zobrazení
+    tasks_by_status = {
+        'Nezahájeno': category_tasks.filter(status='Nezahájeno'),
+        'Probíhá': category_tasks.filter(status='Probíhá'),
+        'Hotovo': category_tasks.filter(status='Hotovo')
+    }
+
+    # Statistika úkolů dle statusu
+    category_status_counts = {
+        'Nezahájeno': tasks_by_status['Nezahájeno'].count(),
+        'Probíhá': tasks_by_status['Probíhá'].count(),
+        'Hotovo': tasks_by_status['Hotovo'].count(),
+    }
+    category_total_tasks = sum(category_status_counts.values())
+
+    # Úkoly pro tabulkové zobrazení (nezahájené a probíhající)
+    tasks_to_do = category_tasks.exclude(status='Hotovo')
+
+    # Pokud existuje organizace, zkusit najít oddělení se stejným názvem
+    department = None
+    department_employees = []
+    if project.organization:
+        try:
+            department = Department.objects.get(
+                organization=project.organization,
+                name__iexact=category.name  # Case-insensitive match
+            )
+            # Získat zaměstnance z tohoto oddělení
+            department_employees = Employee.objects.filter(department=department).select_related('user')
+        except Department.DoesNotExist:
+            pass
+
+    # Kontrola, zda je projekt ukončen
+    is_project_closed = project.end_date is not None
+
+    return render(request, 'project/detail_category.html', {
+        'category': category,
+        'project': project,
+        'tasks_by_status': tasks_by_status,
+        'tasks_to_do': tasks_to_do,
+        'category_status_counts': category_status_counts,
+        'category_total_tasks': category_total_tasks,
+        'department': department,
+        'department_employees': department_employees,
+        'is_project_closed': is_project_closed,
+    })
+
+
+@login_required
 def delete_category(request, category_id):
     cat = get_object_or_404(ProjectCategory, pk=category_id)
     project_id = cat.project.project_id
     if request.method == 'POST':
         cat.delete()
         return redirect('detail_project', project_id=project_id)
-    
+
     return render(request, 'project/delete_category.html', {'category': cat})
 
 

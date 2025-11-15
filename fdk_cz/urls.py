@@ -29,7 +29,7 @@ from fdk_cz.views.grants import (
 
 from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
-from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, project_log, remove_project_user, take_task, task_management, update_task_status
+from fdk_cz.views.project import create_category, create_document, create_task, create_milestone, detail_category, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, project_log, remove_project_user, take_task, task_management, update_task_status
 
 from fdk_cz.views.test import (
     create_test, create_test_error, create_test_result, create_test_type,
@@ -222,6 +222,7 @@ urlpatterns = (
 
 
     path('projekt/<int:project_id>/nova_kategorie/', create_category, name='create_category'),
+    path('projekt/kategorie/<int:category_id>/', detail_category, name='detail_category'),
     path('projekt/kategorie/<int:category_id>/editovat/', edit_category, name='edit_category'),
     path('projekt/kategorie/<int:category_id>/smazat/', delete_category, name='delete_category'),
 
