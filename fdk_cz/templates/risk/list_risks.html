@@ -27,12 +27,32 @@
         <tbody>
           {% for risk in risks %}
           <tr>
-            <td><strong>{{ risk.name }}</strong></td>
-            <td>{{ risk.category|default:"—" }}</td>
-            <td style="text-align: center;">{{ risk.severity|default:"—" }}</td>
-            <td style="text-align: center;">{{ risk.probability|default:"—" }}</td>
+            <td>
+              <a href="{% url 'detail_risk' risk.risk_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                {{ risk.title }}
+              </a>
+              {% if risk.project %}
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                📁 {{ risk.project.name }}
+              </div>
+              {% endif %}
+            </td>
+            <td>{{ risk.get_category_display }}</td>
             <td style="text-align: center;">
-              <a href="#" class="btn btn-sm btn-outline">Detail</a>
+              <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.impact >= 4 %}#dc2626{% elif risk.impact >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
+                {{ risk.get_impact_display }}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.probability >= 4 %}#dc2626{% elif risk.probability >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
+                {{ risk.get_probability_display }}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                <a href="{% url 'detail_risk' risk.risk_id %}" class="btn btn-sm btn-outline">👁️ Detail</a>
+                <a href="{% url 'edit_risk' risk.risk_id %}" class="btn btn-sm btn-outline">✏️</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
