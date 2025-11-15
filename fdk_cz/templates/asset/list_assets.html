@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}Majetek | FDK.cz{% endblock %}
+{% block header_title %}📦 Majetek{% endblock %}
+{% block header_subtitle %}Přehled firemního majetku a aktiv{% endblock %}
+
+{% block content %}
+<div style="max-width: 1600px; margin: 0 auto;">
+  <!-- Actions and Filters -->
+  <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'create_asset' %}" class="btn btn-primary">➕ Nový majetek</a>
+      <a href="{% url 'create_asset_category' %}" class="btn btn-outline">📁 Nová kategorie</a>
+    </div>
+
+    <!-- Filters -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <!-- Category Filter -->
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        <select name="category" onchange="this.form.submit()" class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <option value="">Všechny kategorie</option>
+          {% for category in categories %}
+            <option value="{{ category.category_id }}" {% if selected_category == category.category_id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Status Filter -->
+      <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+        <select name="status" onchange="this.form.submit()" class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <option value="">Všechny statusy</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+
+      <!-- Search -->
+      <form method="GET" style="display: flex; gap: 0.5rem;">
+        {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Hledat majetek..." class="form-control" style="padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <button type="submit" class="btn btn-outline">🔍</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assets Table -->
+  <div class="content-card">
+    {% if assets %}
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Číslo majetku</th>
+              <th>Název</th>
+              <th>Kategorie</th>
+              <th>Lokace</th>
+              <th>Zodpovědná osoba</th>
+              <th>Status</th>
+              <th style="text-align: right;">Hodnota</th>
+              <th style="text-align: center;">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for asset in assets %}
+              <tr>
+                <td>
+                  <div style="font-family: monospace; font-size: 0.875rem; color: #64748b;">
+                    {{ asset.asset_number }}
+                  </div>
+                </td>
+                <td>
+                  <a href="{% url 'detail_asset' asset.asset_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                    {{ asset.name }}
+                  </a>
+                  {% if asset.organization %}
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                      🏛️ {{ asset.organization.name }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if asset.category %}
+                    <span style="padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                      {{ asset.category.name }}
+                    </span>
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if asset.location %}
+                    <span style="color: #475569;">📍 {{ asset.location }}</span>
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if asset.responsible_person %}
+                    <span style="color: #475569;">👤 {{ asset.responsible_person.get_full_name }}</span>
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+                    {% if asset.status == 'active' %}background: #d1fae5; color: #065f46;
+                    {% elif asset.status == 'maintenance' %}background: #fef3c7; color: #92400e;
+                    {% elif asset.status == 'stored' %}background: #e0e7ff; color: #3730a3;
+                    {% elif asset.status == 'disposed' %}background: #fee2e2; color: #991b1b;
+                    {% elif asset.status == 'sold' %}background: #f1f5f9; color: #475569;
+                    {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+                    {{ asset.get_status_display }}
+                  </span>
+                </td>
+                <td style="text-align: right; color: #475569;">
+                  {% if asset.current_value %}
+                    <span style="font-weight: 600;">{{ asset.current_value|floatformat:0 }} {{ asset.currency }}</span>
+                  {% elif asset.purchase_price %}
+                    <span style="color: #94a3b8;">{{ asset.purchase_price|floatformat:0 }} {{ asset.currency }}</span>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td style="text-align: center;">
+                  <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <a href="{% url 'detail_asset' asset.asset_id %}" class="btn btn-sm btn-outline">👁️</a>
+                    <a href="{% url 'edit_asset' asset.asset_id %}" class="btn btn-sm btn-outline">✏️</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">📦</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+          {% if search_query or selected_status or selected_category %}
+            Žádný majetek odpovídající vašemu hledání
+          {% else %}
+            Zatím nemáte přidaný žádný majetek
+          {% endif %}
+        </p>
+        {% if search_query or selected_status or selected_category %}
+          <a href="{% url 'list_assets' %}" class="btn btn-outline" style="margin-right: 0.5rem;">Zrušit filtr</a>
+        {% endif %}
+        <a href="{% url 'create_asset' %}" class="btn btn-primary">➕ Přidat první majetek</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 2rem;">💡</div>
+      <div>
+        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Tipy pro správu majetku</h4>
+        <ul style="font-size: 0.875rem; color: #475569; line-height: 1.6; list-style: disc; padding-left: 1.5rem;">
+          <li>Používejte jedinečná čísla majetku pro snadnou identifikaci</li>
+          <li>Pravidelně aktualizujte současnou hodnotu pro přesnou evidenci</li>
+          <li>Přiřazujte zodpovědné osoby k jednotlivým položkám</li>
+          <li>Využívejte kategorie pro rychlé filtrování a organizaci</li>
+          <li>Sledujte datum pořízení pro evidenci odepisů</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

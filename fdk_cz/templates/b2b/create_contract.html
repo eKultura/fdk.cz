@@ -4,170 +4,173 @@
 {% block header_subtitle %}Vytvoření nové obchodní smlouvy{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
+<div style="max-width: 1000px; margin: 0 auto;">
   <!-- Actions -->
-  <div class="mb-10 flex gap-3">
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
     <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">← Zpět na B2B</a>
     <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline">📋 Všechny smlouvy</a>
   </div>
 
+  <!-- Form Card -->
   <div class="content-card">
     <form method="POST">
       {% csrf_token %}
 
       <!-- Basic Info Section -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Základní informace</h3>
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Základní informace</h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
         <div>
-          <label for="id_company" class="block text-sm font-medium text-gray-700 mb-2">
-            Firma <span class="text-red-500">*</span>
+          <label for="id_company" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+            Firma <span style="color: #ef4444;">*</span>
           </label>
           {{ form.company }}
           {% if form.company.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.company.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.company.errors|join:", " }}</p>
           {% endif %}
-          <p class="mt-1 text-xs text-gray-500">Vyberte B2B firmu</p>
+          <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Vyberte B2B firmu</p>
         </div>
 
         <div>
-          <label for="id_organization" class="block text-sm font-medium text-gray-700 mb-2">Organizace</label>
+          <label for="id_organization" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Organizace</label>
           {{ form.organization }}
           {% if form.organization.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.organization.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.organization.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="mb-6">
-        <label for="id_project" class="block text-sm font-medium text-gray-700 mb-2">Projekt</label>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_project" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Projekt</label>
         {{ form.project }}
         {% if form.project.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.project.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.project.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Volitelně přiřaďte smlouvu k projektu</p>
+        <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Volitelně přiřaďte smlouvu k projektu</p>
       </div>
 
       <!-- Contract Details -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Detaily smlouvy</h3>
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Detaily smlouvy</h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
         <div>
-          <label for="id_contract_number" class="block text-sm font-medium text-gray-700 mb-2">
-            Číslo smlouvy <span class="text-red-500">*</span>
+          <label for="id_contract_number" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+            Číslo smlouvy <span style="color: #ef4444;">*</span>
           </label>
           {{ form.contract_number }}
           {% if form.contract_number.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.contract_number.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.contract_number.errors|join:", " }}</p>
           {% endif %}
         </div>
 
         <div>
-          <label for="id_status" class="block text-sm font-medium text-gray-700 mb-2">
-            Status <span class="text-red-500">*</span>
+          <label for="id_status" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+            Status <span style="color: #ef4444;">*</span>
           </label>
           {{ form.status }}
           {% if form.status.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.status.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.status.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="mb-6">
-        <label for="id_title" class="block text-sm font-medium text-gray-700 mb-2">
-          Název smlouvy <span class="text-red-500">*</span>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_title" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Název smlouvy <span style="color: #ef4444;">*</span>
         </label>
         {{ form.title }}
         {% if form.title.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.title.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.title.errors|join:", " }}</p>
         {% endif %}
       </div>
 
-      <div class="mb-6">
-        <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">Popis</label>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_description" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Popis</label>
         {{ form.description }}
         {% if form.description.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.description.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Stručný popis obsahu a účelu smlouvy</p>
+        <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Stručný popis obsahu a účelu smlouvy</p>
       </div>
 
       <!-- Financial Details -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Finanční údaje</h3>
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Finanční údaje</h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
         <div>
-          <label for="id_contract_value" class="block text-sm font-medium text-gray-700 mb-2">Hodnota smlouvy</label>
+          <label for="id_contract_value" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Hodnota smlouvy</label>
           {{ form.contract_value }}
           {% if form.contract_value.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.contract_value.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.contract_value.errors|join:", " }}</p>
           {% endif %}
         </div>
 
         <div>
-          <label for="id_currency" class="block text-sm font-medium text-gray-700 mb-2">Měna</label>
+          <label for="id_currency" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Měna</label>
           {{ form.currency }}
           {% if form.currency.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.currency.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.currency.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
       <!-- Dates -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Důležitá data</h3>
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Důležitá data</h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
         <div>
-          <label for="id_start_date" class="block text-sm font-medium text-gray-700 mb-2">Datum zahájení</label>
+          <label for="id_start_date" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+            Datum zahájení <span style="color: #ef4444;">*</span>
+          </label>
           {{ form.start_date }}
           {% if form.start_date.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.start_date.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.start_date.errors|join:", " }}</p>
           {% endif %}
         </div>
 
         <div>
-          <label for="id_end_date" class="block text-sm font-medium text-gray-700 mb-2">Datum ukončení</label>
+          <label for="id_end_date" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Datum ukončení</label>
           {{ form.end_date }}
           {% if form.end_date.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.end_date.errors|join:", " }}</p>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.end_date.errors|join:", " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <div class="mb-6">
-        <label for="id_signed_date" class="block text-sm font-medium text-gray-700 mb-2">Datum podpisu</label>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_signed_date" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Datum podpisu</label>
         {{ form.signed_date }}
         {% if form.signed_date.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.signed_date.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.signed_date.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Datum podepsání smlouvy</p>
+        <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Datum podepsání smlouvy</p>
       </div>
 
       <!-- Additional Info -->
-      <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b mt-8">Kategorizace</h3>
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">Kategorizace</h3>
 
-      <div class="mb-6">
-        <label for="id_categories" class="block text-sm font-medium text-gray-700 mb-2">Kategorie</label>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_categories" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Kategorie</label>
         {{ form.categories }}
         {% if form.categories.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.categories.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.categories.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Oddělte čárkami, např: "služby, IT, podpora"</p>
+        <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Oddělte čárkami, např: "služby, IT, podpora"</p>
       </div>
 
-      <div class="mb-6">
-        <label for="id_keywords" class="block text-sm font-medium text-gray-700 mb-2">Klíčová slova</label>
+      <div style="margin-bottom: 1.5rem;">
+        <label for="id_keywords" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Klíčová slova</label>
         {{ form.keywords }}
         {% if form.keywords.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ form.keywords.errors|join:", " }}</p>
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #dc2626;">{{ form.keywords.errors|join:", " }}</p>
         {% endif %}
-        <p class="mt-1 text-xs text-gray-500">Oddělte čárkami pro lepší vyhledávání</p>
+        <p style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">Oddělte čárkami pro lepší vyhledávání</p>
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-3 pt-6 border-t border-gray-200">
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <a href="{% url 'list_b2b_contracts' %}" class="btn btn-outline">Zrušit</a>
         <button type="submit" class="btn btn-primary">📝 Vytvořit smlouvu</button>
-        <a href="{% url 'b2b_dashboard' %}" class="btn btn-outline">Zrušit</a>
       </div>
     </form>
   </div>
