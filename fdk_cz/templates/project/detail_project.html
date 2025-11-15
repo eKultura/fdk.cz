@@ -389,7 +389,8 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           <th class="hidden md:table-cell">E-mail</th>
           <th class="hidden md:table-cell">Telefon</th>
           <th class="hidden lg:table-cell">Firma</th>
-          <th class="text-right">Typ</th>
+          <th>Typ</th>
+          <th class="text-right">Akce</th>
         </tr>
       </thead>
       <tbody>
@@ -397,22 +398,30 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% if not contact.account or contact.account.id == user.id %}
           <tr>
             <td>
-              <strong>{{ contact.first_name }} {{ contact.last_name|default:"" }}</strong>
+              <a href="{% url 'detail_contact' contact.contact_id %}" class="font-semibold text-blue-600 hover:underline">
+                {{ contact.first_name }} {{ contact.last_name|default:"" }}
+              </a>
             </td>
-            <td class="hidden md:table-cell">{{ contact.email|default:"–" }}</td>
-            <td class="hidden md:table-cell">{{ contact.phone|default:"–" }}</td>
-            <td class="hidden lg:table-cell">{{ contact.company|default:"–" }}</td>
-            <td class="text-right">
+            <td class="hidden md:table-cell text-gray-600">{{ contact.email|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ contact.phone|default:"–" }}</td>
+            <td class="hidden lg:table-cell text-gray-600">{{ contact.company|default:"–" }}</td>
+            <td>
               {% if contact.account %}
-                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">🔒 Soukromý</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold">🔒 Soukromý</span>
               {% else %}
-                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">👥 Veřejný</span>
+                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">👥 Veřejný</span>
               {% endif %}
+            </td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_contact' contact.contact_id %}">👁️ Detail</a>
+                <a href="{% url 'edit_contact' contact.contact_id %}">✏️ Upravit</a>
+              </div>
             </td>
           </tr>
           {% endif %}
         {% empty %}
-        <tr><td colspan="5" class="data-table-empty">Zatím nejsou žádné kontakty k projektu</td></tr>
+        <tr><td colspan="6" class="data-table-empty">Zatím nejsou žádné kontakty k projektu</td></tr>
         {% endfor %}
       </tbody>
     </table>

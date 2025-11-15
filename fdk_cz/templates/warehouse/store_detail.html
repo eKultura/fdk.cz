@@ -92,18 +92,20 @@
           {% for item in store.items.all %}
           <tr>
             <td>
-              <div style="font-weight: 600; color: #1e293b;">{{ item.name }}</div>
+              <a href="{% url 'item_detail' item.item_id %}" class="font-semibold text-blue-600 hover:underline">
+                {{ item.name }}
+              </a>
               {% if item.description %}
               <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ item.description|truncatewords:10 }}</div>
               {% endif %}
             </td>
-            <td class="hidden md:table-cell">
+            <td class="hidden md:table-cell text-gray-600">
               {% if item.category %}
               <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
                 🏷️ {{ item.category.name }}
               </span>
               {% else %}
-              <span style="color: #94a3b8;">-</span>
+                —
               {% endif %}
             </td>
             <td class="text-center">

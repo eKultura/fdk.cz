@@ -30,16 +30,16 @@
             {% for risk in risks %}
             <tr>
               <td>
-                <a href="{% url 'detail_risk' risk.risk_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                <a href="{% url 'detail_risk' risk.risk_id %}" class="font-semibold text-blue-600 hover:underline">
                   {{ risk.title|safe }}
                 </a>
                 {% if risk.project %}
-                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                <div class="text-xs text-gray-600 mt-1">
                   📁 {{ risk.project.name }}
                 </div>
                 {% endif %}
               </td>
-              <td class="hidden md:table-cell">{{ risk.get_category_display }}</td>
+              <td class="hidden md:table-cell text-gray-600">{{ risk.get_category_display }}</td>
               <td class="hidden lg:table-cell text-center">
                 <span style="padding: 4px 8px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: white; background: {% if risk.impact >= 4 %}#dc2626{% elif risk.impact >= 3 %}#f59e0b{% else %}#10b981{% endif %};">
                   {{ risk.get_impact_display }}

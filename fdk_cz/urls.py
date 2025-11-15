@@ -58,6 +58,8 @@ from fdk_cz.views.warehouse import (
     create_warehouse_for_project,
     create_warehouse_for_organization,
     create_warehouse_item,
+    edit_warehouse_item,
+    item_detail,
     create_warehouse_category,
     list_warehouse_categories,
 )
@@ -250,6 +252,8 @@ urlpatterns = (
     path('organizace/<int:organization_id>/sklad/novy/', create_warehouse_for_organization, name='create_warehouse_for_organization'),
     path('sklad/<int:store_id>/', store_detail, name='store_detail'),
     path('sklad/<int:store_id>/polozka/nova/', create_warehouse_item, name='create_warehouse_item'),
+    path('sklad/polozka/<int:item_id>/', item_detail, name='item_detail'),
+    path('sklad/polozka/<int:item_id>/upravit/', edit_warehouse_item, name='edit_warehouse_item'),
     path('sklad/<int:store_id>/transakce/', store_transactions, name='store_transactions'),
     path('sklad/<int:store_id>/transakce/nova/', create_transaction, name='create_transaction'),
     path('transakce/<int:transaction_id>/', transaction_detail, name='transaction_detail'),

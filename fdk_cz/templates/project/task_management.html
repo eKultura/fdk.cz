@@ -9,67 +9,180 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
   <!-- Seznam úkolů -->
-  <div class="lg:col-span-2">
+  <div class="lg:col-span-2 space-y-6">
+
+    <!-- Projektové úkoly -->
     <div class="content-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-        <h3 style="font-weight:600;font-size:1.1rem;">Aktuální úkoly</h3>
+        <h3 style="font-weight:600;font-size:1.1rem;">📁 Projektové úkoly</h3>
       </div>
 
-      {% if tasks %}
-      <div style="overflow-x:auto;">
-        <table class="data-table" style="width:100%;border-collapse:collapse;">
-          <thead style="background:#f9fafb;">
+      {% with project_tasks=tasks|dictsort:"project"|select:"project" %}
+      {% if project_tasks %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
             <tr>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold">Název</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold">Projekt</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Priorita</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Stav</th>
-              <th class="px-4 py-2 text-left text-gray-600 font-semibold hidden md:table-cell">Termín</th>
+              <th>Název</th>
+              <th>Projekt</th>
+              <th class="hidden md:table-cell">Priorita</th>
+              <th class="hidden md:table-cell">Stav</th>
+              <th class="hidden md:table-cell">Termín</th>
             </tr>
           </thead>
           <tbody>
-            {% for task in tasks|slice:":100" %}
-            <tr class="hover:bg-gray-50 transition border-b border-gray-100">
-              <td class="px-4 py-2">
-                <a href="{% url 'detail_task' task.task_id %}" class="text-blue-600 hover:underline font-medium">
+            {% for task in project_tasks %}
+            {% if task.project %}
+            <tr>
+              <td>
+                <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">
                   {{ task.title }}
                 </a>
               </td>
-              <td class="px-4 py-2">
-                {% if task.project %}
-                  <a href="{% url 'detail_project' task.project.project_id %}" class="text-blue-600 hover:underline">
-                    {{ task.project.name }}
-                  </a>
-                {% elif task.organization %}
-                  <span class="text-gray-700">🏢 {{ task.organization.name }}</span>
-                {% else %}
-                  <span class="text-gray-500 italic">Osobní</span>
-                {% endif %}
+              <td class="text-gray-600">
+                <a href="{% url 'detail_project' task.project.project_id %}" class="text-blue-600 hover:underline">
+                  {{ task.project.name }}
+                </a>
               </td>
-              <td class="px-4 py-2 hidden md:table-cell text-gray-600">{{ task.priority|default:"—" }}</td>
-              <td class="px-4 py-2 hidden md:table-cell">
-                <span class="px-2 py-1 rounded text-sm font-medium
+              <td class="hidden md:table-cell text-gray-600">{{ task.priority|default:"—" }}</td>
+              <td class="hidden md:table-cell">
+                <span class="px-2 py-1 rounded text-sm font-semibold
                   {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
                   {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
                   {% else %}bg-gray-100 text-gray-700{% endif %}">
                   {{ task.status|default:"Nezahájeno" }}
                 </span>
               </td>
-              <td class="px-4 py-2 hidden md:table-cell text-gray-500">
+              <td class="hidden md:table-cell text-gray-600">
                 {{ task.due_date|date:"d.m.Y"|default:"—" }}
               </td>
             </tr>
+            {% endif %}
             {% endfor %}
           </tbody>
         </table>
       </div>
       {% else %}
-      <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
-        <div style="font-size:2rem;">📝</div>
-        <p style="margin-top:0.5rem;">Zatím nemáte přiřazené žádné úkoly.</p>
+      <div style="text-align:center;padding:2rem;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:2rem;">📁</div>
+        <p style="margin-top:0.5rem;color:#64748b;">Žádné projektové úkoly</p>
       </div>
       {% endif %}
+      {% endwith %}
     </div>
+
+    <!-- Organizační úkoly -->
+    <div class="content-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-weight:600;font-size:1.1rem;">🏢 Organizační úkoly</h3>
+      </div>
+
+      {% with org_tasks=tasks|dictsort:"organization" %}
+      {% if org_tasks %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th>Organizace</th>
+              <th class="hidden md:table-cell">Priorita</th>
+              <th class="hidden md:table-cell">Stav</th>
+              <th class="hidden md:table-cell">Termín</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in org_tasks %}
+            {% if task.organization and not task.project %}
+            <tr>
+              <td>
+                <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">
+                  {{ task.title }}
+                </a>
+              </td>
+              <td class="text-gray-600">
+                🏢 {{ task.organization.name }}
+              </td>
+              <td class="hidden md:table-cell text-gray-600">{{ task.priority|default:"—" }}</td>
+              <td class="hidden md:table-cell">
+                <span class="px-2 py-1 rounded text-sm font-semibold
+                  {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+                  {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ task.status|default:"Nezahájeno" }}
+                </span>
+              </td>
+              <td class="hidden md:table-cell text-gray-600">
+                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:2rem;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:2rem;">🏢</div>
+        <p style="margin-top:0.5rem;color:#64748b;">Žádné organizační úkoly</p>
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Osobní úkoly -->
+    <div class="content-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-weight:600;font-size:1.1rem;">📝 Osobní úkoly</h3>
+      </div>
+
+      {% with personal_tasks=tasks %}
+      {% if personal_tasks %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Priorita</th>
+              <th class="hidden md:table-cell">Stav</th>
+              <th class="hidden md:table-cell">Termín</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in personal_tasks %}
+            {% if not task.project and not task.organization %}
+            <tr>
+              <td>
+                <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">
+                  {{ task.title }}
+                </a>
+              </td>
+              <td class="hidden md:table-cell text-gray-600">{{ task.priority|default:"—" }}</td>
+              <td class="hidden md:table-cell">
+                <span class="px-2 py-1 rounded text-sm font-semibold
+                  {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
+                  {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ task.status|default:"Nezahájeno" }}
+                </span>
+              </td>
+              <td class="hidden md:table-cell text-gray-600">
+                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:2rem;background:#f8fafc;border-radius:8px;">
+        <div style="font-size:2rem;">📝</div>
+        <p style="margin-top:0.5rem;color:#64748b;">Žádné osobní úkoly</p>
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+
   </div>
 
   <!-- Formulář pro vytvoření úkolu -->
