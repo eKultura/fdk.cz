@@ -97,11 +97,19 @@ def grant_list(request):
 
     provider_filter = request.GET.get("provider")
     type_filter = request.GET.get("type")
+    search_query = request.GET.get("search")
 
     if provider_filter:
         grants = grants.filter(provider=provider_filter)
     if type_filter:
         grants = grants.filter(type=type_filter)
+    if search_query:
+        from django.db.models import Q
+        grants = grants.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(keywords__icontains=search_query)
+        )
 
     # Rozdělení dotací podle typu pro zobrazení v template
     active_dotace = grants.filter(type='dotace')

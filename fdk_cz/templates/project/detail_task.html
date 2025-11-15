@@ -162,7 +162,7 @@
     <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
       <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">📝 Popis úkolu</h3>
       <div style="background: linear-gradient(to bottom, #eff6ff, #f0f9ff); border: 2px solid #3b82f6; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div style="color: #1e293b; line-height: 1.8; font-size: 1rem;">{{ task.description|markdown }}</div>
+        <div style="color: #1e293b; line-height: 1.8; font-size: 1rem;">{{ task.description|markdown|safe }}</div>
       </div>
     </div>
     {% endif %}
@@ -173,7 +173,7 @@
       <h3 class="text-lg font-semibold text-gray-800 mb-3">⬆️ Nadřazený úkol</h3>
       <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition">
         <a href="{% url 'detail_task' task.parent.task_id %}" class="text-blue-600 hover:underline font-medium text-lg">
-          {{ task.parent.title }}
+          {{ task.parent.title|safe }}
         </a>
       </div>
     </div>
@@ -187,7 +187,7 @@
         {% for subtask in task.subtasks.all %}
           <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition flex items-center justify-between">
             <a href="{% url 'detail_task' subtask.task_id %}" class="text-blue-600 hover:underline font-medium flex-1">
-              {{ subtask.title }}
+              {{ subtask.title|safe }}
             </a>
             <span class="px-2 py-1 rounded text-xs font-medium ml-3
               {% if subtask.status == 'Hotovo' %}bg-green-100 text-green-700
@@ -253,7 +253,7 @@
             <span style="font-size: 0.75rem; color: #9ca3af;">{{ comment.posted|date:"d.m.Y H:i" }}</span>
           </div>
           <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px; padding: 0.75rem;">
-            <div style="font-size: 0.875rem; color: #374151; line-height: 1.6;">{{ comment.comment|markdown }}</div>
+            <div style="font-size: 0.875rem; color: #374151; line-height: 1.6;">{{ comment.comment|markdown|safe }}</div>
           </div>
         </div>
       {% endfor %}

@@ -713,3 +713,91 @@ def join_project(request, project_id):
         messages.error(request, f"Chyba při přidávání do projektu: {str(e)}")
         return redirect('index')
 
+
+@login_required
+def project_log(request, project_id):
+    """
+    Project activity log - visible only to project administrators
+    Shows:
+    - Task changes (created, status changes)
+    - New documents and edits
+    - Errors (including deleted ones)
+    - Comments on tasks
+    """
+    project = get_object_or_404(Project, pk=project_id)
+
+    # Check if user is project administrator
+    try:
+        project_user = ProjectUser.objects.get(project=project, user=request.user)
+        if project_user.role.role_name != 'Administrator':
+            messages.error(request, "Nemáte oprávnění k zobrazení logu projektu. Pouze administrátoři projektu mají přístup.")
+            return redirect('detail_project', project_id=project_id)
+    except ProjectUser.DoesNotExist:
+        messages.error(request, "Nemáte přístup k tomuto projektu.")
+        return redirect('index')
+
+    # Gather all activities
+    activities = []
+
+    # 1. Tasks (including deleted)
+    tasks = ProjectTask.objects.filter(project=project).order_by('-created')
+    for task in tasks:
+        activities.append({
+            'type': 'task_deleted' if task.deleted else 'task_created',
+            'timestamp': task.created,
+            'title': task.title,
+            'description': f'Úkol vytvořen uživatelem {task.creator.username if task.creator else "Neznámý"}',
+            'status': task.status,
+            'user': task.creator,
+            'object': task,
+            'deleted': task.deleted
+        })
+
+    # 2. Documents
+    documents = ProjectDocument.objects.filter(project=project).order_by('-uploaded_at')
+    for doc in documents:
+        activities.append({
+            'type': 'document_created',
+            'timestamp': doc.uploaded_at,
+            'title': doc.title,
+            'description': f'Dokument nahrán uživatelem {doc.uploaded_by.username if doc.uploaded_by else "Neznámý"}',
+            'user': doc.uploaded_by,
+            'object': doc,
+            'deleted': False
+        })
+
+    # 3. Test Errors (including deleted)
+    errors = TestError.objects.filter(project=project).order_by('-date_created')
+    for error in errors:
+        activities.append({
+            'type': 'error_deleted' if error.deleted else 'error_created',
+            'timestamp': error.date_created,
+            'title': error.error_title,
+            'description': f'Chyba vytvořena uživatelem {error.created_by.username if error.created_by else "Neznámý"}',
+            'status': error.get_status_display(),
+            'user': error.created_by,
+            'object': error,
+            'deleted': error.deleted
+        })
+
+    # 4. Comments on tasks
+    comments = ProjectComment.objects.filter(project=project).order_by('-posted')
+    for comment in comments:
+        activities.append({
+            'type': 'comment_created',
+            'timestamp': comment.posted,
+            'title': f'Komentář k úkolu: {comment.task.title if comment.task else "Neznámý úkol"}',
+            'description': comment.comment[:100] + '...' if len(comment.comment) > 100 else comment.comment,
+            'user': comment.user,
+            'object': comment,
+            'deleted': False
+        })
+
+    # Sort all activities by timestamp (newest first)
+    activities.sort(key=lambda x: x['timestamp'] if x['timestamp'] else timezone.now(), reverse=True)
+
+    return render(request, 'project/project_log.html', {
+        'project': project,
+        'activities': activities
+    })
+
