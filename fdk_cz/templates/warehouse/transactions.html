@@ -21,24 +21,18 @@
     {% if transactions %}
     <div style="display: grid; gap: 0.75rem;">
       {% for transaction in transactions %}
-      <a href="{% url 'transaction_detail' transaction.id %}" style="text-decoration: none; display: block; padding: 1rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid {% if transaction.type == 'in' %}#10b981{% else %}#ef4444{% endif %}; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.background='#f8fafc'; this.style.boxShadow='none'">
+      <a href="{% url 'transaction_detail' transaction.transaction_id %}" style="text-decoration: none; display: block; padding: 1rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid {% if transaction.transaction_type == 'IN' %}#10b981{% else %}#ef4444{% endif %}; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.background='#f8fafc'; this.style.boxShadow='none'">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-              <span style="padding: 4px 12px; background: {% if transaction.type == 'in' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if transaction.type == 'in' %}#065f46{% else %}#991b1b{% endif %}; border-radius: 12px; font-weight: 600; font-size: 0.75rem;">
-                {% if transaction.type == 'in' %}⬆️ {% trans "Příjem" %}{% else %}⬇️ {% trans "Výdej" %}{% endif %}
+              <span style="padding: 4px 12px; background: {% if transaction.transaction_type == 'IN' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if transaction.transaction_type == 'IN' %}#065f46{% else %}#991b1b{% endif %}; border-radius: 12px; font-weight: 600; font-size: 0.75rem;">
+                {% if transaction.transaction_type == 'IN' %}⬆️ {% trans "Příjem" %}{% else %}⬇️ {% trans "Výdej" %}{% endif %}
               </span>
-              <span style="font-weight: 600; color: #1e293b; font-size: 1.125rem;">{{ transaction.amount }}</span>
+              <span style="font-weight: 600; color: #1e293b; font-size: 1.125rem;">{{ transaction.item.name }} - {{ transaction.quantity }}x</span>
             </div>
-            {% if transaction.description %}
-            <div style="color: #64748b; font-size: 0.875rem;">{{ transaction.description }}</div>
-            {% endif %}
           </div>
           <div style="text-align: right;">
-            <div style="color: #64748b; font-size: 0.875rem;">{{ transaction.created_at|date:"d.m.Y H:i" }}</div>
-            {% if transaction.user %}
-            <div style="color: #94a3b8; font-size: 0.75rem;">👤 {{ transaction.user.username }}</div>
-            {% endif %}
+            <div style="color: #64748b; font-size: 0.875rem;">{{ transaction.date|date:"d.m.Y H:i" }}</div>
           </div>
         </div>
       </a>

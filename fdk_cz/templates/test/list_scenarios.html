@@ -71,7 +71,7 @@
             {% for scenario in scenarios %}
               <tr>
                 <td>
-                  <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" style="font-weight: 600; color: #3b82f6; text-decoration: none;">
+                  <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="font-semibold text-blue-600 hover:underline">
                     {{ scenario.name }}
                   </a>
                   {% if scenario.description %}

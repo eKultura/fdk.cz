@@ -66,8 +66,8 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     </div>
 
     <!-- Tabulkové zobrazení (výchozí) -->
-    <div id="task_table" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-      <table class="data-table" style="min-width: 600px;">
+    <div id="task_table" class="overflow-x-auto">
+      <table class="data-table">
         <thead>
           <tr>
             <th>Název</th>
@@ -82,19 +82,19 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% for task in tasks_to_do %}
           <tr>
             <td>
-              <a href="{% url 'detail_task' task.task_id %}"><strong>{{ task.title|safe }}</strong></a>
+              <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">{{ task.title|safe }}</a>
             </td>
             <td>
-              <span class="px-2 py-1 rounded text-xs font-medium
+              <span class="px-2 py-1 rounded text-xs font-semibold
                 {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
                 {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
                 {% else %}bg-gray-100 text-gray-700{% endif %}">
                 {{ task.status|default:"Nezahájeno" }}
               </span>
             </td>
-            <td class="hidden md:table-cell">{{ task.priority }}</td>
-            <td class="hidden sm:table-cell">{{ task.assigned.username|default:"–" }}</td>
-            <td class="hidden md:table-cell">{{ task.category.name|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ task.priority }}</td>
+            <td class="hidden sm:table-cell text-gray-600">{{ task.assigned.username|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ task.category.name|default:"–" }}</td>
             <td class="text-right">
               <div class="data-table-actions">
                 <a href="{% url 'detail_task' task.task_id %}">👁️ Detail</a>
@@ -252,17 +252,19 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <tbody>
           {% for error in all_errors %}
           <tr>
-            <td><strong>{{ error.error_title|safe }}</strong></td>
             <td>
-              <span class="px-2 py-1 rounded text-xs font-medium
+              <a href="{% url 'detail_test_error' error.test_error_id %}" class="font-semibold text-blue-600 hover:underline">{{ error.error_title|safe }}</a>
+            </td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-semibold
                 {% if error.status == 'closed' %}bg-green-100 text-green-700
                 {% elif error.status == 'in_progress' %}bg-yellow-100 text-yellow-800
                 {% else %}bg-red-100 text-red-700{% endif %}">
                 {{ error.get_status_display }}
               </span>
             </td>
-            <td class="hidden md:table-cell">{{ error.created_by.username|default:"–" }}</td>
-            <td class="hidden md:table-cell">{{ error.date_created|date:"d.m.Y H:i" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ error.created_by.username|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ error.date_created|date:"d.m.Y H:i" }}</td>
             <td class="text-right">
               <div class="data-table-actions">
                 <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ Detail</a>
@@ -298,8 +300,10 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <tbody>
         {% for milestone in project.milestones.all %}
         <tr>
-          <td><strong>{{ milestone.title|safe }}</strong></td>
-          <td>{{ milestone.due_date|date:"d.m.Y" }}</td>
+          <td>
+            <a href="{% url 'edit_milestone' project.project_id milestone.pk %}" class="font-semibold text-blue-600 hover:underline">{{ milestone.title|safe }}</a>
+          </td>
+          <td class="text-gray-600">{{ milestone.due_date|date:"d.m.Y" }}</td>
           <td class="text-right">
             <div class="data-table-actions">
               <a href="{% url 'edit_milestone' project.project_id milestone.pk %}">✏️ Upravit</a>
@@ -348,11 +352,14 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <tbody>
         {% for document in project.documents.all %}
         <tr>
-          <td><a href="{% url 'detail_document' document.pk %}"><strong>{{ document.title|safe }}</strong></a></td>
-          <td class="hidden md:table-cell">{{ document.category|default:"–" }}</td>
-          <td class="hidden md:table-cell">{{ document.document_type|default:"–" }}</td>
+          <td>
+            <a href="{% url 'detail_document' document.pk %}" class="font-semibold text-blue-600 hover:underline">{{ document.title|safe }}</a>
+          </td>
+          <td class="hidden md:table-cell text-gray-600">{{ document.category|default:"–" }}</td>
+          <td class="hidden md:table-cell text-gray-600">{{ document.document_type|default:"–" }}</td>
           <td class="text-right">
             <div class="data-table-actions">
+              <a href="{% url 'detail_document' document.pk %}">👁️ Detail</a>
               <a href="{% url 'edit_document' document.pk %}">✏️ Upravit</a>
               <a href="{% url 'delete_document' document.pk %}" class="danger" onclick="return confirm('Opravdu chcete smazat tento dokument?');">🗑️ Smazat</a>
             </div>
@@ -505,25 +512,29 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
             <th class="hidden md:table-cell">Přiřazeno</th>
             <th class="hidden md:table-cell">Kategorie</th>
             <th>Status</th>
+            <th class="text-right">Akce</th>
           </tr>
         </thead>
         <tbody>
           {% for task in nice_to_have_tasks %}
           <tr>
             <td>
-              <a href="{% url 'detail_task' task.task_id %}">
-                <strong>{{ task.title|safe }}</strong>
-              </a>
+              <a href="{% url 'detail_task' task.task_id %}" class="font-semibold text-blue-600 hover:underline">{{ task.title|safe }}</a>
             </td>
-            <td class="hidden md:table-cell">{{ task.assigned.username|default:"—" }}</td>
-            <td class="hidden md:table-cell">{{ task.category.name|default:"—" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ task.assigned.username|default:"—" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ task.category.name|default:"—" }}</td>
             <td>
-              <span class="px-2 py-1 rounded text-xs font-medium
+              <span class="px-2 py-1 rounded text-xs font-semibold
                 {% if task.status == 'Hotovo' %}bg-green-100 text-green-700
                 {% elif task.status == 'Probíhá' %}bg-yellow-100 text-yellow-800
                 {% else %}bg-gray-100 text-gray-700{% endif %}">
                 {{ task.status|default:"Nezahájeno" }}
               </span>
+            </td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_task' task.task_id %}">👁️ Detail</a>
+              </div>
             </td>
           </tr>
           {% endfor %}
