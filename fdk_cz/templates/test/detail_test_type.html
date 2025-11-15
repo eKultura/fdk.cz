@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ test_type.name }} | FDK.cz{% endblock %}
+{% block header_title %}📋 {{ test_type.name }}{% endblock %}
+{% block header_subtitle %}
+  Typ testu v projektu <strong>{{ test_type.project.name }}</strong>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Akce -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_test_type' test_type.test_type_id %}" class="btn btn-primary">✏️ Upravit typ</a>
+    <a href="{% url 'list_test_types' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <!-- Základní informace -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">Základní informace</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+      <!-- Název -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Název typu</h4>
+        <p style="font-weight: 600; color: #1e293b;">{{ test_type.name }}</p>
+      </div>
+
+      <!-- Projekt -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Projekt</h4>
+        <a href="{% url 'detail_project' test_type.project.project_id %}" class="font-semibold text-blue-600 hover:underline">
+          {{ test_type.project.name }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Popis -->
+    {% if test_type.description %}
+    <div style="margin-top: 1.5rem;">
+      <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Popis</h4>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #475569; white-space: pre-wrap;">{{ test_type.description }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Testy tohoto typu -->
+  <div class="content-card">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">🧪 Testy tohoto typu</h2>
+
+    {% if tests %}
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název testu</th>
+              <th>Projekt</th>
+              <th>Grid lokace</th>
+              <th>Vytvořeno</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for test in tests %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_test' test.test_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ test.name }}
+                  </a>
+                  {% if test.description %}
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                      {{ test.description|truncatewords:15 }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td style="color: #64748b;">
+                  <a href="{% url 'detail_project' test.project.project_id %}" class="text-blue-600 hover:underline">
+                    {{ test.project.name }}
+                  </a>
+                </td>
+                <td style="color: #64748b;">
+                  {% if test.grid_location %}
+                    <span style="padding: 4px 8px; background: #e0e7ff; color: #3730a3; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      {{ test.grid_location }}
+                    </span>
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td style="color: #64748b; font-size: 0.875rem;">
+                  {{ test.date_created|date:"d.m.Y" }}
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_test' test.test_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_test' test.test_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Statistika -->
+      <div style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 2rem;">📊</div>
+          <div>
+            <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Celkem testů</h4>
+            <p style="font-size: 1.5rem; font-weight: 700; color: #1e40af;">{{ tests|length }}</p>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">🧪</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+          Zatím nebyly vytvořeny žádné testy tohoto typu
+        </p>
+        <a href="{% url 'create_test' %}" class="btn btn-primary">➕ Vytvořit nový test</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

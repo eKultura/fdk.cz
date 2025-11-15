@@ -132,6 +132,42 @@ def edit_test(request, test_id):
     return render(request, 'test/edit_test.html', {'form': form, 'test': test_instance})
 
 
+# Detail testu
+@login_required
+def detail_test(request, test_id):
+    """Detail testu s výsledky a souvisejícími chybami"""
+    test = get_object_or_404(Test.objects.select_related('project', 'test_type'), pk=test_id)
+
+    # Získat všechny výsledky testu
+    test_results = test.results.select_related('executed_by').order_by('-execution_date')
+
+    # Získat všechny chyby spojené s tímto testem (skrz test results)
+    related_errors = TestError.objects.filter(
+        test_result__test=test
+    ).exclude(deleted=True).select_related('created_by', 'test_result').order_by('-date_created')
+
+    context = {
+        'test': test,
+        'test_results': test_results,
+        'related_errors': related_errors,
+    }
+    return render(request, 'test/detail_test.html', context)
+
+
+# Detail typu testu
+@login_required
+def detail_test_type(request, test_type_id):
+    """Detail typu testu se seznamem všech testů tohoto typu"""
+    test_type = get_object_or_404(TestType.objects.select_related('project'), pk=test_type_id)
+
+    # Získat všechny testy tohoto typu
+    tests = test_type.tests.select_related('project').order_by('-date_created')
+
+    context = {
+        'test_type': test_type,
+        'tests': tests,
+    }
+    return render(request, 'test/detail_test_type.html', context)
 
 
 

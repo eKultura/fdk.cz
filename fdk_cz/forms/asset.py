@@ -48,11 +48,18 @@ class AssetForm(forms.ModelForm):
             ).distinct()
 
             # Filter categories based on selected organization
-            if self.instance and self.instance.organization:
-                self.fields['category'].queryset = AssetCategory.objects.filter(
-                    organization=self.instance.organization
-                )
-            else:
+            # Use try/except to handle RelatedObjectDoesNotExist when organization is not set
+            try:
+                if self.instance and self.instance.pk and self.instance.organization:
+                    self.fields['category'].queryset = AssetCategory.objects.filter(
+                        organization=self.instance.organization
+                    )
+                else:
+                    self.fields['category'].queryset = AssetCategory.objects.filter(
+                        organization__in=self.fields['organization'].queryset
+                    )
+            except:
+                # If organization is not set, filter by user's organizations
                 self.fields['category'].queryset = AssetCategory.objects.filter(
                     organization__in=self.fields['organization'].queryset
                 )
@@ -86,7 +93,18 @@ class AssetCategoryForm(forms.ModelForm):
             ).distinct()
 
             # Filter parent categories based on selected organization
-            if self.instance and self.instance.organization:
+            # Use try/except to handle RelatedObjectDoesNotExist when organization is not set
+            try:
+                if self.instance and self.instance.pk and self.instance.organization:
+                    self.fields['parent_category'].queryset = AssetCategory.objects.filter(
+                        organization=self.instance.organization
+                    ).exclude(pk=self.instance.pk)
+                else:
+                    self.fields['parent_category'].queryset = AssetCategory.objects.filter(
+                        organization__in=self.fields['organization'].queryset
+                    )
+            except:
+                # If organization is not set, filter by user's organizations
                 self.fields['parent_category'].queryset = AssetCategory.objects.filter(
-                    organization=self.instance.organization
-                ).exclude(pk=self.instance.pk)
+                    organization__in=self.fields['organization'].queryset
+                )

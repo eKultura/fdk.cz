@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ test.name }} | FDK.cz{% endblock %}
+{% block header_title %}🧪 {{ test.name }}{% endblock %}
+{% block header_subtitle %}
+  Test v projektu <strong>{{ test.project.name }}</strong>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Akce -->
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem;">
+    <a href="{% url 'edit_test' test.test_id %}" class="btn btn-primary">✏️ Upravit test</a>
+    <a href="{% url 'list_tests' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <!-- Základní informace -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">Základní informace</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <!-- Název -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Název testu</h4>
+        <p style="font-weight: 600; color: #1e293b;">{{ test.name }}</p>
+      </div>
+
+      <!-- Typ testu -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Typ testu</h4>
+        <a href="{% url 'detail_test_type' test.test_type.test_type_id %}" class="font-semibold text-blue-600 hover:underline">
+          {{ test.test_type.name }}
+        </a>
+      </div>
+
+      <!-- Projekt -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Projekt</h4>
+        <a href="{% url 'detail_project' test.project.project_id %}" class="font-semibold text-blue-600 hover:underline">
+          {{ test.project.name }}
+        </a>
+      </div>
+
+      <!-- Grid lokace -->
+      {% if test.grid_location %}
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Grid lokace</h4>
+        <p style="font-weight: 600; color: #1e293b;">{{ test.grid_location }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Datum vytvoření -->
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Vytvořeno</h4>
+        <p style="font-weight: 600; color: #1e293b;">{{ test.date_created|date:"d.m.Y H:i" }}</p>
+      </div>
+    </div>
+
+    <!-- Popis -->
+    {% if test.description %}
+    <div style="margin-top: 1.5rem;">
+      <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Popis</h4>
+      <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #475569; white-space: pre-wrap;">{{ test.description }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Výsledky testů -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">📊 Výsledky testů</h2>
+
+    {% if test_results %}
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Výsledek</th>
+              <th>Provedl</th>
+              <th>Datum provedení</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in test_results %}
+              <tr>
+                <td>
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+                    {% if result.result == 'Pass' or result.result == 'Passed' %}background: #d1fae5; color: #065f46;
+                    {% elif result.result == 'Fail' or result.result == 'Failed' %}background: #fee2e2; color: #991b1b;
+                    {% elif result.result == 'Blocked' %}background: #fef3c7; color: #92400e;
+                    {% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+                    {{ result.result }}
+                  </span>
+                </td>
+                <td style="color: #64748b;">
+                  {% if result.executed_by %}
+                    {{ result.executed_by.get_full_name|default:result.executed_by.username }}
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td style="color: #64748b; font-size: 0.875rem;">
+                  {{ result.execution_date|date:"d.m.Y H:i" }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+        <p style="color: #64748b;">Zatím nebyly provedeny žádné testy</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Související chyby -->
+  <div class="content-card">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">🐛 Související chyby</h2>
+
+    {% if related_errors %}
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název chyby</th>
+              <th>Status</th>
+              <th>Vytvořil</th>
+              <th>Datum</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for error in related_errors %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_test_error' error.test_error_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ error.error_title }}
+                  </a>
+                </td>
+                <td>
+                  <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+                    {% if error.status == 'closed' %}background: #d1fae5; color: #065f46;
+                    {% elif error.status == 'in_progress' %}background: #fef3c7; color: #92400e;
+                    {% else %}background: #fee2e2; color: #991b1b;{% endif %}">
+                    {{ error.get_status_display }}
+                  </span>
+                </td>
+                <td style="color: #64748b;">
+                  {% if error.created_by %}
+                    {{ error.created_by.get_full_name|default:error.created_by.username }}
+                  {% else %}
+                    <span style="color: #cbd5e1;">—</span>
+                  {% endif %}
+                </td>
+                <td style="color: #64748b; font-size: 0.875rem;">
+                  {{ error.date_created|date:"d.m.Y" }}
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_test_error' error.test_error_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_test_error' error.test_error_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+        <p style="color: #64748b;">Žádné chyby nejsou s tímto testem spojeny</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
