@@ -4,21 +4,107 @@
 {% block header_subtitle %}Organizační struktura a oddělení firmy{% endblock %}
 
 {% block content %}
-<div style="max-width: 1400px; margin: 0 auto;">
+<div class="max-w-7xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'create_department' %}" class="btn btn-primary">+ Nové oddělení</a>
+    <a href="{% url 'hr_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+  </div>
+
+  <!-- Departments Table -->
   <div class="content-card">
-    <div style="text-align: center; padding: 4rem;">
-      <div style="font-size: 5rem; margin-bottom: 1.5rem;">🏢</div>
-      <h3 style="font-size: 1.5rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">Modul Oddělení</h3>
-      <p style="color: #64748b; margin-bottom: 2rem;">Tento modul je v přípravě. Brzy zde bude k dispozici správa organizační struktury.</p>
-      <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;">
-        <p style="font-size: 0.875rem; color: #1e40af; margin: 0;">
-          <strong>Plánované funkce:</strong><br>
-          • Vytváření a správa oddělení<br>
-          • Hierarchie organizace<br>
-          • Vedoucí oddělení<br>
-          • Přiřazení zaměstnanců<br>
-          • Rozpočty oddělení
+    {% if departments %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název oddělení</th>
+              <th class="hidden md:table-cell">Organizace</th>
+              <th class="hidden lg:table-cell">Manažer</th>
+              <th class="hidden lg:table-cell">Nadřazené oddělení</th>
+              <th class="text-center">Zaměstnanců</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for department in departments %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_department' department.department_id %}" class="font-semibold text-blue-600 hover:underline">
+                    🏢 {{ department.name }}
+                  </a>
+                  {% if department.description %}
+                    <div class="text-xs text-gray-500 mt-1">
+                      {{ department.description|truncatewords:15 }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell text-gray-600">
+                  <a href="{% url 'organization_detail' department.organization.organization_id %}" class="text-blue-600 hover:underline">
+                    {{ department.organization.name }}
+                  </a>
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {% if department.manager %}
+                    {{ department.manager.get_full_name|default:department.manager.username }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="hidden lg:table-cell text-gray-600">
+                  {% if department.parent_department %}
+                    <a href="{% url 'detail_department' department.parent_department.department_id %}" class="text-blue-600 hover:underline">
+                      {{ department.parent_department.name }}
+                    </a>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td class="text-center">
+                  <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+                    {{ department.employee_count|default:0 }}
+                  </span>
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_department' department.department_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_department' department.department_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Results Summary -->
+      <div class="mt-4 text-sm text-gray-600 text-center">
+        Celkem {{ departments.count }} oddělení
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-5xl mb-3">🏢</div>
+        <p class="text-gray-600 mb-4">
+          Zatím nemáte vytvořená žádná oddělení
         </p>
+        <a href="{% url 'create_department' %}" class="btn btn-primary">+ Vytvořit první oddělení</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+    <div class="flex items-start">
+      <div class="text-3xl mr-4">💡</div>
+      <div>
+        <h4 class="font-semibold text-gray-800 mb-2">Tipy pro organizační strukturu</h4>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Vytvořte hierarchii oddělení pomocí nadřazených oddělení</li>
+          <li>• Přiřaďte manažery k jednotlivým oddělením pro lepší správu</li>
+          <li>• Organizujte zaměstnance do oddělení podle jejich pracovní náplně</li>
+          <li>• Používejte popis oddělení pro dokumentaci jeho činnosti</li>
+          <li>• Sledujte počet zaměstnanců v každém oddělení</li>
+        </ul>
       </div>
     </div>
   </div>

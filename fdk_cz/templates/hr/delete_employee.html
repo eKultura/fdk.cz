@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Smazat zaměstnance {{ employee.get_full_name }} | FDK.cz{% endblock %}
+{% block header_title %}🗑️ Smazat zaměstnance{% endblock %}
+{% block header_subtitle %}Potvrzení smazání{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="content-card">
+    <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+      <h3 style="color: #991b1b; font-weight: 600; margin-bottom: 0.5rem;">⚠️ Varování</h3>
+      <p style="color: #7f1d1d; margin: 0;">
+        Opravdu chcete smazat zaměstnance <strong>{{ employee.get_full_name }}</strong>?
+        Tato akce je nevratná.
+      </p>
+    </div>
+
+    <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+      <h4 style="font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Detail zaměstnance:</h4>
+
+      <div style="display: grid; gap: 0.75rem;">
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Jméno:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.first_name }} {{ employee.last_name }}</p>
+        </div>
+
+        {% if employee.email %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Email:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.email }}</p>
+        </div>
+        {% endif %}
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Organizace:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.organization.name }}</p>
+        </div>
+
+        {% if employee.department %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Oddělení:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.department.name }}</p>
+        </div>
+        {% endif %}
+
+        {% if employee.position %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Pozice:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.position }}</p>
+        </div>
+        {% endif %}
+
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Status:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.get_status_display }}</p>
+        </div>
+
+        {% if employee.user %}
+        <div>
+          <label style="font-size: 0.875rem; font-weight: 600; color: #64748b;">Propojený účet:</label>
+          <p style="color: #1e293b; margin: 0.25rem 0 0 0;">{{ employee.user.username }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if employee.user %}
+    <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+      <p style="color: #92400e; margin: 0; font-size: 0.875rem;">
+        <strong>Upozornění:</strong> Tento zaměstnanec má propojený uživatelský účet ({{ employee.user.username }}).
+        Smazání zaměstnance NEODSTRANÍ uživatelský účet - pouze zruší propojení.
+      </p>
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <a href="{% url 'detail_employee' employee.employee_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary" style="background: #dc2626; border-color: #dc2626;">
+          🗑️ Ano, smazat zaměstnance
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

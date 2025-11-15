@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Upravit oddělení {{ department.name }} | FDK.cz{% endblock %}
+{% block header_title %}🏢 Upravit oddělení{% endblock %}
+{% block header_subtitle %}{{ department.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div class="content-card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Basic Info Section -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0;">📋 Základní informace</h3>
+
+      <div class="form-group">
+        <label for="{{ form.name.id_for_label }}" class="form-label">
+          Název oddělení <span class="required">*</span>
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <p class="form-error">{{ form.name.errors }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.description.id_for_label }}" class="form-label">
+          Popis
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="form-error">{{ form.description.errors }}</p>
+        {% endif %}
+        <div class="form-help">Stručný popis oddělení a jeho činnosti</div>
+      </div>
+
+      <!-- Organizational Info -->
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-top: 2rem;">🏢 Organizační struktura</h3>
+
+      <div class="form-group">
+        <label for="{{ form.organization.id_for_label }}" class="form-label">
+          Organizace <span class="required">*</span>
+        </label>
+        {{ form.organization }}
+        {% if form.organization.errors %}
+          <p class="form-error">{{ form.organization.errors }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.parent_department.id_for_label }}" class="form-label">
+          Nadřazené oddělení
+        </label>
+        {{ form.parent_department }}
+        {% if form.parent_department.errors %}
+          <p class="form-error">{{ form.parent_department.errors }}</p>
+        {% endif %}
+        <div class="form-help">Volitelné - pro vytvoření hierarchie oddělení</div>
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.manager.id_for_label }}" class="form-label">
+          Manažer oddělení
+        </label>
+        {{ form.manager }}
+        {% if form.manager.errors %}
+          <p class="form-error">{{ form.manager.errors }}</p>
+        {% endif %}
+        <div class="form-help">Vedoucí tohoto oddělení</div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; margin-top: 2rem;">
+        <a href="{% url 'delete_department' department.department_id %}" class="btn btn-outline danger" onclick="return confirm('Opravdu chcete smazat toto oddělení?')">
+          🗑️ Smazat oddělení
+        </a>
+        <div style="display: flex; gap: 0.75rem;">
+          <a href="{% url 'detail_department' department.department_id %}" class="btn btn-outline">Zrušit</a>
+          <button type="submit" class="btn btn-primary">✓ Uložit změny</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
