@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
-
 {% block title %}
   {% if user.is_authenticated %}
     Granty a Dotace | FDK.cz
@@ -11,545 +9,512 @@
   {% endif %}
 {% endblock %}
 
-
-
-{% block meta %}
-<!-- CSS styly pro tabulky -->
-<style>
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  div[style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-  
-  table {
-    font-size: 0.75rem !important;
-  }
-  
-  th, td {
-    padding: 0.5rem 0.25rem !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-.stat-change.neutral {
-  color: #6b7280;
-}
-
-.feature-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  transition: transform 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-}
-</style>
-{% endblock %}
-
-
 {% block header_title %}Granty a Dotace{% endblock %}
 {% block header_subtitle %}Aktuální výzvy a příležitosti pro financování projektů{% endblock %}
 
-
 {% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
 
-<!-- Stats sekce -->
-<div class="stats-grid" style="margin-bottom: 2rem;">
-  <div class="stat-card">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <div class="stat-title">Aktivní výzvy</div>
-        <div class="stat-value">
-          {% if user.is_authenticated %}
-            {{ active_grants_count|default:0 }}
-          {% else %}
-            247
-          {% endif %}
-        </div>
-        <div class="stat-change positive">
-          <span>&#8599;</span>
-          {% if user.is_authenticated %}
-            {{ new_grants_week|default:0 }} nových tento týden
-          {% else %}
-            23 nových tento týden
-          {% endif %}
-        </div>
-      </div>
-      <div class="stat-icon primary">&#128176;</div>
-    </div>
+  <!-- Breadcrumbs -->
+  <div style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+    <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">🏠 Domů</a>
+    <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+    <span style="color: #64748b;">Granty a dotace</span>
   </div>
 
-  <div class="stat-card">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <div class="stat-title">Celková hodnota</div>
-        <div class="stat-value">
-          {% if user.is_authenticated %}
-            {{ total_grant_value|default:"0 mil." }}
-          {% else %}
-            2.8 mld.
-          {% endif %}
+  <!-- Stats sekce -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Aktivní výzvy</div>
+          <div style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-top: 0.5rem;">
+            {% if user.is_authenticated %}
+              {{ active_grants_count|default:0 }}
+            {% else %}
+              247
+            {% endif %}
+          </div>
+          <div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">
+            <span style="font-weight: 600;">↗</span>
+            {% if user.is_authenticated %}
+              {{ new_grants_week|default:0 }} nových tento týden
+            {% else %}
+              23 nových tento týden
+            {% endif %}
+          </div>
         </div>
-        <div class="stat-change positive">
-          <span>&#8599;</span>
-          {% if user.is_authenticated %}
+        <div style="font-size: 2.5rem;">💰</div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Celková hodnota</div>
+          <div style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-top: 0.5rem;">
+            {% if user.is_authenticated %}
+              {{ total_grant_value|default:"0 mil." }}
+            {% else %}
+              2.8 mld.
+            {% endif %}
+          </div>
+          <div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">
             dostupných prostředků
-          {% else %}
-            dostupných prostředků
-          {% endif %}
+          </div>
         </div>
+        <div style="font-size: 2.5rem;">💵</div>
       </div>
-      <div class="stat-icon success">&#128178;</div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <div class="stat-title">Moje žádosti</div>
-        <div class="stat-value">
-          {% if user.is_authenticated %}
-            {{ user_applications_count|default:0 }}
-          {% else %}
-            --
-          {% endif %}
-        </div>
-        <div class="stat-change {% if user.is_authenticated %}positive{% else %}neutral{% endif %}">
-          <span>{% if user.is_authenticated %}&#8599;{% else %}&#128273;{% endif %}</span>
-          {% if user.is_authenticated %}
-            {{ approved_applications|default:0 }} schválených
-          {% else %}
-            Přihlaste se
-          {% endif %}
-        </div>
-      </div>
-      <div class="stat-icon info">&#128221;</div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <div class="stat-title">Úspěšnost</div>
-        <div class="stat-value">
-          {% if user.is_authenticated %}
-            {{ success_rate|default:"--" }}%
-          {% else %}
-            67%
-         {% endif %}
-        </div>
-        <div class="stat-change positive">
-          <span>&#8599;</span>
-          {% if user.is_authenticated %}
-            průměrná úspěšnost
-          {% else %}
-            průměrná úspěšnost
-          {% endif %}
-        </div>
-      </div>
-      <div class="stat-icon warning">&#128200;</div>
-    </div>
-  </div>
-</div>
-
-{% if user.is_authenticated %}
-<!-- Filtrování pro přihlášené -->
-<div class="content-card" style="margin-bottom: 2rem;">
-  <h3 style="margin-bottom: 1rem;">Filtrování a vyhledávání</h3>
-  <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
-        Typ výzvy
-      </label>
-      <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">Všechny typy</option>
-        <option value="dotace" {% if request.GET.type == 'dotace' %}selected{% endif %}>Dotace</option>
-        <option value="grant" {% if request.GET.type == 'grant' %}selected{% endif %}>Granty</option>
-        <option value="stipendium" {% if request.GET.type == 'stipendium' %}selected{% endif %}>Stipendia</option>
-      </select>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="provider">
-        Poskytovatel
-      </label>
-      <select name="provider" id="provider" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">Všichni poskytovatelé</option>
-        <option value="MKČR" {% if request.GET.provider == 'MKČR' %}selected{% endif %}>MKČR</option>
-        <option value="EU" {% if request.GET.provider == 'EU' %}selected{% endif %}>EU fondy</option>
-        <option value="MAS" {% if request.GET.provider == 'MAS' %}selected{% endif %}>MAS</option>
-        <option value="NPO" {% if request.GET.provider == 'NPO' %}selected{% endif %}>NPO</option>
-      </select>
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="search">
-        Hledat
-      </label>
-      <input type="text" name="search" id="search" value="{{ request.GET.search }}" placeholder="Název, klíčová slova..."
-             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
-
-    <div>
-      <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">
-        &#128269; Filtrovat
-      </button>
-    </div>
-  </form>
-</div>
-
-<!-- Tabulky s granty -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-  <!-- Aktivní dotace -->
-  <div class="content-card">
-    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1rem;">
-      <h3>Aktivní dotace ({{ active_dotace|length|default:0 }})</h3>
-      <a href="{% url 'grant_create' %}" class="btn btn-outline" style="font-size: 0.875rem;">
-        &#10133; Přidat výzvu
-      </a>
-    </div>
-
-    {% if active_dotace %}
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-        <thead>
-          <tr style="border-bottom: 1px solid #e5e7eb;">
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Název</th>
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Poskytovatel</th>
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Deadline</th>
-            <th style="text-align: center; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Akce</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for grant in active_dotace|slice:":10" %}
-          <tr style="border-bottom: 1px solid #f3f4f6;">
-            <td style="padding: 0.75rem 0.5rem;">
-              <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-                {{ grant.title|truncatechars:40 }}
-              </a>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-                {{ grant.type|capfirst }}
-              </div>
-            </td>
-            <td style="padding: 0.75rem 0.5rem; color: #6b7280;">
-              {{ grant.provider }}
-            </td>
-            <td style="padding: 0.75rem 0.5rem;">
-              <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %};">
-                {{ grant.end_date|date:"d.m.Y" }}
-              </span>
-              <div style="font-size: 0.75rem; color: #6b7280;">
-                {{ grant.end_date|timeuntil }}
-              </div>
-            </td>
-            <td style="padding: 0.75rem 0.5rem; text-align: center;">
-              <a href="{% url 'application_create' grant.call_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                Podat žádost
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-state-icon">&#128176;</div>
-      <p>Zatím nejsou dostupné žádné aktivní dotace</p>
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- Aktivní granty -->
-  <div class="content-card">
-    <h3 style="margin-bottom: 1rem;">Aktivní granty ({{ active_granty|length|default:0 }})</h3>
-
-    {% if active_granty %}
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-        <thead>
-          <tr style="border-bottom: 1px solid #e5e7eb;">
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Název</th>
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Poskytovatel</th>
-            <th style="text-align: left; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Deadline</th>
-            <th style="text-align: center; padding: 0.75rem 0.5rem; font-weight: 600; color: #374151;">Akce</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for grant in active_granty|slice:":10" %}
-          <tr style="border-bottom: 1px solid #f3f4f6;">
-            <td style="padding: 0.75rem 0.5rem;">
-              <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-                {{ grant.title|truncatechars:40 }}
-              </a>
-              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-                {{ grant.type|capfirst }}
-              </div>
-            </td>
-            <td style="padding: 0.75rem 0.5rem; color: #6b7280;">
-              {{ grant.provider }}
-            </td>
-            <td style="padding: 0.75rem 0.5rem;">
-              <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %};">
-                {{ grant.end_date|date:"d.m.Y" }}
-              </span>
-              <div style="font-size: 0.75rem; color: #6b7280;">
-                {{ grant.end_date|timeuntil }}
-              </div>
-            </td>
-            <td style="padding: 0.75rem 0.5rem; text-align: center;">
-              <a href="{% url 'application_create' grant.call_id %}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
-                Podat žádost
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="empty-state">
-      <div class="empty-state-icon">&#127942;</div>
-      <p>Zatím nejsou dostupné žádné aktivní granty</p>
-    </div>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Moje žádosti -->
-<div class="content-card">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-    <h3>Moje žádosti ({{ user_applications|length|default:0 }})</h3>
-    <a href="{% url 'grant_calendar' %}" class="btn btn-outline">
-      &#128197; Kalendář výzev
-    </a>
-  </div>
-
-  {% if user_applications %}
-  <div style="overflow-x: auto;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-      <thead>
-        <tr style="border-bottom: 1px solid #e5e7eb;">
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Výzva</th>
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Projekt</th>
-          <th style="text-align: right; padding: 0.75rem; font-weight: 600; color: #374151;">Požadovaná částka</th>
-          <th style="text-align: center; padding: 0.75rem; font-weight: 600; color: #374151;">Status</th>
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Podáno</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for app in user_applications|slice:":5" %}
-        <tr style="border-bottom: 1px solid #f3f4f6;">
-          <td style="padding: 0.75rem;">
-            <a href="{% url 'grant_detail' app.grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-              {{ app.grant.title|truncatechars:35 }}
-            </a>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">
-            {{ app.project.name|default:"--" }}
-          </td>
-          <td style="padding: 0.75rem; text-align: right; font-weight: 500;">
-            {% if app.requested_amount %}
-              {{ app.requested_amount|floatformat:0 }} Kč
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Moje žádosti</div>
+          <div style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-top: 0.5rem;">
+            {% if user.is_authenticated %}
+              {{ user_applications_count|default:0 }}
             {% else %}
               --
             {% endif %}
-          </td>
-          <td style="padding: 0.75rem; text-align: center;">
-            <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;
-                         {% if app.status == 'approved' %}background: #d1fae5; color: #065f46;
-                         {% elif app.status == 'rejected' %}background: #fee2e2; color: #991b1b;
-                         {% elif app.status == 'submitted' %}background: #dbeafe; color: #1e40af;
-                         {% else %}background: #f3f4f6; color: #374151;{% endif %}">
-              {% if app.status == 'approved' %}Schváleno
-              {% elif app.status == 'rejected' %}Zamítnuto
-              {% elif app.status == 'submitted' %}Odesláno
-              {% elif app.status == 'in_progress' %}V procesu
-              {% else %}Koncept{% endif %}
-            </span>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">
-            {{ app.submission_date|date:"d.m.Y"|default:"--" }}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          </div>
+          <div style="font-size: 0.75rem; {% if user.is_authenticated %}color: #10b981;{% else %}color: #9ca3af;{% endif %} margin-top: 0.25rem;">
+            {% if user.is_authenticated %}
+              <span style="font-weight: 600;">↗</span> {{ approved_applications|default:0 }} schválených
+            {% else %}
+              🔒 Přihlaste se
+            {% endif %}
+          </div>
+        </div>
+        <div style="font-size: 2.5rem;">📝</div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-size: 0.875rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Úspěšnost</div>
+          <div style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-top: 0.5rem;">
+            {% if user.is_authenticated %}
+              {{ success_rate|default:"--" }}%
+            {% else %}
+              67%
+           {% endif %}
+          </div>
+          <div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">
+            průměrná úspěšnost
+          </div>
+        </div>
+        <div style="font-size: 2.5rem;">📊</div>
+      </div>
+    </div>
   </div>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-state-icon">&#128221;</div>
-    <p>Zatím jste nepodali žádné žádosti</p>
-    <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
-      Začněte tím, že si prohlédnete dostupné výzvy výše
-    </p>
+
+  {% if user.is_authenticated %}
+  <!-- Filtrování a vyhledávání -->
+  <div class="bg-white rounded-lg shadow-md p-6" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">🔍 Filtrování a vyhledávání</h3>
+    <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="type">
+          Typ výzvy
+        </label>
+        <select name="type" id="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Všechny typy</option>
+          <option value="dotace" {% if request.GET.type == 'dotace' %}selected{% endif %}>Dotace</option>
+          <option value="grant" {% if request.GET.type == 'grant' %}selected{% endif %}>Granty</option>
+          <option value="stipendium" {% if request.GET.type == 'stipendium' %}selected{% endif %}>Stipendia</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="provider">
+          Poskytovatel
+        </label>
+        <select name="provider" id="provider" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Všichni poskytovatelé</option>
+          <option value="MKČR" {% if request.GET.provider == 'MKČR' %}selected{% endif %}>MKČR</option>
+          <option value="EU" {% if request.GET.provider == 'EU' %}selected{% endif %}>EU fondy</option>
+          <option value="MAS" {% if request.GET.provider == 'MAS' %}selected{% endif %}>MAS</option>
+          <option value="NPO" {% if request.GET.provider == 'NPO' %}selected{% endif %}>NPO</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="search">
+          Hledat
+        </label>
+        <input type="text" name="search" id="search" value="{{ request.GET.search }}" placeholder="Název, klíčová slova..."
+               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div style="display: flex; align-items: flex-end;">
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full font-medium">
+          🔎 Filtrovat
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Action buttons pro administrátory -->
+  {% if user.is_superuser or user.is_staff %}
+  <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <a href="{% url 'grant_create' %}" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-medium">
+      ➕ Nová výzva
+    </a>
+    <a href="{% url 'grant_calendar' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-medium">
+      📅 Kalendář výzev
+    </a>
   </div>
   {% endif %}
+
+  <!-- Responzivní grid pro tabulky dotací a grantů -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+
+    <!-- Aktivní dotace -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">📋 Aktivní dotace ({{ active_dotace|length|default:0 }})</h3>
+      </div>
+
+      {% if active_dotace %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Poskytovatel</th>
+              <th>Deadline</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for grant in active_dotace|slice:":10" %}
+            <tr>
+              <td>
+                <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                  {{ grant.title|safe|truncatechars:50 }}
+                </a>
+                <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                  {{ grant.type|capfirst }}
+                </div>
+              </td>
+              <td class="hidden md:table-cell" style="color: #6b7280;">
+                {{ grant.provider }}
+              </td>
+              <td>
+                <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %}; font-weight: 500;">
+                  {{ grant.end_date|date:"d.m.Y" }}
+                </span>
+                <div style="font-size: 0.75rem; color: #6b7280;">
+                  {{ grant.end_date|timeuntil }}
+                </div>
+              </td>
+              <td class="text-right">
+                <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
+                  Podat žádost
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">💰</span>
+        <p style="color: #64748b;">Zatím nejsou dostupné žádné aktivní dotace</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Aktivní granty -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">🏆 Aktivní granty ({{ active_granty|length|default:0 }})</h3>
+
+      {% if active_granty %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th class="hidden md:table-cell">Poskytovatel</th>
+              <th>Deadline</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for grant in active_granty|slice:":10" %}
+            <tr>
+              <td>
+                <a href="{% url 'grant_detail' grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                  {{ grant.title|safe|truncatechars:50 }}
+                </a>
+                <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                  {{ grant.type|capfirst }}
+                </div>
+              </td>
+              <td class="hidden md:table-cell" style="color: #6b7280;">
+                {{ grant.provider }}
+              </td>
+              <td>
+                <span style="color: {% if grant.end_date|date:'Y-m-d' < today|date:'Y-m-d' %}#dc2626{% elif grant.end_date|timeuntil|slice:':2' < '7' %}#f59e0b{% else %}#059669{% endif %}; font-weight: 500;">
+                  {{ grant.end_date|date:"d.m.Y" }}
+                </span>
+                <div style="font-size: 0.75rem; color: #6b7280;">
+                  {{ grant.end_date|timeuntil }}
+                </div>
+              </td>
+              <td class="text-right">
+                <a href="{% url 'application_create' grant.call_id %}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
+                  Podat žádost
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">🏆</span>
+        <p style="color: #64748b;">Zatím nejsou dostupné žádné aktivní granty</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Moje žádosti -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">📝 Moje žádosti ({{ user_applications|length|default:0 }})</h3>
+      <a href="{% url 'grant_calendar' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 font-medium text-sm">
+        📅 Kalendář výzev
+      </a>
+    </div>
+
+    {% if user_applications %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Výzva</th>
+            <th class="hidden md:table-cell">Projekt</th>
+            <th class="hidden lg:table-cell text-right">Požadovaná částka</th>
+            <th>Status</th>
+            <th class="hidden md:table-cell">Podáno</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in user_applications|slice:":10" %}
+          <tr>
+            <td>
+              <a href="{% url 'grant_detail' app.grant.call_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                {{ app.grant.title|safe|truncatechars:40 }}
+              </a>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">
+              {{ app.project.name|default:"--" }}
+            </td>
+            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">
+              {% if app.requested_amount %}
+                {{ app.requested_amount|floatformat:0 }} Kč
+              {% else %}
+                --
+              {% endif %}
+            </td>
+            <td>
+              <span class="px-2 py-1 rounded text-xs font-medium
+                           {% if app.status == 'approved' %}bg-green-100 text-green-700
+                           {% elif app.status == 'rejected' %}bg-red-100 text-red-700
+                           {% elif app.status == 'submitted' %}bg-blue-100 text-blue-700
+                           {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {% if app.status == 'approved' %}Schváleno
+                {% elif app.status == 'rejected' %}Zamítnuto
+                {% elif app.status == 'submitted' %}Odesláno
+                {% elif app.status == 'in_progress' %}V procesu
+                {% else %}Koncept{% endif %}
+              </span>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">
+              {{ app.submission_date|date:"d.m.Y"|default:"--" }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if user_applications|length > 10 %}
+    <div style="text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+      <p style="font-size: 0.875rem; color: #64748b;">
+        Zobrazeno 10 z {{ user_applications|length }} žádostí
+      </p>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📝</span>
+      <p style="color: #64748b; margin-bottom: 0.5rem;">Zatím jste nepodali žádné žádosti</p>
+      <p style="font-size: 0.875rem; color: #9ca3af;">
+        Začněte tím, že si prohlédnete dostupné výzvy výše
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% else %}
+  <!-- Sekce pro nepřihlášené uživatele -->
+  <div class="bg-white rounded-lg shadow-md p-12 text-center" style="margin-bottom: 2rem;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">💰</div>
+    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">Získejte přístup k databázi grantů</h3>
+    <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+      Přihlaste se a získejte přístup k rozsáhlé databázi grantů, dotací a stipendií.
+      Sledujte svoje žádosti, nastavte si upozornění na nové výzvy a zvyšte šance na úspěch.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'registration_cs' %}" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium">
+        📝 Zaregistrovat se
+      </a>
+      <a href="{% url 'login_cs' %}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">
+        🔒 Přihlásit se
+      </a>
+    </div>
+  </div>
+
+  <!-- Demo výpis grantů pro nepřihlášené -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1.5rem;">📋 Ukázka dostupných výzev</h3>
+
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Název výzvy</th>
+            <th class="hidden md:table-cell">Poskytovatel</th>
+            <th class="hidden lg:table-cell">Typ</th>
+            <th>Deadline</th>
+            <th class="hidden lg:table-cell text-right">Max. částka</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span style="color: #3b82f6; font-weight: 500;">Podpora kulturních projektů 2025</span>
+              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                Financování kulturních a uměleckých aktivit
+              </div>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">MKČR</td>
+            <td class="hidden lg:table-cell">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                Dotace
+              </span>
+            </td>
+            <td style="color: #059669; font-weight: 500;">31.3.2025</td>
+            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">500 000 Kč</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span style="color: #3b82f6; font-weight: 500;">Horizont Evropa - Excellent Science</span>
+              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                Evropský program pro výzkum a inovace
+              </div>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">Evropská komise</td>
+            <td class="hidden lg:table-cell">
+              <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                Grant
+              </span>
+            </td>
+            <td style="color: #f59e0b; font-weight: 500;">15.4.2025</td>
+            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">2 mil. EUR</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span style="color: #3b82f6; font-weight: 500;">Podpora MSP v digitalizaci</span>
+              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                Digitální transformace malých podniků
+              </div>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">MPO ČR</td>
+            <td class="hidden lg:table-cell">
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                Dotace
+              </span>
+            </td>
+            <td style="color: #059669; font-weight: 500;">30.6.2025</td>
+            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">1 mil. Kč</td>
+          </tr>
+
+          <tr>
+            <td>
+              <span style="color: #3b82f6; font-weight: 500;">Stipendia pro doktorandy</span>
+              <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                Podpora mladých výzkumníků
+              </div>
+            </td>
+            <td class="hidden md:table-cell" style="color: #6b7280;">GAČR</td>
+            <td class="hidden lg:table-cell">
+              <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
+                Stipendium
+              </span>
+            </td>
+            <td style="color: #dc2626; font-weight: 500;">28.2.2025</td>
+            <td class="hidden lg:table-cell text-right" style="font-weight: 500;">180 000 Kč/rok</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border-radius: 8px;">
+      <p style="color: #475569; margin-bottom: 1rem; font-weight: 600;">
+        Ukázka 4 ze 247 dostupných výzev
+      </p>
+      <a href="{% url 'registration_cs' %}" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium inline-block">
+        Přihlásit se pro přístup ke všem výzvám
+      </a>
+    </div>
+  </div>
+
+  <!-- Výhody pro nepřihlášené -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+    <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔍</div>
+      <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Pokročilé vyhledávání</h4>
+      <p style="color: #6b7280; font-size: 0.875rem;">
+        Filtrujte výzvy podle typu, poskytovatele, částky a termínů
+      </p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔔</div>
+      <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Upozornění</h4>
+      <p style="color: #6b7280; font-size: 0.875rem;">
+        Dostávejte notifikace o nových výzvách a blížících se deadlinech
+      </p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">📊</div>
+      <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Statistiky</h4>
+      <p style="color: #6b7280; font-size: 0.875rem;">
+        Sledujte svou úspěšnost a analyzujte trendy v grantových výzvách
+      </p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+      <div style="font-size: 2.5rem; margin-bottom: 1rem;">📅</div>
+      <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Kalendář</h4>
+      <p style="color: #6b7280; font-size: 0.875rem;">
+        Přehledný kalendář všech důležitých termínů a deadlinů
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
-
-{% else %}
-<!-- Sekce pro nepřihlášené uživatele -->
-<div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
-  <div style="font-size: 3rem; margin-bottom: 1rem;">&#128176;</div>
-  <h3 style="margin-bottom: 1rem; color: #1e293b;">Získejte přístup k databázi grantů</h3>
-  <p style="color: #64748b; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-    Přihlaste se a získejte přístup k rozsáhlé databázi grantů, dotací a stipendií. 
-    Sledujte svoje žádosti, nastavte si upozornění na nové výzvy a zvyšte šance na úspěch.
-  </p>
-  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-    <a href="{% url 'registration_cs' %}" class="btn btn-primary">
-      &#128221; Zaregistrovat se
-    </a>
-    <a href="{% url 'login_cs' %}" class="btn btn-outline">
-      &#128273; Přihlásit se
-    </a>
-  </div>
-</div>
-
-<!-- Demo výpis grantů pro nepřihlášené -->
-<div class="content-card">
-  <h3 style="margin-bottom: 1.5rem;">Ukázka dostupných výzev</h3>
-  
-  <div style="overflow-x: auto;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-      <thead>
-        <tr style="border-bottom: 1px solid #e5e7eb;">
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Název výzvy</th>
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Poskytovatel</th>
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Typ</th>
-          <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Deadline</th>
-          <th style="text-align: right; padding: 0.75rem; font-weight: 600; color: #374151;">Max. částka</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom: 1px solid #f3f4f6;">
-          <td style="padding: 0.75rem;">
-            <span style="color: #3b82f6; font-weight: 500;">Podpora kulturních projektů 2025</span>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-              Financování kulturních a uměleckých aktivit
-            </div>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">MKČR</td>
-          <td style="padding: 0.75rem;">
-            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
-              Dotace
-            </span>
-          </td>
-          <td style="padding: 0.75rem; color: #059669;">31.3.2025</td>
-          <td style="padding: 0.75rem; text-align: right; font-weight: 500;">500 000 Kč</td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #f3f4f6;">
-          <td style="padding: 0.75rem;">
-            <span style="color: #3b82f6; font-weight: 500;">Horizont Evropa - Excellent Science</span>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-              Evropský program pro výzkum a inovace
-            </div>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">Evropská komise</td>
-          <td style="padding: 0.75rem;">
-            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
-              Grant
-            </span>
-          </td>
-          <td style="padding: 0.75rem; color: #f59e0b;">15.4.2025</td>
-          <td style="padding: 0.75rem; text-align: right; font-weight: 500;">2 mil. EUR</td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #f3f4f6;">
-          <td style="padding: 0.75rem;">
-            <span style="color: #3b82f6; font-weight: 500;">Podpora MSP v digitalizaci</span>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-              Digitální transformace malých podniků
-            </div>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">MPO ČR</td>
-          <td style="padding: 0.75rem;">
-            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
-              Dotace
-            </span>
-          </td>
-          <td style="padding: 0.75rem; color: #059669;">30.6.2025</td>
-          <td style="padding: 0.75rem; text-align: right; font-weight: 500;">1 mil. Kč</td>
-        </tr>
-        
-        <tr style="border-bottom: 1px solid #f3f4f6;">
-          <td style="padding: 0.75rem;">
-            <span style="color: #3b82f6; font-weight: 500;">Stipendia pro doktorandy</span>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
-              Podpora mladých výzkumníků
-            </div>
-          </td>
-          <td style="padding: 0.75rem; color: #6b7280;">GAČR</td>
-          <td style="padding: 0.75rem;">
-            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">
-              Stipendium
-            </span>
-          </td>
-          <td style="padding: 0.75rem; color: #dc2626;">28.2.2025</td>
-          <td style="padding: 0.75rem; text-align: right; font-weight: 500;">180 000 Kč/rok</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 8px;">
-    <p style="color: #6b7280; margin-bottom: 1rem;">
-      <strong>Ukázka 4 ze 247 dostupných výzev</strong>
-    </p>
-    <a href="{% url 'registration_cs' %}" class="btn btn-primary">
-      Přihlásit se pro přístup ke všem výzvám
-    </a>
-  </div>
-</div>
-
-<!-- Výhody pro nepřihlášené -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-  <div class="feature-card" style="text-align: center;">
-    <div style="font-size: 2rem; margin-bottom: 1rem;">&#128269;</div>
-    <h4 style="margin-bottom: 0.5rem;">Pokročilé vyhledávání</h4>
-    <p style="color: #6b7280; font-size: 0.875rem;">
-      Filtrujte výzvy podle typu, poskytovatele, částky a termínů
-    </p>
-  </div>
-  
-  <div class="feature-card" style="text-align: center;">
-    <div style="font-size: 2rem; margin-bottom: 1rem;">&#128276;</div>
-    <h4 style="margin-bottom: 0.5rem;">Upozornění</h4>
-    <p style="color: #6b7280; font-size: 0.875rem;">
-      Dostávejte notifikace o nových výzvách a blížících se deadlinech
-    </p>
-  </div>
-  
-  <div class="feature-card" style="text-align: center;">
-    <div style="font-size: 2rem; margin-bottom: 1rem;">&#128200;</div>
-    <h4 style="margin-bottom: 0.5rem;">Statistiky</h4>
-    <p style="color: #6b7280; font-size: 0.875rem;">
-      Sledujte svou úspěšnost a analyzujte trendy v grantových výzvách
-    </p>
-  </div>
-  
-  <div class="feature-card" style="text-align: center;">
-    <div style="font-size: 2rem; margin-bottom: 1rem;">&#128197;</div>
-    <h4 style="margin-bottom: 0.5rem;">Kalendář</h4>
-    <p style="color: #6b7280; font-size: 0.875rem;">
-      Přehledný kalendář všech důležitých termínů a deadlinů
-    </p>
-  </div>
-</div>
-{% endif %}
-
-
 {% endblock %}
