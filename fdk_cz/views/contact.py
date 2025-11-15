@@ -62,21 +62,29 @@ def edit_contact(request, contact_id):
     # Použití get_or_create místo get
     admin_role, _ = ProjectRole.objects.get_or_create(role_name='Administrator')
     owner_role, _ = ProjectRole.objects.get_or_create(role_name='Owner')
-    
+
     user_projects = ProjectUser.objects.filter(user=request.user, role__in=[admin_role, owner_role])
 
     if request.method == 'POST':
         form = contact_form(request.POST, instance=contact_instance)
         if form.is_valid():
-            form.save()
-            return redirect('my_contacts')
+            contact = form.save()
+            # Redirect zpět na projekt, pokud kontakt má projekt
+            if contact.project:
+                return redirect('detail_project', project_id=contact.project.project_id)
+            else:
+                return redirect('my_contacts')
     else:
         form = contact_form(instance=contact_instance)
         form.fields['project'].queryset = Project.objects.filter(
             project_id__in=[user_project.project_id for user_project in user_projects]
         )
 
-    return render(request, 'contact/edit_contact.html', {'form': form, 'projects': user_projects})
+    return render(request, 'contact/edit_contact.html', {
+        'form': form,
+        'projects': user_projects,
+        'contact': contact_instance
+    })
 
 
 @login_required

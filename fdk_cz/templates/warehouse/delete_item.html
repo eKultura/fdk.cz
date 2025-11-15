@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Smazat položku" %} | FDK.cz{% endblock %}
+{% block header_title %}🗑️ {% trans "Smazat položku" %}{% endblock %}
+{% block header_subtitle %}{{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'item_detail' item.item_id %}" class="btn btn-outline">← {% trans "Zpět na detail" %}</a>
+  </div>
+
+  <div class="content-card">
+    <div class="p-6 bg-red-50 border-2 border-red-200 rounded-lg mb-6">
+      <div class="flex items-start gap-4">
+        <div style="font-size: 3rem;">⚠️</div>
+        <div>
+          <h3 class="text-xl font-bold text-red-800 mb-2">{% trans "Varování" %}</h3>
+          <p class="text-red-700 mb-2">{% trans "Opravdu chcete smazat tuto skladovou položku?" %}</p>
+          <p class="text-red-600 text-sm">{% trans "Tato akce je nevratná. Budou smazány i všechny související transakce." %}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item Details -->
+    <div class="mb-6">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4">{% trans "Detail položky" %}</h4>
+      <div class="space-y-2">
+        <p><strong>{% trans "Název:" %}</strong> {{ item.name }}</p>
+        <p><strong>{% trans "Sklad:" %}</strong> {{ item.warehouse.name }}</p>
+        {% if item.category %}
+          <p><strong>{% trans "Kategorie:" %}</strong> {{ item.category.name }}</p>
+        {% endif %}
+        <p><strong>{% trans "Množství:" %}</strong> {{ item.quantity }}</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <form method="POST" class="flex gap-3 pt-6 border-t border-gray-200">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary" style="background-color: #dc2626; border-color: #dc2626;">
+        🗑️ {% trans "Ano, smazat položku" %}
+      </button>
+      <a href="{% url 'item_detail' item.item_id %}" class="btn btn-outline">
+        {% trans "Zrušit" %}
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}

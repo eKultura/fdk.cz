@@ -78,49 +78,102 @@
     </div>
 
     {% if store.items.all %}
-    <div style="overflow-x: auto;">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{% trans "Název" %}</th>
-            <th class="hidden md:table-cell">{% trans "Kategorie" %}</th>
-            <th class="text-center">{% trans "Množství" %}</th>
-            <th class="hidden lg:table-cell">{% trans "Vytvořeno" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in store.items.all %}
-          <tr>
-            <td>
-              <a href="{% url 'item_detail' item.item_id %}" class="font-semibold text-blue-600 hover:underline">
-                {{ item.name }}
-              </a>
-              {% if item.description %}
-              <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ item.description|truncatewords:10 }}</div>
-              {% endif %}
-            </td>
-            <td class="hidden md:table-cell text-gray-600">
-              {% if item.category %}
-              <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-                🏷️ {{ item.category.name }}
-              </span>
-              {% else %}
-                —
-              {% endif %}
-            </td>
-            <td class="text-center">
-              <span style="padding: 6px 16px; background: #dcfce7; color: #166534; border-radius: 12px; font-weight: 700; font-size: 1rem;">
-                {{ item.quantity }}
-              </span>
-            </td>
-            <td class="hidden lg:table-cell" style="color: #64748b; font-size: 0.875rem;">
-              {{ item.created|date:"d.m.Y H:i" }}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <form method="POST" action="{% url 'bulk_delete_warehouse_items' store.warehouse_id %}" id="bulk-delete-form">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+        <button type="submit" class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;" onclick="return confirm('{% trans "Opravdu chcete smazat vybrané položky?" %}')">
+          🗑️ {% trans "Smazat vybrané" %}
+        </button>
+        <span id="selected-count" style="color: #64748b; font-size: 0.875rem;"></span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;">
+                <input type="checkbox" id="select-all" class="w-4 h-4">
+              </th>
+              <th>{% trans "Název" %}</th>
+              <th class="hidden md:table-cell">{% trans "Kategorie" %}</th>
+              <th class="text-center">{% trans "Množství" %}</th>
+              <th class="hidden lg:table-cell">{% trans "Vytvořeno" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in store.items.all %}
+            <tr>
+              <td>
+                <input type="checkbox" name="item_ids" value="{{ item.item_id }}" class="item-checkbox w-4 h-4">
+              </td>
+              <td>
+                <a href="{% url 'item_detail' item.item_id %}" class="font-semibold text-blue-600 hover:underline">
+                  {{ item.name }}
+                </a>
+                {% if item.description %}
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ item.description|truncatewords:10 }}</div>
+                {% endif %}
+              </td>
+              <td class="hidden md:table-cell text-gray-600">
+                {% if item.category %}
+                <span style="padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
+                  🏷️ {{ item.category.name }}
+                </span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <span style="padding: 6px 16px; background: #dcfce7; color: #166534; border-radius: 12px; font-weight: 700; font-size: 1rem;">
+                  {{ item.quantity }}
+                </span>
+              </td>
+              <td class="hidden lg:table-cell" style="color: #64748b; font-size: 0.875rem;">
+                {{ item.created|date:"d.m.Y H:i" }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectAllCheckbox = document.getElementById('select-all');
+      const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+      const selectedCount = document.getElementById('selected-count');
+
+      function updateSelectedCount() {
+        const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+        if (checkedCount > 0) {
+          selectedCount.textContent = `(${checkedCount} {% trans "vybráno" %})`;
+        } else {
+          selectedCount.textContent = '';
+        }
+      }
+
+      selectAllCheckbox.addEventListener('change', (e) => {
+        itemCheckboxes.forEach(checkbox => {
+          checkbox.checked = e.target.checked;
+        });
+        updateSelectedCount();
+      });
+
+      itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          updateSelectedCount();
+          const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+          const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
+          selectAllCheckbox.checked = allChecked;
+          selectAllCheckbox.indeterminate = someChecked && !allChecked;
+        });
+      });
+
+      updateSelectedCount();
+    });
+    </script>
     {% else %}
     <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
       <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>

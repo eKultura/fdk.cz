@@ -1,12 +1,23 @@
-{% extends 'contact/base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Editace kontaktu{% endblock %}
+{% block title %}{% trans "Editace kontaktu" %} | FDK.cz{% endblock %}
+{% block header_title %}✏️ {% trans "Editace kontaktu" %}{% endblock %}
+{% block header_subtitle %}{{ contact.first_name }} {{ contact.last_name|default:"" }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="content-card">
-        <h2 class="text-2xl font-semibold mb-6">{% trans "Editace kontaktu" %}</h2>
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    {% if contact.project %}
+      <a href="{% url 'detail_project' contact.project.project_id %}" class="btn btn-outline">← {% trans "Zpět na projekt" %}</a>
+    {% else %}
+      <a href="{% url 'my_contacts' %}" class="btn btn-outline">← {% trans "Zpět na kontakty" %}</a>
+    {% endif %}
+  </div>
+
+  <div class="content-card">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">{% trans "Informace o kontaktu" %}</h3>
 
         <form method="POST">
             {% csrf_token %}
@@ -58,10 +69,18 @@
                 </div>
                 <div>
                     <label for="id_project" class="form-label">{% trans "Projekt" %}</label>
-                    {{ form.project }}
+                    <select name="project" id="id_project" class="form-control">
+                        <option value="">-- {% trans "Vyberte projekt" %} --</option>
+                        {% for project in projects %}
+                            <option value="{{ project.project_id }}" {% if form.project.value == project.project_id %}selected{% endif %}>
+                                {{ project.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
                     {% if form.project.errors %}
                         <p class="text-red-600 text-sm mt-1">{{ form.project.errors|join:", " }}</p>
                     {% endif %}
+                    <p class="text-xs text-gray-500 mt-1">{% trans "Volitelné - přiřazení kontaktu k projektu" %}</p>
                 </div>
             </div>
 
@@ -74,15 +93,28 @@
                 {% endif %}
             </div>
 
-            <!-- Soukromý kontakt a tlačítko -->
-            <div class="flex items-center justify-between">
+            <!-- Soukromý kontakt -->
+            <div class="mb-4">
                 <div class="flex items-center">
                     <input type="checkbox" name="is_private" id="id_is_private" class="mr-2" {% if form.is_private.value %}checked{% endif %}>
                     <label for="id_is_private" class="text-sm text-gray-700">{% trans "Soukromý kontakt" %}</label>
                 </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-6 border-t border-gray-200">
                 <button type="submit" class="btn btn-primary">
-                    {% trans "Uložit změny" %}
+                    💾 {% trans "Uložit změny" %}
                 </button>
+                {% if contact.project %}
+                    <a href="{% url 'detail_project' contact.project.project_id %}" class="btn btn-outline">
+                        {% trans "Zrušit" %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'my_contacts' %}" class="btn btn-outline">
+                        {% trans "Zrušit" %}
+                    </a>
+                {% endif %}
             </div>
         </form>
     </div>
