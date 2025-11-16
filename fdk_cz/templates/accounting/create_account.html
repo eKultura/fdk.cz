@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Nový účet" %} | FDK.cz{% endblock %}
+{% block header_title %}📋 {% trans "Nový účet" %}{% endblock %}
+{% block header_subtitle %}{{ context.name }} – {% trans "Přidat účet do účtové osnovy" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <!-- Breadcrumbs -->
+  <nav class="text-sm text-gray-600 mb-4">
+    <a href="{% url 'accounting_dashboard' %}" class="hover:text-blue-600">{% trans "Účetnictví" %}</a>
+    <span class="mx-2">›</span>
+    <a href="{% url 'chart_of_accounts' %}" class="hover:text-blue-600">{% trans "Účtová osnova" %}</a>
+    <span class="mx-2">›</span>
+    <span class="text-gray-900 font-semibold">{% trans "Nový účet" %}</span>
+  </nav>
+
+  <!-- Context Info -->
+  <div class="content-card mb-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">{% trans "Aktivní kontext" %}: {{ context.name }}</h3>
+        <p class="text-sm text-gray-600">{% trans "Účetní období" %}: {{ context.fiscal_year }}</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="{% url 'select_accounting_context' %}" class="btn btn-outline">🔄 {% trans "Změnit kontext" %}</a>
+        <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informační panel -->
+  <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-md mb-6">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <span class="text-2xl">ℹ️</span>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-lg font-semibold text-blue-800">{% trans "Nápověda - Účtová osnova" %}</h3>
+        <p class="text-sm text-blue-700 mt-1">
+          {% trans "Účtová osnova je seznam všech účtů používaných v účetnictví. Účty jsou členěny podle typů:" %}
+        </p>
+        <ul class="text-sm text-blue-700 mt-2 list-disc list-inside">
+          <li><strong>{% trans "Aktiva" %}</strong> - {% trans "majetek (pokladna, bankovní účty, zásoby...)" %}</li>
+          <li><strong>{% trans "Pasiva" %}</strong> - {% trans "závazky a zdroje financování" %}</li>
+          <li><strong>{% trans "Kapitál" %}</strong> - {% trans "vlastní kapitál a výsledek hospodaření" %}</li>
+          <li><strong>{% trans "Výnosy" %}</strong> - {% trans "tržby a ostatní výnosy" %}</li>
+          <li><strong>{% trans "Náklady" %}</strong> - {% trans "materiál, mzdy, energie..." %}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">📝 {% trans "Vytvořit nový účet" %}</h2>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Display form errors -->
+      {% if form.non_field_errors %}
+      <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <span class="text-2xl">⚠️</span>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-lg font-semibold text-red-800">{% trans "Chyba" %}</h3>
+            <ul class="text-sm text-red-700 mt-1">
+              {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Account Number and Name -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.account_number.id_for_label }}">
+            {{ form.account_number.label }} <span class="text-red-500">*</span>
+          </label>
+          {{ form.account_number }}
+          {% if form.account_number.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.account_number.errors.0 }}</p>
+          {% endif %}
+          <p class="text-gray-500 text-xs mt-1">{% trans "Např. 221, 321, 518..." %}</p>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.name.id_for_label }}">
+            {{ form.name.label }} <span class="text-red-500">*</span>
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.name.errors.0 }}</p>
+          {% endif %}
+          <p class="text-gray-500 text-xs mt-1">{% trans "Např. Bankovní účty, Pokladna..." %}</p>
+        </div>
+      </div>
+
+      <!-- Account Type -->
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.account_type.id_for_label }}">
+          {{ form.account_type.label }} <span class="text-red-500">*</span>
+        </label>
+        {{ form.account_type }}
+        {% if form.account_type.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.account_type.errors.0 }}</p>
+        {% endif %}
+        <p class="text-gray-500 text-xs mt-1">{% trans "Typ účtu určuje, kam v účetní rozvaze bude účet zařazen" %}</p>
+      </div>
+
+      <!-- Parent Account -->
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.parent_account.id_for_label }}">
+          {{ form.parent_account.label }}
+        </label>
+        {{ form.parent_account }}
+        {% if form.parent_account.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.parent_account.errors.0 }}</p>
+        {% endif %}
+        <p class="text-gray-500 text-xs mt-1">{% trans "Volitelné - pro hierarchickou strukturu účtové osnovy" %}</p>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.description.id_for_label }}">
+          {{ form.description.label }}
+        </label>
+        {{ form.description }}
+        {% if form.description.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
+        {% endif %}
+        <p class="text-gray-500 text-xs mt-1">{% trans "Volitelný popis účtu pro lepší orientaci" %}</p>
+      </div>
+
+      <!-- Is Active -->
+      <div class="mb-6">
+        <label class="flex items-center">
+          {{ form.is_active }}
+          <span class="ml-2 text-gray-700 text-sm font-bold">{{ form.is_active.label }}</span>
+        </label>
+        {% if form.is_active.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.is_active.errors.0 }}</p>
+        {% endif %}
+        <p class="text-gray-500 text-xs mt-1">{% trans "Neaktivní účty se nezobrazují v účtových seznamech" %}</p>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex justify-end space-x-2 mt-6">
+        <a href="{% url 'chart_of_accounts' %}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+          {% trans "Zrušit" %}
+        </a>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          {% trans "Vytvořit účet" %}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Help section - Common accounts -->
+  <div class="content-card mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">💡 {% trans "Často používané účty" %}</h3>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Číslo" %}</th>
+            <th>{% trans "Název" %}</th>
+            <th class="hidden md:table-cell">{% trans "Typ" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-semibold text-blue-600">211</td>
+            <td>{% trans "Pokladna" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">{% trans "Aktiva" %}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-blue-600">221</td>
+            <td>{% trans "Bankovní účty" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">{% trans "Aktiva" %}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-blue-600">321</td>
+            <td>{% trans "Dodavatelé" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700">{% trans "Pasiva" %}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-blue-600">311</td>
+            <td>{% trans "Odběratelé" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">{% trans "Aktiva" %}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-blue-600">601</td>
+            <td>{% trans "Tržby za vlastní výrobky" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700">{% trans "Výnosy" %}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-blue-600">501</td>
+            <td>{% trans "Spotřeba materiálu" %}</td>
+            <td class="hidden md:table-cell">
+              <span class="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-700">{% trans "Náklady" %}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
