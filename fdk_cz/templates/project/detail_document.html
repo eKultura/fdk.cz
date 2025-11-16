@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load functions %}
 
 {% block title %}{{ document.title }} | Dokument | FDK.cz{% endblock %}
 {% block header_title %}📄 {{ document.title }}{% endblock %}
@@ -75,7 +76,7 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
     {% if document.description %}
     <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
       <div style="color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Popis dokumentu</div>
-      <div style="color: #1e293b; line-height: 1.6;">{{ document.description|linebreaks|safe }}</div>
+      <div style="color: #1e293b; line-height: 1.6;">{{ document.description|markdown|safe }}</div>
     </div>
     {% endif %}
   </div>

@@ -203,7 +203,100 @@ Automaticky aplikuje jednotný styl na všechny tabulky:
 - Správný padding a zarovnání
 - Dělící čáry mezi řádky
 
-## 3.6 Formuláře - jednotný styl
+## 3.6 Breadcrumbs (drobečková navigace) - JEDNOTNÁ STRUKTURA
+
+### Účel breadcrumbs:
+- Zobrazení kontextu, kde se uživatel nachází
+- Rychlá navigace zpět v hierarchii
+- Vizualizace organizačního/projektového kontextu
+
+### Povinná struktura breadcrumbs:
+
+```
+[Ikona modulu] Kontext: Modul → Organizace (nebo Osobní) → Logická cesta → Detail
+```
+
+### Vzorová implementace:
+
+```html
+<!-- Context Info (breadcrumbs) -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Modul</span>
+    <span style="color: #9ca3af;">→</span>
+    <span style="color: #64748b;">{{ organization.name|default:"Osobní" }}</span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'list_url' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+      Seznam
+    </a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Detail</span>
+  </div>
+</div>
+```
+
+### Příklady podle modulů:
+
+**1. Projekt - seznam:**
+```
+📍 Kontext: Projekty → Organizace XYZ (nebo Osobní)
+```
+
+**2. Projekt - nový:**
+```
+📍 Kontext: Projekty → Organizace XYZ → Nový projekt
+```
+
+**3. Projekt - detail:**
+```
+📍 Kontext: Projekty → Organizace XYZ → Název projektu
+```
+
+**4. Úkol - detail:**
+```
+📍 Kontext: Úkol → Název projektu → Organizace XYZ
+```
+
+**5. Účetnictví - účtová osnova:**
+```
+📍 Kontext: Účetnictví → Organizace XYZ (rok 2024) → Účtová osnova
+```
+
+**6. HR - oddělení:**
+```
+📍 Kontext: HR → Organizace XYZ → Oddělení → IT
+```
+
+**7. Rizika - detail:**
+```
+📍 Kontext: Řízení rizik → Organizace XYZ → Projekt ABC → Riziko #5
+```
+
+### Pravidla:
+1. **Ikona modulu** - vždy na začátku (📍 nebo ikonka modulu)
+2. **"Kontext:"** - vždy na začátku jako signpost
+3. **Organizace nebo "Osobní"** - pokud je aplikovatelné
+4. **Šipky →** - separátor mezi úrovněmi
+5. **Klikací odkazy** - na úrovně, na které lze navigovat zpět
+6. **Tučný aktuální položka** - kde se uživatel nachází (není klikací)
+
+### CSS styly (použít VŠUDE):
+- Světle modrý gradient pozadí: `linear-gradient(to right, #eff6ff, #eef2ff)`
+- Modrý border: `border: 2px solid #bfdbfe`
+- Zaoblené rohy: `border-radius: 8px`
+- Padding: `padding: 1rem`
+- Font size: `font-size: 0.875rem` (14px)
+- Šedá šipka: `color: #9ca3af`
+- Odkazy modré: `color: #3b82f6`
+
+### Umístění:
+- VŽDY nad hlavním obsahem stránky
+- Pod header_title/header_subtitle (pokud existuje)
+- Před akcemi (tlačítka)
+- `margin-bottom: 1.5rem`
+
+## 3.7 Formuláře - jednotný styl
 
 ### Základní pravidla:
 - Formuláře v **bílém boxu** s padding
@@ -253,7 +346,7 @@ Automaticky aplikuje jednotný styl na všechny tabulky:
 - `focus:ring-2 focus:ring-blue-500` - focus stav inputů
 - Tlačítka vždy v pravém dolním rohu
 
-## 3.7 Tlačítka - umístění, styly, marginy
+## 3.8 Tlačítka - umístění, styly, marginy
 
 ### Hierarchie tlačítek:
 

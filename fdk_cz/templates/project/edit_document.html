@@ -8,7 +8,7 @@
 {% block meta %}
 <!-- Summernote knihovny -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 {% endblock %}
 
@@ -93,8 +93,10 @@ $(document).ready(function() {
     height: 240,
     toolbar: [
       ['style', ['bold', 'italic', 'underline', 'clear']],
+      ['font', ['fontsize', 'color']],
       ['para', ['ul', 'ol', 'paragraph']],
-      ['insert', ['link', 'table']],
+      ['table', ['table']],
+      ['insert', ['link']],
       ['view', ['fullscreen', 'codeview']]
     ]
   });
