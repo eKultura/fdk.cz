@@ -6,6 +6,17 @@
 {% block header_subtitle %}{{ contract.name }}{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'list_contracts' %}" style="color: #3b82f6; text-decoration: none;">Smlouvy</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'detail_contract' contract.pk %}" style="color: #3b82f6; text-decoration: none;">{{ contract.name }}</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <span style="color: #1e293b; font-weight: 500;">Úprava</span>
+</nav>
+
 <div style="max-width: 800px; margin: 0 auto;">
 
   <div class="content-card">

@@ -311,6 +311,39 @@ def create_account(request):
 
 
 @login_required
+def account_detail(request, account_id):
+    """View account details"""
+    context = get_current_context(request)
+    if not context:
+        return redirect('select_accounting_context')
+
+    account = get_object_or_404(
+        AccountingAccount,
+        account_id=account_id,
+        context=context
+    )
+
+    # Get journal entry lines for this account
+    journal_lines = JournalEntryLine.objects.filter(
+        account=account
+    ).select_related('journal_entry').order_by('-journal_entry__entry_date')
+
+    # Calculate account balance
+    total_debit = sum(line.debit_amount for line in journal_lines)
+    total_credit = sum(line.credit_amount for line in journal_lines)
+    balance = total_debit - total_credit
+
+    return render(request, 'accounting/account_detail.html', {
+        'context': context,
+        'account': account,
+        'journal_lines': journal_lines,
+        'total_debit': total_debit,
+        'total_credit': total_credit,
+        'balance': balance
+    })
+
+
+@login_required
 def journal_ledger(request):
     """View journal ledger (účetní deník)"""
     context = get_current_context(request)

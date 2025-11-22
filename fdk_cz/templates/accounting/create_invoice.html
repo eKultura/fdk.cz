@@ -2,6 +2,17 @@
 {% block title %}Vytvořit fakturu{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'accounting_dashboard' %}" style="color: #3b82f6; text-decoration: none;">Účetnictví</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'list_invoices' %}" style="color: #3b82f6; text-decoration: none;">Faktury</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <span style="color: #1e293b; font-weight: 500;">Nová faktura</span>
+</nav>
+
 <div class="container mt-5">
     <h1>Vytvořit novou fakturu</h1>
     <form method="post">

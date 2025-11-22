@@ -4,6 +4,13 @@
 {% block header_subtitle %}Administrace modulů a cen{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <span style="color: #1e293b; font-weight: 500;">Správa modulů</span>
+</nav>
+
 <div style="max-width: 1600px; margin: 0 auto;">
 
   <!-- Actions -->
