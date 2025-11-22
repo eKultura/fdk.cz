@@ -4,6 +4,18 @@
 {% block header_subtitle %}Seznam obchodních smluv a dohod{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'b2b_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">B2B</a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Smlouvy</span>
+  </div>
+</div>
+
 <div style="max-width: 1600px; margin: 0 auto;">
   <!-- Actions and Filters -->
   <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
