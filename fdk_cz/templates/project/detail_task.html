@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load functions %}
 
-{% block title %}{{ task.title }} | Detail úkolu | FDK.cz{% endblock %}
-{% block header_title %}📋 {{ task.title }}{% endblock %}
+{% block title %}{{ task.title|safe }} | Detail úkolu | FDK.cz{% endblock %}
+{% block header_title %}📋 {{ task.title|safe }}{% endblock %}
 {% block header_subtitle %}
 {% if project %}
   Úkol v projektu <strong>{{ project.name }}</strong>

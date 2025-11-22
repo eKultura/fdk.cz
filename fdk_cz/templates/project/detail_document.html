@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load functions %}
 
-{% block title %}{{ document.title }} | Dokument | FDK.cz{% endblock %}
-{% block header_title %}📄 {{ document.title }}{% endblock %}
+{% block title %}{{ document.title|safe }} | Dokument | FDK.cz{% endblock %}
+{% block header_title %}📄 {{ document.title|safe }}{% endblock %}
 {% block header_subtitle %}
 Dokument v projektu <strong>{{ document.project.name }}</strong>
 {% endblock %}
@@ -31,7 +31,7 @@ Dokument v projektu <strong>{{ document.project.name }}</strong>
         {{ document.project.name }}
       </a>
       <span style="color: #9ca3af;">→</span>
-      <span style="font-weight: 600; color: #1e293b;">{{ document.title }}</span>
+      <span style="font-weight: 600; color: #1e293b;">{{ document.title|safe }}</span>
     </div>
   </div>
 

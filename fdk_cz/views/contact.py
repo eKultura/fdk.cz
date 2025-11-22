@@ -69,11 +69,8 @@ def edit_contact(request, contact_id):
         form = contact_form(request.POST, instance=contact_instance)
         if form.is_valid():
             contact = form.save()
-            # Redirect zpět na projekt, pokud kontakt má projekt
-            if contact.project:
-                return redirect('detail_project', project_id=contact.project.project_id)
-            else:
-                return redirect('my_contacts')
+            # Po editaci vždy zpět na seznam kontaktů
+            return redirect('my_contacts')
     else:
         form = contact_form(instance=contact_instance)
         form.fields['project'].queryset = Project.objects.filter(
