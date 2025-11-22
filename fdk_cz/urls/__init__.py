@@ -7,7 +7,7 @@ from django.urls import path
 
 from fdk_cz.views.accounting import (
     accounting_dashboard, create_invoice, edit_invoice, delete_invoice, detail_invoice, free_invoice, list_invoices,
-    select_accounting_context, set_accounting_context, chart_of_accounts, create_account,
+    select_accounting_context, set_accounting_context, chart_of_accounts, create_account, account_detail,
     journal_ledger, create_journal_entry, balance_sheet_view
 )
 from fdk_cz.views.articles import article_detail, article_add, article_edit, article_blog_index, article_help_index, article_page_index
@@ -348,6 +348,7 @@ urlpatterns = [
     path('ucetnictvi/kontext/<int:context_id>/aktivovat/', set_accounting_context, name='set_accounting_context'),
     path('ucetnictvi/uctova-osnova/', chart_of_accounts, name='chart_of_accounts'),
     path('ucetnictvi/uctova-osnova/novy/', create_account, name='create_account'),
+    path('ucetnictvi/uctova-osnova/<int:account_id>/', account_detail, name='account_detail'),
     path('ucetnictvi/denik/', journal_ledger, name='journal_ledger'),
     path('ucetnictvi/denik/novy/', create_journal_entry, name='create_journal_entry'),
     path('ucetnictvi/rozvaha/<str:balance_type>/', balance_sheet_view, name='balance_sheet_view'),
