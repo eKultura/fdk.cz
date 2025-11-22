@@ -164,3 +164,36 @@ def remove_member(request, organization_id, user_id):
         messages.error(request, 'Člen nenalezen.')
 
     return redirect('organization_detail', organization_id=organization_id)
+
+
+@login_required
+def set_current_organization(request, organization_id=None):
+    """
+    Set current organization context in session.
+    If organization_id is None, sets to personal context.
+    """
+    if organization_id is None:
+        # Switch to personal context
+        if 'current_organization_id' in request.session:
+            del request.session['current_organization_id']
+        messages.success(request, 'Přepnuto na osobní kontext.')
+    else:
+        # Verify user has access to this organization
+        org = get_object_or_404(Organization, pk=organization_id)
+
+        # Check if user is member or creator
+        is_member = OrganizationMembership.objects.filter(
+            organization=org,
+            user=request.user
+        ).exists()
+
+        if not is_member and org.created_by != request.user:
+            messages.error(request, 'Nemáte přístup k této organizaci.')
+            return redirect('index')
+
+        request.session['current_organization_id'] = organization_id
+        messages.success(request, f'Přepnuto na organizaci: {org.name}')
+
+    # Redirect back to previous page or index
+    next_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
+    return redirect(next_url)

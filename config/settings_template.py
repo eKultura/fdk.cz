@@ -97,6 +97,7 @@ TEMPLATES = [
 
                 # FDK.cz context processors
                 'fdk_cz.context_processors.user_modules',
+                'fdk_cz.context_processors.organization_context',
             ],
         },
     },
