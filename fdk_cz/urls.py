@@ -115,7 +115,7 @@ from fdk_cz.views.modules import (
     project_management_landing, grants_landing, accounting_landing, law_ai_landing
 )
 
-urlpatterns = (
+urlpatterns = [
 
     path('', index, name='index'),
     path('dashboard', dashboard, name='dashboard'),
@@ -478,7 +478,7 @@ urlpatterns = (
 
     path('<slug:slug>', article_detail, name='article_detail'),
 
-)
+]
 
 
 
