@@ -13,7 +13,7 @@
         Opravdu chcete smazat tento dokument?
       </h2>
       <p class="text-gray-700 font-medium mb-1">
-        {{ document.title }}
+        {{ document.title|safe }}
       </p>
       {% if document.category %}
       <p class="text-gray-500 text-sm mb-2">
