@@ -17,7 +17,7 @@
       </p>
       {% if category.description %}
       <p class="text-gray-500 text-sm mb-2">
-        {{ category.description }}
+        {{ category.description|safe }}
       </p>
       {% endif %}
       <p class="text-gray-500 text-sm">
