@@ -183,16 +183,17 @@
 
 
 {% block content %}
-
-<nav style="margin-bottom: 1rem;">
-  <a href="{% url 'grant_list' %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
-    ← Zpět na granty
-  </a>
-  <span style="color: #6b7280; margin: 0 0.5rem;">/</span>
-  <a href="{% url 'grant_detail' grant.grant_id %}" style="color: #6b7280; text-decoration: none; font-size: 0.875rem;">
-    {{ grant.title|truncatewords:5 }}
-  </a>
-</nav>
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'grant_list' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Granty</a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Úprava</span>
+  </div>
+</div>
 
 <!-- Informace o verzi -->
 <div class="version-info">

@@ -12,19 +12,34 @@ Kategorie projektu <a href="{% url 'detail_project' project.project_id %}" class
 <div class="max-w-6xl mx-auto space-y-8">
 
   <!-- Breadcrumbs -->
-  <nav class="text-sm text-gray-600 mb-4">
-    <a href="{% url 'index_project_cs' %}" class="hover:text-blue-600">Projekty</a>
-    <span class="mx-2">›</span>
-    <a href="{% url 'detail_project' project.project_id %}" class="hover:text-blue-600">{{ project.name }}</a>
-    <span class="mx-2">›</span>
-    <span class="text-gray-900 font-semibold">{{ category.name }}</span>
-  </nav>
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+      <span style="color: #64748b;">📍 Kontext:</span>
+      {% if project.organization %}
+        <a href="{% url 'organization_detail' project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          {{ project.organization.name }}
+        </a>
+      {% else %}
+        <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+      {% endif %}
+      <span style="color: #9ca3af;">→</span>
+      <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        Projekty
+      </a>
+      <span style="color: #9ca3af;">→</span>
+      <a href="{% url 'detail_project' project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        {{ project.name }}
+      </a>
+      <span style="color: #9ca3af;">→</span>
+      <span style="font-weight: 600; color: #1e293b;">{{ category.name }}</span>
+    </div>
+  </div>
 
   <!-- Popis kategorie -->
   {% if category.description %}
   <div class="content-card">
     <h2 class="text-xl font-semibold text-gray-800 mb-4">📋 Popis kategorie</h2>
-    <p class="text-gray-700">{{ category.description }}</p>
+    <p class="text-gray-700">{{ category.description|safe }}</p>
   </div>
   {% endif %}
 
