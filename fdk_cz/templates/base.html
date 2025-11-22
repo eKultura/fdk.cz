@@ -52,6 +52,40 @@
           </a>
         </div>
 
+        {% if user.is_authenticated and user_organizations %}
+        <!-- Organization Context Switcher -->
+        <div class="nav-section">
+          <div class="nav-section-title">Kontext</div>
+          <div style="padding: 0.5rem 1rem; margin-bottom: 0.5rem;">
+            <!-- Current context display -->
+            <div style="background: {% if current_organization %}linear-gradient(to right, #dbeafe, #e0e7ff){% else %}linear-gradient(to right, #fef3c7, #fde68a){% endif %}; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem;">
+              <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.25rem;">Aktuální kontext:</div>
+              <div style="font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
+                {% if current_organization %}
+                  <span>&#127970;</span> {{ current_organization.name }}
+                {% else %}
+                  <span>&#128100;</span> Osobní
+                {% endif %}
+              </div>
+            </div>
+            <!-- Context switcher dropdown -->
+            <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Přepnout na:</div>
+            {% if not is_personal_context %}
+            <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.5rem; background: #f8fafc; border-radius: 4px; margin-bottom: 0.25rem; color: #475569; text-decoration: none; font-size: 0.875rem; transition: background 0.2s;">
+              <span>&#128100;</span> Osobní
+            </a>
+            {% endif %}
+            {% for org in user_organizations %}
+              {% if org != current_organization %}
+              <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.5rem; background: #f8fafc; border-radius: 4px; margin-bottom: 0.25rem; color: #475569; text-decoration: none; font-size: 0.875rem; transition: background 0.2s;">
+                <span>&#127970;</span> {{ org.name }}
+              </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
         {% if not user.is_authenticated %}
         <!-- Menu pro nepřihlášené uživatele - vábnička -->
         <div class="nav-section">
