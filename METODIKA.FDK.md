@@ -213,25 +213,31 @@ Automaticky aplikuje jednotný styl na všechny tabulky:
 ### Povinná struktura breadcrumbs:
 
 ```
-[Ikona modulu] Kontext: Modul → Organizace (nebo Osobní) → Logická cesta → Detail
+📍 Kontext: Organizace (nebo Osobní) → Modul → Detail/Seznam/Dashboard
 ```
+
+**DŮLEŽITÉ:** Pořadí je vždy: **Organizace → Modul → Aktuální stránka**
 
 ### Vzorová implementace:
 
 ```html
 <!-- Context Info (breadcrumbs) -->
 <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
     <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Modul</span>
-    <span style="color: #9ca3af;">→</span>
-    <span style="color: #64748b;">{{ organization.name|default:"Osobní" }}</span>
+    {% if organization %}
+      <a href="{% url 'organization_detail' organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        {{ organization.name }}
+      </a>
+    {% else %}
+      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    {% endif %}
     <span style="color: #9ca3af;">→</span>
     <a href="{% url 'list_url' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-      Seznam
+      Modul
     </a>
     <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Detail</span>
+    <span style="font-weight: 600; color: #1e293b;">Aktuální stránka</span>
   </div>
 </div>
 ```
@@ -240,46 +246,53 @@ Automaticky aplikuje jednotný styl na všechny tabulky:
 
 **1. Projekt - seznam:**
 ```
-📍 Kontext: Projekty → Organizace XYZ (nebo Osobní)
+📍 Kontext: Organizace XYZ (nebo Osobní) → Projekty
 ```
 
 **2. Projekt - nový:**
 ```
-📍 Kontext: Projekty → Organizace XYZ → Nový projekt
+📍 Kontext: Organizace XYZ (nebo Osobní) → Projekty → Nový projekt
 ```
 
 **3. Projekt - detail:**
 ```
-📍 Kontext: Projekty → Organizace XYZ → Název projektu
+📍 Kontext: Organizace XYZ (nebo Osobní) → Projekty → Název projektu
 ```
 
-**4. Úkol - detail:**
+**4. Úkol v projektu - detail:**
 ```
-📍 Kontext: Úkol → Název projektu → Organizace XYZ
+📍 Kontext: Organizace XYZ (nebo Osobní) → Projekty → Název projektu → Úkol
 ```
 
 **5. Účetnictví - účtová osnova:**
 ```
-📍 Kontext: Účetnictví → Organizace XYZ (rok 2024) → Účtová osnova
+📍 Kontext: Organizace XYZ (rok 2024) → Účetnictví → Účtová osnova
 ```
 
 **6. HR - oddělení:**
 ```
-📍 Kontext: HR → Organizace XYZ → Oddělení → IT
+📍 Kontext: Organizace XYZ → HR → Oddělení → IT
 ```
 
 **7. Rizika - detail:**
 ```
-📍 Kontext: Řízení rizik → Organizace XYZ → Projekt ABC → Riziko #5
+📍 Kontext: Organizace XYZ → Řízení rizik → Projekt ABC → Riziko #5
+```
+
+**8. Správce úkolů - seznam:**
+```
+📍 Kontext: Osobní → Správce úkolů
 ```
 
 ### Pravidla:
-1. **Ikona modulu** - vždy na začátku (📍 nebo ikonka modulu)
+1. **Ikona 📍** - vždy na začátku
 2. **"Kontext:"** - vždy na začátku jako signpost
-3. **Organizace nebo "Osobní"** - pokud je aplikovatelné
-4. **Šipky →** - separátor mezi úrovněmi
-5. **Klikací odkazy** - na úrovně, na které lze navigovat zpět
-6. **Tučný aktuální položka** - kde se uživatel nachází (není klikací)
+3. **Organizace první** - pak modul, pak detail
+4. **"Osobní"** - pokud není organizace
+5. **Šipky →** - separátor mezi úrovněmi
+6. **Klikací odkazy** - na úrovně, na které lze navigovat zpět
+7. **Tučný aktuální položka** - kde se uživatel nachází (není klikací)
+8. **flex-wrap: wrap** - pro responzivitu na mobilu
 
 ### CSS styly (použít VŠUDE):
 - Světle modrý gradient pozadí: `linear-gradient(to right, #eff6ff, #eef2ff)`

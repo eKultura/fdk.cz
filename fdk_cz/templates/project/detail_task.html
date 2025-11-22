@@ -45,26 +45,46 @@
 
 <div style="max-width: 1200px; margin: 0 auto;">
 
-  <!-- Context Info -->
+  <!-- Context Info (Breadcrumbs) -->
   <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
       <span style="color: #64748b;">📍 Kontext:</span>
       {% if project %}
-        <span style="font-weight: 500; color: #1e293b;">Úkol</span>
+        {% if project.organization %}
+          <a href="{% url 'organization_detail' project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+            {{ project.organization.name }}
+          </a>
+        {% else %}
+          <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+        {% endif %}
+        <span style="color: #9ca3af;">→</span>
+        <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          Projekty
+        </a>
         <span style="color: #9ca3af;">→</span>
         <a href="{% url 'detail_project' project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
           {{ project.name }}
         </a>
-        {% if project.organization %}
-          <span style="color: #9ca3af;">→</span>
-          <span style="color: #64748b;">{{ project.organization.name }}</span>
-        {% endif %}
-      {% elif task.organization %}
-        <span style="font-weight: 500; color: #1e293b;">Úkol</span>
         <span style="color: #9ca3af;">→</span>
-        <span style="color: #64748b;">{{ task.organization.name }}</span>
+        <span style="font-weight: 600; color: #1e293b;">Úkol</span>
+      {% elif task.organization %}
+        <a href="{% url 'organization_detail' task.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          {{ task.organization.name }}
+        </a>
+        <span style="color: #9ca3af;">→</span>
+        <a href="{% url 'task_management' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          Správa úkolů
+        </a>
+        <span style="color: #9ca3af;">→</span>
+        <span style="font-weight: 600; color: #1e293b;">Úkol</span>
       {% else %}
-        <span style="font-weight: 500; color: #1e293b;">Osobní úkol</span>
+        <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+        <span style="color: #9ca3af;">→</span>
+        <a href="{% url 'task_management' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+          Správa úkolů
+        </a>
+        <span style="color: #9ca3af;">→</span>
+        <span style="font-weight: 600; color: #1e293b;">Úkol</span>
       {% endif %}
     </div>
   </div>

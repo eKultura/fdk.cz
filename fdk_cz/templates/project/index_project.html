@@ -6,6 +6,16 @@
 {% block header_subtitle %}{% trans "Spravujte své projekty přehledně a efektivně" %}{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Projekty</span>
+  </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
   <!-- Seznam projektů -->
