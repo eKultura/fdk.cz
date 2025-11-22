@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ account.name }} | FDK.cz{% endblock %}
+{% block header_title %}📋 {{ account.account_number }} - {{ account.name }}{% endblock %}
+{% block header_subtitle %}{{ context.name }} – {% trans "Detail účtu" %}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'accounting_dashboard' %}" style="color: #3b82f6; text-decoration: none;">Účetnictví</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'chart_of_accounts' %}" style="color: #3b82f6; text-decoration: none;">Účtová osnova</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <span style="color: #1e293b; font-weight: 500;">{{ account.account_number }}</span>
+</nav>
+
+<div class="max-w-7xl mx-auto">
+  <!-- Account Info Card -->
+  <div class="content-card mb-6">
+    <div class="flex justify-between items-start flex-wrap gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800">{{ account.account_number }} - {{ account.name }}</h2>
+        {% if account.description %}
+        <p class="text-gray-600 mt-2">{{ account.description }}</p>
+        {% endif %}
+        <div class="flex gap-4 mt-4">
+          <span class="px-3 py-1 rounded text-sm font-semibold
+            {% if account.account_type == 'asset' %}bg-blue-100 text-blue-700
+            {% elif account.account_type == 'liability' %}bg-red-100 text-red-700
+            {% elif account.account_type == 'equity' %}bg-purple-100 text-purple-700
+            {% elif account.account_type == 'revenue' %}bg-green-100 text-green-700
+            {% elif account.account_type == 'expense' %}bg-orange-100 text-orange-700
+            {% else %}bg-gray-100 text-gray-700{% endif %}">
+            {{ account.get_account_type_display }}
+          </span>
+          {% if account.parent_account %}
+          <span class="text-sm text-gray-600">
+            {% trans "Nadřazený" %}: {{ account.parent_account.account_number }} - {{ account.parent_account.name }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">← {% trans "Zpět" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance Summary -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="content-card p-4 bg-blue-50">
+      <h4 class="text-sm font-semibold text-blue-800 mb-1">{% trans "Celkem MD" %}</h4>
+      <p class="text-2xl font-bold text-blue-700">{{ total_debit|floatformat:2 }} Kč</p>
+    </div>
+    <div class="content-card p-4 bg-green-50">
+      <h4 class="text-sm font-semibold text-green-800 mb-1">{% trans "Celkem D" %}</h4>
+      <p class="text-2xl font-bold text-green-700">{{ total_credit|floatformat:2 }} Kč</p>
+    </div>
+    <div class="content-card p-4 {% if balance >= 0 %}bg-gray-50{% else %}bg-red-50{% endif %}">
+      <h4 class="text-sm font-semibold {% if balance >= 0 %}text-gray-800{% else %}text-red-800{% endif %} mb-1">{% trans "Zůstatek" %}</h4>
+      <p class="text-2xl font-bold {% if balance >= 0 %}text-gray-700{% else %}text-red-700{% endif %}">{{ balance|floatformat:2 }} Kč</p>
+    </div>
+  </div>
+
+  <!-- Journal Lines -->
+  <div class="content-card">
+    <div class="card-header" style="margin-bottom:1rem;">
+      <h3 class="text-lg font-semibold text-gray-800">📚 {% trans "Pohyby na účtu" %}</h3>
+    </div>
+
+    {% if journal_lines %}
+    <div class="overflow-x-auto">
+      <table class="data-table" style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f9fafb;">
+          <tr>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold w-32">{% trans "Datum" %}</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold w-24">{% trans "Číslo zápisu" %}</th>
+            <th class="px-4 py-2 text-left text-gray-600 font-semibold">{% trans "Popis" %}</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold w-32">{% trans "MD" %}</th>
+            <th class="px-4 py-2 text-right text-gray-600 font-semibold w-32">{% trans "D" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for line in journal_lines %}
+          <tr style="border-bottom:1px solid #e5e7eb;" class="hover:bg-gray-50 transition">
+            <td class="px-4 py-2 text-gray-600">{{ line.journal_entry.entry_date|date:"d.m.Y" }}</td>
+            <td class="px-4 py-2 text-gray-700 font-medium">#{{ line.journal_entry.entry_number }}</td>
+            <td class="px-4 py-2 text-gray-800">{{ line.description|default:line.journal_entry.description|default:"–" }}</td>
+            <td class="px-4 py-2 text-right font-medium {% if line.debit_amount > 0 %}text-blue-700{% else %}text-gray-400{% endif %}">
+              {{ line.debit_amount|floatformat:2 }} Kč
+            </td>
+            <td class="px-4 py-2 text-right font-medium {% if line.credit_amount > 0 %}text-green-700{% else %}text-gray-400{% endif %}">
+              {{ line.credit_amount|floatformat:2 }} Kč
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot style="background:#f3f4f6;border-top:2px solid #d1d5db;">
+          <tr>
+            <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-800">{% trans "Celkem" %}:</td>
+            <td class="px-4 py-3 text-right font-bold text-blue-800">{{ total_debit|floatformat:2 }} Kč</td>
+            <td class="px-4 py-3 text-right font-bold text-green-800">{{ total_credit|floatformat:2 }} Kč</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+      <div style="font-size:2rem;">📚</div>
+      <p style="margin-top:0.5rem;">{% trans "Na tomto účtu zatím nejsou žádné pohyby." %}</p>
+      <a href="{% url 'create_journal_entry' %}" class="btn btn-outline" style="margin-top:1rem;">➕ {% trans "Vytvořit zápis" %}</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
