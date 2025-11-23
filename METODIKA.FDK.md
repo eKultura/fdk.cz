@@ -104,10 +104,10 @@ owner = ForeignKey(User)
   ❌ ŠPATNĚ: detail_smlouvy.html, seznam_zamestnancu.html
   ```
 
-- **URL názvy**: anglické výrazy
+- **URL názvy**: české výrazy
   ```python
-  ✅ SPRÁVNĚ: path('contract/<int:pk>/', ...)
-  ❌ ŠPATNĚ: path('smlouva/<int:pk>/', ...)
+  ✅ SPRÁVNĚ: path('smlouva/<int:pk>/', ...)
+  ❌ ŠPATNĚ: path('contract/<int:pk>/', ...)
   ```
 
 - **Proměnné a funkce**: snake_case, anglicky
