@@ -1096,6 +1096,19 @@ select.form-control {
       margin-bottom: 0.5rem;
     }
 
+    .nav-section-active {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      margin: 0 0.5rem 1rem 0.5rem;
+      padding: 0.5rem 0;
+    }
+
+    .nav-section-active .nav-section-title {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
     .nav-item {
       display: flex;
       align-items: center;

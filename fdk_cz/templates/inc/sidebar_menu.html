@@ -1,8 +1,7 @@
 {% comment %}
 Centrální sidebar menu pro celý FDK.cz systém
-- Zobrazuje kategorie a moduly podle visible_modules
-- Zvýrazňuje aktivní modul
-- Podmenu se zobrazuje pouze pro aktivní modul
+- Aktivní modul s podmenu je nahoře pod Hlavní
+- Kategorie jsou fixní - jen odkazy bez podmenu
 {% endcomment %}
 
 <!-- Hlavní Section -->
@@ -20,42 +19,78 @@ Centrální sidebar menu pro celý FDK.cz systém
 
 {% if user.is_authenticated %}
 
-{% comment %} KATEGORIE: Management {% endcomment %}
-{% with management_modules="project_management,task_management,test_management,b2b_management,hr_management,risk_management,it_management,asset_management" %}
-{% regroup visible_modules by name as grouped_modules %}
+{% comment %} AKTIVNÍ MODUL - zobrazí se nahoře s podmenu {% endcomment %}
+{% if active_module %}
+<div class="nav-section nav-section-active">
+  <div class="nav-section-title">Aktivní</div>
+  {% if active_module == 'project_management' %}
+    {% include 'inc/menus/project_menu.html' %}
+  {% elif active_module == 'task_management' %}
+    {% include 'inc/menus/task_menu.html' %}
+  {% elif active_module == 'test_management' %}
+    {% include 'inc/menus/test_menu.html' %}
+  {% elif active_module == 'b2b_management' %}
+    {% include 'inc/menus/b2b_menu.html' %}
+  {% elif active_module == 'hr_management' %}
+    {% include 'inc/menus/hr_menu.html' %}
+  {% elif active_module == 'risk_management' %}
+    {% include 'inc/menus/risk_menu.html' %}
+  {% elif active_module == 'it_management' %}
+    {% include 'inc/menus/it_menu.html' %}
+  {% elif active_module == 'asset_management' %}
+    {% include 'inc/menus/asset_menu.html' %}
+  {% elif active_module == 'accounting' %}
+    {% include 'inc/menus/accounting_menu.html' %}
+  {% elif active_module == 'grants' %}
+    {% include 'inc/menus/grants_menu.html' %}
+  {% elif active_module == 'contacts' %}
+    {% include 'inc/menus/contacts_menu.html' %}
+  {% elif active_module == 'contracts' %}
+    {% include 'inc/menus/contracts_menu.html' %}
+  {% elif active_module == 'lists' %}
+    {% include 'inc/menus/lists_menu.html' %}
+  {% elif active_module == 'warehouse' %}
+    {% include 'inc/menus/warehouse_menu.html' %}
+  {% elif active_module == 'law_ai' %}
+    {% include 'inc/menus/law_menu.html' %}
+  {% elif active_module == 'dms' %}
+    {% include 'inc/menus/dms_menu.html' %}
+  {% endif %}
+</div>
+{% endif %}
 
+{% comment %} KATEGORIE: Management {% endcomment %}
 <div class="nav-section">
   <div class="nav-section-title">Management</div>
   {% for module in visible_modules %}
     {% if module.name == 'project_management' %}
-      {% include 'inc/menus/project_menu.html' %}
+      <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
     {% elif module.name == 'task_management' %}
-      {% include 'inc/menus/task_menu.html' %}
+      <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
     {% elif module.name == 'test_management' %}
-      {% include 'inc/menus/test_menu.html' %}
+      <a href="{% url 'list_tests' %}" class="nav-item"><span class="nav-icon">&#129514;</span> Testování</a>
     {% elif module.name == 'b2b_management' %}
-      {% include 'inc/menus/b2b_menu.html' %}
+      <a href="{% url 'b2b_dashboard' %}" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
     {% elif module.name == 'hr_management' %}
-      {% include 'inc/menus/hr_menu.html' %}
+      <a href="{% url 'hr_dashboard' %}" class="nav-item"><span class="nav-icon">&#128188;</span> HR Management</a>
     {% elif module.name == 'risk_management' %}
-      {% include 'inc/menus/risk_menu.html' %}
+      <a href="{% url 'risk_dashboard' %}" class="nav-item"><span class="nav-icon">&#9888;</span> Správa rizik</a>
     {% elif module.name == 'it_management' %}
-      {% include 'inc/menus/it_menu.html' %}
+      <a href="{% url 'it_dashboard' %}" class="nav-item"><span class="nav-icon">&#128187;</span> Správa IT</a>
     {% elif module.name == 'asset_management' %}
-      {% include 'inc/menus/asset_menu.html' %}
+      <a href="{% url 'asset_dashboard' %}" class="nav-item"><span class="nav-icon">&#128203;</span> Správa majetku</a>
     {% endif %}
   {% endfor %}
 </div>
-{% endwith %}
 
 {% comment %} KATEGORIE: Finance {% endcomment %}
 <div class="nav-section">
   <div class="nav-section-title">Finance</div>
   {% for module in visible_modules %}
     {% if module.name == 'accounting' %}
-      {% include 'inc/menus/accounting_menu.html' %}
+      <a href="{% url 'accounting_dashboard' %}" class="nav-item"><span class="nav-icon">&#128202;</span> Účetnictví</a>
     {% elif module.name == 'grants' %}
-      {% include 'inc/menus/grants_menu.html' %}
+      <a href="{% url 'grant_list' %}" class="nav-item"><span class="nav-icon">&#128176;</span> Granty &amp; Dotace</a>
     {% endif %}
   {% endfor %}
 </div>
@@ -65,9 +100,9 @@ Centrální sidebar menu pro celý FDK.cz systém
   <div class="nav-section-title">Business</div>
   {% for module in visible_modules %}
     {% if module.name == 'contacts' %}
-      {% include 'inc/menus/contacts_menu.html' %}
+      <a href="{% url 'my_contacts' %}" class="nav-item"><span class="nav-icon">&#128100;</span> Kontakty</a>
     {% elif module.name == 'contracts' %}
-      {% include 'inc/menus/contracts_menu.html' %}
+      <a href="{% url 'list_contracts' %}" class="nav-item"><span class="nav-icon">&#128196;</span> Smlouvy</a>
     {% endif %}
   {% endfor %}
 </div>
@@ -77,15 +112,14 @@ Centrální sidebar menu pro celý FDK.cz systém
   <div class="nav-section-title">Nástroje</div>
   {% for module in visible_modules %}
     {% if module.name == 'lists' %}
-      {% include 'inc/menus/lists_menu.html' %}
+      <a href="{% url 'index_list' %}" class="nav-item"><span class="nav-icon">&#128221;</span> Seznamy</a>
     {% elif module.name == 'warehouse' %}
-      {% include 'inc/menus/warehouse_menu.html' %}
+      <a href="{% url 'all_stores' %}" class="nav-item"><span class="nav-icon">&#128230;</span> Sklad</a>
     {% elif module.name == 'law_ai' %}
-      {% include 'inc/menus/law_menu.html' %}
+      <a href="{% url 'pravo_ai' %}" class="nav-item"><span class="nav-icon">&#9889;</span> AI Právník</a>
     {% endif %}
   {% endfor %}
-  <!-- DMS je vždy viditelné -->
-  {% include 'inc/menus/dms_menu.html' %}
+  <a href="{% url 'dms_dashboard' %}" class="nav-item"><span class="nav-icon">&#128193;</span> DMS</a>
 </div>
 
 <!-- Nastavení Section -->

@@ -223,17 +223,6 @@
         }, 5000);
       }
 
-      // Move active module to top of its category
-      const activeModule = document.querySelector('.nav-module-active');
-      if (activeModule) {
-        const parentSection = activeModule.closest('.nav-section');
-        if (parentSection) {
-          const sectionTitle = parentSection.querySelector('.nav-section-title');
-          if (sectionTitle && sectionTitle.nextElementSibling !== activeModule) {
-            sectionTitle.after(activeModule);
-          }
-        }
-      }
     });
   </script>
   {% block extra_scripts %}{% endblock %}

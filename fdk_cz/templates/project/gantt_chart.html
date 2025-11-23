@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Ganttův diagram | FDK.cz{% endblock %}
+{% block header_title %}📊 Ganttův diagram{% endblock %}
+{% block header_subtitle %}
+Časová osa úkolů ve vašich projektech
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Breadcrumbs -->
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+      <span style="color: #64748b;">📍 Kontext:</span>
+      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+      <span style="color: #9ca3af;">→</span>
+      <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        Projekty
+      </a>
+      <span style="color: #9ca3af;">→</span>
+      <span style="font-weight: 600; color: #1e293b;">Ganttův diagram</span>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div style="margin-bottom: 1.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+    <form method="get" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <label style="font-weight: 500; color: #374151;">Filtrovat projekt:</label>
+      <select name="project" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; min-width: 200px;">
+        <option value="">Všechny projekty</option>
+        {% for project in all_projects %}
+        <option value="{{ project.project_id }}" {% if project_filter == project.project_id|stringformat:"d" %}selected{% endif %}>
+          {{ project.project_name }}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {% if gantt_data %}
+  <!-- Gantt Chart -->
+  {% for project in gantt_data %}
+  <div style="margin-bottom: 2rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+    <!-- Project header -->
+    <div style="background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; padding: 1rem 1.5rem;">
+      <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">
+        <a href="{% url 'detail_project' project.project_id %}" style="color: white; text-decoration: none;">
+          📁 {{ project.project_name }}
+        </a>
+      </h2>
+    </div>
+
+    <div style="padding: 1.5rem;">
+      {% if project.tasks %}
+      <!-- Tasks timeline -->
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e2e8f0;">
+              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 200px;">Úkol</th>
+              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Začátek</th>
+              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Konec</th>
+              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Stav</th>
+              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Přiřazeno</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in project.tasks %}
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+              <td style="padding: 0.75rem;">
+                <a href="{% url 'detail_task' task.id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                  {{ task.name }}
+                </a>
+              </td>
+              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+                {{ task.start|date:"d.m.Y" }}
+              </td>
+              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+                {% if task.end %}{{ task.end|date:"d.m.Y" }}{% else %}-{% endif %}
+              </td>
+              <td style="padding: 0.75rem;">
+                {% if task.status == 'completed' %}
+                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #dcfce7; color: #166534; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
+                  ✓ Dokončeno
+                </span>
+                {% elif task.status == 'in_progress' %}
+                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
+                  ⏳ Probíhá
+                </span>
+                {% else %}
+                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #f3f4f6; color: #4b5563; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
+                  ○ Čeká
+                </span>
+                {% endif %}
+              </td>
+              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+                {{ task.assignee|default:"-" }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p style="color: #6b7280; font-style: italic;">Žádné úkoly s datem začátku.</p>
+      {% endif %}
+
+      {% if project.milestones %}
+      <!-- Milestones -->
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <h3 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">🎯 Milníky</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+          {% for milestone in project.milestones %}
+          <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: {% if milestone.completed %}#dcfce7{% else %}#fef3c7{% endif %}; border-radius: 6px;">
+            <span style="font-size: 1.25rem;">{% if milestone.completed %}✅{% else %}🏁{% endif %}</span>
+            <div>
+              <div style="font-weight: 500; color: #1e293b;">{{ milestone.name }}</div>
+              <div style="font-size: 0.75rem; color: #6b7280;">{{ milestone.date|date:"d.m.Y" }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <!-- Empty state -->
+  <div style="text-align: center; padding: 3rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Žádné úkoly k zobrazení</h3>
+    <p style="color: #6b7280; margin-bottom: 1.5rem;">
+      Přidejte úkoly s datumem začátku do vašich projektů pro zobrazení v Ganttově diagramu.
+    </p>
+    <a href="{% url 'index_project_cs' %}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-weight: 500;">
+      📁 Přejít na projekty
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
