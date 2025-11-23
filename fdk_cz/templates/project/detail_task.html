@@ -182,7 +182,7 @@
     <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
       <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.75rem;">📝 Popis úkolu</h3>
       <div style="background: linear-gradient(to bottom, #eff6ff, #f0f9ff); border: 2px solid #3b82f6; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        <div style="color: #1e293b; line-height: 1.8; font-size: 1rem;">{{ task.description|markdown|safe }}</div>
+        <div style="color: #1e293b; line-height: 1.8; font-size: 1rem;">{{ task.description|safe }}</div>
       </div>
     </div>
     {% endif %}
@@ -302,3 +302,4 @@
   </div>
 </div>
 {% endblock %}
+
