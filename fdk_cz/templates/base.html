@@ -209,6 +209,32 @@
       const userTrigger = document.querySelector('.user-trigger');
       if (userTrigger && !userTrigger.contains(e.target)) userMenu.classList.remove('active');
     });
+
+    // Auto-hide messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+      const messages = document.getElementById('messages');
+      if (messages) {
+        setTimeout(function() {
+          messages.style.transition = 'opacity 0.5s ease';
+          messages.style.opacity = '0';
+          setTimeout(function() {
+            messages.style.display = 'none';
+          }, 500);
+        }, 5000);
+      }
+
+      // Move active module to top of its category
+      const activeModule = document.querySelector('.nav-module-active');
+      if (activeModule) {
+        const parentSection = activeModule.closest('.nav-section');
+        if (parentSection) {
+          const sectionTitle = parentSection.querySelector('.nav-section-title');
+          if (sectionTitle && sectionTitle.nextElementSibling !== activeModule) {
+            sectionTitle.after(activeModule);
+          }
+        }
+      }
+    });
   </script>
   {% block extra_scripts %}{% endblock %}
 </body>
