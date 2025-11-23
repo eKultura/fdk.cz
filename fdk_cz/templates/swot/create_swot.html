@@ -56,8 +56,8 @@
             <input type="radio" name="context_type" value="organization" onchange="toggleContextFields()">
             <span>🏛️ Organizace</span>
           </label>
-          <div id="organization_field" style="display: none; margin-left: 1.5rem;">
-            <select name="organization_id" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+          <div id="organization_field" style="display: none; margin-left: 1.5rem; margin-top: 0.5rem;">
+            <select name="organization_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: white; min-height: 44px;">
               {% for org in organizations %}
                 <option value="{{ org.organization_id }}">{{ org.name }}</option>
               {% endfor %}
@@ -70,8 +70,8 @@
             <input type="radio" name="context_type" value="project" onchange="toggleContextFields()">
             <span>📁 Projekt</span>
           </label>
-          <div id="project_field" style="display: none; margin-left: 1.5rem;">
-            <select name="project_id" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+          <div id="project_field" style="display: none; margin-left: 1.5rem; margin-top: 0.5rem;">
+            <select name="project_id" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: white; min-height: 44px;">
               {% for project in projects %}
                 <option value="{{ project.project_id }}">{{ project.name }}</option>
               {% endfor %}
