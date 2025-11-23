@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     """
 
     dependencies = [
-        ('fdk_cz', '0013_add_soft_delete'),
+        ('fdk_cz', '0014_sync_state'),
     ]
 
     operations = [
