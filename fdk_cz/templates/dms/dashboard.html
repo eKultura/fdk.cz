@@ -116,7 +116,7 @@
 
         <div>
           <label class="block text-xs text-gray-600 mb-1">Hledat</label>
-          <input type="text" name="search" value="{{ search_query }}" placeholder="Název dokumentu..." class="form-control text-sm">
+          <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Název dokumentu..." class="form-control text-sm">
         </div>
 
         <button type="submit" class="btn btn-secondary">🔍 Filtrovat</button>

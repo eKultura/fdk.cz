@@ -81,8 +81,8 @@
         </div>
       </form>
 
-      <!-- Existing items -->
-      {% for item in swot.strengths %}
+      <!-- Existing items (sorted by weight) -->
+      {% for item in sorted_strengths %}
         <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
@@ -92,7 +92,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_item">
             <input type="hidden" name="quadrant" value="strengths">
-            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <input type="hidden" name="index" value="{{ item.idx }}">
             <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
           </form>
         </div>
@@ -122,8 +122,8 @@
         </div>
       </form>
 
-      <!-- Existing items -->
-      {% for item in swot.weaknesses %}
+      <!-- Existing items (sorted by weight) -->
+      {% for item in sorted_weaknesses %}
         <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
@@ -133,7 +133,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_item">
             <input type="hidden" name="quadrant" value="weaknesses">
-            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <input type="hidden" name="index" value="{{ item.idx }}">
             <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
           </form>
         </div>
@@ -163,8 +163,8 @@
         </div>
       </form>
 
-      <!-- Existing items -->
-      {% for item in swot.opportunities %}
+      <!-- Existing items (sorted by weight) -->
+      {% for item in sorted_opportunities %}
         <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
@@ -174,7 +174,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_item">
             <input type="hidden" name="quadrant" value="opportunities">
-            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <input type="hidden" name="index" value="{{ item.idx }}">
             <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
           </form>
         </div>
@@ -204,8 +204,8 @@
         </div>
       </form>
 
-      <!-- Existing items -->
-      {% for item in swot.threats %}
+      <!-- Existing items (sorted by weight) -->
+      {% for item in sorted_threats %}
         <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
           <div style="flex: 1;">
             <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
@@ -215,7 +215,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="delete_item">
             <input type="hidden" name="quadrant" value="threats">
-            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <input type="hidden" name="index" value="{{ item.idx }}">
             <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
           </form>
         </div>
