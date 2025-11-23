@@ -5,7 +5,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fdk_cz', '0011_remove_projecttask_deleted_and_more'),
+        ('fdk_cz', '0003_alter_testerror_test_result'),
     ]
 
     operations = [
