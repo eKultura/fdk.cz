@@ -4,12 +4,19 @@
 {% block header_subtitle %}Administrace modulů a cen{% endblock %}
 
 {% block content %}
-<!-- Breadcrumbs -->
-<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
-  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
-  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
-  <span style="color: #1e293b; font-weight: 500;">Správa modulů</span>
-</nav>
+
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Osobni</span>
+    <span style="color: #9ca3af;">-></span>
+    <span style="font-weight: 500; color: #1e293b;">Administrace</span>
+    <span style="color: #9ca3af;">-></span>
+    <span style="font-weight: 500; color: #1e293b;">Moduly</span>
+    <span style="color: #9ca3af;">-></span>
+    <span style="font-weight: 600; color: #1e293b;">Sprava modulu</span>
+  </div>
+</div>
 
 <div style="max-width: 1600px; margin: 0 auto;">
 
