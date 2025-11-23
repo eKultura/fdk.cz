@@ -1,0 +1,16 @@
+{% comment %}Podmenu pro modul AI Právník{% endcomment %}
+<div class="nav-module {% if active_module == 'law_ai' %}nav-module-active{% endif %}">
+  <a href="{% url 'pravo_ai' %}" class="nav-item nav-module-header {% if active_module == 'law_ai' %}active{% endif %}">
+    <span class="nav-icon">&#9889;</span> AI Právník
+  </a>
+  {% if active_module == 'law_ai' %}
+  <div class="nav-submenu">
+    <a href="{% url 'pravo_ai' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#9889;</span> AI Právník
+    </a>
+    <a href="{% url 'article_help_index' %}#pravnik" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

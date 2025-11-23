@@ -1127,6 +1127,68 @@ select.form-control {
       text-align: center;
     }
 
+    /* Nav Module - modul s podmenu */
+    .nav-module {
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-module-active {
+      background: #f0f9ff;
+      border-radius: 8px;
+      margin: 0 0.5rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .nav-module-active .nav-module-header {
+      font-weight: 600;
+      color: #1d4ed8;
+      background: #dbeafe;
+      border-radius: 8px 8px 0 0;
+      margin: 0;
+    }
+
+    .nav-module-header {
+      border-left: none !important;
+    }
+
+    /* Nav Submenu - podmenu položky */
+    .nav-submenu {
+      padding: 0.25rem 0 0.5rem 0;
+    }
+
+    .nav-submenu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem 0.4rem 2.25rem;
+      font-size: 0.8rem;
+      color: #475569;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .nav-submenu-item:hover {
+      color: #1e293b;
+      background: rgba(59, 130, 246, 0.1);
+      text-decoration: none;
+    }
+
+    .nav-submenu-item .nav-icon {
+      font-size: 0.9rem;
+      width: 16px;
+    }
+
+    .nav-submenu-help {
+      margin-top: 0.25rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed #e2e8f0;
+      color: #94a3b8;
+    }
+
+    .nav-submenu-help:hover {
+      color: #3b82f6;
+    }
+
     /* Main Content Area */
     .main-content {
       flex: 1;

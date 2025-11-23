@@ -1,0 +1,19 @@
+{% comment %}Podmenu pro modul Správa rizik{% endcomment %}
+<div class="nav-module {% if active_module == 'risk_management' %}nav-module-active{% endif %}">
+  <a href="{% url 'risk_dashboard' %}" class="nav-item nav-module-header {% if active_module == 'risk_management' %}active{% endif %}">
+    <span class="nav-icon">&#9888;</span> Správa rizik
+  </a>
+  {% if active_module == 'risk_management' %}
+  <div class="nav-submenu">
+    <a href="{% url 'risk_dashboard' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128200;</span> Dashboard
+    </a>
+    <a href="{% url 'list_risks' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Seznam rizik
+    </a>
+    <a href="{% url 'article_help_index' %}#rizika" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

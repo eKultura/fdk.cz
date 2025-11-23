@@ -1,0 +1,19 @@
+{% comment %}Podmenu pro modul Kontakty{% endcomment %}
+<div class="nav-module {% if active_module == 'contacts' %}nav-module-active{% endif %}">
+  <a href="{% url 'my_contacts' %}" class="nav-item nav-module-header {% if active_module == 'contacts' %}active{% endif %}">
+    <span class="nav-icon">&#128100;</span> Kontakty
+  </a>
+  {% if active_module == 'contacts' %}
+  <div class="nav-submenu">
+    <a href="{% url 'my_contacts' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Moje kontakty
+    </a>
+    <a href="{% url 'create_contact' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#10133;</span> Nový kontakt
+    </a>
+    <a href="{% url 'article_help_index' %}#kontakty" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>
