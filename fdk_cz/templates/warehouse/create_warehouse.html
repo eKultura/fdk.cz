@@ -6,6 +6,28 @@
 {% block header_subtitle %}{% trans "Vytvořte nový sklad pro správu zásob" %}{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    {% if organization %}
+    <a href="{% url 'organization_detail' organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ organization.name }}</a>
+    {% elif project %}
+    {% if project.organization %}
+    <a href="{% url 'organization_detail' project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ project.organization.name }}</a>
+    <span style="color: #9ca3af;">→</span>
+    {% endif %}
+    <a href="{% url 'detail_project' project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ project.name }}</a>
+    {% else %}
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    {% endif %}
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'all_stores' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Sklad</a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Nový sklad</span>
+  </div>
+</div>
+
 <div class="max-w-4xl mx-auto">
   <!-- Actions -->
   <div class="mb-6 flex gap-3">

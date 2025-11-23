@@ -1,9 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Novı AI dotaz | FDK.cz{% endblock %}
-{% block header_title %}– Novı AI dotaz{% endblock %}
-{% block header_subtitle %}Zeptejte se AI na právní otázku{% endblock %}
+{% block title %}Novï¿½ AI dotaz | FDK.cz{% endblock %}
+{% block header_title %}ï¿½ Novï¿½ AI dotaz{% endblock %}
+{% block header_subtitle %}Zeptejte se AI na prï¿½vnï¿½ otï¿½zku{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">ğŸ“ Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">OsobnÃ­</span>
+    <span style="color: #9ca3af;">â†’</span>
+    <a href="{% url 'law_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">AI PrÃ¡vnÃ­k</a>
+    <span style="color: #9ca3af;">â†’</span>
+    <span style="font-weight: 600; color: #1e293b;">NovÃ½ dotaz</span>
+  </div>
+</div>
+
 <div class="max-w-4xl mx-auto">
   <div class="content-card">
     <form method="POST">
@@ -18,21 +30,21 @@
             <option value="{{ value }}">{{ label }}</option>
           {% endfor %}
         </select>
-        <div class="form-help">Vyberte typ právního dotazu pro optimální AI odpov</div>
+        <div class="form-help">Vyberte typ prï¿½vnï¿½ho dotazu pro optimï¿½lnï¿½ AI odpov</div>
       </div>
 
       <!-- Title -->
       <div class="form-group">
-        <label for="id_title" class="form-label">Název dotazu <span class="required">*</span></label>
-        <input type="text" name="title" id="id_title" class="form-control" required placeholder="Strunı název vaaeho dotazu">
-        <div class="form-help">Zadejte vısti~nı název pro snadnou identifikaci</div>
+        <label for="id_title" class="form-label">Nï¿½zev dotazu <span class="required">*</span></label>
+        <input type="text" name="title" id="id_title" class="form-control" required placeholder="Strunï¿½ nï¿½zev vaaeho dotazu">
+        <div class="form-help">Zadejte vï¿½sti~nï¿½ nï¿½zev pro snadnou identifikaci</div>
       </div>
 
       <!-- Question -->
       <div class="form-group">
-        <label for="id_question" class="form-label">Váa dotaz <span class="required">*</span></label>
-        <textarea name="question" id="id_question" class="form-control" rows="8" required placeholder="Popiate co nejpodrobnji svoj právní problém nebo otázku..."></textarea>
-        <div class="form-help">ím podrobnjaí informace poskytnete, tím pYesnjaí bude odpov AI</div>
+        <label for="id_question" class="form-label">Vï¿½a dotaz <span class="required">*</span></label>
+        <textarea name="question" id="id_question" class="form-control" rows="8" required placeholder="Popiate co nejpodrobnji svoj prï¿½vnï¿½ problï¿½m nebo otï¿½zku..."></textarea>
+        <div class="form-help">ï¿½m podrobnjaï¿½ informace poskytnete, tï¿½m pYesnjaï¿½ bude odpov AI</div>
       </div>
 
       <!-- Info Box -->
@@ -40,10 +52,10 @@
         <div class="flex items-start">
           <div class="text-2xl mr-3">9</div>
           <div>
-            <h4 class="font-semibold text-blue-800 mb-1">Upozornní</h4>
+            <h4 class="font-semibold text-blue-800 mb-1">Upozornnï¿½</h4>
             <p class="text-sm text-blue-700">
-              AI asistent poskytuje orientaní informace a nepYedstavuje oficiální právní poradenství.
-              Pro komplexní právní zále~itosti doporuujeme konzultaci s kvalifikovanım advokátem.
+              AI asistent poskytuje orientanï¿½ informace a nepYedstavuje oficiï¿½lnï¿½ prï¿½vnï¿½ poradenstvï¿½.
+              Pro komplexnï¿½ prï¿½vnï¿½ zï¿½le~itosti doporuujeme konzultaci s kvalifikovanï¿½m advokï¿½tem.
             </p>
           </div>
         </div>
@@ -51,12 +63,12 @@
 
       <!-- Example Queries -->
       <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-        <h4 class="font-semibold text-gray-800 mb-3">=¡ PYíklady dotazo</h4>
+        <h4 class="font-semibold text-gray-800 mb-3">=ï¿½ PYï¿½klady dotazo</h4>
         <ul class="text-sm text-gray-700 space-y-2">
-          <li>" "Analıza kupní smlouvy - identifikujte rizikové klauzule"</li>
-          <li>" "Jaká jsou práva zamstnance pYi jednostranné zmn pracovní smlouvy?"</li>
-          <li>" "Postup pYi reklamaci vady zbo~í koupeného online"</li>
-          <li>" "Kontrola souladu obchodních podmínek s GDPR"</li>
+          <li>" "Analï¿½za kupnï¿½ smlouvy - identifikujte rizikovï¿½ klauzule"</li>
+          <li>" "Jakï¿½ jsou prï¿½va zamstnance pYi jednostrannï¿½ zmn pracovnï¿½ smlouvy?"</li>
+          <li>" "Postup pYi reklamaci vady zbo~ï¿½ koupenï¿½ho online"</li>
+          <li>" "Kontrola souladu obchodnï¿½ch podmï¿½nek s GDPR"</li>
         </ul>
       </div>
 

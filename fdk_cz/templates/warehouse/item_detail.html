@@ -6,6 +6,30 @@
 {% block header_subtitle %}{% trans "Detail skladové položky" %}{% endblock %}
 
 {% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    {% if item.warehouse.organization %}
+    <a href="{% url 'organization_detail' item.warehouse.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ item.warehouse.organization.name }}</a>
+    {% elif item.warehouse.project %}
+    {% if item.warehouse.project.organization %}
+    <a href="{% url 'organization_detail' item.warehouse.project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ item.warehouse.project.organization.name }}</a>
+    <span style="color: #9ca3af;">→</span>
+    {% endif %}
+    <a href="{% url 'detail_project' item.warehouse.project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ item.warehouse.project.name }}</a>
+    {% else %}
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    {% endif %}
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'all_stores' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Sklad</a>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'store_detail' item.warehouse.warehouse_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ item.warehouse.name }}</a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">{{ item.name }}</span>
+  </div>
+</div>
+
 <div style="max-width: 1400px; margin: 0 auto;">
 
   <!-- Actions -->

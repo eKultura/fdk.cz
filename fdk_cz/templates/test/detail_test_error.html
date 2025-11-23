@@ -79,7 +79,7 @@
   <div class="content-card">
     <h3 class="text-xl font-semibold text-gray-800 mb-4">📝 Popis chyby</h3>
     <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <p class="text-gray-700 whitespace-pre-wrap">{{ error.description }}</p>
+      <p class="text-gray-700 whitespace-pre-wrap">{{ error.description|safe }}</p>
     </div>
   </div>
   {% endif %}
