@@ -180,7 +180,7 @@ class TestScenarioForm(forms.ModelForm):
             User = get_user_model()
             self.fields['owner'].queryset = User.objects.filter(
                 Q(created_organizations__in=user_orgs) |
-                Q(member_of_organizations__in=user_orgs)
+                Q(organizationmembership__organization__in=user_orgs)
             ).distinct()
             
             # Nastavení výchozího ownera na aktuálního uživatele
