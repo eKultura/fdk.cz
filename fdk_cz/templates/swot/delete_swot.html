@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Smazat {{ swot.title }} | SWOT | FDK.cz{% endblock %}
+{% block header_title %}🗑️ Smazat SWOT analýzu{% endblock %}
+{% block header_subtitle %}{{ swot.title }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">
+      {% if swot.organization %}{{ swot.organization.name }}{% elif swot.project %}{{ swot.project.name }}{% else %}Osobní{% endif %}
+    </span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'list_swot_analyses' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+      SWOT analýzy
+    </a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Smazat</span>
+  </div>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+  <div class="content-card">
+    <div style="text-align: center; padding: 2rem 0;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+      <h3 style="font-weight: 700; color: #991b1b; margin-bottom: 0.5rem;">Opravdu chcete smazat tuto SWOT analýzu?</h3>
+      <p style="color: #6b7280; margin-bottom: 1.5rem;">
+        Tato akce je nevratná. Všechny položky analýzy budou ztraceny.
+      </p>
+
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: left;">
+        <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{{ swot.title }}</div>
+        {% if swot.description %}
+          <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">{{ swot.description }}</div>
+        {% endif %}
+        <div style="font-size: 0.75rem; color: #9ca3af;">
+          Celkem {{ swot.get_total_items }} položek
+        </div>
+      </div>
+
+      <form method="post" style="display: flex; justify-content: center; gap: 0.75rem;">
+        {% csrf_token %}
+        <a href="{% url 'detail_swot_analysis' swot.swot_id %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary" style="background: #dc2626; border-color: #dc2626;">🗑️ Smazat</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

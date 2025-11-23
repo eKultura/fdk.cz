@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Upravit {{ swot.title }} | SWOT | FDK.cz{% endblock %}
+{% block header_title %}✏️ Upravit SWOT analýzu{% endblock %}
+{% block header_subtitle %}{{ swot.title }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    {% if swot.organization %}
+      <span style="font-weight: 500; color: #1e293b;">{{ swot.organization.name }}</span>
+    {% elif swot.project %}
+      <span style="font-weight: 500; color: #1e293b;">{{ swot.project.name }}</span>
+    {% else %}
+      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    {% endif %}
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'list_swot_analyses' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+      SWOT analýzy
+    </a>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'detail_swot_analysis' swot.swot_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+      {{ swot.title }}
+    </a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Upravit</span>
+  </div>
+</div>
+
+<div style="max-width: 1400px; margin: 0 auto;">
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+    <a href="{% url 'detail_swot_analysis' swot.swot_id %}" class="btn btn-outline">👁️ Zobrazit</a>
+  </div>
+
+  <!-- Metadata Form -->
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Základní informace</h3>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="update_metadata">
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; align-items: start;">
+        <div>
+          <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">Název</label>
+          <input type="text" name="title" value="{{ swot.title }}" required
+                 style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+        </div>
+        <div>
+          <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">Popis</label>
+          <input type="text" name="description" value="{{ swot.description|default:'' }}"
+                 style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+        </div>
+      </div>
+      <div style="margin-top: 1rem; text-align: right;">
+        <button type="submit" class="btn btn-outline" style="font-size: 0.875rem;">Uložit metadata</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- SWOT Quadrants Editor -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <!-- Strengths -->
+    <div style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 2px solid #10b981; border-radius: 12px; padding: 1rem;">
+      <h3 style="font-weight: 700; color: #065f46; margin-bottom: 1rem;">💪 Silné stránky (S)</h3>
+
+      <!-- Add new item -->
+      <form method="post" style="margin-bottom: 1rem; background: white; padding: 0.75rem; border-radius: 8px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_item">
+        <input type="hidden" name="quadrant" value="strengths">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" name="text" placeholder="Nová silná stránka..." required
+                 style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+          <select name="weight" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+            {% for i in "12345678910"|make_list %}
+              <option value="{{ forloop.counter }}" {% if forloop.counter == 5 %}selected{% endif %}>{{ forloop.counter }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" style="padding: 0.5rem 0.75rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">+</button>
+        </div>
+      </form>
+
+      <!-- Existing items -->
+      {% for item in swot.strengths %}
+        <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Váha: {{ item.weight }}/10</div>
+          </div>
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_item">
+            <input type="hidden" name="quadrant" value="strengths">
+            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
+          </form>
+        </div>
+      {% empty %}
+        <p style="color: #6b7280; font-style: italic; text-align: center; padding: 1rem 0; font-size: 0.875rem;">Žádné položky</p>
+      {% endfor %}
+    </div>
+
+    <!-- Weaknesses -->
+    <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); border: 2px solid #ef4444; border-radius: 12px; padding: 1rem;">
+      <h3 style="font-weight: 700; color: #991b1b; margin-bottom: 1rem;">⚠️ Slabé stránky (W)</h3>
+
+      <!-- Add new item -->
+      <form method="post" style="margin-bottom: 1rem; background: white; padding: 0.75rem; border-radius: 8px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_item">
+        <input type="hidden" name="quadrant" value="weaknesses">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" name="text" placeholder="Nová slabá stránka..." required
+                 style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+          <select name="weight" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+            {% for i in "12345678910"|make_list %}
+              <option value="{{ forloop.counter }}" {% if forloop.counter == 5 %}selected{% endif %}>{{ forloop.counter }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" style="padding: 0.5rem 0.75rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">+</button>
+        </div>
+      </form>
+
+      <!-- Existing items -->
+      {% for item in swot.weaknesses %}
+        <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Váha: {{ item.weight }}/10</div>
+          </div>
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_item">
+            <input type="hidden" name="quadrant" value="weaknesses">
+            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
+          </form>
+        </div>
+      {% empty %}
+        <p style="color: #6b7280; font-style: italic; text-align: center; padding: 1rem 0; font-size: 0.875rem;">Žádné položky</p>
+      {% endfor %}
+    </div>
+
+    <!-- Opportunities -->
+    <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border: 2px solid #3b82f6; border-radius: 12px; padding: 1rem;">
+      <h3 style="font-weight: 700; color: #1e40af; margin-bottom: 1rem;">🚀 Příležitosti (O)</h3>
+
+      <!-- Add new item -->
+      <form method="post" style="margin-bottom: 1rem; background: white; padding: 0.75rem; border-radius: 8px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_item">
+        <input type="hidden" name="quadrant" value="opportunities">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" name="text" placeholder="Nová příležitost..." required
+                 style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+          <select name="weight" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+            {% for i in "12345678910"|make_list %}
+              <option value="{{ forloop.counter }}" {% if forloop.counter == 5 %}selected{% endif %}>{{ forloop.counter }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" style="padding: 0.5rem 0.75rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">+</button>
+        </div>
+      </form>
+
+      <!-- Existing items -->
+      {% for item in swot.opportunities %}
+        <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Váha: {{ item.weight }}/10</div>
+          </div>
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_item">
+            <input type="hidden" name="quadrant" value="opportunities">
+            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
+          </form>
+        </div>
+      {% empty %}
+        <p style="color: #6b7280; font-style: italic; text-align: center; padding: 1rem 0; font-size: 0.875rem;">Žádné položky</p>
+      {% endfor %}
+    </div>
+
+    <!-- Threats -->
+    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b; border-radius: 12px; padding: 1rem;">
+      <h3 style="font-weight: 700; color: #92400e; margin-bottom: 1rem;">⚡ Hrozby (T)</h3>
+
+      <!-- Add new item -->
+      <form method="post" style="margin-bottom: 1rem; background: white; padding: 0.75rem; border-radius: 8px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_item">
+        <input type="hidden" name="quadrant" value="threats">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" name="text" placeholder="Nová hrozba..." required
+                 style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+          <select name="weight" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+            {% for i in "12345678910"|make_list %}
+              <option value="{{ forloop.counter }}" {% if forloop.counter == 5 %}selected{% endif %}>{{ forloop.counter }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" style="padding: 0.5rem 0.75rem; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer;">+</button>
+        </div>
+      </form>
+
+      <!-- Existing items -->
+      {% for item in swot.threats %}
+        <div style="background: white; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-size: 0.875rem; color: #1e293b;">{{ item.text }}</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Váha: {{ item.weight }}/10</div>
+          </div>
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_item">
+            <input type="hidden" name="quadrant" value="threats">
+            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+            <button type="submit" style="padding: 0.25rem 0.5rem; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">🗑️</button>
+          </form>
+        </div>
+      {% empty %}
+        <p style="color: #6b7280; font-style: italic; text-align: center; padding: 1rem 0; font-size: 0.875rem;">Žádné položky</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

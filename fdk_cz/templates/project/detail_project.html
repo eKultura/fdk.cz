@@ -288,6 +288,67 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     </div>
   </div>
 
+  <!-- Sekce: Ganttův diagram -->
+  {% if gantt_items %}
+  <div class="content-card">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold text-gray-800">📅 Ganttův diagram</h2>
+    </div>
+    <p class="text-sm text-gray-600 mb-4">Časová osa milníků a vysokoprioritních úkolů</p>
+
+    <div style="position: relative; padding: 1rem 0;">
+      <!-- Timeline line -->
+      <div style="position: absolute; left: 120px; right: 20px; top: 50%; height: 4px; background: linear-gradient(to right, #e5e7eb, #d1d5db); border-radius: 2px;"></div>
+
+      <!-- Timeline items -->
+      <div style="display: flex; flex-direction: column; gap: 1rem; position: relative;">
+        {% for item in gantt_items %}
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <!-- Date -->
+          <div style="width: 100px; text-align: right; flex-shrink: 0;">
+            <div style="font-weight: 600; font-size: 0.875rem; color: #1e293b;">{{ item.date|date:"d.m" }}</div>
+            <div style="font-size: 0.7rem; color: #64748b;">{{ item.date|date:"Y" }}</div>
+          </div>
+
+          <!-- Point on timeline -->
+          <div style="width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+                      {% if item.type == 'milestone' %}
+                        background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 0 4px #fef3c7;
+                      {% else %}
+                        background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 0 0 4px #dbeafe;
+                      {% endif %}">
+          </div>
+
+          <!-- Item details -->
+          <div style="flex: 1; background: white; border-radius: 8px; padding: 0.75rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              {% if item.type == 'milestone' %}
+                <span style="padding: 2px 8px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">📍 Milník</span>
+              {% else %}
+                <span style="padding: 2px 8px; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">⚡ Vysoká priorita</span>
+              {% endif %}
+              <span style="font-weight: 600; color: #1e293b; font-size: 0.875rem;">{{ item.title }}</span>
+            </div>
+            {% if item.status %}
+            <div style="margin-top: 0.25rem; font-size: 0.7rem; color: #64748b;">
+              Status: {{ item.status }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if not gantt_items %}
+    <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 8px;">
+      <p style="color: #64748b;">Žádné položky pro zobrazení v Ganttově diagramu</p>
+      <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.5rem;">Přidejte milníky s termíny nebo úkoly s vysokou prioritou a deadlinem</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
   <!-- Sekce: Milníky -->
   <div class="content-card">
     <div class="flex justify-between items-center mb-4">

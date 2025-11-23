@@ -133,6 +133,33 @@ def detail_project(request, project_id):
     # Kontrola, zda je projekt ukončen (má nastavený end_date)
     is_project_closed = proj.end_date is not None
 
+    # Data pro Ganttův diagram
+    gantt_items = []
+
+    # Přidání milníků do Gantt diagramu
+    for milestone in milestones:
+        if milestone.due_date:
+            gantt_items.append({
+                'type': 'milestone',
+                'title': milestone.title,
+                'date': milestone.due_date,
+                'status': milestone.status,
+            })
+
+    # Přidání vysokoprioritních úkolů do Gantt diagramu
+    high_priority_tasks = proj.tasks.filter(priority='Vysoká').exclude(status='Hotovo')
+    for task in high_priority_tasks:
+        if task.deadline:
+            gantt_items.append({
+                'type': 'task',
+                'title': task.title,
+                'date': task.deadline,
+                'status': task.status,
+            })
+
+    # Seřadit podle data
+    gantt_items.sort(key=lambda x: x['date'])
+
     # Přenesení inicializovaných formulářů do šablony
     return render(request, 'project/detail_project.html', {
         'project': proj,
@@ -150,6 +177,7 @@ def detail_project(request, project_id):
         'project_status_counts': project_status_counts,
         'project_total_tasks': project_total_tasks,
         'is_project_closed': is_project_closed,
+        'gantt_items': gantt_items,
     })
 
 
