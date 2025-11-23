@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Log aktivit projektů | FDK.cz{% endblock %}
+{% block header_title %}📊 Log aktivit{% endblock %}
+{% block header_subtitle %}
+Přehled aktivit ve vašich projektech
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Breadcrumbs -->
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+      <span style="color: #64748b;">📍 Kontext:</span>
+      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+      <span style="color: #9ca3af;">→</span>
+      <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+        Projekty
+      </a>
+      <span style="color: #9ca3af;">→</span>
+      <span style="font-weight: 600; color: #1e293b;">Log aktivit</span>
+    </div>
+  </div>
+
+  <!-- Info box -->
+  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #fef3c7, #fde68a); border: 2px solid #fbbf24; border-radius: 8px; padding: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+      <span style="color: #92400e;">🔑</span>
+      <span style="color: #92400e; font-weight: 600;">Administrátorský přehled:</span>
+      <span style="color: #78350f;">Zobrazují se pouze projekty, kde jste administrátorem ({{ total_projects }} {% if total_projects == 1 %}projekt{% elif total_projects < 5 %}projekty{% else %}projektů{% endif %}).</span>
+    </div>
+  </div>
+
+  {% if projects_with_stats %}
+  <!-- Projects with activity logs -->
+  <div class="content-card">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">
+      📋 Vaše projekty s logy aktivit
+    </h2>
+
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Projekt</th>
+            <th class="hidden md:table-cell">Organizace</th>
+            <th>Úkoly</th>
+            <th class="hidden md:table-cell">Dokumenty</th>
+            <th>Chyby</th>
+            <th class="hidden lg:table-cell">Poslední aktivita</th>
+            <th class="text-right">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in projects_with_stats %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_project' item.project.project_id %}" class="font-semibold text-blue-600 hover:underline">
+                {{ item.project.name }}
+              </a>
+              <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                {{ item.total_activities }} aktivit celkem
+              </div>
+            </td>
+            <td class="hidden md:table-cell">
+              {% if item.project.organization %}
+                <span style="padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                  🏛️ {{ item.project.organization.name }}
+                </span>
+              {% else %}
+                <span style="padding: 4px 8px; background: #f3e8ff; color: #6b21a8; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                  👤 Osobní
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <span style="font-weight: 600; color: {% if item.completed_task_count == item.task_count and item.task_count > 0 %}#16a34a{% else %}#1e293b{% endif %};">
+                  {{ item.completed_task_count }}/{{ item.task_count }}
+                </span>
+                {% if item.task_count > 0 %}
+                  <div style="width: 40px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                    <div style="width: {% widthratio item.completed_task_count item.task_count 100 %}%; height: 100%; background: #22c55e;"></div>
+                  </div>
+                {% endif %}
+              </div>
+            </td>
+            <td class="hidden md:table-cell">
+              <span style="color: #64748b;">{{ item.doc_count }}</span>
+            </td>
+            <td>
+              {% if item.open_error_count > 0 %}
+                <span style="padding: 2px 8px; background: #fee2e2; color: #991b1b; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                  {{ item.open_error_count }} otevřených
+                </span>
+              {% else %}
+                <span style="color: #64748b;">{{ item.error_count }}</span>
+              {% endif %}
+            </td>
+            <td class="hidden lg:table-cell">
+              {% if item.last_activity %}
+                <div style="font-size: 0.875rem;">
+                  <div style="font-weight: 500;">{{ item.last_activity|date:"d.m.Y" }}</div>
+                  <div style="color: #64748b; font-size: 0.75rem;">{{ item.last_activity|timesince }}</div>
+                </div>
+              {% else %}
+                <span style="color: #9ca3af; font-size: 0.75rem;">—</span>
+              {% endif %}
+            </td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'project_log' item.project.project_id %}">📊 Log</a>
+                <a href="{% url 'detail_project' item.project.project_id %}">👁️ Detail</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Empty state -->
+  <div class="content-card">
+    <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📊</span>
+      <p style="color: #64748b; font-size: 1rem; margin-bottom: 1rem;">
+        Nejste administrátorem žádného projektu.
+      </p>
+      <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem;">
+        Pro zobrazení logu aktivit musíte být administrátorem alespoň jednoho projektu.
+      </p>
+      <a href="{% url 'index_project_cs' %}" class="btn btn-primary">
+        📁 Přejít na projekty
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Tips -->
+  <div class="content-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 2rem;">💡</div>
+      <div>
+        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">O logu aktivit</h4>
+        <ul style="font-size: 0.875rem; color: #475569; line-height: 1.6; list-style: disc; padding-left: 1.5rem;">
+          <li>Log aktivit zobrazuje všechny změny v projektu: úkoly, dokumenty, chyby a komentáře</li>
+          <li>Jako administrátor vidíte i smazané položky pro úplnou historii</li>
+          <li>Klikněte na "📊 Log" pro zobrazení detailního logu konkrétního projektu</li>
+          <li>Aktivita je seřazena od nejnovější po nejstarší</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

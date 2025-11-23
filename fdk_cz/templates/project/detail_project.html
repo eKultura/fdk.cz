@@ -54,24 +54,6 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
   </div>
   {% endif %}
 
-  <!-- Quick actions for administrators -->
-  {% if user.is_authenticated %}
-    {% for member in members %}
-      {% if member.user.id == user.id and member.role.role_name == 'Administrator' %}
-  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #fef3c7, #fde68a); border: 2px solid #fbbf24; border-radius: 8px; padding: 1rem;">
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-      <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="font-size: 1.25rem;">🔑</span>
-        <span style="color: #92400e; font-weight: 600;">Administrátorské funkce:</span>
-      </div>
-      <a href="{% url 'project_log' project.project_id %}" class="btn btn-primary" style="background: #f59e0b; border-color: #f59e0b;">
-        📊 Zobrazit log aktivit
-      </a>
-    </div>
-  </div>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
 
   <!-- Sekce: Úkoly -->
   <div class="content-card">

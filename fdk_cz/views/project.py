@@ -903,3 +903,71 @@ def project_log(request, project_id):
         'is_paginated': paginator.num_pages > 1
     })
 
+
+@login_required
+def all_project_logs(request):
+    """
+    View all project activity logs - shows projects where user is administrator
+    with activity summaries and links to detailed logs.
+    """
+    # Get all projects where user is an administrator
+    admin_project_users = ProjectUser.objects.filter(
+        user=request.user,
+        role__role_name='Administrator'
+    ).select_related('project', 'project__organization')
+
+    projects_with_stats = []
+
+    for pu in admin_project_users:
+        project = pu.project
+
+        # Calculate statistics for each project
+        task_count = ProjectTask.objects.filter(project=project).count()
+        completed_task_count = ProjectTask.objects.filter(project=project, status='Hotovo').count()
+        doc_count = ProjectDocument.objects.filter(project=project).count()
+        error_count = TestError.objects.filter(project=project, deleted=False).count()
+        open_error_count = TestError.objects.filter(project=project, deleted=False, status='open').count()
+        comment_count = ProjectComment.objects.filter(project=project).count()
+
+        # Get last activity date
+        last_activity = None
+
+        # Check tasks
+        last_task = ProjectTask.objects.filter(project=project).order_by('-created').first()
+        if last_task and last_task.created:
+            last_activity = last_task.created
+
+        # Check documents
+        last_doc = ProjectDocument.objects.filter(project=project).order_by('-uploaded_at').first()
+        if last_doc and last_doc.uploaded_at:
+            if not last_activity or last_doc.uploaded_at > last_activity:
+                last_activity = last_doc.uploaded_at
+
+        # Check errors
+        last_error = TestError.objects.filter(project=project).order_by('-date_created').first()
+        if last_error and last_error.date_created:
+            if not last_activity or last_error.date_created > last_activity:
+                last_activity = last_error.date_created
+
+        projects_with_stats.append({
+            'project': project,
+            'task_count': task_count,
+            'completed_task_count': completed_task_count,
+            'doc_count': doc_count,
+            'error_count': error_count,
+            'open_error_count': open_error_count,
+            'comment_count': comment_count,
+            'last_activity': last_activity,
+            'total_activities': task_count + doc_count + error_count + comment_count
+        })
+
+    # Sort by last activity (most recent first)
+    projects_with_stats.sort(
+        key=lambda x: x['last_activity'] if x['last_activity'] else timezone.now() - timezone.timedelta(days=365*10),
+        reverse=True
+    )
+
+    return render(request, 'project/all_project_logs.html', {
+        'projects_with_stats': projects_with_stats,
+        'total_projects': len(projects_with_stats)
+    })
