@@ -58,7 +58,7 @@
                     {{ contact.first_name|default:""|first }}{{ contact.last_name|default:""|first }}
                   </div>
                   <a href="{% url 'detail_contact' contact.contact_id %}" class="font-semibold text-blue-600 hover:underline">
-                    {{ contact.first_name }} {{ contact.last_name }}
+                    {{ contact.first_name }} {{ contact.last_name|default:"" }}
                   </a>
                 </div>
               </td>
