@@ -25,7 +25,7 @@ MENU_CONFIG = {
         {
             'name': 'Nástroje',
             'icon': '&#128736;',
-            'modules': ['lists', 'warehouse', 'law_ai', 'dms', 'swot']
+            'modules': ['lists', 'warehouse', 'law_ai', 'dms']
         },
     ],
     'modules': {
@@ -38,7 +38,7 @@ MENU_CONFIG = {
                 {'name': 'Seznam projektů', 'url': 'index_project_cs', 'icon': '&#128203;'},
                 {'name': 'Nový projekt', 'url': 'create_project_cs', 'icon': '&#10133;'},
                 {'name': 'SWOT analýzy', 'url': 'list_swot_analyses', 'icon': '&#128202;'},
-                {'name': 'Ganttův diagram', 'url': 'gantt_list', 'icon': '&#128197;'},
+                {'name': 'Ganttův diagram', 'url': 'gantt_chart', 'icon': '&#128197;'},
                 {'name': 'Log aktivit', 'url': 'all_project_logs', 'icon': '&#128196;'},
                 {'name': 'Nápověda', 'url': 'help_projects', 'icon': '&#10067;'},
             ]

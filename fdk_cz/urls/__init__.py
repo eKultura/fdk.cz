@@ -29,7 +29,19 @@ from fdk_cz.views.grants import (
 
 from fdk_cz.views.index import index, dashboard
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
-from fdk_cz.views.project import all_project_logs, create_category, create_document, create_task, create_milestone, detail_category, edit_category, edit_document, edit_milestone, edit_project, edit_task, delete_category, delete_document, delete_milestone, delete_project, delete_task, detail_document, detail_project, detail_task, index_project, join_project, new_project, manage_project_users, project_log, remove_project_user, take_task, task_management, update_task_status
+from fdk_cz.views.project import (
+    all_project_logs, create_category, create_document, create_task, create_milestone,
+    detail_category, edit_category, edit_document, edit_milestone, edit_project, edit_task,
+    delete_category, delete_document, delete_milestone, delete_project, delete_task,
+    detail_document, detail_project, detail_task, index_project, join_project, new_project,
+    manage_project_users, project_log, remove_project_user, take_task, task_management,
+    update_task_status,
+    # SWOT Analysis
+    list_swot_analyses, create_swot_analysis, detail_swot_analysis,
+    edit_swot_analysis, delete_swot_analysis,
+    # Gantt
+    gantt_chart
+)
 
 from fdk_cz.views.test import (
     create_test, create_test_error, create_test_result, create_test_type,
@@ -42,10 +54,6 @@ from fdk_cz.views.test import (
     edit_test_scenario, delete_test_scenario
 )
 
-from fdk_cz.views.swot import (
-    list_swot_analyses, create_swot_analysis, detail_swot_analysis,
-    edit_swot_analysis, delete_swot_analysis
-)
 
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
@@ -198,6 +206,7 @@ urlpatterns = [
     # Project
     path('projekty/', index_project, name='index_project_cs'),
     path('projekty/log-aktivit/', all_project_logs, name='all_project_logs'),
+    path('projekty/gantt/', gantt_chart, name='gantt_chart'),
     path('projekt/novy-projekt', new_project, name='new_project_cs'),
 
     path('project/new-project', new_project, name='new_project_en'),
