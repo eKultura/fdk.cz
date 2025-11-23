@@ -136,10 +136,12 @@
         {% for module in visible_modules %}
           {% if module.name == 'project_management' %}
             <a href="{% url 'index_project_cs' %}" class="nav-item"><span class="nav-icon">&#128295;</span> Správa projektů</a>
+            <a href="{% url 'all_project_logs' %}" class="nav-item" style="padding-left: 2.5rem; font-size: 0.8rem;"><span class="nav-icon">&#128202;</span> Log aktivit</a>
           {% elif module.name == 'task_management' %}
             <a href="{% url 'task_management' %}" class="nav-item"><span class="nav-icon">&#10004;</span> Správa úkolů</a>
           {% elif module.name == 'test_management' %}
             <a href="{% url 'list_tests' %}" class="nav-item"><span class="nav-icon">&#129514;</span> Testování</a>
+            <a href="{% url 'list_test_scenarios' %}" class="nav-item" style="padding-left: 2.5rem; font-size: 0.8rem;"><span class="nav-icon">&#128203;</span> Scénáře</a>
           {% elif module.name == 'b2b_management' %}
             <a href="{% url 'b2b_dashboard' %}" class="nav-item"><span class="nav-icon">&#129309;</span> Správa B2B</a>
           {% elif module.name == 'hr_management' %}
