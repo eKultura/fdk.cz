@@ -5,146 +5,76 @@ Centrální sidebar menu pro celý FDK.cz systém
 - Podmenu se zobrazuje pouze pro aktivní modul
 {% endcomment %}
 
-<!-- Home Section -->
+<!-- Hlavní Section -->
 <div class="nav-section">
   <div class="nav-section-title">Hlavní</div>
   <a href="{% url 'index' %}" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
     <span class="nav-icon">&#127968;</span> Domů
   </a>
-  {% if user.is_authenticated and user_organizations %}
-  <!-- Organization Switcher -->
-  <div class="nav-item-expandable">
-    <div class="nav-item" onclick="toggleOrgSwitcher()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-      <span><span class="nav-icon">&#127970;</span> Organizace</span>
-      <span id="orgExpandIcon" style="font-size: 0.75rem; transition: transform 0.2s;">&#9660;</span>
-    </div>
-    <div id="orgSwitcherPanel" style="display: none; padding: 0.5rem 0.5rem 0.5rem 2rem; background: #f8fafc; border-radius: 0 0 8px 8px;">
-      <!-- Current context -->
-      <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Aktuální:</div>
-      <div style="background: {% if current_organization %}#dbeafe{% else %}#fef3c7{% endif %}; border-radius: 6px; padding: 0.5rem; margin-bottom: 0.75rem; font-weight: 600; font-size: 0.875rem; color: #1e293b;">
-        {% if current_organization %}
-          &#127970; {{ current_organization.name }}
-        {% else %}
-          &#128100; Osobní
-        {% endif %}
-      </div>
-      <!-- Switcher options -->
-      <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Přepnout na:</div>
-      {% if not is_personal_context %}
-      <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.4rem 0.5rem; background: white; border-radius: 4px; margin-bottom: 0.25rem; color: #475569; text-decoration: none; font-size: 0.8rem; border: 1px solid #e2e8f0;">
-        &#128100; Osobní
-      </a>
-      {% endif %}
-      {% for org in user_organizations %}
-        {% if org != current_organization %}
-        <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.4rem 0.5rem; background: white; border-radius: 4px; margin-bottom: 0.25rem; color: #475569; text-decoration: none; font-size: 0.8rem; border: 1px solid #e2e8f0;">
-          &#127970; {{ org.name }}
-        </a>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
+  {% if user.is_authenticated %}
+  <a href="{% url 'organization_dashboard' %}" class="nav-item">
+    <span class="nav-icon">&#127970;</span> Moje organizace
+  </a>
   {% endif %}
 </div>
 
 {% if user.is_authenticated %}
 
 {% comment %} KATEGORIE: Management {% endcomment %}
-{% with has_management_modules=False %}
-{% for module in visible_modules %}
-  {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'test_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
-    {% if forloop.first or not has_management_modules %}
-      <div class="nav-section">
-        <div class="nav-section-title">Management</div>
+{% with management_modules="project_management,task_management,test_management,b2b_management,hr_management,risk_management,it_management,asset_management" %}
+{% regroup visible_modules by name as grouped_modules %}
+
+<div class="nav-section">
+  <div class="nav-section-title">Management</div>
+  {% for module in visible_modules %}
+    {% if module.name == 'project_management' %}
+      {% include 'inc/menus/project_menu.html' %}
+    {% elif module.name == 'task_management' %}
+      {% include 'inc/menus/task_menu.html' %}
+    {% elif module.name == 'test_management' %}
+      {% include 'inc/menus/test_menu.html' %}
+    {% elif module.name == 'b2b_management' %}
+      {% include 'inc/menus/b2b_menu.html' %}
+    {% elif module.name == 'hr_management' %}
+      {% include 'inc/menus/hr_menu.html' %}
+    {% elif module.name == 'risk_management' %}
+      {% include 'inc/menus/risk_menu.html' %}
+    {% elif module.name == 'it_management' %}
+      {% include 'inc/menus/it_menu.html' %}
+    {% elif module.name == 'asset_management' %}
+      {% include 'inc/menus/asset_menu.html' %}
     {% endif %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'project_management' %}
-    {% include 'inc/menus/project_menu.html' %}
-  {% elif module.name == 'task_management' %}
-    {% include 'inc/menus/task_menu.html' %}
-  {% elif module.name == 'test_management' %}
-    {% include 'inc/menus/test_menu.html' %}
-  {% elif module.name == 'b2b_management' %}
-    {% include 'inc/menus/b2b_menu.html' %}
-  {% elif module.name == 'hr_management' %}
-    {% include 'inc/menus/hr_menu.html' %}
-  {% elif module.name == 'risk_management' %}
-    {% include 'inc/menus/risk_menu.html' %}
-  {% elif module.name == 'it_management' %}
-    {% include 'inc/menus/it_menu.html' %}
-  {% elif module.name == 'asset_management' %}
-    {% include 'inc/menus/asset_menu.html' %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'project_management' or module.name == 'task_management' or module.name == 'test_management' or module.name == 'b2b_management' or module.name == 'hr_management' or module.name == 'risk_management' or module.name == 'it_management' or module.name == 'asset_management' %}
-    {% if forloop.last %}</div>{% endif %}
-  {% endif %}
-{% endfor %}
+  {% endfor %}
+</div>
 {% endwith %}
 
-<!-- Organizace Section -->
+{% comment %} KATEGORIE: Finance {% endcomment %}
 <div class="nav-section">
-  <div class="nav-section-title">Organizace</div>
-  <a href="{% url 'organization_dashboard' %}" class="nav-item"><span class="nav-icon">&#127970;</span> Moje organizace</a>
+  <div class="nav-section-title">Finance</div>
+  {% for module in visible_modules %}
+    {% if module.name == 'accounting' %}
+      {% include 'inc/menus/accounting_menu.html' %}
+    {% elif module.name == 'grants' %}
+      {% include 'inc/menus/grants_menu.html' %}
+    {% endif %}
+  {% endfor %}
 </div>
 
-{% comment %} KATEGORIE: Finance {% endcomment %}
-{% for module in visible_modules %}
-  {% if module.name == 'accounting' or module.name == 'grants' %}
-    {% if forloop.counter == 1 %}
-      <div class="nav-section">
-        <div class="nav-section-title">Finance</div>
-    {% endif %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'accounting' %}
-    {% include 'inc/menus/accounting_menu.html' %}
-  {% elif module.name == 'grants' %}
-    {% include 'inc/menus/grants_menu.html' %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'accounting' or module.name == 'grants' %}
-    {% if forloop.last %}</div>{% endif %}
-  {% endif %}
-{% endfor %}
-
 {% comment %} KATEGORIE: Business {% endcomment %}
-{% for module in visible_modules %}
-  {% if module.name == 'contacts' or module.name == 'contracts' %}
-    {% if forloop.counter == 1 %}
-      <div class="nav-section">
-        <div class="nav-section-title">Business</div>
+<div class="nav-section">
+  <div class="nav-section-title">Business</div>
+  {% for module in visible_modules %}
+    {% if module.name == 'contacts' %}
+      {% include 'inc/menus/contacts_menu.html' %}
+    {% elif module.name == 'contracts' %}
+      {% include 'inc/menus/contracts_menu.html' %}
     {% endif %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'contacts' %}
-    {% include 'inc/menus/contacts_menu.html' %}
-  {% elif module.name == 'contracts' %}
-    {% include 'inc/menus/contracts_menu.html' %}
-  {% endif %}
-{% endfor %}
-
-{% for module in visible_modules %}
-  {% if module.name == 'contacts' or module.name == 'contracts' %}
-    {% if forloop.last %}</div>{% endif %}
-  {% endif %}
-{% endfor %}
+  {% endfor %}
+</div>
 
 {% comment %} KATEGORIE: Nástroje {% endcomment %}
 <div class="nav-section">
   <div class="nav-section-title">Nástroje</div>
-
   {% for module in visible_modules %}
     {% if module.name == 'lists' %}
       {% include 'inc/menus/lists_menu.html' %}
@@ -154,7 +84,6 @@ Centrální sidebar menu pro celý FDK.cz systém
       {% include 'inc/menus/law_menu.html' %}
     {% endif %}
   {% endfor %}
-
   <!-- DMS je vždy viditelné -->
   {% include 'inc/menus/dms_menu.html' %}
 </div>
