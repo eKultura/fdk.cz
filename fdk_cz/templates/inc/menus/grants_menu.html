@@ -1,0 +1,19 @@
+{% comment %}Podmenu pro modul Granty{% endcomment %}
+<div class="nav-module {% if active_module == 'grants' %}nav-module-active{% endif %}">
+  <a href="{% url 'grant_list' %}" class="nav-item nav-module-header {% if active_module == 'grants' %}active{% endif %}">
+    <span class="nav-icon">&#128176;</span> Granty &amp; Dotace
+  </a>
+  {% if active_module == 'grants' %}
+  <div class="nav-submenu">
+    <a href="{% url 'grant_list' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Seznam grantů
+    </a>
+    <a href="{% url 'grant_create' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#10133;</span> Nový grant
+    </a>
+    <a href="{% url 'article_help_index' %}#granty" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

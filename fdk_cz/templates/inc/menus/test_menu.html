@@ -1,0 +1,22 @@
+{% comment %}Podmenu pro modul Testování{% endcomment %}
+<div class="nav-module {% if active_module == 'test_management' %}nav-module-active{% endif %}">
+  <a href="{% url 'list_tests' %}" class="nav-item nav-module-header {% if active_module == 'test_management' %}active{% endif %}">
+    <span class="nav-icon">&#129514;</span> Testování
+  </a>
+  {% if active_module == 'test_management' %}
+  <div class="nav-submenu">
+    <a href="{% url 'list_tests' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#129514;</span> Testy
+    </a>
+    <a href="{% url 'list_test_types' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Typy testů
+    </a>
+    <a href="{% url 'list_test_scenarios' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Scénáře
+    </a>
+    <a href="{% url 'article_help_index' %}#testovani" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

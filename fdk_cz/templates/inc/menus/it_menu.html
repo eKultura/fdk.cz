@@ -1,0 +1,19 @@
+{% comment %}Podmenu pro modul IT Management{% endcomment %}
+<div class="nav-module {% if active_module == 'it_management' %}nav-module-active{% endif %}">
+  <a href="{% url 'it_dashboard' %}" class="nav-item nav-module-header {% if active_module == 'it_management' %}active{% endif %}">
+    <span class="nav-icon">&#128187;</span> Správa IT
+  </a>
+  {% if active_module == 'it_management' %}
+  <div class="nav-submenu">
+    <a href="{% url 'it_dashboard' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128200;</span> Dashboard
+    </a>
+    <a href="{% url 'list_incidents' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128680;</span> Incidenty
+    </a>
+    <a href="{% url 'article_help_index' %}#it" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

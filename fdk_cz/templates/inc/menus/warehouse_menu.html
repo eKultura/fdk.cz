@@ -1,0 +1,16 @@
+{% comment %}Podmenu pro modul Sklad{% endcomment %}
+<div class="nav-module {% if active_module == 'warehouse' %}nav-module-active{% endif %}">
+  <a href="{% url 'all_stores' %}" class="nav-item nav-module-header {% if active_module == 'warehouse' %}active{% endif %}">
+    <span class="nav-icon">&#128230;</span> Sklad
+  </a>
+  {% if active_module == 'warehouse' %}
+  <div class="nav-submenu">
+    <a href="{% url 'all_stores' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128230;</span> Sklady
+    </a>
+    <a href="{% url 'article_help_index' %}#sklad" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

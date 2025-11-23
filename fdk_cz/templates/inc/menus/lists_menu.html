@@ -1,0 +1,19 @@
+{% comment %}Podmenu pro modul Seznamy{% endcomment %}
+<div class="nav-module {% if active_module == 'lists' %}nav-module-active{% endif %}">
+  <a href="{% url 'index_list' %}" class="nav-item nav-module-header {% if active_module == 'lists' %}active{% endif %}">
+    <span class="nav-icon">&#128221;</span> Seznamy
+  </a>
+  {% if active_module == 'lists' %}
+  <div class="nav-submenu">
+    <a href="{% url 'index_list' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Moje seznamy
+    </a>
+    <a href="{% url 'create_list' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#10133;</span> Nový seznam
+    </a>
+    <a href="{% url 'article_help_index' %}#seznamy" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>

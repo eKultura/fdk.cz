@@ -1,0 +1,25 @@
+{% comment %}Podmenu pro modul Správa projektů{% endcomment %}
+<div class="nav-module {% if active_module == 'project_management' %}nav-module-active{% endif %}">
+  <a href="{% url 'index_project_cs' %}" class="nav-item nav-module-header {% if active_module == 'project_management' %}active{% endif %}">
+    <span class="nav-icon">&#128295;</span> Správa projektů
+  </a>
+  {% if active_module == 'project_management' %}
+  <div class="nav-submenu">
+    <a href="{% url 'index_project_cs' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128203;</span> Seznam projektů
+    </a>
+    <a href="{% url 'create_project_cs' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#10133;</span> Nový projekt
+    </a>
+    <a href="{% url 'list_swot_analyses' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128202;</span> SWOT analýzy
+    </a>
+    <a href="{% url 'all_project_logs' %}" class="nav-submenu-item">
+      <span class="nav-icon">&#128196;</span> Log aktivit
+    </a>
+    <a href="{% url 'article_help_index' %}#projekty" class="nav-submenu-item nav-submenu-help">
+      <span class="nav-icon">&#10067;</span> Nápověda
+    </a>
+  </div>
+  {% endif %}
+</div>
