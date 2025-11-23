@@ -42,6 +42,11 @@ from fdk_cz.views.test import (
     edit_test_scenario, delete_test_scenario
 )
 
+from fdk_cz.views.swot import (
+    list_swot_analyses, create_swot_analysis, detail_swot_analysis,
+    edit_swot_analysis, delete_swot_analysis
+)
+
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
 from fdk_cz.views.organization import organization_dashboard, create_organization, organization_detail, add_member, remove_member, set_current_organization
@@ -333,6 +338,13 @@ urlpatterns = [
     path('testy/scenare/<int:scenario_id>/', detail_test_scenario, name='detail_test_scenario'),
     path('testy/scenare/<int:scenario_id>/upravit/', edit_test_scenario, name='edit_test_scenario'),
     path('testy/scenare/<int:scenario_id>/smazat/', delete_test_scenario, name='delete_test_scenario'),
+
+    # SWOT Analysis
+    path('swot/', list_swot_analyses, name='list_swot_analyses'),
+    path('swot/nova/', create_swot_analysis, name='create_swot_analysis'),
+    path('swot/<int:swot_id>/', detail_swot_analysis, name='detail_swot_analysis'),
+    path('swot/<int:swot_id>/upravit/', edit_swot_analysis, name='edit_swot_analysis'),
+    path('swot/<int:swot_id>/smazat/', delete_swot_analysis, name='delete_swot_analysis'),
 
     # Invoice management
     path('ucetnictvi/', accounting_dashboard, name='accounting_dashboard'),

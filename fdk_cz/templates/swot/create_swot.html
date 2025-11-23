@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Nová SWOT analýza | FDK.cz{% endblock %}
+{% block header_title %}📊 Nová SWOT analýza{% endblock %}
+{% block header_subtitle %}Vytvořte strategickou analýzu{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'list_swot_analyses' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+      SWOT analýzy
+    </a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Nová analýza</span>
+  </div>
+</div>
+
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="content-card">
+    <form method="post">
+      {% csrf_token %}
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Název SWOT analýzy <span style="color: #ef4444;">*</span>
+        </label>
+        <input type="text" name="title" required
+               style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;"
+               placeholder="např. Strategická analýza Q1 2025">
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Popis (volitelný)
+        </label>
+        <textarea name="description" rows="3"
+                  style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;"
+                  placeholder="Stručný popis účelu této SWOT analýzy..."></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+          Kontext
+        </label>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px;">
+            <input type="radio" name="context_type" value="personal" checked onchange="toggleContextFields()">
+            <span>👤 Osobní</span>
+          </label>
+
+          {% if organizations %}
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px;">
+            <input type="radio" name="context_type" value="organization" onchange="toggleContextFields()">
+            <span>🏛️ Organizace</span>
+          </label>
+          <div id="organization_field" style="display: none; margin-left: 1.5rem;">
+            <select name="organization_id" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+              {% for org in organizations %}
+                <option value="{{ org.organization_id }}">{{ org.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
+          {% if projects %}
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px;">
+            <input type="radio" name="context_type" value="project" onchange="toggleContextFields()">
+            <span>📁 Projekt</span>
+          </label>
+          <div id="project_field" style="display: none; margin-left: 1.5rem;">
+            <select name="project_id" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+              {% for project in projects %}
+                <option value="{{ project.project_id }}">{{ project.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+        <a href="{% url 'list_swot_analyses' %}" class="btn btn-outline">Zrušit</a>
+        <button type="submit" class="btn btn-primary">Vytvořit a přidat položky</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleContextFields() {
+  const contextType = document.querySelector('input[name="context_type"]:checked').value;
+  const orgField = document.getElementById('organization_field');
+  const projectField = document.getElementById('project_field');
+
+  if (orgField) orgField.style.display = contextType === 'organization' ? 'block' : 'none';
+  if (projectField) projectField.style.display = contextType === 'project' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

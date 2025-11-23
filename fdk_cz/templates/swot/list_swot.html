@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}SWOT analýzy | FDK.cz{% endblock %}
+{% block header_title %}📊 SWOT analýzy{% endblock %}
+{% block header_subtitle %}Strategické analýzy silných a slabých stránek{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">SWOT analýzy</span>
+  </div>
+</div>
+
+<div style="max-width: 1400px; margin: 0 auto;">
+  <!-- Actions and Filters -->
+  <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'create_swot_analysis' %}" class="btn btn-primary">➕ Nová SWOT analýza</a>
+    </div>
+
+    <!-- Filters -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <a href="{% url 'list_swot_analyses' %}" class="btn {% if not context_filter %}btn-primary{% else %}btn-outline{% endif %}" style="font-size: 0.875rem;">
+        Všechny
+      </a>
+      <a href="{% url 'list_swot_analyses' %}?context=organization" class="btn {% if context_filter == 'organization' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size: 0.875rem;">
+        🏛️ Organizační
+      </a>
+      <a href="{% url 'list_swot_analyses' %}?context=project" class="btn {% if context_filter == 'project' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size: 0.875rem;">
+        📁 Projektové
+      </a>
+      <a href="{% url 'list_swot_analyses' %}?context=personal" class="btn {% if context_filter == 'personal' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size: 0.875rem;">
+        👤 Osobní
+      </a>
+    </div>
+  </div>
+
+  <!-- SWOT List -->
+  <div class="content-card">
+    {% if swot_analyses %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th>Kontext</th>
+              <th class="hidden md:table-cell">Položky</th>
+              <th class="hidden md:table-cell">Aktualizováno</th>
+              <th class="text-right">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for swot in swot_analyses %}
+              <tr>
+                <td>
+                  <a href="{% url 'detail_swot_analysis' swot.swot_id %}" class="font-semibold text-blue-600 hover:underline">
+                    {{ swot.title }}
+                  </a>
+                  {% if swot.description %}
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                      {{ swot.description|truncatewords:10 }}
+                    </div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if swot.organization %}
+                    <span style="padding: 4px 8px; background: #dbeafe; color: #1e40af; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      🏛️ {{ swot.organization.name }}
+                    </span>
+                  {% elif swot.project %}
+                    <span style="padding: 4px 8px; background: #d1fae5; color: #065f46; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      📁 {{ swot.project.name }}
+                    </span>
+                  {% elif swot.owner %}
+                    <span style="padding: 4px 8px; background: #f3e8ff; color: #6b21a8; border-radius: 8px; font-size: 0.75rem; font-weight: 600;">
+                      👤 Osobní
+                    </span>
+                  {% endif %}
+                </td>
+                <td class="hidden md:table-cell">
+                  <div style="display: flex; gap: 0.5rem; font-size: 0.75rem;">
+                    <span style="padding: 2px 6px; background: #d1fae5; color: #065f46; border-radius: 4px;">S: {{ swot.strengths|length }}</span>
+                    <span style="padding: 2px 6px; background: #fee2e2; color: #991b1b; border-radius: 4px;">W: {{ swot.weaknesses|length }}</span>
+                    <span style="padding: 2px 6px; background: #dbeafe; color: #1e40af; border-radius: 4px;">O: {{ swot.opportunities|length }}</span>
+                    <span style="padding: 2px 6px; background: #fef3c7; color: #92400e; border-radius: 4px;">T: {{ swot.threats|length }}</span>
+                  </div>
+                </td>
+                <td class="hidden md:table-cell" style="color: #64748b; font-size: 0.875rem;">
+                  {{ swot.updated_at|date:"d.m.Y H:i" }}
+                </td>
+                <td class="text-right">
+                  <div class="data-table-actions">
+                    <a href="{% url 'detail_swot_analysis' swot.swot_id %}">👁️ Detail</a>
+                    <a href="{% url 'edit_swot_analysis' swot.swot_id %}">✏️ Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">📊</div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+          {% if context_filter %}
+            Žádné SWOT analýzy v tomto kontextu
+          {% else %}
+            Zatím nemáte žádné SWOT analýzy
+          {% endif %}
+        </p>
+        <a href="{% url 'create_swot_analysis' %}" class="btn btn-primary">➕ Vytvořit první SWOT analýzu</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Info Card -->
+  <div class="content-card" style="margin-top: 1.5rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 2rem;">💡</div>
+      <div>
+        <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">O SWOT analýze</h4>
+        <ul style="font-size: 0.875rem; color: #475569; line-height: 1.6; list-style: disc; padding-left: 1.5rem;">
+          <li><strong>S</strong>trengths (Silné stránky) - vnitřní pozitivní faktory</li>
+          <li><strong>W</strong>eaknesses (Slabé stránky) - vnitřní negativní faktory</li>
+          <li><strong>O</strong>pportunities (Příležitosti) - vnější pozitivní faktory</li>
+          <li><strong>T</strong>hreats (Hrozby) - vnější negativní faktory</li>
+          <li>Váha 1-10 určuje důležitost položky (vizuální umístění)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

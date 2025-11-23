@@ -2082,3 +2082,85 @@ class HelpArticle(models.Model):
 
     def get_absolute_url(self):
         return f"/napoveda/{self.slug}/"
+
+
+class SwotAnalysis(models.Model):
+    """
+    SWOT analýza - může existovat na úrovni organizace, projektu nebo uživatele.
+    Každý položka má váhu 1-10 pro vizuální umístění v kvadrantu.
+    """
+    swot_id = models.AutoField(primary_key=True, db_column='swot_id')
+    title = models.CharField(max_length=255, db_column='title')
+    description = models.TextField(null=True, blank=True, db_column='description')
+
+    # Triple context (organization/project/personal)
+    organization = models.ForeignKey(
+        'Organization',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='swot_analyses',
+        db_column='organization_id'
+    )
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='swot_analyses',
+        db_column='project_id'
+    )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='personal_swot_analyses',
+        db_column='owner_id'
+    )
+
+    # SWOT quadrants - each is a list of {"text": "...", "weight": 1-10}
+    strengths = models.JSONField(
+        default=list,
+        db_column='strengths',
+        help_text='Silné stránky - [{"text": "...", "weight": 1-10}, ...]'
+    )
+    weaknesses = models.JSONField(
+        default=list,
+        db_column='weaknesses',
+        help_text='Slabé stránky - [{"text": "...", "weight": 1-10}, ...]'
+    )
+    opportunities = models.JSONField(
+        default=list,
+        db_column='opportunities',
+        help_text='Příležitosti - [{"text": "...", "weight": 1-10}, ...]'
+    )
+    threats = models.JSONField(
+        default=list,
+        db_column='threats',
+        help_text='Hrozby - [{"text": "...", "weight": 1-10}, ...]'
+    )
+
+    # Audit fields
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_swot_analyses',
+        db_column='created_by_id'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_swot_analysis'
+        ordering = ['-updated_at']
+        verbose_name = 'SWOT analýza'
+        verbose_name_plural = 'SWOT analýzy'
+
+    def __str__(self):
+        return self.title
+
+    def get_total_items(self):
+        return len(self.strengths) + len(self.weaknesses) + len(self.opportunities) + len(self.threats)
