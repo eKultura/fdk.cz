@@ -4,7 +4,8 @@
 from django.urls import path
 from django.shortcuts import redirect
 
-from fdk_cz.views.accounting import *
+# Import views from subdomain-aware module
+from fdk_cz.views.ucetnictvi_fdk_cz import *
 from fdk_cz.views.user import login as main_login, registration as main_registration, logout as main_logout
 
 

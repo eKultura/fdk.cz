@@ -20,6 +20,14 @@ from fdk_cz.models import (
     AccountingContext, AccountingAccount, JournalEntry, JournalEntryLine, BalanceSheet
 )
 
+# Import views that don't need subdomain customization
+from fdk_cz.views.accounting import (
+    create_invoice, free_invoice, detail_invoice, edit_invoice, delete_invoice,
+    set_accounting_context, create_journal_entry, account_detail,
+    edit_journal_entry, delete_journal_entry, edit_account, delete_account,
+    import_standard_chart, download_invoice_pdf
+)
+
 
 # -------------------------------------------------------------------
 #                    HELPER FUNCTIONS
