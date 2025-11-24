@@ -2022,117 +2022,13 @@ select.form-control {
 
 
 /* =========================================================
- * CONTEXT BAR - OSOBNÍ/ORGANIZACE SWITCHER
+ * CLEAN BREADCRUMBS - Simple text navigation
  * ========================================================= */
-.context-bar {
-  background: linear-gradient(to right, #eff6ff, #eef2ff);
-  border-bottom: 2px solid #bfdbfe;
-  padding: 0.75rem 2rem;
-  position: sticky;
-  top: 70px;
-  z-index: 900;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.context-bar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  justify-content: space-between;
-}
-
-.context-switcher {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-right: 2rem;
-  border-right: 2px solid #cbd5e1;
-}
-
-.context-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  white-space: nowrap;
-}
-
-.context-badge-personal {
-  background: #10b981;
-  color: white;
-}
-
-.context-badge-org {
-  background: #3b82f6;
-  color: white;
-}
-
-.context-icon {
-  font-size: 1rem;
-}
-
-.context-name {
-  font-weight: 600;
-}
-
-.context-switch-btn {
-  padding: 6px 14px;
-  background: white;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #64748b;
-  text-decoration: none;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.context-switch-btn:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #1e293b;
-  text-decoration: none;
-}
-
-.context-select {
-  padding: 6px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  background: white;
-  color: #1e293b;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.context-select:hover {
-  border-color: #94a3b8;
-  background: #f8fafc;
-}
-
-.context-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.context-breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  flex-wrap: wrap;
-}
-
 .breadcrumb-link {
   color: #64748b;
   text-decoration: none;
   transition: color 0.2s;
+  font-size: 0.875rem;
 }
 
 .breadcrumb-link:hover {
@@ -2143,6 +2039,25 @@ select.form-control {
 .breadcrumb-sep {
   color: #9ca3af;
   user-select: none;
+  margin: 0 0.25rem;
+}
+
+/* =========================================================
+ * USER MENU - Organization switcher
+ * ========================================================= */
+.dropdown-label {
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dropdown-item.active {
+  background: #eff6ff;
+  color: #3b82f6;
+  font-weight: 500;
 }
 
 /* =========================================================
