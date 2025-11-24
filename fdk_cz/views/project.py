@@ -154,11 +154,11 @@ def detail_project(request, project_id):
     # Přidání vysokoprioritních úkolů do Gantt diagramu
     high_priority_tasks = proj.tasks.filter(priority='Vysoká').exclude(status='Hotovo')
     for task in high_priority_tasks:
-        if task.deadline:
+        if task.due_date:  # Fix: Use 'due_date' instead of 'deadline'
             gantt_items.append({
                 'type': 'task',
                 'title': task.title,
-                'date': task.deadline,
+                'date': task.due_date,  # Fix: Use 'due_date' instead of 'deadline'
                 'status': task.status,
             })
 
@@ -1297,13 +1297,18 @@ def _has_swot_access(user, swot):
 @login_required
 def gantt_chart(request):
     """Display Gantt chart for user's projects and tasks."""
+    from datetime import date
+
     # Get projects user has access to
     user_project_ids = ProjectUser.objects.filter(
         user=request.user
     ).values_list('project_id', flat=True)
 
+    # Filter out closed projects (end_date < today)
     projects = Project.objects.filter(
         project_id__in=user_project_ids
+    ).filter(
+        Q(end_date__isnull=True) | Q(end_date__gte=date.today())  # Only active projects
     ).prefetch_related('tasks', 'milestones').order_by('name')
 
     # Filter by project if specified

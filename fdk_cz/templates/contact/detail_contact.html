@@ -8,7 +8,7 @@
 {% block context_breadcrumbs %}
 <span class="breadcrumb-link">Osobní</span>
 <span class="breadcrumb-sep">→</span>
-<a href="{% url 'list_contacts' %}" class="breadcrumb-link">Kontakty</a>
+<a href="{% url 'my_contacts' %}" class="breadcrumb-link">Kontakty</a>
 <span class="breadcrumb-sep">→</span>
 <span style="font-weight: 600; color: #1e293b;">{{ contact.first_name }} {{ contact.last_name|default:"" }}</span>
 {% endblock %}
