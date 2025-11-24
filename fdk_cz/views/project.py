@@ -1318,18 +1318,21 @@ def gantt_chart(request):
     gantt_data = []
     for project in projects:
         project_tasks = []
-        tasks = project.tasks.all().order_by('start_date', 'task_name')
+        # Fix: Use correct field names - 'created' and 'title' instead of 'start_date' and 'task_name'
+        tasks = project.tasks.filter(deleted=False).order_by('created', 'title')
 
         for task in tasks:
-            if task.start_date:
+            # Use 'created' as start date and 'due_date' as end date
+            if task.created:
+                start_date = task.created.date() if task.created else None
                 project_tasks.append({
                     'id': task.task_id,
-                    'name': task.task_name,
-                    'start': task.start_date.isoformat() if task.start_date else None,
-                    'end': task.due_date.isoformat() if task.due_date else (task.start_date.isoformat() if task.start_date else None),
+                    'name': task.title,  # Fix: Use 'title' not 'task_name'
+                    'start': start_date.isoformat() if start_date else None,
+                    'end': task.due_date.isoformat() if task.due_date else (start_date.isoformat() if start_date else None),
                     'status': task.status,
                     'priority': task.priority,
-                    'assignee': task.assignee.get_full_name() if task.assignee else None,
+                    'assignee': task.assigned.get_full_name() if task.assigned else None,  # Fix: Use 'assigned' not 'assignee'
                 })
 
         milestones = []
@@ -1337,9 +1340,9 @@ def gantt_chart(request):
             if milestone.due_date:
                 milestones.append({
                     'id': milestone.milestone_id,
-                    'name': milestone.milestone_name,
+                    'name': milestone.title,  # Fix: Use 'title' not 'milestone_name'
                     'date': milestone.due_date.isoformat(),
-                    'completed': milestone.completed,
+                    'completed': milestone.status == 'completed',  # Fix: Check status instead of 'completed' field
                 })
 
         if project_tasks or milestones:

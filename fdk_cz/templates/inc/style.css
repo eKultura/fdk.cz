@@ -2020,3 +2020,225 @@ select.form-control {
 
 
 
+
+/* =========================================================
+ * CONTEXT BAR - OSOBNÍ/ORGANIZACE SWITCHER
+ * ========================================================= */
+.context-bar {
+  background: linear-gradient(to right, #eff6ff, #eef2ff);
+  border-bottom: 2px solid #bfdbfe;
+  padding: 0.75rem 2rem;
+  position: sticky;
+  top: 70px;
+  z-index: 900;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.context-bar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.context-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-right: 2rem;
+  border-right: 2px solid #cbd5e1;
+}
+
+.context-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.context-badge-personal {
+  background: #10b981;
+  color: white;
+}
+
+.context-badge-org {
+  background: #3b82f6;
+  color: white;
+}
+
+.context-icon {
+  font-size: 1rem;
+}
+
+.context-name {
+  font-weight: 600;
+}
+
+.context-switch-btn {
+  padding: 6px 14px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.context-switch-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #1e293b;
+  text-decoration: none;
+}
+
+.context-select {
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.context-select:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.context-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.context-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-link {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #1e293b;
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: #9ca3af;
+  user-select: none;
+}
+
+/* =========================================================
+ * SPACING FIX - Odstranit "špagety z Lidlu"
+ * ========================================================= */
+
+/* Mezera mezi content-card bloky */
+.content-card + .content-card {
+  margin-top: 1.5rem;
+}
+
+/* Space-y utility classes (podobné Tailwind) */
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2rem;
+}
+
+/* Content container s automatic spacing */
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Grid containers */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+/* Responsive grid */
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .lg\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+}
+
+/* Responsive context bar */
+@media (max-width: 768px) {
+  .context-bar {
+    padding: 0.75rem 1rem;
+  }
+  
+  .context-bar-container {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .context-switcher {
+    border-right: none;
+    border-bottom: 1px solid #cbd5e1;
+    padding-right: 0;
+    padding-bottom: 0.75rem;
+    width: 100%;
+  }
+  
+  .context-breadcrumbs {
+    width: 100%;
+  }
+}
