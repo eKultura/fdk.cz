@@ -3,30 +3,21 @@
 {% block header_title %}📊 {{ swot.title }}{% endblock %}
 {% block header_subtitle %}SWOT analýza{% endblock %}
 
+{% block context_breadcrumbs %}
+{% if swot.organization %}
+  <a href="{% url 'organization_detail' swot.organization.organization_id %}" class="breadcrumb-link">{{ swot.organization.name }}</a>
+{% elif swot.project %}
+  <a href="{% url 'detail_project' swot.project.project_id %}" class="breadcrumb-link">{{ swot.project.name }}</a>
+{% else %}
+  <span class="breadcrumb-link">Osobní</span>
+{% endif %}
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'list_swot_analyses' %}" class="breadcrumb-link">SWOT analýzy</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">{{ swot.title }}</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    {% if swot.organization %}
-      <a href="{% url 'organization_detail' swot.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-        {{ swot.organization.name }}
-      </a>
-    {% elif swot.project %}
-      <a href="{% url 'detail_project' swot.project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-        {{ swot.project.name }}
-      </a>
-    {% else %}
-      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
-    {% endif %}
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'list_swot_analyses' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-      SWOT analýzy
-    </a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">{{ swot.title }}</span>
-  </div>
-</div>
 
 <div style="max-width: 1600px; margin: 0 auto;">
   <!-- Actions -->

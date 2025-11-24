@@ -125,8 +125,31 @@ class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_projects', db_column='owner_id')
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, null=True, blank=True, db_column='organization')
 
+    # Rozpočet projektu (budget)
+    budget = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, db_column='budget', help_text="Celkový rozpočet projektu v Kč")
+    budget_currency = models.CharField(max_length=3, default='CZK', db_column='budget_currency')
+
     def __str__(self):
         return self.name
+
+    def get_spent_budget(self):
+        """Vypočítá celkové čerpání rozpočtu z faktur projektu"""
+        from django.db.models import Sum
+        total = self.invoices.aggregate(total=Sum('total_price'))['total']
+        return total or 0
+
+    def get_remaining_budget(self):
+        """Vypočítá zbývající rozpočet"""
+        if self.budget is None:
+            return None
+        return self.budget - self.get_spent_budget()
+
+    def get_budget_utilization_percent(self):
+        """Vrátí procento čerpání rozpočtu"""
+        if self.budget is None or self.budget == 0:
+            return None
+        return (self.get_spent_budget() / self.budget) * 100
+
     class Meta:
         db_table = 'FDK_projects'
 
@@ -536,7 +559,9 @@ class TestScenario(models.Model):
 
 class Invoice(models.Model):
     invoice_id = models.AutoField(primary_key=True, db_column='invoice_id')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='invoices', db_column='company_id')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='invoices', db_column='organization_id', null=True, blank=True)
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, related_name='invoices', db_column='project_id', null=True, blank=True)
     invoice_number = models.CharField(max_length=20, unique=True, db_column='invoice_number')
     issue_date = models.DateField(db_column='issue_date')
     due_date = models.DateField(db_column='due_date')
@@ -545,6 +570,7 @@ class Invoice(models.Model):
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=21, db_column='vat_rate')  # Standardní sazba 21 %
     is_paid = models.BooleanField(default=False, db_column='is_paid')
     created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_invoices', db_column='created_by')
 
     class Meta:
         db_table = 'FDK_invoice'

@@ -97,6 +97,48 @@
         </div>
       </header>
 
+<!-- Context Bar - OSOBNÍ/ORGANIZACE přepínač -->
+{% if user.is_authenticated %}
+<div class="context-bar">
+  <div class="context-bar-container">
+    <!-- Context Switcher -->
+    <div class="context-switcher">
+      {% if current_organization %}
+        <span class="context-badge context-badge-org">
+          <span class="context-icon">🏢</span>
+          <span class="context-name">{{ current_organization.name }}</span>
+        </span>
+        <a href="{% url 'set_personal_context' %}" class="context-switch-btn" title="Přepnout na osobní kontext">
+          <span>→ Osobní</span>
+        </a>
+      {% else %}
+        <span class="context-badge context-badge-personal">
+          <span class="context-icon">👤</span>
+          <span class="context-name">OSOBNÍ</span>
+        </span>
+        {% if user_organizations %}
+        <select class="context-select" onchange="if(this.value) window.location.href=this.value" title="Přepnout na organizaci">
+          <option value="">→ Přepnout na organizaci</option>
+          {% for org in user_organizations %}
+            <option value="{% url 'set_organization_context' org.organization_id %}">{{ org.name }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- Enhanced Breadcrumbs -->
+    <div class="context-breadcrumbs">
+      <a href="{% url 'index' %}" class="breadcrumb-link">🏠 FDK</a>
+      <span class="breadcrumb-sep">→</span>
+      {% block context_breadcrumbs %}
+      <!-- Templates can override this block for specific breadcrumbs -->
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- Obsah stránky -->
 <div class="page-content">
 
