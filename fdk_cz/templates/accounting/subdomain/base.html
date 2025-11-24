@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Účetnictví | eKultura{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+
+        /* CARDS */
+        .card {
+            @apply bg-white rounded-2xl shadow-lg border border-gray-100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+
+        /* GLASS EFFECT */
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* BUTTONS */
+        .btn {
+            @apply px-5 py-2.5 font-semibold rounded-xl transition-all duration-300;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            @apply text-white border-0;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #63397d 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            @apply text-white border-0;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            @apply text-white border-0;
+        }
+
+        .btn-outline {
+            @apply bg-white border-2 border-gray-300 text-gray-700;
+        }
+
+        .btn-outline:hover {
+            @apply bg-gray-50 border-gray-400;
+        }
+
+        /* KPI CARDS */
+        .kpi-card {
+            @apply rounded-2xl p-6 text-white relative overflow-hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .kpi-gradient-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .kpi-gradient-green {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .kpi-gradient-red {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+
+        .kpi-gradient-blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        /* DATA TABLES */
+        .data-table {
+            @apply w-full;
+        }
+
+        .data-table th {
+            @apply px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-600 bg-gray-50;
+        }
+
+        .data-table td {
+            @apply px-6 py-4 text-sm text-gray-800;
+        }
+
+        .data-table tbody tr {
+            @apply border-b border-gray-100;
+        }
+
+        .data-table tbody tr:hover {
+            @apply bg-gradient-to-r from-purple-50 to-blue-50;
+        }
+
+        /* BADGES */
+        .badge {
+            @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+        }
+
+        .badge-success {
+            @apply bg-gradient-to-r from-green-400 to-green-600 text-white;
+        }
+
+        .badge-warning {
+            @apply bg-gradient-to-r from-yellow-400 to-orange-500 text-white;
+        }
+
+        .badge-danger {
+            @apply bg-gradient-to-r from-red-400 to-pink-600 text-white;
+        }
+
+        .badge-info {
+            @apply bg-gradient-to-r from-blue-400 to-cyan-500 text-white;
+        }
+
+        /* NUMBERS */
+        .number-display {
+            font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* GLOW EFFECT */
+        .glow {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        /* FORM CONTROLS */
+        .form-control {
+            @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400;
+            @apply focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none;
+        }
+
+        .form-label {
+            @apply block text-sm font-semibold text-gray-700 mb-2;
+        }
+
+        /* HEADER GRADIENT */
+        .header-gradient {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .kpi-card {
+                @apply p-4;
+            }
+            .btn {
+                @apply px-4 py-2 text-sm;
+            }
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body class="min-h-screen">
+
+<!-- HEADER -->
+<header class="header-gradient sticky top-0 z-50 shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+
+            <!-- LOGO -->
+            <a href="{% url 'accounting_dashboard' %}" class="flex items-center space-x-3 group">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow-lg group-hover:shadow-xl transform group-hover:scale-105">
+                    <span class="text-2xl">💰</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-800">
+                        Účetnictví
+                    </h1>
+                    <p class="text-xs text-gray-500 font-medium">Finanční modul eKultura</p>
+                </div>
+            </a>
+
+            <!-- USER INFO -->
+            {% if user.is_authenticated %}
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-semibold text-gray-800">{{ user.username }}</p>
+                    <p class="text-xs text-gray-500">{{ user.email }}</p>
+                </div>
+                <a href="/odhlaseni/" class="btn btn-outline text-xs">
+                    🚪 Odhlásit
+                </a>
+            </div>
+            {% else %}
+            <a href="/prihlaseni/" class="btn btn-primary">
+                🔐 Přihlásit se
+            </a>
+            {% endif %}
+
+        </div>
+    </div>
+</header>
+
+
+<!-- MAIN CONTENT -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-slide-in">
+
+    <!-- DEMO WARNING -->
+    {% if demo_warning %}
+    <div class="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 text-white shadow-xl">
+        <div class="flex items-start space-x-4">
+            <div class="text-4xl">🎭</div>
+            <div class="flex-1">
+                <h3 class="text-lg font-bold mb-2">DEMO režim – Ukázková data</h3>
+                <p class="text-sm opacity-90 mb-3">
+                    Právě prohlížíte demonstraci zážitkového účetnictví s ukázkovými daty.
+                    Pro přístup k reálným datům se prosím přihlaste.
+                </p>
+                <a href="/prihlaseni/" class="inline-flex items-center px-4 py-2 bg-white text-orange-600 font-semibold rounded-lg shadow hover:shadow-lg">
+                    🔐 Přihlásit se k reálným datům
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="mb-6 space-y-3">
+        {% for message in messages %}
+        <div class="rounded-xl p-4 shadow-lg {% if message.tags == 'success' %}bg-gradient-to-r from-green-400 to-green-600 text-white{% elif message.tags == 'error' %}bg-gradient-to-r from-red-400 to-pink-600 text-white{% elif message.tags == 'warning' %}bg-gradient-to-r from-yellow-400 to-orange-500 text-white{% else %}bg-gradient-to-r from-blue-400 to-cyan-500 text-white{% endif %}">
+            <p class="font-medium">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    <!-- Obsah šablon se vloží sem -->
+    {% endblock %}
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="mt-16 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div class="text-center md:text-left">
+                <p class="font-semibold text-lg">© {{ now|date:"Y" }} eKultura, z.s.</p>
+                <p class="text-sm text-gray-400 mt-1">Všechna práva vyhrazena</p>
+            </div>
+            <div class="text-center md:text-right">
+                <p class="text-sm text-gray-400">Technické zajištění:</p>
+                <a href="https://invelib.cz" target="_blank" class="text-blue-400 hover:text-blue-300 font-semibold">
+                    InveLIB s.r.o.
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

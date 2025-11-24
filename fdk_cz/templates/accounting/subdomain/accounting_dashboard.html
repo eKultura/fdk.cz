@@ -1,0 +1,266 @@
+{% extends "accounting/subdomain/base.html" %}
+
+{% block title %}Dashboard | Účetnictví{% endblock %}
+
+{% block content %}
+
+<!-- COCKPIT HEADER -->
+<div class="card glass mb-8 p-8 border-4 border-purple-200">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+
+        <div class="flex-1">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+                🛫 Cockpit – Finanční Řízení
+            </h2>
+            {% if current_context %}
+            <p class="text-gray-600 font-medium">
+                {{ current_context.name }} • Období {{ current_context.fiscal_year }}
+            </p>
+            {% else %}
+            <p class="text-yellow-600 font-semibold">⚠️ Není aktivní žádný účetní kontext</p>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="flex space-x-3">
+            <a href="{% url 'select_accounting_context' %}" class="btn btn-outline">
+                🔄 Změnit kontext
+            </a>
+            <a href="{% url 'create_invoice' %}" class="btn btn-success">
+                ➕ Nová faktura
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+<!-- VÝSLEDOVKA - KPI CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    <!-- VÝNOSY -->
+    <div class="kpi-card kpi-gradient-green">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-white/80 text-sm font-semibold uppercase">💰 Výnosy</span>
+                <span class="text-white/60 text-xs">(6xx účty)</span>
+            </div>
+            <h3 class="number-display text-4xl lg:text-5xl mb-1">
+                {{ total_revenues|floatformat:0 }}
+            </h3>
+            <p class="text-white/90 text-sm font-medium">Kč</p>
+            <div class="mt-4 h-1 bg-white/30 rounded-full overflow-hidden">
+                <div class="h-full bg-white rounded-full" style="width: 85%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NÁKLADY -->
+    <div class="kpi-card kpi-gradient-red">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-white/80 text-sm font-semibold uppercase">💸 Náklady</span>
+                <span class="text-white/60 text-xs">(5xx účty)</span>
+            </div>
+            <h3 class="number-display text-4xl lg:text-5xl mb-1">
+                {{ total_expenses|floatformat:0 }}
+            </h3>
+            <p class="text-white/90 text-sm font-medium">Kč</p>
+            <div class="mt-4 h-1 bg-white/30 rounded-full overflow-hidden">
+                <div class="h-full bg-white rounded-full" style="width: 65%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOSPODÁŘSKÝ VÝSLEDEK -->
+    <div class="kpi-card {% if profit >= 0 %}kpi-gradient-blue{% else %}kpi-gradient-red{% endif %}">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-white/80 text-sm font-semibold uppercase">📊 HV</span>
+                <span class="text-white/60 text-xs">Zisk/Ztráta</span>
+            </div>
+            <h3 class="number-display text-4xl lg:text-5xl mb-1">
+                {% if profit >= 0 %}+{% endif %}{{ profit|floatformat:0 }}
+            </h3>
+            <p class="text-white/90 text-sm font-medium">Kč</p>
+            <div class="mt-4 flex items-center space-x-2">
+                {% if profit >= 0 %}
+                <span class="text-2xl">📈</span>
+                <span class="text-white/90 text-sm font-semibold">Růst</span>
+                {% else %}
+                <span class="text-2xl">📉</span>
+                <span class="text-white/90 text-sm font-semibold">Pokles</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- RYCHLÁ NAVIGACE -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
+    <a href="{% url 'create_invoice' %}" class="card p-6 text-center hover:shadow-2xl group">
+        <div class="text-5xl mb-3 group-hover:scale-110 transform">📄</div>
+        <h3 class="font-bold text-lg text-gray-800 mb-1">Faktury</h3>
+        <p class="text-xs text-gray-500">Vystavení a správa</p>
+    </a>
+
+    <a href="{% url 'journal_ledger' %}" class="card p-6 text-center hover:shadow-2xl group">
+        <div class="text-5xl mb-3 group-hover:scale-110 transform">📚</div>
+        <h3 class="font-bold text-lg text-gray-800 mb-1">Deník</h3>
+        <p class="text-xs text-gray-500">Zaúčtování MD/D</p>
+    </a>
+
+    <a href="{% url 'balance_sheet_view' 'opening' %}" class="card p-6 text-center hover:shadow-2xl group">
+        <div class="text-5xl mb-3 group-hover:scale-110 transform">📊</div>
+        <h3 class="font-bold text-lg text-gray-800 mb-1">Rozvaha</h3>
+        <p class="text-xs text-gray-500">Stav účtů</p>
+    </a>
+
+    <a href="{% url 'chart_of_accounts' %}" class="card p-6 text-center hover:shadow-2xl group">
+        <div class="text-5xl mb-3 group-hover:scale-110 transform">📋</div>
+        <h3 class="font-bold text-lg text-gray-800 mb-1">Osnova</h3>
+        <p class="text-xs text-gray-500">Správa účtů</p>
+    </a>
+
+</div>
+
+
+<!-- DENÍK -->
+{% if recent_journal_entries %}
+<div class="card p-6 mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+            <span class="mr-3 text-3xl">📚</span>
+            Poslední záznamy v deníku
+        </h3>
+        <a href="{% url 'journal_ledger' %}" class="text-purple-600 hover:text-purple-800 font-semibold text-sm flex items-center">
+            Celý deník
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Popis</th>
+                    <th class="text-right">MD</th>
+                    <th class="text-right">D</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in recent_journal_entries %}
+                <tr>
+                    <td class="font-semibold text-gray-700">
+                        {{ entry.entry_date|date:"d.m.Y" }}
+                    </td>
+                    <td>
+                        <p class="font-semibold text-gray-800">{{ entry.description }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {% for line in entry.lines.all|slice:":2" %}
+                                {{ line.account.account_number }} {{ line.account.name }}{% if not forloop.last %} • {% endif %}
+                            {% endfor %}
+                        </p>
+                    </td>
+                    <td class="text-right number-display text-blue-700 font-bold">
+                        {{ entry.total_debit|floatformat:2 }}
+                    </td>
+                    <td class="text-right number-display text-green-700 font-bold">
+                        {{ entry.total_credit|floatformat:2 }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- FAKTURY -->
+<div class="card p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+            <span class="mr-3 text-3xl">📄</span>
+            Nedávné faktury
+        </h3>
+        <div class="flex space-x-3">
+            <a href="{% url 'create_invoice' %}" class="btn btn-success text-sm">
+                ➕ Nová faktura
+            </a>
+            <a href="{% url 'list_invoices' %}" class="btn btn-outline text-sm">
+                Všechny faktury
+            </a>
+        </div>
+    </div>
+
+    {% if invoices %}
+    <div class="overflow-x-auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Číslo</th>
+                    <th class="hidden md:table-cell">Plátce</th>
+                    <th class="text-right">Částka</th>
+                    <th>Stav</th>
+                    <th class="text-center">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td class="font-bold text-purple-700">
+                        {{ invoice.invoice_number }}
+                    </td>
+                    <td class="hidden md:table-cell text-gray-600">
+                        {{ invoice.company.name|default:"—" }}
+                    </td>
+                    <td class="text-right number-display text-gray-900 font-bold text-lg">
+                        {{ invoice.total_amount|default:"0"|floatformat:0 }} Kč
+                    </td>
+                    <td>
+                        {% if invoice.status == 'paid' %}
+                            <span class="badge badge-success">✓ Zaplaceno</span>
+                        {% elif invoice.status == 'pending' %}
+                            <span class="badge badge-warning">⏳ Čeká</span>
+                        {% elif invoice.status == 'overdue' %}
+                            <span class="badge badge-danger">⚠️ Po splatnosti</span>
+                        {% else %}
+                            <span class="badge badge-info">{{ invoice.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-center space-x-2">
+                            <a href="{% url 'detail_invoice' invoice.id %}" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                                👁️ Detail
+                            </a>
+                            <a href="{% url 'edit_invoice' invoice.id %}" class="text-yellow-600 hover:text-yellow-800 font-semibold text-sm">
+                                ✏️ Upravit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <div class="text-6xl mb-4">📄</div>
+        <h4 class="text-xl font-bold text-gray-700 mb-2">Zatím nemáte žádné faktury</h4>
+        <p class="text-gray-500 mb-6">Vytvořte svou první fakturu a začněte řídit finance jako profíci</p>
+        <a href="{% url 'create_invoice' %}" class="btn btn-success">
+            ➕ Vytvořit první fakturu
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
