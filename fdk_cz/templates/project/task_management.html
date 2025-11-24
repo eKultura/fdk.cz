@@ -198,7 +198,8 @@
         {% csrf_token %}
         <div class="form-group">
           <label for="title" class="form-label">Název úkolu <span class="required">*</span></label>
-          <input type="text" id="title" name="title" required class="form-control" placeholder="Název úkolu">
+          <input type="text" id="title" name="title" required maxlength="255" class="form-control" placeholder="Název úkolu">
+          <div class="form-help">Maximálně 255 znaků</div>
         </div>
 
         <div class="form-group">

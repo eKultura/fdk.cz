@@ -511,6 +511,25 @@ def task_management(request):
         project_id = request.POST.get('project_id')
         organization_id = request.POST.get('organization_id')
 
+        # Validace délky názvu úkolu
+        if not title or len(title.strip()) == 0:
+            messages.error(request, "Název úkolu je povinný.")
+            context_data = {
+                'tasks': user_tasks,
+                'user_organizations': user_organizations,
+                'user_projects': user_projects,
+            }
+            return render(request, 'project/task_management.html', context_data)
+
+        if len(title) > 255:
+            messages.error(request, "Název úkolu je příliš dlouhý. Maximální délka je 255 znaků.")
+            context_data = {
+                'tasks': user_tasks,
+                'user_organizations': user_organizations,
+                'user_projects': user_projects,
+            }
+            return render(request, 'project/task_management.html', context_data)
+
         # Validace - pokud je vybrán kontext projekt/organizace, musí být vybrán i konkrétní projekt/organizace
         if context == 'project' and not project_id:
             messages.error(request, "Pokud vytváříte projektový úkol, musíte vybrat konkrétní projekt.")
