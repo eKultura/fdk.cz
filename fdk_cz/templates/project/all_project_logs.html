@@ -7,22 +7,16 @@
 Přehled aktivit ve vašich projektech
 {% endblock %}
 
+{% block context_breadcrumbs %}
+<span class="breadcrumb-link">Osobní</span>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'index_project_cs' %}" class="breadcrumb-link">Projekty</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Log aktivit</span>
+{% endblock %}
+
 {% block content %}
 <div style="max-width: 1400px; margin: 0 auto;">
-
-  <!-- Breadcrumbs -->
-  <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-      <span style="color: #64748b;">📍 Kontext:</span>
-      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
-      <span style="color: #9ca3af;">→</span>
-      <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-        Projekty
-      </a>
-      <span style="color: #9ca3af;">→</span>
-      <span style="font-weight: 600; color: #1e293b;">Log aktivit</span>
-    </div>
-  </div>
 
   <!-- Info box -->
   <div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #fef3c7, #fde68a); border: 2px solid #fbbf24; border-radius: 8px; padding: 1rem;">

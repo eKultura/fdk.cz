@@ -1,20 +1,17 @@
 {% extends 'list/base.html' %}
 {% block title %}Přidat novou položku{% endblock %}
 
+{% block context_breadcrumbs %}
+<span class="breadcrumb-link">Osobní</span>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'index_list' %}" class="breadcrumb-link">Seznamy</a>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'detail_list' list.list_id %}" class="breadcrumb-link">{{ list.name }}</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Přidat položku</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Osobní</span>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'index_list' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Seznamy</a>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'detail_list' list.list_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ list.name }}</a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Přidat položku</span>
-  </div>
-</div>
 
 <div class="container mt-5" style="max-width: 600px;">
     <h1 class="text-center mb-4" style="font-weight: bold; color: #333;">Přidat novou položku</h1>

@@ -5,18 +5,15 @@
 {% block header_title %}Zakoupit modul{% endblock %}
 {% block header_subtitle %}{{ module.display_name }}{% endblock %}
 
-{% block content %}
+{% block context_breadcrumbs %}
+<span class="breadcrumb-link">Osobní</span>
+<span class="breadcrumb-sep">→</span>
+<span class="breadcrumb-link">Předplatné</span>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Zakoupit modul</span>
+{% endblock %}
 
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Osobni</span>
-    <span style="color: #9ca3af;">-></span>
-    <span style="font-weight: 500; color: #1e293b;">Predplatne</span>
-    <span style="color: #9ca3af;">-></span>
-    <span style="font-weight: 600; color: #1e293b;">Zakoupit modul</span>
-  </div>
-</div>
+{% block content %}
 
 <div style="max-width: 600px; margin: 0 auto;">
     <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 2rem; background: white;">
