@@ -76,13 +76,44 @@
               {% if user.is_authenticated %}
               <button class="user-trigger" onclick="toggleUserMenu()">
                 <div class="user-avatar">{{ user.first_name|first|default:user.username|first|upper }}</div>
-                <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                <span class="user-name">
+                  {% if current_organization %}
+                    <span style="font-size: 0.75rem; color: #64748b;">🏢</span> {{ current_organization.name|truncatewords:2 }}
+                  {% else %}
+                    {{ user.first_name|default:user.username }}
+                  {% endif %}
+                </span>
                 <span style="color: #94a3b8; font-size: 0.75rem;">&#9660;</span>
               </button>
               <div class="dropdown-menu" id="userDropdownMenu">
                 <a href="{% url 'user_profile' %}" class="dropdown-item">&#128100; Profil</a>
                 <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128203; Projekty</a>
                 <a href="{% url 'user_settings' %}" class="dropdown-item">&#9881; Nastavení</a>
+
+                {% if user_organizations %}
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-label">Organizace</div>
+                {% if current_organization %}
+                  <a href="{% url 'set_personal_context' %}" class="dropdown-item">
+                    <span style="color: #10b981;">●</span> Osobní
+                  </a>
+                  {% for org in user_organizations %}
+                    <a href="{% url 'set_organization_context' org.organization_id %}" class="dropdown-item {% if org.organization_id == current_organization.organization_id %}active{% endif %}">
+                      {% if org.organization_id == current_organization.organization_id %}<span style="color: #3b82f6;">●</span>{% else %}<span style="color: #e5e7eb;">○</span>{% endif %} {{ org.name }}
+                    </a>
+                  {% endfor %}
+                {% else %}
+                  <a href="#" class="dropdown-item active">
+                    <span style="color: #10b981;">●</span> Osobní
+                  </a>
+                  {% for org in user_organizations %}
+                    <a href="{% url 'set_organization_context' org.organization_id %}" class="dropdown-item">
+                      <span style="color: #e5e7eb;">○</span> {{ org.name }}
+                    </a>
+                  {% endfor %}
+                {% endif %}
+                {% endif %}
+
                 <div class="dropdown-divider"></div>
                 <a href="{% url 'logout_cs' %}" class="dropdown-item">&#128682; Odhlásit se</a>
               </div>
@@ -97,53 +128,14 @@
         </div>
       </header>
 
-<!-- Context Bar - OSOBNÍ/ORGANIZACE přepínač -->
-{% if user.is_authenticated %}
-<div class="context-bar">
-  <div class="context-bar-container">
-    <!-- Context Switcher -->
-    <div class="context-switcher">
-      {% if current_organization %}
-        <span class="context-badge context-badge-org">
-          <span class="context-icon">🏢</span>
-          <span class="context-name">{{ current_organization.name }}</span>
-        </span>
-        <a href="{% url 'set_personal_context' %}" class="context-switch-btn" title="Přepnout na osobní kontext">
-          <span>→ Osobní</span>
-        </a>
-      {% else %}
-        <span class="context-badge context-badge-personal">
-          <span class="context-icon">👤</span>
-          <span class="context-name">OSOBNÍ</span>
-        </span>
-        {% if user_organizations %}
-        <select class="context-select" onchange="if(this.value) window.location.href=this.value" title="Přepnout na organizaci">
-          <option value="">→ Přepnout na organizaci</option>
-          {% for org in user_organizations %}
-            <option value="{% url 'set_organization_context' org.organization_id %}">{{ org.name }}</option>
-          {% endfor %}
-        </select>
-        {% endif %}
-      {% endif %}
-    </div>
-
-    <!-- Enhanced Breadcrumbs -->
-    <div class="context-breadcrumbs">
-      <a href="{% url 'index' %}" class="breadcrumb-link">🏠 FDK</a>
-      <span class="breadcrumb-sep">→</span>
-      {% block context_breadcrumbs %}
-      <!-- Templates can override this block for specific breadcrumbs -->
-      {% endblock %}
-    </div>
-  </div>
-</div>
-{% endif %}
-
 <!-- Obsah stránky -->
 <div class="page-content">
 
   <!-- Modulový header -->
   <div class="page-header" style="margin-bottom: 1.5rem;">
+
+  <!-- Breadcrumbs as simple text -->
+  {% block context_breadcrumbs %}{% endblock %}
 
   <h1 class="page-title">{% block header_title %}{% endblock %}</h1>
   <p class="page-subtitle">{% block header_subtitle %}{% endblock %}</p>
