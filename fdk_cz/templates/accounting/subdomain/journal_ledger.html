@@ -1,0 +1,153 @@
+{% extends "accounting/subdomain/base.html" %}
+
+{% block title %}Účetní deník | Účetnictví{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<div class="card glass mb-8 p-6">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+
+        <div>
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-600 mb-2">
+                📚 Účetní deník
+            </h2>
+            <p class="text-gray-600">
+                <span class="font-semibold">{{ current_context.name }}</span> • Období {{ current_context.fiscal_year }}
+            </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'create_journal_entry' %}" class="btn btn-success">
+                ➕ Nový záznam
+            </a>
+            <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">📋 Osnova</a>
+            <a href="{% url 'balance_sheet_view' 'opening' %}" class="btn btn-outline">📊 Rozvaha</a>
+            <a href="{% url 'accounting_dashboard' %}" class="btn btn-outline">← Dashboard</a>
+        </div>
+
+    </div>
+</div>
+
+
+{% if entries %}
+
+<!-- ENTRIES TABLE -->
+<div class="card p-6">
+    <div class="mb-6">
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+            <span class="mr-3 text-3xl">📝</span>
+            Záznamy v deníku
+        </h3>
+        <p class="text-sm text-gray-600 mt-1">
+            Celkem {{ entries|length }} zápisů
+        </p>
+    </div>
+
+    <div class="space-y-4">
+        {% for entry in entries %}
+        <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 hover:shadow-lg transition-all">
+
+            <!-- Entry Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 space-y-2 md:space-y-0">
+                <div class="flex-1">
+                    <h4 class="text-lg font-bold text-gray-800">
+                        {{ entry.description }}
+                    </h4>
+                    <p class="text-sm text-gray-500 mt-1">
+                        📅 {{ entry.entry_date|date:"d.m.Y" }}
+                    </p>
+                </div>
+
+                <div class="flex space-x-4">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 uppercase">MD</p>
+                        <p class="number-display text-xl font-bold text-blue-700">
+                            {{ entry.total_debit|floatformat:2 }}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 uppercase">D</p>
+                        <p class="number-display text-xl font-bold text-green-700">
+                            {{ entry.total_credit|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entry Lines -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-300">
+                            <th class="text-left py-2 px-2 text-gray-600 font-semibold">Účet</th>
+                            <th class="text-left py-2 px-2 text-gray-600 font-semibold">Název</th>
+                            <th class="text-right py-2 px-2 text-gray-600 font-semibold">MD</th>
+                            <th class="text-right py-2 px-2 text-gray-600 font-semibold">D</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in entry.lines.all %}
+                        <tr class="border-b border-gray-200">
+                            <td class="py-2 px-2 font-bold text-purple-700">
+                                {{ line.account.account_number }}
+                            </td>
+                            <td class="py-2 px-2 text-gray-700">
+                                {{ line.account.name }}
+                            </td>
+                            <td class="py-2 px-2 text-right number-display {% if line.debit_amount > 0 %}text-blue-700 font-semibold{% else %}text-gray-400{% endif %}">
+                                {% if line.debit_amount > 0 %}{{ line.debit_amount|floatformat:2 }}{% else %}—{% endif %}
+                            </td>
+                            <td class="py-2 px-2 text-right number-display {% if line.credit_amount > 0 %}text-green-700 font-semibold{% else %}text-gray-400{% endif %}">
+                                {% if line.credit_amount > 0 %}{{ line.credit_amount|floatformat:2 }}{% else %}—{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-3 mt-4">
+                <a href="{% url 'edit_journal_entry' entry.entry_id %}" class="text-yellow-600 hover:text-yellow-800 font-semibold text-sm">
+                    ✏️ Upravit
+                </a>
+                <a href="{% url 'delete_journal_entry' entry.entry_id %}" class="text-red-600 hover:text-red-800 font-semibold text-sm">
+                    🗑️ Smazat
+                </a>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- EMPTY STATE -->
+<div class="card p-12">
+    <div class="text-center">
+        <div class="text-8xl mb-6">📚</div>
+        <h3 class="text-3xl font-bold text-gray-800 mb-3">
+            Zatím nemáte žádné záznamy v deníku
+        </h3>
+        <p class="text-gray-600 mb-8 max-w-md mx-auto">
+            Deník je srdce účetnictví. Zde zaúčtujete všechny transakce pomocí metody
+            podvojného účetnictví (MD/D).
+        </p>
+
+        <div class="flex justify-center space-x-4">
+            <a href="{% url 'create_journal_entry' %}" class="btn btn-success">
+                ➕ Vytvořit první záznam
+            </a>
+            <a href="{% url 'chart_of_accounts' %}" class="btn btn-outline">
+                📋 Zobrazit účtovou osnovu
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

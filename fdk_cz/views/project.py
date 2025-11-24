@@ -1114,8 +1114,17 @@ def detail_swot_analysis(request, swot_id):
         messages.error(request, 'Nemáte přístup k této SWOT analýze.')
         return redirect('list_swot_analyses')
 
+    # Sort items by weight (highest first) with original indices
+    def sort_with_index(items):
+        indexed = [{'text': item.get('text', ''), 'weight': item.get('weight', 5), 'idx': i} for i, item in enumerate(items)]
+        return sorted(indexed, key=lambda x: x['weight'], reverse=True)
+
     return render(request, 'project/swot_detail.html', {
         'swot': swot,
+        'sorted_strengths': sort_with_index(swot.strengths),
+        'sorted_weaknesses': sort_with_index(swot.weaknesses),
+        'sorted_opportunities': sort_with_index(swot.opportunities),
+        'sorted_threats': sort_with_index(swot.threats),
     })
 
 
@@ -1190,8 +1199,17 @@ def edit_swot_analysis(request, swot_id):
 
         return redirect('edit_swot_analysis', swot_id=swot.swot_id)
 
+    # Sort items by weight (highest first) with original indices for delete
+    def sort_with_index(items):
+        indexed = [{'text': item.get('text', ''), 'weight': item.get('weight', 5), 'idx': i} for i, item in enumerate(items)]
+        return sorted(indexed, key=lambda x: x['weight'], reverse=True)
+
     return render(request, 'project/swot_edit.html', {
         'swot': swot,
+        'sorted_strengths': sort_with_index(swot.strengths),
+        'sorted_weaknesses': sort_with_index(swot.weaknesses),
+        'sorted_opportunities': sort_with_index(swot.opportunities),
+        'sorted_threats': sort_with_index(swot.threats),
     })
 
 
@@ -1253,7 +1271,7 @@ def gantt_chart(request):
 
     projects = Project.objects.filter(
         project_id__in=user_project_ids
-    ).prefetch_related('tasks', 'milestones').order_by('project_name')
+    ).prefetch_related('tasks', 'milestones').order_by('name')
 
     # Filter by project if specified
     project_filter = request.GET.get('project', '')
@@ -1294,7 +1312,7 @@ def gantt_chart(request):
         if project_tasks or milestones:
             gantt_data.append({
                 'project_id': project.project_id,
-                'project_name': project.project_name,
+                'project_name': project.name,
                 'tasks': project_tasks,
                 'milestones': milestones,
             })
@@ -1302,7 +1320,7 @@ def gantt_chart(request):
     # Get all projects for filter dropdown
     all_projects = Project.objects.filter(
         project_id__in=user_project_ids
-    ).order_by('project_name')
+    ).order_by('name')
 
     return render(request, 'project/gantt_chart.html', {
         'gantt_data': gantt_data,
