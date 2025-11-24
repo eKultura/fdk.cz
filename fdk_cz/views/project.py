@@ -134,8 +134,9 @@ def detail_project(request, project_id):
     nice_to_have_tasks = proj.tasks.filter(priority='Nice to have')
     can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
 
-    # Kontrola, zda je projekt ukončen (má nastavený end_date)
-    is_project_closed = proj.end_date is not None
+    # Kontrola, zda je projekt ukončen (má nastavený end_date a je v minulosti)
+    from datetime import date
+    is_project_closed = proj.end_date and proj.end_date < date.today()
 
     # Data pro Ganttův diagram
     gantt_items = []
@@ -222,18 +223,31 @@ def edit_project(request, project_id):
 
 @login_required
 def index_project(request):
+    from datetime import date
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
-    # Vyhledáme projekty, kde je aktuální uživatel vlastníkem NEBO členem
-    # Vyfiltrujeme projekty, které mají nastavený end_date (ukončené projekty)
+
+    # Aktivní projekty = bez end_date NEBO s end_date >= dnes
     user_projects = Project.objects.filter(
         Q(project_users__user=request.user) | Q(owner=request.user)  # Člen nebo vlastník
     ).filter(
-        Q(end_date__isnull=True)  # Projekty bez end_date
+        Q(end_date__isnull=True) | Q(end_date__gte=date.today())  # Aktivní projekty
     ).distinct().order_by('-created')
+
+    # Archivované projekty = s end_date < dnes
+    archived_projects = Project.objects.filter(
+        Q(project_users__user=request.user) | Q(owner=request.user)  # Člen nebo vlastník
+    ).filter(
+        end_date__lt=date.today()  # Ukončené projekty
+    ).distinct().order_by('-end_date')
+
     assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
 
-    return render(request, 'project/index_project.html', {'user_projects': user_projects, 'assigned_tasks': assigned_tasks})
+    return render(request, 'project/index_project.html', {
+        'user_projects': user_projects,
+        'archived_projects': archived_projects,
+        'assigned_tasks': assigned_tasks
+    })
 
 
 
