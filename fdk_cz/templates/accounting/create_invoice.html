@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-{% block title %}Vytvořit fakturu{% endblock %}
+{% block title %}Vytvořit fakturu | FDK.cz{% endblock %}
+{% block header_title %}📄 Vytvořit fakturu{% endblock %}
+{% block header_subtitle %}Nová faktura{% endblock %}
 
 {% block content %}
 <!-- Breadcrumbs -->
@@ -16,31 +18,255 @@
   </div>
 </div>
 
-<div class="container mt-5">
-    <h1>Vytvořit novou fakturu</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+<div class="max-w-6xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'list_invoices' %}" class="btn btn-outline">← Zpět na seznam</a>
+  </div>
+
+  <div class="content-card">
+    <form method="post" id="invoice-form">
+      {% csrf_token %}
+
+      {% if form.errors or items_formset.errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
+        <p class="text-red-700 font-semibold mb-2">Formulář obsahuje chyby:</p>
+        <ul class="list-disc list-inside text-red-600 text-sm">
+          {% for field, errors in form.errors.items %}
+            <li>{{ field }}: {{ errors|join:", " }}</li>
+          {% endfor %}
+          {% for error in items_formset.non_form_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Základní údaje faktury -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Základní údaje</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label for="id_issue_date" class="form-label">
+              Datum vystavení <span class="text-red-500">*</span>
+            </label>
+            {{ form.issue_date }}
+            {% if form.issue_date.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.issue_date.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_due_date" class="form-label">
+              Datum splatnosti <span class="text-red-500">*</span>
+            </label>
+            {{ form.due_date }}
+            {% if form.due_date.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.due_date.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div class="form-group">
+            <label class="flex items-center">
+              {{ form.is_vat_payer }}
+              <span class="ml-2 text-sm text-gray-700">Jsem plátce DPH</span>
+            </label>
+          </div>
+
+          <div class="form-group" id="vat-rate-group">
+            <label for="id_vat_rate" class="form-label">Sazba DPH (%)</label>
+            {{ form.vat_rate }}
+            {% if form.vat_rate.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.vat_rate.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group mt-4">
+          <label class="flex items-center">
+            {{ form.is_paid }}
+            <span class="ml-2 text-sm text-gray-700">Uhrazeno</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Položky faktury -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Položky faktury</h3>
+
         {{ items_formset.management_form }}
-        {% for form in items_formset %}
-            <div class="form-row">
-                {{ form.as_p }}
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Popis</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 w-24">Množství</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 w-32">Cena za jednotku</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 w-32">Celková cena</th>
+                <th class="px-4 py-2 text-center text-sm font-semibold text-gray-700 w-20">Smazat</th>
+              </tr>
+            </thead>
+            <tbody id="formset-body">
+              {% for item_form in items_formset %}
+              <tr class="border-b formset-row">
+                <td class="px-4 py-2">
+                  {{ item_form.description }}
+                  {% if item_form.description.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ item_form.description.errors|join:", " }}</p>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                  {{ item_form.quantity }}
+                  {% if item_form.quantity.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ item_form.quantity.errors|join:", " }}</p>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                  {{ item_form.unit_price }}
+                  {% if item_form.unit_price.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ item_form.unit_price.errors|join:", " }}</p>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                  {{ item_form.total_price }}
+                  {% if item_form.total_price.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ item_form.total_price.errors|join:", " }}</p>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2 text-center">
+                  {{ item_form.DELETE }}
+                  {{ item_form.id }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Celková suma -->
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+          <div class="flex justify-end">
+            <div class="w-64">
+              <div class="flex justify-between mb-2">
+                <span class="font-semibold">Mezisoučet:</span>
+                <span id="subtotal">0,00 Kč</span>
+              </div>
+              <div class="flex justify-between mb-2" id="vat-row" style="display: none;">
+                <span class="font-semibold">DPH (<span id="vat-percentage">21</span>%):</span>
+                <span id="vat-amount">0,00 Kč</span>
+              </div>
+              <div class="flex justify-between text-lg font-bold border-t pt-2">
+                <span>Celkem:</span>
+                <span id="total">0,00 Kč</span>
+              </div>
             </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Vytvořit fakturu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          💾 Vytvořit fakturu
+        </button>
+        <a href="{% url 'list_invoices' %}" class="btn btn-outline">
+          Zrušit
+        </a>
+      </div>
     </form>
+  </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const vatPayerCheckbox = document.querySelector('input[name="is_vat_payer"]');
+  const vatRateGroup = document.getElementById('vat-rate-group');
+  const vatRateInput = document.querySelector('input[name="vat_rate"]');
 
+  // Toggle VAT rate field based on VAT payer checkbox
+  function toggleVatRate() {
+    if (vatPayerCheckbox && vatRateGroup && vatRateInput) {
+      if (vatPayerCheckbox.checked) {
+        vatRateGroup.style.display = 'block';
+        document.getElementById('vat-row').style.display = 'flex';
+      } else {
+        vatRateGroup.style.display = 'none';
+        document.getElementById('vat-row').style.display = 'none';
+        vatRateInput.value = '0';
+      }
+      calculateTotals();
+    }
+  }
 
-<div class="container mt-5">
-    <h1>Vytvořit novou fakturu 2</h1>
+  if (vatPayerCheckbox) {
+    vatPayerCheckbox.addEventListener('change', toggleVatRate);
+  }
+  if (vatRateInput) {
+    vatRateInput.addEventListener('input', calculateTotals);
+  }
+  toggleVatRate();
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Vytvořit fakturu</button>
-        <a href="{% url 'list_invoices' %}" class="btn btn-secondary">Zpět na seznam faktur</a>
-    </form>
-</div>
+  // Calculate item totals
+  function calculateItemTotal(row) {
+    const quantityInput = row.querySelector('input[name$="-quantity"]');
+    const unitPriceInput = row.querySelector('input[name$="-unit_price"]');
+    const totalPriceInput = row.querySelector('input[name$="-total_price"]');
+    const deleteCheckbox = row.querySelector('input[name$="-DELETE"]');
+
+    if (deleteCheckbox && deleteCheckbox.checked) {
+      if (totalPriceInput) totalPriceInput.value = '0';
+      return 0;
+    }
+
+    const quantity = parseFloat(quantityInput?.value) || 0;
+    const unitPrice = parseFloat(unitPriceInput?.value) || 0;
+    const total = quantity * unitPrice;
+
+    if (totalPriceInput) {
+      totalPriceInput.value = total.toFixed(2);
+    }
+
+    return total;
+  }
+
+  // Calculate all totals
+  function calculateTotals() {
+    let subtotal = 0;
+
+    document.querySelectorAll('.formset-row').forEach(row => {
+      subtotal += calculateItemTotal(row);
+    });
+
+    const vatRate = parseFloat(vatRateInput?.value) || 0;
+    const vatAmount = subtotal * (vatRate / 100);
+    const total = subtotal + vatAmount;
+
+    const subtotalEl = document.getElementById('subtotal');
+    const vatAmountEl = document.getElementById('vat-amount');
+    const vatPercentageEl = document.getElementById('vat-percentage');
+    const totalEl = document.getElementById('total');
+
+    if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2) + ' Kč';
+    if (vatAmountEl) vatAmountEl.textContent = vatAmount.toFixed(2) + ' Kč';
+    if (vatPercentageEl) vatPercentageEl.textContent = vatRate.toFixed(0);
+    if (totalEl) totalEl.textContent = total.toFixed(2) + ' Kč';
+  }
+
+  // Attach event listeners to all inputs
+  document.querySelectorAll('input[name$="-quantity"], input[name$="-unit_price"]').forEach(input => {
+    input.addEventListener('input', calculateTotals);
+  });
+
+  document.querySelectorAll('input[name$="-DELETE"]').forEach(checkbox => {
+    checkbox.addEventListener('change', calculateTotals);
+  });
+
+  // Initial calculation
+  calculateTotals();
+});
+</script>
 {% endblock %}

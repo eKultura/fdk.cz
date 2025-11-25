@@ -25,7 +25,7 @@ def create_contract(request, project_id):
             new_contract = form.save(commit=False)
             new_contract.project = project_instance
             new_contract.save()
-            return redirect('detail_project', project_id=project_id)
+            return redirect('detail_contract', contract_id=new_contract.contract_id)
     else:
         form = contract_form()
 
