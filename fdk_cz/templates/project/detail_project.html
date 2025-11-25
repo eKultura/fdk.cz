@@ -19,7 +19,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
+<div style="width: 100%;">
 
   <!-- Project Closed Warning -->
   {% if is_project_closed %}
@@ -49,44 +49,60 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 
   <!-- Tab: Overview -->
   <div class="tab-content active" id="tab-overview">
-    <!-- Stats Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-      {% with value=project_status_counts.Nezahájeno|default:"0" label="Nezahájeno" icon="⏸" color="gray" %}
-        {% include 'inc/components.html' with component='stat_card' %}
-      {% endwith %}
-
-      {% with value=project_status_counts.Probíhá|default:"0" label="Probíhá" icon="▶️" color="orange" %}
-        {% include 'inc/components.html' with component='stat_card' %}
-      {% endwith %}
-
-      {% with value=project_status_counts.Hotovo|default:"0" label="Hotovo" icon="✓" color="green" %}
-        {% include 'inc/components.html' with component='stat_card' %}
-      {% endwith %}
-
-      {% with value=project_total_tasks|default:"0" label="Celkem úkolů" icon="📋" color="blue" %}
-        {% include 'inc/components.html' with component='stat_card' %}
-      {% endwith %}
+    <!-- Project Progress Chart -->
+    <div class="content-card" style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">📊 Průběh projektu</h2>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: center;">
+        <!-- Chart -->
+        <div style="max-width: 280px; margin: 0 auto;">
+          <canvas id="overviewProjectChart"></canvas>
+        </div>
+        <!-- Stats List -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 12px; height: 12px; background: #94a3b8; border-radius: 50%;"></div>
+              <span style="font-weight: 500; color: #475569;">Nezahájeno</span>
+            </div>
+            <span style="font-weight: 700; font-size: 1.25rem; color: #1e293b;">{{ project_status_counts.Nezahájeno|default:0 }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #fef3c7; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 12px; height: 12px; background: #eab308; border-radius: 50%;"></div>
+              <span style="font-weight: 500; color: #a16207;">Probíhá</span>
+            </div>
+            <span style="font-weight: 700; font-size: 1.25rem; color: #a16207;">{{ project_status_counts.Probíhá|default:0 }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #d1fae5; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 12px; height: 12px; background: #22c55e; border-radius: 50%;"></div>
+              <span style="font-weight: 500; color: #15803d;">Hotovo</span>
+            </div>
+            <span style="font-weight: 700; font-size: 1.25rem; color: #15803d;">{{ project_status_counts.Hotovo|default:0 }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Recent Activity -->
-    <div class="content-card" style="margin-bottom: 3rem;">
-      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">💬 Poslední komentáře</h2>
+    <div class="content-card">
+      <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b;">💬 Poslední aktivita</h2>
       {% with recent_comments=project.tasks.all|slice:":5" %}
         {% if recent_comments %}
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           {% for task in recent_comments %}
             {% if task.comments.count > 0 %}
               {% with last_comment=task.comments.first %}
-                <div style="border-left: 4px solid #3b82f6; background: #f8fafc; border-radius: 8px; padding: 1rem;">
-                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                    <a href="{% url 'detail_task' task.task_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
+                <div style="border-left: 3px solid #3b82f6; background: #f8fafc; border-radius: 8px; padding: 1rem; transition: all 0.2s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#f8fafc'">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                    <a href="{% url 'detail_task' task.task_id %}" style="color: #1e293b; text-decoration: none; font-weight: 600; font-size: 0.9375rem;">
                       {{ task.title|safe }}
                     </a>
-                    <span style="font-size: 0.75rem; color: #9ca3af;">{{ last_comment.posted|date:"d.m.Y H:i" }}</span>
+                    <span style="font-size: 0.75rem; color: #9ca3af; white-space: nowrap; margin-left: 1rem;">{{ last_comment.posted|timesince }}</span>
                   </div>
-                  <p style="font-size: 0.875rem; color: #4b5563; margin-bottom: 0.5rem;">{{ last_comment.comment|truncatewords:30|safe }}</p>
-                  <div style="font-size: 0.75rem; color: #94a3b8;">
-                    {{ last_comment.user.username }} · {{ last_comment.posted|timesince }} ago
+                  <p style="font-size: 0.875rem; color: #64748b; margin: 0.5rem 0; line-height: 1.5;">{{ last_comment.comment|truncatewords:25|safe }}</p>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #94a3b8;">
+                    <span>👤 {{ last_comment.user.username }}</span>
                   </div>
                 </div>
               {% endwith %}
@@ -94,7 +110,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           {% endfor %}
         </div>
         {% else %}
-          {% with icon="💬" title="Žádné komentáře" message="Zatím nejsou žádné komentáře k úkolům" %}
+          {% with icon="💬" title="Žádná aktivita" message="Zatím nejsou žádné komentáře k úkolům" %}
             {% include 'inc/components.html' with component='empty_state' %}
           {% endwith %}
         {% endif %}
@@ -109,7 +125,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Úkoly projektu</h2>
         <div style="display: flex; gap: 0.75rem;">
           {% if not is_project_closed %}
-          <a href="novy-ukol/" class="btn btn-primary">＋ Nový úkol</a>
+          <a href="{% url 'create_task' project.project_id %}" class="btn btn-primary">＋ Nový úkol</a>
           {% endif %}
           <button id="toggleView" class="btn btn-outline">📊 Kanban</button>
         </div>
@@ -327,7 +343,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📍 Milníky</h2>
         {% if not is_project_closed %}
-        <a href="novy-milnik/" class="btn btn-primary">＋ Přidat milník</a>
+        <a href="{% url 'create_milestone' project.project_id %}" class="btn btn-primary">＋ Přidat milník</a>
         {% endif %}
       </div>
       <div style="overflow-x:auto;">
@@ -366,7 +382,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📄 Dokumenty</h2>
         {% if not is_project_closed %}
-        <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat dokument</a>
+        <a href="{% url 'create_document' project.project_id %}" class="btn btn-primary">＋ Přidat dokument</a>
         {% endif %}
       </div>
       <div style="overflow-x:auto;">
@@ -410,7 +426,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <h2 style="font-size: 1.125rem; font-weight: 600; margin: 0;">👥 Členové týmu</h2>
           {% if not is_project_closed %}
-          <a href="uzivatele/" class="btn btn-outline" style="font-size: 0.875rem;">Spravovat</a>
+          <a href="{% url 'manage_project_users' project.project_id %}" class="btn btn-outline" style="font-size: 0.875rem;">Spravovat</a>
           {% endif %}
         </div>
         <ul class="content-list">
@@ -603,7 +619,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Chart.js
+  // Chart.js - Overview Chart
+  try {
+    const overviewCtx = document.getElementById('overviewProjectChart');
+    if (overviewCtx && typeof Chart !== 'undefined') {
+      new Chart(overviewCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
+          datasets: [{
+            data: [{{ project_status_counts.Nezahájeno|default:0 }}, {{ project_status_counts.Probíhá|default:0 }}, {{ project_status_counts.Hotovo|default:0 }}],
+            backgroundColor: ['#94a3b8', '#eab308', '#22c55e'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Overview chart error:', error);
+  }
+
+  // Chart.js - Tasks Tab Chart
   try {
     const ctx = document.getElementById('projectTaskPieChart');
     if (ctx && typeof Chart !== 'undefined') {
@@ -613,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
           labels: ['Nezahájeno', 'Probíhá', 'Hotovo'],
           datasets: [{
             data: [{{ project_status_counts.Nezahájeno|default:0 }}, {{ project_status_counts.Probíhá|default:0 }}, {{ project_status_counts.Hotovo|default:0 }}],
-            backgroundColor: ['#f87171', '#facc15', '#4ade80']
+            backgroundColor: ['#94a3b8', '#eab308', '#22c55e']
           }]
         },
         options: {responsive: true, maintainAspectRatio: true}
