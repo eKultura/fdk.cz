@@ -13,7 +13,7 @@
 
 {% block content %}
 
-<div class="max-w-6xl mx-auto">
+<div class="">
   <!-- Testy -->
   <div class="content-card mb-6">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
@@ -114,23 +114,47 @@
   <div class="content-card mb-6">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
       <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">📋 {% trans "Testovací scénáře" %}</h3>
-      <div style="display: flex; gap: 0.5rem;">
-        <a href="{% url 'list_test_scenarios' %}" class="btn btn-outline text-sm">{% trans "Zobrazit všechny" %}</a>
-        <a href="{% url 'create_test_scenario' %}" class="btn btn-primary text-sm">&#10133; {% trans "Nový scénář" %}</a>
-      </div>
+      <a href="{% url 'create_test_scenario' %}" class="btn btn-primary text-sm">&#10133; {% trans "Nový scénář" %}</a>
     </div>
-    <div style="padding: 1.5rem; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 8px; text-align: center;">
-      <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📋</div>
-      <p style="color: #475569; margin-bottom: 1rem;">{% trans "Testovací scénáře umožňují definovat kroky a očekávané výsledky testů." %}</p>
-      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{% url 'list_test_scenarios' %}" class="btn btn-outline" style="font-size: 0.875rem;">
-          📋 {% trans "Zobrazit scénáře" %}
-        </a>
-        <a href="{% url 'create_test_scenario' %}" class="btn btn-primary" style="font-size: 0.875rem;">
-          ➕ {% trans "Vytvořit scénář" %}
-        </a>
-      </div>
+    {% if scenarios %}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{% trans "Název" %}</th>
+            <th class="hidden md:table-cell">{% trans "Popis" %}</th>
+            <th class="hidden md:table-cell">{% trans "Projekt" %}</th>
+            <th class="text-right">{% trans "Akce" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for scenario in scenarios %}
+          <tr>
+            <td>
+              <a href="{% url 'detail_test_scenario' scenario.scenario_id %}" class="font-semibold text-blue-600 hover:underline">
+                {{ scenario.name }}
+              </a>
+            </td>
+            <td class="hidden md:table-cell text-gray-600">{{ scenario.description|truncatewords:10|default:"–" }}</td>
+            <td class="hidden md:table-cell text-gray-600">{{ scenario.project.name|default:"–" }}</td>
+            <td class="text-right">
+              <div class="data-table-actions">
+                <a href="{% url 'detail_test_scenario' scenario.scenario_id %}">👁️ {% trans "Detail" %}</a>
+                <a href="{% url 'edit_test_scenario' scenario.scenario_id %}">✏️ {% trans "Upravit" %}</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {% else %}
+    <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
+      <div style="font-size:2rem;">📋</div>
+      <p style="margin-top:0.5rem;">{% trans "Zatím nemáte vytvořené žádné scénáře." %}</p>
+      <a href="{% url 'create_test_scenario' %}" class="btn btn-outline" style="margin-top:1rem;">➕ {% trans "Vytvořit první scénář" %}</a>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Aktivní chyby -->

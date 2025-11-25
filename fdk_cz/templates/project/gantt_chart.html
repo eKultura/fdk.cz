@@ -50,46 +50,40 @@
       {% if project.tasks %}
       <!-- Tasks timeline -->
       <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+        <table class="data-table">
           <thead>
-            <tr style="border-bottom: 2px solid #e2e8f0;">
-              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 200px;">Úkol</th>
-              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Začátek</th>
-              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Konec</th>
-              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151; width: 100px;">Stav</th>
-              <th style="text-align: left; padding: 0.75rem; font-weight: 600; color: #374151;">Přiřazeno</th>
+            <tr>
+              <th>Úkol</th>
+              <th>Začátek</th>
+              <th>Konec</th>
+              <th>Stav</th>
+              <th>Přiřazeno</th>
             </tr>
           </thead>
           <tbody>
             {% for task in project.tasks %}
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 0.75rem;">
-                <a href="{% url 'detail_task' task.id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+            <tr>
+              <td>
+                <a href="{% url 'detail_task' task.id %}" class="font-semibold text-blue-600 hover:underline">
                   {{ task.name }}
                 </a>
               </td>
-              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+              <td class="text-gray-600">
                 {{ task.start|date:"d.m.Y" }}
               </td>
-              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+              <td class="text-gray-600">
                 {% if task.end %}{{ task.end|date:"d.m.Y" }}{% else %}-{% endif %}
               </td>
-              <td style="padding: 0.75rem;">
+              <td>
                 {% if task.status == 'completed' %}
-                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #dcfce7; color: #166534; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
-                  ✓ Dokončeno
-                </span>
+                <span class="badge badge-green">✓ Dokončeno</span>
                 {% elif task.status == 'in_progress' %}
-                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
-                  ⏳ Probíhá
-                </span>
+                <span class="badge badge-blue">⏳ Probíhá</span>
                 {% else %}
-                <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; background: #f3f4f6; color: #4b5563; border-radius: 4px; font-size: 0.75rem; font-weight: 500;">
-                  ○ Čeká
-                </span>
+                <span class="badge badge-gray">○ Čeká</span>
                 {% endif %}
               </td>
-              <td style="padding: 0.75rem; color: #6b7280; font-size: 0.875rem;">
+              <td class="text-gray-600">
                 {{ task.assignee|default:"-" }}
               </td>
             </tr>

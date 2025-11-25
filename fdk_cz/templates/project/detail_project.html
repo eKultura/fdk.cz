@@ -581,22 +581,47 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Tab Navigation
+  // Tab Navigation with Hash Support
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
 
+  function switchTab(tabId) {
+    // Remove active class from all
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    // Add active to selected
+    const selectedButton = document.querySelector(`[data-tab="${tabId}"]`);
+    const selectedContent = document.getElementById(`tab-${tabId}`);
+
+    if (selectedButton && selectedContent) {
+      selectedButton.classList.add('active');
+      selectedContent.classList.add('active');
+
+      // Update URL hash
+      window.location.hash = tabId;
+    }
+  }
+
+  // Handle button clicks
   tabButtons.forEach(button => {
     button.addEventListener('click', () => {
-      const tabId = button.dataset.tab;
-
-      // Remove active class from all
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      tabContents.forEach(content => content.classList.remove('active'));
-
-      // Add active to clicked
-      button.classList.add('active');
-      document.getElementById(`tab-${tabId}`).classList.add('active');
+      switchTab(button.dataset.tab);
     });
+  });
+
+  // Handle URL hash on load
+  if (window.location.hash) {
+    const tabId = window.location.hash.substring(1);
+    switchTab(tabId);
+  }
+
+  // Handle hash changes
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash) {
+      const tabId = window.location.hash.substring(1);
+      switchTab(tabId);
+    }
   });
 
   // Toggle Task View

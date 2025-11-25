@@ -92,11 +92,13 @@ def list_tests(request):
     tests = Test.objects.filter(project__in=user_projects)
     test_types = TestType.objects.filter(project__in=user_projects)
     test_errors = TestError.objects.filter(status='open', project__in=user_projects).exclude(deleted=True).order_by('-date_created')[:10]
+    scenarios = TestScenario.objects.filter(project__in=user_projects)
 
     return render(request, 'test/list_tests.html', {
         'tests': tests,
         'test_types': test_types,
         'test_errors': test_errors,
+        'scenarios': scenarios,
         'projects': user_projects
     })
 
