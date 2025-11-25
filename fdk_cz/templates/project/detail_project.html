@@ -125,7 +125,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Úkoly projektu</h2>
         <div style="display: flex; gap: 0.75rem;">
           {% if not is_project_closed %}
-          <a href="novy-ukol/" class="btn btn-primary">＋ Nový úkol</a>
+          <a href="{% url 'create_task' project.project_id %}" class="btn btn-primary">＋ Nový úkol</a>
           {% endif %}
           <button id="toggleView" class="btn btn-outline">📊 Kanban</button>
         </div>
@@ -343,7 +343,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📍 Milníky</h2>
         {% if not is_project_closed %}
-        <a href="novy-milnik/" class="btn btn-primary">＋ Přidat milník</a>
+        <a href="{% url 'create_milestone' project.project_id %}" class="btn btn-primary">＋ Přidat milník</a>
         {% endif %}
       </div>
       <div style="overflow-x:auto;">
@@ -382,7 +382,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">📄 Dokumenty</h2>
         {% if not is_project_closed %}
-        <a href="vytvorit-dokument/" class="btn btn-primary">＋ Přidat dokument</a>
+        <a href="{% url 'create_document' project.project_id %}" class="btn btn-primary">＋ Přidat dokument</a>
         {% endif %}
       </div>
       <div style="overflow-x:auto;">
@@ -426,7 +426,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
           <h2 style="font-size: 1.125rem; font-weight: 600; margin: 0;">👥 Členové týmu</h2>
           {% if not is_project_closed %}
-          <a href="uzivatele/" class="btn btn-outline" style="font-size: 0.875rem;">Spravovat</a>
+          <a href="{% url 'manage_project_users' project.project_id %}" class="btn btn-outline" style="font-size: 0.875rem;">Spravovat</a>
           {% endif %}
         </div>
         <ul class="content-list">
