@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from fdk_cz.forms.test import test_type_form, test_form, test_result_form, test_error_form
-from fdk_cz.models import TestType, Test, TestResult, TestError, Project
+from fdk_cz.models import TestType, Test, TestResult, TestError, Project, TestScenario
 
 # -------------------------------------------------------------------
 #                    POZNÁMKY A TODO
@@ -286,7 +286,7 @@ def mark_error_fixed(request, test_error_id):
 def list_test_scenarios(request):
     """Seznam testovacích scénářů"""
     from django.db.models import Q
-    from fdk_cz.models import Organization, TestScenario
+    from fdk_cz.models import Organization
     
     # Získat organizace uživatele
     user_orgs = Organization.objects.filter(
@@ -356,8 +356,6 @@ def create_test_scenario(request):
 @login_required
 def detail_test_scenario(request, scenario_id):
     """Detail testovacího scénáře"""
-    from fdk_cz.models import TestScenario
-    
     scenario = get_object_or_404(
         TestScenario.objects.select_related('organization', 'project', 'owner', 'created_by'),
         pk=scenario_id
@@ -372,7 +370,6 @@ def detail_test_scenario(request, scenario_id):
 @login_required
 def edit_test_scenario(request, scenario_id):
     """Editace testovacího scénáře"""
-    from fdk_cz.models import TestScenario
     from fdk_cz.forms.test import TestScenarioForm
     from django.contrib import messages
     
@@ -393,7 +390,6 @@ def edit_test_scenario(request, scenario_id):
 @login_required
 def delete_test_scenario(request, scenario_id):
     """Smazání testovacího scénáře"""
-    from fdk_cz.models import TestScenario
     from django.contrib import messages
     
     scenario = get_object_or_404(TestScenario, pk=scenario_id)

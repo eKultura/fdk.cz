@@ -4,7 +4,7 @@
 {% block title %}Ganttův diagram | FDK.cz{% endblock %}
 {% block header_title %}📊 Ganttův diagram{% endblock %}
 {% block header_subtitle %}
-Časová osa úkolů ve vašich projektech
+Vizuální časová osa úkolů a milníků ve vašich projektech
 {% endblock %}
 
 {% block context_breadcrumbs %}
@@ -15,18 +15,244 @@
 <span style="font-weight: 600; color: #1e293b;">Ganttův diagram</span>
 {% endblock %}
 
+{% block extra_head %}
+<style>
+  .gantt-container {
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+
+  .gantt-header {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .gantt-project {
+    margin-bottom: 2rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .gantt-project-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .gantt-project-header a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .gantt-project-header a:hover {
+    text-decoration: underline;
+  }
+
+  .gantt-chart {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+
+  .gantt-timeline {
+    display: flex;
+    border-bottom: 2px solid #cbd5e1;
+    margin-bottom: 1rem;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+
+  .gantt-timeline-label {
+    min-width: 250px;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #475569;
+    border-right: 2px solid #cbd5e1;
+  }
+
+  .gantt-timeline-grid {
+    flex: 1;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(80px, 1fr);
+  }
+
+  .gantt-timeline-month {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: #1e293b;
+    border-right: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+  }
+
+  .gantt-row {
+    display: flex;
+    min-height: 48px;
+    border-bottom: 1px solid #f1f5f9;
+    position: relative;
+  }
+
+  .gantt-row:hover {
+    background: #fafafa;
+  }
+
+  .gantt-row-label {
+    min-width: 250px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    border-right: 2px solid #cbd5e1;
+  }
+
+  .gantt-row-chart {
+    flex: 1;
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(80px, 1fr);
+  }
+
+  .gantt-grid-cell {
+    border-right: 1px solid #f1f5f9;
+    position: relative;
+  }
+
+  .gantt-bar {
+    position: absolute;
+    height: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    padding: 0 0.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .gantt-bar:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-50%) scale(1.02);
+  }
+
+  .gantt-bar-pending {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  }
+
+  .gantt-bar-in_progress {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  }
+
+  .gantt-bar-completed {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  }
+
+  .gantt-bar-high {
+    border-left: 4px solid #ef4444;
+  }
+
+  .gantt-milestone {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    background: #f59e0b;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  .gantt-milestone-completed {
+    background: #10b981;
+  }
+
+  .gantt-milestone-label {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #1e293b;
+  }
+
+  .gantt-empty {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+  }
+
+  .gantt-legend {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+  }
+
+  .gantt-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .gantt-legend-box {
+    width: 24px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  .task-tooltip {
+    position: absolute;
+    background: #1e293b;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 1400px; margin: 0 auto;">
+<div class="gantt-container">
 
   <!-- Filter -->
-  <div style="margin-bottom: 1.5rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+  <div class="gantt-header">
     <form method="get" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
       <label style="font-weight: 500; color: #374151;">Filtrovat projekt:</label>
       <select name="project" onchange="this.form.submit()" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; min-width: 200px;">
         <option value="">Všechny projekty</option>
         {% for project in all_projects %}
         <option value="{{ project.project_id }}" {% if project_filter == project.project_id|stringformat:"d" %}selected{% endif %}>
-          {{ project.project_name }}
+          {{ project.name }}
         </option>
         {% endfor %}
       </select>
@@ -34,99 +260,183 @@
   </div>
 
   {% if gantt_data %}
-  <!-- Gantt Chart -->
+  <!-- Gantt Charts -->
   {% for project in gantt_data %}
-  <div style="margin-bottom: 2rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-    <!-- Project header -->
-    <div style="background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; padding: 1rem 1.5rem;">
-      <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">
-        <a href="{% url 'detail_project' project.project_id %}" style="color: white; text-decoration: none;">
-          📁 {{ project.project_name }}
-        </a>
-      </h2>
+  <div class="gantt-project" id="gantt-{{ project.project_id }}">
+    <div class="gantt-project-header">
+      <a href="{% url 'detail_project' project.project_id %}">
+        📁 {{ project.project_name }}
+      </a>
     </div>
 
-    <div style="padding: 1.5rem;">
+    <div class="gantt-chart">
       {% if project.tasks %}
-      <!-- Tasks timeline -->
-      <div style="overflow-x: auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Úkol</th>
-              <th>Začátek</th>
-              <th>Konec</th>
-              <th>Stav</th>
-              <th>Přiřazeno</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for task in project.tasks %}
-            <tr>
-              <td>
-                <a href="{% url 'detail_task' task.id %}" class="font-semibold text-blue-600 hover:underline">
-                  {{ task.name }}
-                </a>
-              </td>
-              <td class="text-gray-600">
-                {{ task.start|date:"d.m.Y" }}
-              </td>
-              <td class="text-gray-600">
-                {% if task.end %}{{ task.end|date:"d.m.Y" }}{% else %}-{% endif %}
-              </td>
-              <td>
-                {% if task.status == 'completed' %}
-                <span class="badge badge-green">✓ Dokončeno</span>
-                {% elif task.status == 'in_progress' %}
-                <span class="badge badge-blue">⏳ Probíhá</span>
-                {% else %}
-                <span class="badge badge-gray">○ Čeká</span>
-                {% endif %}
-              </td>
-              <td class="text-gray-600">
-                {{ task.assignee|default:"-" }}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-      <p style="color: #6b7280; font-style: italic;">Žádné úkoly s datem začátku.</p>
-      {% endif %}
+      <div id="chart-{{ project.project_id }}"></div>
 
-      {% if project.milestones %}
-      <!-- Milestones -->
-      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
-        <h3 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">🎯 Milníky</h3>
-        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-          {% for milestone in project.milestones %}
-          <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: {% if milestone.completed %}#dcfce7{% else %}#fef3c7{% endif %}; border-radius: 6px;">
-            <span style="font-size: 1.25rem;">{% if milestone.completed %}✅{% else %}🏁{% endif %}</span>
-            <div>
-              <div style="font-weight: 500; color: #1e293b;">{{ milestone.name }}</div>
-              <div style="font-size: 0.75rem; color: #6b7280;">{{ milestone.date|date:"d.m.Y" }}</div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
+      <script>
+      (function() {
+        const tasks = {{ project.tasks|safe }};
+        const milestones = {{ project.milestones|safe }};
+        const projectId = {{ project.project_id }};
+
+        // Parse dates and find date range
+        let minDate = new Date();
+        let maxDate = new Date();
+
+        tasks.forEach(task => {
+          if (task.start) {
+            const start = new Date(task.start);
+            if (start < minDate) minDate = start;
+          }
+          if (task.end) {
+            const end = new Date(task.end);
+            if (end > maxDate) maxDate = end;
+          }
+        });
+
+        milestones.forEach(ms => {
+          if (ms.date) {
+            const date = new Date(ms.date);
+            if (date < minDate) minDate = date;
+            if (date > maxDate) maxDate = date;
+          }
+        });
+
+        // Add padding - 1 month before and after
+        minDate.setMonth(minDate.getMonth() - 1);
+        maxDate.setMonth(maxDate.getMonth() + 1);
+
+        // Generate month columns
+        const months = [];
+        let current = new Date(minDate);
+        current.setDate(1);
+
+        while (current <= maxDate) {
+          months.push({
+            date: new Date(current),
+            label: current.toLocaleDateString('cs-CZ', { month: 'short', year: 'numeric' })
+          });
+          current.setMonth(current.getMonth() + 1);
+        }
+
+        // Calculate position percentage
+        function getPosition(date) {
+          const d = new Date(date);
+          const totalDays = (maxDate - minDate) / (1000 * 60 * 60 * 24);
+          const daysSinceStart = (d - minDate) / (1000 * 60 * 60 * 24);
+          return (daysSinceStart / totalDays) * 100;
+        }
+
+        // Build HTML
+        let html = '<div class="gantt-timeline">';
+        html += '<div class="gantt-timeline-label">Úkol</div>';
+        html += '<div class="gantt-timeline-grid" style="grid-template-columns: repeat(' + months.length + ', 1fr);">';
+        months.forEach(month => {
+          html += '<div class="gantt-timeline-month">' + month.label + '</div>';
+        });
+        html += '</div></div>';
+
+        // Add task rows
+        tasks.forEach(task => {
+          const start = task.start ? new Date(task.start) : null;
+          const end = task.end ? new Date(task.end) : null;
+
+          if (!start) return;
+
+          const startPos = getPosition(start);
+          const endPos = end ? getPosition(end) : startPos + 2;
+          const width = endPos - startPos;
+
+          html += '<div class="gantt-row">';
+          html += '<div class="gantt-row-label">';
+          html += '<a href="/ukol/' + task.id + '/" style="text-decoration: none; color: #1e293b; font-weight: 500;">' + task.name + '</a>';
+          html += '</div>';
+          html += '<div class="gantt-row-chart" style="grid-template-columns: repeat(' + months.length + ', 1fr);">';
+
+          // Grid cells
+          for (let i = 0; i < months.length; i++) {
+            html += '<div class="gantt-grid-cell"></div>';
+          }
+
+          // Task bar
+          const statusClass = 'gantt-bar-' + (task.status || 'pending');
+          const priorityClass = task.priority === 'high' ? ' gantt-bar-high' : '';
+          html += '<div class="gantt-bar ' + statusClass + priorityClass + '" style="left: ' + startPos + '%; width: ' + width + '%;" title="' + task.name + '">';
+          html += task.name;
+          html += '</div>';
+
+          html += '</div></div>';
+        });
+
+        // Add milestone row if any
+        if (milestones.length > 0) {
+          html += '<div class="gantt-row" style="min-height: 60px;">';
+          html += '<div class="gantt-row-label" style="font-weight: 600; color: #f59e0b;">🎯 Milníky</div>';
+          html += '<div class="gantt-row-chart" style="grid-template-columns: repeat(' + months.length + ', 1fr);">';
+
+          for (let i = 0; i < months.length; i++) {
+            html += '<div class="gantt-grid-cell"></div>';
+          }
+
+          milestones.forEach(ms => {
+            const pos = getPosition(ms.date);
+            const completedClass = ms.completed ? 'gantt-milestone-completed' : '';
+            html += '<div class="gantt-milestone ' + completedClass + '" style="left: ' + pos + '%;" title="' + ms.name + '"></div>';
+          });
+
+          html += '</div></div>';
+        }
+
+        document.getElementById('chart-' + projectId).innerHTML = html;
+      })();
+      </script>
+      {% else %}
+      <div class="gantt-empty">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📅</div>
+        <p>Žádné úkoly s datumem začátku v tomto projektu.</p>
       </div>
       {% endif %}
     </div>
   </div>
   {% endfor %}
 
+  <!-- Legend -->
+  <div class="gantt-legend">
+    <div class="gantt-legend-item">
+      <div class="gantt-legend-box" style="background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);"></div>
+      <span>Čeká na zahájení</span>
+    </div>
+    <div class="gantt-legend-item">
+      <div class="gantt-legend-box" style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);"></div>
+      <span>Probíhá</span>
+    </div>
+    <div class="gantt-legend-item">
+      <div class="gantt-legend-box" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%);"></div>
+      <span>Dokončeno</span>
+    </div>
+    <div class="gantt-legend-item">
+      <div class="gantt-milestone" style="position: relative; transform: rotate(45deg);"></div>
+      <span>Milník</span>
+    </div>
+    <div class="gantt-legend-item">
+      <div class="gantt-milestone gantt-milestone-completed" style="position: relative; transform: rotate(45deg);"></div>
+      <span>Dokončený milník</span>
+    </div>
+  </div>
+
   {% else %}
   <!-- Empty state -->
-  <div style="text-align: center; padding: 3rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px;">
-    <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
-    <h3 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Žádné úkoly k zobrazení</h3>
-    <p style="color: #6b7280; margin-bottom: 1.5rem;">
-      Přidejte úkoly s datumem začátku do vašich projektů pro zobrazení v Ganttově diagramu.
-    </p>
-    <a href="{% url 'index_project_cs' %}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-weight: 500;">
-      📁 Přejít na projekty
-    </a>
+  <div class="gantt-project">
+    <div style="text-align: center; padding: 3rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Žádné úkoly k zobrazení</h3>
+      <p style="color: #6b7280; margin-bottom: 1.5rem;">
+        Přidejte úkoly s datumem začátku do vašich projektů pro zobrazení v Ganttově diagramu.
+      </p>
+      <a href="{% url 'index_project_cs' %}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border-radius: 6px; text-decoration: none; font-weight: 500;">
+        📁 Přejít na projekty
+      </a>
+    </div>
   </div>
   {% endif %}
 
