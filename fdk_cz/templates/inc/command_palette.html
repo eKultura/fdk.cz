@@ -1,0 +1,221 @@
+{% comment %}
+=========================================================
+Command Palette - Cmd+K / Ctrl+K
+=========================================================
+Global search and quick actions
+{% endcomment %}
+
+<!-- Command Palette Overlay -->
+<div class="command-palette-overlay" id="commandPalette">
+  <div class="command-palette">
+    <div class="command-input-wrapper">
+      <input
+        type="text"
+        class="command-input"
+        id="commandInput"
+        placeholder="Hledat nebo příkaz..."
+        autocomplete="off"
+      >
+    </div>
+    <div class="command-results" id="commandResults">
+      <!-- Results will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const palette = document.getElementById('commandPalette');
+  const input = document.getElementById('commandInput');
+  const results = document.getElementById('commandResults');
+
+  // Command definitions
+  const commands = [
+    // Quick Actions
+    {
+      id: 'new-project',
+      title: 'Nový projekt',
+      subtitle: 'Vytvořit nový projekt',
+      icon: '📁',
+      url: '{% url "new_project_cs" %}',
+      shortcut: 'Cmd+N',
+      group: 'Rychlé akce'
+    },
+    {
+      id: 'new-task',
+      title: 'Nový úkol',
+      subtitle: 'Přidat nový úkol',
+      icon: '✓',
+      url: '{% url "task_management" %}',
+      shortcut: 'Cmd+T',
+      group: 'Rychlé akce'
+    },
+    {
+      id: 'dashboard',
+      title: 'Dashboard',
+      subtitle: 'Hlavní přehled',
+      icon: '🏠',
+      url: '{% url "index" %}',
+      group: 'Navigace'
+    },
+    {
+      id: 'projects',
+      title: 'Projekty',
+      subtitle: 'Seznam všech projektů',
+      icon: '📁',
+      url: '{% url "index_project_cs" %}',
+      group: 'Navigace'
+    },
+    {
+      id: 'tasks',
+      title: 'Správa úkolů',
+      subtitle: 'Přehled úkolů',
+      icon: '✓',
+      url: '{% url "task_management" %}',
+      group: 'Navigace'
+    },
+    {
+      id: 'tests',
+      title: 'Testování',
+      subtitle: 'Test management',
+      icon: '🧪',
+      url: '{% url "list_tests" %}',
+      group: 'Navigace'
+    },
+    {
+      id: 'accounting',
+      title: 'Účetnictví',
+      subtitle: 'Finanční přehled',
+      icon: '💰',
+      url: '{% url "accounting_dashboard" %}',
+      group: 'Navigace'
+    },
+  ];
+
+  let selectedIndex = 0;
+
+  // Open palette: Cmd+K or Ctrl+K
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      openPalette();
+    }
+
+    // ESC to close
+    if (e.key === 'Escape') {
+      closePalette();
+    }
+  });
+
+  // Click overlay to close
+  palette.addEventListener('click', function(e) {
+    if (e.target === palette) {
+      closePalette();
+    }
+  });
+
+  function openPalette() {
+    palette.classList.add('active');
+    input.value = '';
+    input.focus();
+    renderResults(commands);
+  }
+
+  function closePalette() {
+    palette.classList.remove('active');
+    selectedIndex = 0;
+  }
+
+  // Search on input
+  input.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    if (query === '') {
+      renderResults(commands);
+    } else {
+      const filtered = commands.filter(cmd =>
+        cmd.title.toLowerCase().includes(query) ||
+        cmd.subtitle.toLowerCase().includes(query)
+      );
+      renderResults(filtered);
+    }
+    selectedIndex = 0;
+  });
+
+  // Keyboard navigation
+  input.addEventListener('keydown', function(e) {
+    const items = results.querySelectorAll('.command-item');
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      updateSelection(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (items[selectedIndex]) {
+        items[selectedIndex].click();
+      }
+    }
+  });
+
+  function updateSelection(items) {
+    items.forEach((item, index) => {
+      item.classList.toggle('selected', index === selectedIndex);
+    });
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  }
+
+  function renderResults(items) {
+    if (items.length === 0) {
+      results.innerHTML = '<div class="command-item"><div class="command-item-content"><div class="command-item-title">Nic nenalezeno</div></div></div>';
+      return;
+    }
+
+    // Group by category
+    const grouped = {};
+    items.forEach(item => {
+      const group = item.group || 'Ostatní';
+      if (!grouped[group]) grouped[group] = [];
+      grouped[group].push(item);
+    });
+
+    let html = '';
+    Object.keys(grouped).forEach(groupName => {
+      html += `<div class="command-group">`;
+      html += `<div class="command-group-label">${groupName}</div>`;
+      grouped[groupName].forEach(item => {
+        html += `
+          <div class="command-item" data-url="${item.url}">
+            <div class="command-item-icon">${item.icon}</div>
+            <div class="command-item-content">
+              <div class="command-item-title">${item.title}</div>
+              <div class="command-item-subtitle">${item.subtitle}</div>
+            </div>
+            ${item.shortcut ? `<div class="command-item-shortcut">${item.shortcut}</div>` : ''}
+          </div>
+        `;
+      });
+      html += `</div>`;
+    });
+
+    results.innerHTML = html;
+
+    // Add click handlers
+    results.querySelectorAll('.command-item').forEach((item, index) => {
+      item.addEventListener('click', function() {
+        const url = this.dataset.url;
+        if (url) {
+          window.location.href = url;
+        }
+      });
+
+      if (index === selectedIndex) {
+        item.classList.add('selected');
+      }
+    });
+  }
+})();
+</script>
