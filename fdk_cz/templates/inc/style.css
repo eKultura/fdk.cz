@@ -2698,9 +2698,7 @@ select.form-control {
 
 /* ============ PAGE LAYOUTS ============ */
 .page-content {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1.5rem;
 }
 
 .page-header {
@@ -2747,6 +2745,51 @@ select.form-control {
 .tab.active {
   color: #3b82f6;
   border-bottom-color: #3b82f6;
+}
+
+/* ============ TAB NAVIGATION (Button-based tabs) ============ */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  color: #1e293b;
+  background: #e2e8f0;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 600;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
 }
 
 /* ============ RESPONSIVE ============ */
