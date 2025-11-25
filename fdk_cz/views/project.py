@@ -1363,6 +1363,12 @@ def gantt_chart(request):
         project_id__in=user_project_ids
     ).order_by('name')
 
+    # Convert gantt_data to JSON for JavaScript
+    import json as json_module
+    for project_data in gantt_data:
+        project_data['tasks'] = json_module.dumps(project_data['tasks'])
+        project_data['milestones'] = json_module.dumps(project_data['milestones'])
+
     return render(request, 'project/gantt_chart.html', {
         'gantt_data': gantt_data,
         'all_projects': all_projects,

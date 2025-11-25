@@ -3,19 +3,15 @@
 {% block header_title %}⚠️ Seznam rizik{% endblock %}
 {% block header_subtitle %}Přehled identifikovaných rizik a jejich řízení{% endblock %}
 
-{% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'risk_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Rizika</a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Seznam</span>
-  </div>
-</div>
+{% block context_breadcrumbs %}
+<span class="breadcrumb-link">Organizace</span>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'risk_dashboard' %}" class="breadcrumb-link">Rizika</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Seznam</span>
+{% endblock %}
 
+{% block content %}
 <div style="max-width: 1400px; margin: 0 auto;">
   <!-- Actions -->
   <div class="mb-10 flex gap-3">
