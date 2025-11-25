@@ -1,0 +1,145 @@
+{% comment %}
+=========================================================
+FDK.cz Design System - Reusable Components
+=========================================================
+Usage: {% include 'inc/components.html' %}
+{% endcomment %}
+
+{% comment %} ============ STAT CARD ============ {% endcomment %}
+{% comment %}
+Usage:
+  {% with value="24" label="Projekty" icon="📁" color="blue" %}
+    {% include 'inc/components.html' with component='stat_card' %}
+  {% endwith %}
+{% endcomment %}
+
+{% if component == 'stat_card' %}
+<div class="stat-card stat-card-{{ color|default:'blue' }}">
+  <div class="stat-icon">{{ icon|default:'📊' }}</div>
+  <div class="stat-value">{{ value }}</div>
+  <div class="stat-label">{{ label }}</div>
+  {% if sublabel %}<div class="stat-sublabel">{{ sublabel }}</div>{% endif %}
+</div>
+{% endif %}
+
+{% comment %} ============ PROJECT CARD ============ {% endcomment %}
+{% comment %}
+Usage:
+  {% with project=project %}
+    {% include 'inc/components.html' with component='project_card' %}
+  {% endwith %}
+{% endcomment %}
+
+{% if component == 'project_card' %}
+<a href="{% url 'detail_project' project.project_id %}" class="project-card">
+  <div class="project-card-header">
+    <h3 class="project-card-title">{{ project.name }}</h3>
+    {% if project.organization %}
+      <span class="badge badge-org">🏢 {{ project.organization.name }}</span>
+    {% endif %}
+  </div>
+
+  {% if project.description %}
+  <p class="project-card-description">{{ project.description|truncatewords:15 }}</p>
+  {% endif %}
+
+  <div class="project-card-stats">
+    <div class="project-stat">
+      <span class="project-stat-icon">🎯</span>
+      <span class="project-stat-value">{{ project.tasks.count }}</span>
+      <span class="project-stat-label">úkolů</span>
+    </div>
+
+    {% if project.budget %}
+    <div class="project-stat">
+      <span class="project-stat-icon">💰</span>
+      <span class="project-stat-value">{{ project.get_budget_utilization_percent|floatformat:0 }}%</span>
+      <span class="project-stat-label">rozpočtu</span>
+    </div>
+    {% endif %}
+
+    {% if project.end_date %}
+    <div class="project-stat">
+      <span class="project-stat-icon">📅</span>
+      <span class="project-stat-value">{{ project.end_date|timeuntil|truncatewords:1 }}</span>
+      <span class="project-stat-label">zbývá</span>
+    </div>
+    {% endif %}
+  </div>
+</a>
+{% endif %}
+
+{% comment %} ============ EMPTY STATE ============ {% endcomment %}
+{% comment %}
+Usage:
+  {% with icon="📁" title="Žádné projekty" message="Začněte vytvořením nového projektu" action_url="new_project_cs" action_label="Nový projekt" %}
+    {% include 'inc/components.html' with component='empty_state' %}
+  {% endwith %}
+{% endcomment %}
+
+{% if component == 'empty_state' %}
+<div class="empty-state">
+  <div class="empty-state-icon">{{ icon|default:'📭' }}</div>
+  <h3 class="empty-state-title">{{ title }}</h3>
+  <p class="empty-state-message">{{ message }}</p>
+  {% if action_url %}
+  <a href="{% url action_url %}" class="btn btn-primary">{{ action_label|default:'Začít' }}</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% comment %} ============ TASK ITEM ============ {% endcomment %}
+{% comment %}
+Usage:
+  {% with task=task inline_actions=True %}
+    {% include 'inc/components.html' with component='task_item' %}
+  {% endwith %}
+{% endcomment %}
+
+{% if component == 'task_item' %}
+<div class="task-item task-item-{{ task.status|slugify }}" data-task-id="{{ task.task_id }}">
+  <div class="task-item-content">
+    <a href="{% url 'detail_task' task.task_id %}" class="task-item-title">{{ task.title }}</a>
+    {% if task.project %}
+      <span class="task-item-meta">📁 {{ task.project.name }}</span>
+    {% endif %}
+  </div>
+
+  <div class="task-item-badges">
+    {% if task.priority == 'Vysoká' %}
+      <span class="badge badge-red">🔥 Vysoká</span>
+    {% endif %}
+
+    <span class="badge badge-{{ task.status|slugify }}">{{ task.status }}</span>
+
+    {% if task.due_date %}
+      <span class="badge badge-gray">📅 {{ task.due_date|date:'d.m.Y' }}</span>
+    {% endif %}
+  </div>
+
+  {% if inline_actions %}
+  <div class="task-item-actions">
+    <button class="task-action" title="Hotovo">✓</button>
+    <button class="task-action" title="Upravit">✏️</button>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% comment %} ============ QUICK ACTION ============ {% endcomment %}
+{% comment %}
+Usage:
+  {% with url="new_project_cs" icon="📁" label="Nový projekt" shortcut="Cmd+N" %}
+    {% include 'inc/components.html' with component='quick_action' %}
+  {% endwith %}
+{% endcomment %}
+
+{% if component == 'quick_action' %}
+<a href="{% url url %}" class="quick-action">
+  <span class="quick-action-icon">{{ icon }}</span>
+  <span class="quick-action-label">{{ label }}</span>
+  {% if shortcut %}
+    <span class="quick-action-shortcut">{{ shortcut }}</span>
+  {% endif %}
+</a>
+{% endif %}

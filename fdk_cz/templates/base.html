@@ -258,7 +258,21 @@
       }
 
     });
+
+    // Sidebar toggle (Cmd+B)
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+        e.preventDefault();
+        document.getElementById('sidebar').classList.toggle('collapsed');
+      }
+    });
   </script>
+
+  <!-- Command Palette -->
+  {% if user.is_authenticated %}
+    {% include 'inc/command_palette.html' %}
+  {% endif %}
+
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>

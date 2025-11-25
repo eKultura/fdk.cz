@@ -11,141 +11,95 @@
 
 {% block content %}
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Quick Actions Bar -->
+<div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+  {% with url="new_project_cs" icon="📁" label="Nový projekt" shortcut="Cmd+N" %}
+    {% include 'inc/components.html' with component='quick_action' %}
+  {% endwith %}
 
-  <!-- Seznam projektů -->
-  <div class="lg:col-span-2">
-    <div class="content-card">
-      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-        <h3 class="card-title" style="font-weight:600;font-size:1.1rem;">{% trans "Seznam projektů" %}</h3>
-        <a href="{% url 'new_project_cs' %}" class="btn btn-primary text-sm">&#10133; {% trans "Přidat projekt" %}</a>
-      </div>
+  {% with url="task_management" icon="✓" label="Správa úkolů" %}
+    {% include 'inc/components.html' with component='quick_action' %}
+  {% endwith %}
 
-      {% if user_projects %}
-      <div style="overflow-x:auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>{% trans "Název" %}</th>
-              <th class="hidden md:table-cell">{% trans "Organizace" %}</th>
-              <th class="hidden lg:table-cell">{% trans "Vlastník" %}</th>
-              <th class="hidden lg:table-cell">{% trans "Vytvořeno" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for project in user_projects %}
-            <tr>
-              <td>
-                <a href="{% url 'detail_project' project.project_id %}" class="font-semibold text-blue-600 hover:underline">
-                  {{ project.name|safe }}
-                </a>
-                {% if project.description %}
-                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">{{ project.description|truncatewords:10|safe }}</div>
-                {% endif %}
-              </td>
-              <td class="hidden md:table-cell text-gray-600">
-                {% if project.organization %}
-                  <a href="{% url 'organization_detail' project.organization.organization_id %}" class="text-blue-600 hover:underline">
-                    🏢 {{ project.organization.name }}
-                  </a>
-                {% else %}
-                  <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-                    👤 Osobní
-                  </span>
-                {% endif %}
-              </td>
-              <td class="hidden lg:table-cell text-gray-600">
-                {% if project.owner %}
-                  <span style="padding: 4px 12px; background: #e0e7ff; color: #3730a3; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-                    👤 {{ project.owner.get_full_name|default:project.owner.username }}
-                  </span>
-                {% else %}
-                  —
-                {% endif %}
-              </td>
-              <td class="hidden lg:table-cell" style="color: #64748b; font-size: 0.875rem;">
-                {{ project.created|date:"d.m.Y" }}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-      <div class="empty-state" style="text-align:center;padding:2rem;color:#6b7280;">
-        <div style="font-size:2rem;">🗂️</div>
-        <p style="margin-top:0.5rem;">{% trans "Zatím nemáte žádné projekty." %}</p>
-        <a href="{% url 'new_project_cs' %}" class="btn btn-outline" style="margin-top:1rem;">➕ {% trans "Založit nový projekt" %}</a>
-      </div>
-      {% endif %}
+  {% with url="gantt_view" icon="📊" label="Gantt diagram" %}
+    {% include 'inc/components.html' with component='quick_action' %}
+  {% endwith %}
+</div>
+
+<!-- Active Projects -->
+<div style="margin-bottom: 3rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+      <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">{% trans "Aktivní projekty" %}</h2>
+      <p style="color: #64748b; margin: 0; font-size: 0.875rem;">{{ user_projects|length|default:0 }} {% if user_projects|length == 1 %}projekt{% elif user_projects|length < 5 %}projekty{% else %}projektů{% endif %}</p>
     </div>
-
-    <!-- Archiv projektů -->
-    {% if archived_projects %}
-    <div class="content-card" style="margin-top: 1.5rem; border: 2px solid #e5e7eb; background: linear-gradient(to bottom, #f9fafb, #ffffff);">
-      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-        <h3 class="card-title" style="font-weight:600;font-size:1.1rem;color:#6b7280;">📦 {% trans "Archiv projektů" %}</h3>
-        <span style="padding: 4px 12px; background: #f3f4f6; color: #6b7280; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-          {{ archived_projects|length }} {% if archived_projects|length == 1 %}projekt{% elif archived_projects|length < 5 %}projekty{% else %}projektů{% endif %}
-        </span>
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="data-table" style="opacity: 0.8;">
-          <thead>
-            <tr>
-              <th>{% trans "Název" %}</th>
-              <th class="hidden md:table-cell">{% trans "Organizace" %}</th>
-              <th class="hidden lg:table-cell">{% trans "Vlastník" %}</th>
-              <th class="hidden lg:table-cell">{% trans "Ukončeno" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for project in archived_projects %}
-            <tr style="background: #fafafa;">
-              <td>
-                <a href="{% url 'detail_project' project.project_id %}" class="font-semibold text-gray-500 hover:text-gray-700 hover:underline">
-                  {{ project.name|safe }}
-                </a>
-                {% if project.description %}
-                <div style="font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem;">{{ project.description|truncatewords:10|safe }}</div>
-                {% endif %}
-              </td>
-              <td class="hidden md:table-cell text-gray-500">
-                {% if project.organization %}
-                  <a href="{% url 'organization_detail' project.organization.organization_id %}" class="text-gray-500 hover:text-gray-700 hover:underline">
-                    🏢 {{ project.organization.name }}
-                  </a>
-                {% else %}
-                  <span style="padding: 4px 12px; background: #e5e7eb; color: #6b7280; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-                    👤 Osobní
-                  </span>
-                {% endif %}
-              </td>
-              <td class="hidden lg:table-cell text-gray-500">
-                {% if project.owner %}
-                  <span style="padding: 4px 12px; background: #e5e7eb; color: #6b7280; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
-                    👤 {{ project.owner.get_full_name|default:project.owner.username }}
-                  </span>
-                {% else %}
-                  —
-                {% endif %}
-              </td>
-              <td class="hidden lg:table-cell" style="font-size: 0.875rem;">
-                <span style="padding: 4px 12px; background: #fee2e2; color: #991b1b; border-radius: 12px; font-weight: 500;">
-                  🏁 {{ project.end_date|date:"d.m.Y" }}
-                </span>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% endif %}
+    <a href="{% url 'new_project_cs' %}" class="btn btn-primary">
+      ➕ {% trans "Nový projekt" %}
+    </a>
   </div>
 
-
-
+  {% if user_projects %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for project in user_projects %}
+      {% with project=project %}
+        {% include 'inc/components.html' with component='project_card' %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}
+    {% with icon="📁" title="Žádné projekty" message="Začněte vytvořením nového projektu" action_url="new_project_cs" action_label="Nový projekt" %}
+      {% include 'inc/components.html' with component='empty_state' %}
+    {% endwith %}
+  {% endif %}
 </div>
+
+<!-- Archived Projects -->
+{% if archived_projects %}
+<div class="content-card" style="border: 2px solid #e5e7eb; background: linear-gradient(to bottom, #f9fafb, #ffffff);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+      <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0; color: #6b7280;">📦 {% trans "Archiv projektů" %}</h3>
+      <p style="color: #9ca3af; margin: 0; font-size: 0.875rem;">
+        {{ archived_projects|length }} {% if archived_projects|length == 1 %}projekt{% elif archived_projects|length < 5 %}projekty{% else %}projektů{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for project in archived_projects %}
+    <a href="{% url 'detail_project' project.project_id %}" class="project-card" style="opacity: 0.75; filter: grayscale(20%);">
+      <div class="project-card-header">
+        <h3 class="project-card-title" style="color: #6b7280;">{{ project.name|safe }}</h3>
+        {% if project.organization %}
+          <span class="badge badge-org" style="background: #f3f4f6; color: #6b7280;">🏢 {{ project.organization.name }}</span>
+        {% else %}
+          <span class="badge" style="background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">👤 Osobní</span>
+        {% endif %}
+      </div>
+
+      {% if project.description %}
+      <p class="project-card-description" style="color: #9ca3af;">{{ project.description|truncatewords:15|safe }}</p>
+      {% endif %}
+
+      <div class="project-card-stats">
+        {% if project.owner %}
+        <div class="project-stat">
+          <span class="project-stat-icon">👤</span>
+          <span class="project-stat-label">{{ project.owner.get_full_name|default:project.owner.username|truncatewords:2 }}</span>
+        </div>
+        {% endif %}
+
+        {% if project.end_date %}
+        <div class="project-stat">
+          <span class="project-stat-icon">🏁</span>
+          <span class="project-stat-label">{{ project.end_date|date:"d.m.Y" }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}
