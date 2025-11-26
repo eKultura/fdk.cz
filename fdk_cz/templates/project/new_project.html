@@ -5,6 +5,14 @@
 {% block header_title %}Nový projekt{% endblock %}
 {% block header_subtitle %}Založte nový projekt a vyplňte základní informace{% endblock %}
 
+{% block context_breadcrumbs %}
+{% include 'inc/org_context_breadcrumb.html' %}
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'index_project_cs' %}" class="breadcrumb-link">Projekty</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Nový projekt</span>
+{% endblock %}
+
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto;">
   <div class="content-card">

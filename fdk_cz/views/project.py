@@ -1332,7 +1332,11 @@ def gantt_chart(request):
     for project in projects:
         project_tasks = []
         # Fix: Use correct field names - 'created' and 'title' instead of 'start_date' and 'task_name'
-        tasks = project.tasks.filter(deleted=False).order_by('created', 'title')
+        # Only show high and medium priority tasks
+        tasks = project.tasks.filter(
+            deleted=False,
+            priority__in=['high', 'medium']
+        ).order_by('created', 'title')
 
         for task in tasks:
             # Use 'created' as start date and 'due_date' as end date

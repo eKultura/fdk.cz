@@ -12,13 +12,21 @@
 {% block content %}
 
 <div class="max-w-6xl mx-auto">
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <a href="{% url 'hr_dashboard' %}" class="tab-button active">📊 Dashboard</a>
+    <a href="{% url 'list_employees' %}" class="tab-button">👥 Zaměstnanci</a>
+    <a href="{% url 'list_departments' %}" class="tab-button">🏢 Oddělení</a>
+  </div>
+
   <!-- Actions -->
-  <div class="content-card mb-6">
-    <div class="flex flex-wrap gap-3">
-      <a href="{% url 'create_employee' %}" class="btn btn-primary">+ Nový zaměstnanec</a>
-      <a href="{% url 'create_department' %}" class="btn btn-secondary">+ Nové oddělení</a>
-      <a href="{% url 'list_employees' %}" class="btn btn-outline">Všichni zaměstnanci</a>
-      <a href="{% url 'list_departments' %}" class="btn btn-outline">Všechna oddělení</a>
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <h2 style="font-size: 1.125rem; font-weight: 600; margin: 0;">HR Management</h2>
+      <div style="display: flex; gap: 0.75rem;">
+        <a href="{% url 'create_employee' %}" class="btn btn-primary">＋ Nový zaměstnanec</a>
+        <a href="{% url 'create_department' %}" class="btn btn-outline">＋ Nové oddělení</a>
+      </div>
     </div>
   </div>
 
