@@ -12,17 +12,14 @@ Modul: {{ article.module.display_name }}
 {% endif %}
 {% endblock %}
 
+{% block context_breadcrumbs %}
+<a href="{% url 'help_index' %}" class="breadcrumb-link">📚 Nápověda</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">{{ article.title }}</span>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto">
-
-  <!-- Breadcrumb -->
-  <div class="mb-6">
-    <nav class="flex items-center gap-2 text-sm text-gray-600">
-      <a href="{% url 'help_index' %}" class="hover:text-blue-600">📚 Nápověda</a>
-      <span>→</span>
-      <span class="text-gray-800 font-medium">{{ article.title }}</span>
-    </nav>
-  </div>
 
   <!-- Article Content -->
   <div class="content-card">

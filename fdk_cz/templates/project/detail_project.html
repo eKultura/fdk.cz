@@ -43,6 +43,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
     <button class="tab-button" data-tab="gantt">📅 Gantt</button>
     <button class="tab-button" data-tab="documents">📄 Dokumenty</button>
     <button class="tab-button" data-tab="team">👥 Tým</button>
+    <button class="tab-button" data-tab="swot">💡 SWOT</button>
     <button class="tab-button" data-tab="testing">🐛 Testování</button>
     <button class="tab-button" data-tab="stores">📦 Sklady</button>
   </div>
@@ -511,6 +512,73 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- Tab: SWOT -->
+  <div class="tab-content" id="tab-swot">
+    <div class="content-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">💡 SWOT Analýzy</h2>
+        {% if not is_project_closed %}
+        <a href="{% url 'create_swot_analysis' %}?project_id={{ project.project_id }}" class="btn btn-primary">＋ Nová SWOT analýza</a>
+        {% endif %}
+      </div>
+      <p style="color: #64748b; margin-bottom: 1.5rem;">SWOT analýza pomáhá identifikovat silné (Strengths) a slabé (Weaknesses) stránky projektu, příležitosti (Opportunities) a hrozby (Threats).</p>
+
+      {% if project.swot_analyses.all %}
+      <div style="display: grid; gap: 1rem;">
+        {% for swot in project.swot_analyses.all %}
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div>
+              <h3 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
+                <a href="{% url 'detail_swot_analysis' swot.swot_id %}" style="color: #3b82f6; text-decoration: none;">
+                  {{ swot.title }}
+                </a>
+              </h3>
+              <p style="color: #64748b; font-size: 0.875rem;">Vytvořeno: {{ swot.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <a href="{% url 'detail_swot_analysis' swot.swot_id %}" class="btn btn-outline btn-sm">👁️ Detail</a>
+              <a href="{% url 'edit_swot_analysis' swot.swot_id %}" class="btn btn-outline btn-sm">✏️ Upravit</a>
+            </div>
+          </div>
+
+          <!-- SWOT Grid Preview -->
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div style="background: #d1fae5; padding: 1rem; border-radius: 8px;">
+              <div style="font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">💪 Silné stránky</div>
+              <div style="color: #047857; font-size: 0.875rem;">{{ swot.strengths|truncatewords:10 }}</div>
+            </div>
+            <div style="background: #fef3c7; padding: 1rem; border-radius: 8px;">
+              <div style="font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">⚠️ Slabé stránky</div>
+              <div style="color: #b45309; font-size: 0.875rem;">{{ swot.weaknesses|truncatewords:10 }}</div>
+            </div>
+            <div style="background: #dbeafe; padding: 1rem; border-radius: 8px;">
+              <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">🎯 Příležitosti</div>
+              <div style="color: #1d4ed8; font-size: 0.875rem;">{{ swot.opportunities|truncatewords:10 }}</div>
+            </div>
+            <div style="background: #fee2e2; padding: 1rem; border-radius: 8px;">
+              <div style="font-weight: 600; color: #991b1b; margin-bottom: 0.5rem;">⚡ Hrozby</div>
+              <div style="color: #dc2626; font-size: 0.875rem;">{{ swot.threats|truncatewords:10 }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 4rem 2rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 5rem; margin-bottom: 1rem;">💡</div>
+        <h3 style="font-size: 1.25rem; color: #64748b; margin-bottom: 1rem;">Zatím nebyly vytvořeny žádné SWOT analýzy</h3>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">SWOT analýza vám pomůže strategicky naplánovat váš projekt</p>
+        {% if not is_project_closed %}
+        <a href="{% url 'create_swot_analysis' %}?project_id={{ project.project_id }}" class="btn btn-primary">
+          ＋ Vytvořit první SWOT analýzu
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
   </div>
 
