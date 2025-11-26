@@ -4,7 +4,7 @@
 {% block header_subtitle %}Správa seznamů a úkolových položek{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <span style="font-weight: 600; color: #1e293b;">Seznamy</span>
 {% endblock %}

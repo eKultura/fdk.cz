@@ -6,7 +6,7 @@
 {% block header_subtitle %}{{ module.display_name }}{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <span class="breadcrumb-link">Předplatné</span>
 <span class="breadcrumb-sep">→</span>

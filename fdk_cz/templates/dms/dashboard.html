@@ -4,7 +4,7 @@
 {% block header_subtitle %}Centralizovaný systém pro správu všech dokumentů{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <span style="font-weight: 600; color: #1e293b;">DMS</span>
 {% endblock %}

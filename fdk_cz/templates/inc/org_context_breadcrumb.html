@@ -1,0 +1,11 @@
+{% comment %}
+Breadcrumb component for organization/personal context
+Displays either current organization or "Osobní" based on session context
+{% endcomment %}
+{% if current_organization %}
+<a href="{% url 'organization_detail' current_organization.organization_id %}" class="breadcrumb-link" style="color: #3b82f6; text-decoration: none;">
+  {{ current_organization.name }}
+</a>
+{% else %}
+<span class="breadcrumb-link">Osobní</span>
+{% endif %}

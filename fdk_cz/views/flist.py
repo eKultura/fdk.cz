@@ -30,6 +30,16 @@ def index_list(request):
         # Načteme uživatele explicitně podle jeho primárního klíče
         current_user = User.objects.get(pk=request.user.pk)
         lists = Flist.objects.filter(owner=current_user)
+
+        # Filter by organization context
+        current_org_id = request.session.get('current_organization_id')
+        if current_org_id:
+            # Organization context: show only lists from projects in this organization
+            lists = lists.filter(project__organization_id=current_org_id)
+        else:
+            # Personal context: show only lists without project or with project without organization
+            lists = lists.filter(project__isnull=True) | lists.filter(project__organization__isnull=True)
+
     except User.DoesNotExist:
         lists = []
 

@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'list_tests' %}" class="breadcrumb-link">Testování</a>
 <span class="breadcrumb-sep">→</span>

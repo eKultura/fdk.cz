@@ -4,7 +4,7 @@
 {% block header_subtitle %}Vytvořte strategickou analýzu{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'list_swot_analyses' %}" class="breadcrumb-link">SWOT analýzy</a>
 <span class="breadcrumb-sep">→</span>

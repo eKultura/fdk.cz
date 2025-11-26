@@ -227,17 +227,25 @@ def index_project(request):
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
 
+    # Base query: user's projects (member or owner)
+    base_query = Q(project_users__user=request.user) | Q(owner=request.user)
+
+    # Filter by organization context
+    current_org_id = request.session.get('current_organization_id')
+    if current_org_id:
+        # Organization context: show only projects from this organization
+        base_query = base_query & Q(organization_id=current_org_id)
+    else:
+        # Personal context: show only projects without organization
+        base_query = base_query & Q(organization__isnull=True)
+
     # Aktivní projekty = bez end_date NEBO s end_date >= dnes
-    user_projects = Project.objects.filter(
-        Q(project_users__user=request.user) | Q(owner=request.user)  # Člen nebo vlastník
-    ).filter(
+    user_projects = Project.objects.filter(base_query).filter(
         Q(end_date__isnull=True) | Q(end_date__gte=date.today())  # Aktivní projekty
     ).distinct().order_by('-created')
 
     # Archivované projekty = s end_date < dnes
-    archived_projects = Project.objects.filter(
-        Q(project_users__user=request.user) | Q(owner=request.user)  # Člen nebo vlastník
-    ).filter(
+    archived_projects = Project.objects.filter(base_query).filter(
         end_date__lt=date.today()  # Ukončené projekty
     ).distinct().order_by('-end_date')
 

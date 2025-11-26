@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'law_dashboard' %}" class="breadcrumb-link">AI Právník</a>
 <span class="breadcrumb-sep">→</span>
