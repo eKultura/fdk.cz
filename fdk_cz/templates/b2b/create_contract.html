@@ -3,20 +3,15 @@
 {% block header_title %}📝 Nová B2B smlouva{% endblock %}
 {% block header_subtitle %}Vytvoření nové obchodní smlouvy{% endblock %}
 
+{% block context_breadcrumbs %}
+<a href="{% url 'b2b_dashboard' %}" class="breadcrumb-link">B2B</a>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'list_b2b_contracts' %}" class="breadcrumb-link">Smlouvy</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Nová</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'b2b_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">B2B</a>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'list_b2b_contracts' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Smlouvy</a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Nová smlouva</span>
-  </div>
-</div>
 
 <div style="max-width: 1000px; margin: 0 auto;">
 

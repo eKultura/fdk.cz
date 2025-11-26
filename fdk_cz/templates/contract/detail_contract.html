@@ -5,24 +5,19 @@
 {% block header_title %}📄 {{ contract.name }}{% endblock %}
 {% block header_subtitle %}Detail smlouvy{% endblock %}
 
+{% block context_breadcrumbs %}
+{% if contract.project and contract.project.organization %}
+  <a href="{% url 'organization_detail' contract.project.organization.organization_id %}" class="breadcrumb-link">{{ contract.project.organization.name }}</a>
+{% else %}
+  <span class="breadcrumb-link">Osobní</span>
+{% endif %}
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'list_contracts' %}" class="breadcrumb-link">Smlouvy</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">{{ contract.name }}</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    {% if contract.project and contract.project.organization %}
-      <a href="{% url 'organization_detail' contract.project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-        {{ contract.project.organization.name }}
-      </a>
-    {% else %}
-      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
-    {% endif %}
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'list_contracts' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Smlouvy</a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">{{ contract.name }}</span>
-  </div>
-</div>
 
 <div style="max-width: 1000px; margin: 0 auto;">
 
