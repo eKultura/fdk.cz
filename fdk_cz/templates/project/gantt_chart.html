@@ -41,20 +41,23 @@ Vizuální časová osa úkolů a milníků ve vašich projektech
   }
 
   .gantt-project-header {
-    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-    color: white;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
     padding: 1rem 1.5rem;
     font-size: 1.125rem;
     font-weight: 600;
   }
 
   .gantt-project-header a {
-    color: white;
+    color: #1e293b;
     text-decoration: none;
+    transition: color 0.2s;
   }
 
   .gantt-project-header a:hover {
-    text-decoration: underline;
+    color: #3b82f6;
+    text-decoration: none;
   }
 
   .gantt-chart {
@@ -349,7 +352,7 @@ Vizuální časová osa úkolů a milníků ve vašich projektech
 
           html += '<div class="gantt-row">';
           html += '<div class="gantt-row-label">';
-          html += '<a href="/ukol/' + task.id + '/" style="text-decoration: none; color: #1e293b; font-weight: 500;">' + task.name + '</a>';
+          html += '<a href="/projekt/ukol/' + task.id + '/" style="text-decoration: none; color: #1e293b; font-weight: 500;">' + task.name + '</a>';
           html += '</div>';
           html += '<div class="gantt-row-chart" style="grid-template-columns: repeat(' + months.length + ', 1fr);">';
 

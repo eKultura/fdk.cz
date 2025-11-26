@@ -309,7 +309,234 @@ Automaticky aplikuje jednotný styl na všechny tabulky:
 - Před akcemi (tlačítka)
 - `margin-bottom: 1.5rem`
 
-## 3.7 Formuláře - jednotný styl
+### CSS třídy pro breadcrumbs (v style.css):
+
+```css
+.breadcrumb-link {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-link:hover {
+  color: #1e293b;
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  color: #9ca3af;
+  user-select: none;
+  margin: 0 0.25rem;
+}
+```
+
+## 3.7 Page Title a Page Subtitle - JEDNOTNÁ STRUKTURA
+
+### Účel:
+- **Page Title** - hlavní nadpis stránky (h1)
+- **Page Subtitle** - popisný text pod nadpisem
+
+### CSS třídy (v style.css):
+
+```css
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 1rem;
+}
+```
+
+### Vzorová implementace:
+
+```html
+<div class="page-header">
+  <h1 class="page-title">Název stránky</h1>
+  <p class="page-subtitle">Popis stránky nebo její účel</p>
+</div>
+```
+
+### Příklady:
+
+**1. Dashboard:**
+```html
+<h1 class="page-title">📊 Dashboard</h1>
+<p class="page-subtitle">Přehled vašich projektů a úkolů</p>
+```
+
+**2. Seznam:**
+```html
+<h1 class="page-title">Projekty</h1>
+<p class="page-subtitle">Spravujte své projekty a týmy</p>
+```
+
+**3. Detail:**
+```html
+<h1 class="page-title">Projekt: {{ project.name }}</h1>
+<p class="page-subtitle">{{ project.tasks.count }} úkolů · {{ project.members.count }} členů týmu</p>
+```
+
+## 3.8 Tab Navigation - JEDNOTNÁ NAVIGACE PRO VŠECHNY MODULY
+
+### Účel:
+- Navigace mezi sekcemi v rámci modulu/detailu
+- Jednotný vzhled napříč celou aplikací
+- Aktivní tab zvýrazněn
+
+### CSS třídy (v style.css):
+
+```css
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  color: #1e293b;
+  background: #e2e8f0;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 600;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+```
+
+### Vzorová implementace:
+
+**1. Pro samostatné stránky (linky):**
+```html
+<div class="tab-navigation">
+  <a href="{% url 'dashboard' %}" class="tab-button active">📊 Dashboard</a>
+  <a href="{% url 'list' %}" class="tab-button">📋 Seznam</a>
+  <a href="{% url 'settings' %}" class="tab-button">⚙️ Nastavení</a>
+</div>
+```
+
+**2. Pro JavaScript tabing (přepínání na straně):**
+```html
+<div class="tab-navigation">
+  <button class="tab-button active" data-tab="overview">📊 Přehled</button>
+  <button class="tab-button" data-tab="tasks">✓ Úkoly</button>
+  <button class="tab-button" data-tab="documents">📄 Dokumenty</button>
+</div>
+
+<div class="tab-content active" id="tab-overview">
+  <!-- Obsah přehledu -->
+</div>
+
+<div class="tab-content" id="tab-tasks">
+  <!-- Obsah úkolů -->
+</div>
+
+<div class="tab-content" id="tab-documents">
+  <!-- Obsah dokumentů -->
+</div>
+```
+
+### Příklady podle modulů:
+
+**1. Projekt - detail:**
+```html
+<div class="tab-navigation">
+  <button class="tab-button active" data-tab="overview">📊 Přehled</button>
+  <button class="tab-button" data-tab="tasks">✓ Úkoly</button>
+  <button class="tab-button" data-tab="gantt">📅 Gantt</button>
+  <button class="tab-button" data-tab="documents">📄 Dokumenty</button>
+  <button class="tab-button" data-tab="team">👥 Tým</button>
+</div>
+```
+
+**2. HR - dashboard:**
+```html
+<div class="tab-navigation">
+  <a href="{% url 'hr_dashboard' %}" class="tab-button active">📊 Dashboard</a>
+  <a href="{% url 'list_employees' %}" class="tab-button">👥 Zaměstnanci</a>
+  <a href="{% url 'list_departments' %}" class="tab-button">🏢 Oddělení</a>
+</div>
+```
+
+**3. Rizika - dashboard:**
+```html
+<div class="tab-navigation">
+  <a href="{% url 'risk_dashboard' %}" class="tab-button active">📊 Dashboard</a>
+  <a href="{% url 'list_risks' %}" class="tab-button">📋 Všechna rizika</a>
+  <a href="{% url 'risk_matrix' %}" class="tab-button">🎯 Riziková matice</a>
+</div>
+```
+
+### Pravidla:
+1. **Tab navigation VŽDY nad hlavním obsahem** - ihned po breadcrumbs
+2. **Ikony před textem** - pro lepší vizuální rozlišení
+3. **Aktivní tab** má třídu `active`
+4. **Flex-wrap: wrap** - pro responzivitu na mobilu
+5. **Gap: 0.5rem** - mezera mezi taby
+6. **Margin-bottom: 1.5rem** - mezera pod navigací
+
+### Umístění:
+- VŽDY nad hlavním obsahem stránky/modulu
+- Pod breadcrumbs
+- Před akčními tlačítky (Create, Add, etc.)
+
+### JavaScript pro tab switching (volitelné):
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Odstranit active ze všech
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Přidat active na vybraný
+      button.classList.add('active');
+      const tabId = button.dataset.tab;
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    });
+  });
+});
+```
+
+## 3.9 Formuláře - jednotný styl
 
 ### Základní pravidla:
 - Formuláře v **bílém boxu** s padding

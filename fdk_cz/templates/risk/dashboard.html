@@ -12,12 +12,18 @@
 {% block content %}
 
 <div class="">
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <a href="{% url 'risk_dashboard' %}" class="tab-button active">📊 Dashboard</a>
+    <a href="{% url 'list_risks' %}" class="tab-button">📋 Všechna rizika</a>
+    <a href="{% url 'risk_matrix' %}" class="tab-button">🎯 Riziková matice</a>
+  </div>
+
   <!-- Actions -->
-  <div class="content-card mb-6">
-    <div class="flex flex-wrap gap-3">
-      <a href="{% url 'create_risk' %}" class="btn btn-primary">+ Nové riziko</a>
-      <a href="{% url 'list_risks' %}" class="btn btn-outline">Všechna rizika</a>
-      <a href="{% url 'risk_matrix' %}" class="btn btn-outline">Riziková matice</a>
+  <div class="content-card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 1.125rem; font-weight: 600; margin: 0;">Správa rizik</h2>
+      <a href="{% url 'create_risk' %}" class="btn btn-primary">＋ Nové riziko</a>
     </div>
   </div>
 
