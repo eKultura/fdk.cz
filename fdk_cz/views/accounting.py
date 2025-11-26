@@ -290,6 +290,9 @@ def chart_of_accounts(request):
 @login_required
 def create_account(request):
     """Create new account in chart of accounts"""
+    from django.contrib import messages
+    from django.db import IntegrityError
+
     context = get_current_context(request)
     if not context:
         return redirect('select_accounting_context')
@@ -297,10 +300,14 @@ def create_account(request):
     if request.method == 'POST':
         form = AccountingAccountForm(request.POST, context=context)
         if form.is_valid():
-            account = form.save(commit=False)
-            account.context = context
-            account.save()
-            return redirect('chart_of_accounts')
+            try:
+                account = form.save(commit=False)
+                account.context = context
+                account.save()
+                messages.success(request, f'Účet "{account.account_number} - {account.name}" byl úspěšně vytvořen.')
+                return redirect('chart_of_accounts')
+            except IntegrityError:
+                messages.error(request, f'Účet s číslem "{account.account_number}" již v tomto kontextu existuje. Zvolte prosím jiné číslo účtu.')
     else:
         form = AccountingAccountForm(context=context)
 

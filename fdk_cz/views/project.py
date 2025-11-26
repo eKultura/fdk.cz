@@ -124,14 +124,14 @@ def detail_project(request, project_id):
         new_milestone.save()
         return redirect('detail_project', project_id=project_id)
 
-    tasks_to_do = proj.tasks.exclude(priority='Nice to have').exclude(status='Hotovo')
+    tasks_to_do = proj.tasks.exclude(deleted=True).exclude(priority='Nice to have').exclude(status='Hotovo')
     # Další logika pro detaily projektu
     tasks_by_status = {
-        'Nezahájeno': proj.tasks.filter(status='Nezahájeno'),
-        'Probíhá': proj.tasks.filter(status='Probíhá'),
-        'Hotovo': proj.tasks.filter(status='Hotovo')
+        'Nezahájeno': proj.tasks.filter(status='Nezahájeno').exclude(deleted=True),
+        'Probíhá': proj.tasks.filter(status='Probíhá').exclude(deleted=True),
+        'Hotovo': proj.tasks.filter(status='Hotovo').exclude(deleted=True)
     }
-    nice_to_have_tasks = proj.tasks.filter(priority='Nice to have')
+    nice_to_have_tasks = proj.tasks.filter(priority='Nice to have').exclude(deleted=True)
     can_view_contacts = request.user.has_perm('project.view_contact') or request.user == proj.owner
 
     # Kontrola, zda je projekt ukončen (má nastavený end_date a je v minulosti)
@@ -152,7 +152,7 @@ def detail_project(request, project_id):
             })
 
     # Přidání vysokoprioritních úkolů do Gantt diagramu
-    high_priority_tasks = proj.tasks.filter(priority='Vysoká').exclude(status='Hotovo')
+    high_priority_tasks = proj.tasks.filter(priority='Vysoká').exclude(status='Hotovo').exclude(deleted=True)
     for task in high_priority_tasks:
         if task.due_date:  # Fix: Use 'due_date' instead of 'deadline'
             gantt_items.append({

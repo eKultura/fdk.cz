@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Úprava majetku | FDK.cz{% endblock %}
+{% block header_title %}✏️ Úprava majetku{% endblock %}
+{% block header_subtitle %}Upravte údaje o majetku{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
+  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
+    <span style="color: #64748b;">📍 Kontext:</span>
+    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'asset_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Majetek</a>
+    <span style="color: #9ca3af;">→</span>
+    <a href="{% url 'detail_asset' asset.asset_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">{{ asset.name }}</a>
+    <span style="color: #9ca3af;">→</span>
+    <span style="font-weight: 600; color: #1e293b;">Úprava</span>
+  </div>
+</div>
+
+<div class="max-w-4xl mx-auto">
+  <!-- Actions -->
+  <div class="mb-6 flex gap-3">
+    <a href="{% url 'detail_asset' asset.asset_id %}" class="btn btn-outline">← Zpět na detail</a>
+  </div>
+
+  <div class="content-card">
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+      <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 font-semibold mb-2">Formulář obsahuje chyby:</p>
+        <ul class="list-disc list-inside text-red-600 text-sm">
+          {% for field, errors in form.errors.items %}
+            <li>{{ field }}: {{ errors|join:", " }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Základní informace -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Základní informace</h3>
+
+        <div class="form-group">
+          <label for="id_name" class="form-label">
+            Název majetku <span class="text-red-500">*</span>
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.name.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_asset_number" class="form-label">
+            Evidenční číslo <span class="text-red-500">*</span>
+          </label>
+          {{ form.asset_number }}
+          {% if form.asset_number.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.asset_number.errors|join:", " }}</p>
+          {% endif %}
+          <p class="text-xs text-gray-500 mt-1">Unikátní identifikační číslo majetku</p>
+        </div>
+
+        <div class="form-group">
+          <label for="id_description" class="form-label">Popis</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.description.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label for="id_category" class="form-label">Kategorie</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.category.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_organization" class="form-label">
+              Organizace <span class="text-red-500">*</span>
+            </label>
+            {{ form.organization }}
+            {% if form.organization.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.organization.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label for="id_location" class="form-label">Umístění</label>
+            {{ form.location }}
+            {% if form.location.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.location.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_responsible_person" class="form-label">Odpovědná osoba</label>
+            {{ form.responsible_person }}
+            {% if form.responsible_person.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.responsible_person.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Finanční údaje -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Finanční údaje</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label for="id_purchase_date" class="form-label">Datum pořízení</label>
+            {{ form.purchase_date }}
+            {% if form.purchase_date.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.purchase_date.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_purchase_price" class="form-label">Pořizovací cena</label>
+            {{ form.purchase_price }}
+            {% if form.purchase_price.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.purchase_price.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_current_value" class="form-label">Současná hodnota</label>
+            {{ form.current_value }}
+            {% if form.current_value.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.current_value.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_currency" class="form-label">Měna</label>
+          {{ form.currency }}
+          {% if form.currency.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.currency.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Status a poznámky -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Status a poznámky</h3>
+
+        <div class="form-group">
+          <label for="id_status" class="form-label">Status</label>
+          {{ form.status }}
+          {% if form.status.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.status.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_notes" class="form-label">Poznámky</label>
+          {{ form.notes }}
+          {% if form.notes.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.notes.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-6 border-t border-gray-200">
+        <button type="submit" class="btn btn-primary">
+          💾 Uložit změny
+        </button>
+        <a href="{% url 'detail_asset' asset.asset_id %}" class="btn btn-outline">
+          Zrušit
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
