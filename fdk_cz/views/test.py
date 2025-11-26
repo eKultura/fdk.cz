@@ -49,7 +49,18 @@ def delete_test_error(request, error_id):
 # Typy testů - výpis
 @login_required
 def list_test_types(request):
+    # Base filter: user's projects
     user_projects = Project.objects.filter(project_users__user=request.user)
+
+    # Filter by organization context
+    current_org_id = request.session.get('current_organization_id')
+    if current_org_id:
+        # Organization context: show only projects from this organization
+        user_projects = user_projects.filter(organization_id=current_org_id)
+    else:
+        # Personal context: show only projects without organization
+        user_projects = user_projects.filter(organization__isnull=True)
+
     test_types = TestType.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_types.html', {'test_types': test_types, 'projects': user_projects})
 
@@ -88,7 +99,18 @@ def edit_test_type(request, test_type_id):
 # Výpis testů
 @login_required
 def list_tests(request):
+    # Base filter: user's projects
     user_projects = Project.objects.filter(project_users__user=request.user)
+
+    # Filter by organization context
+    current_org_id = request.session.get('current_organization_id')
+    if current_org_id:
+        # Organization context: show only projects from this organization
+        user_projects = user_projects.filter(organization_id=current_org_id)
+    else:
+        # Personal context: show only projects without organization
+        user_projects = user_projects.filter(organization__isnull=True)
+
     tests = Test.objects.filter(project__in=user_projects)
     test_types = TestType.objects.filter(project__in=user_projects)
     test_errors = TestError.objects.filter(status='open', project__in=user_projects).exclude(deleted=True).order_by('-date_created')[:10]

@@ -8,7 +8,7 @@ Vizuální časová osa úkolů a milníků ve vašich projektech
 {% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'index_project_cs' %}" class="breadcrumb-link">Projekty</a>
 <span class="breadcrumb-sep">→</span>

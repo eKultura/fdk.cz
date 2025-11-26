@@ -9,7 +9,7 @@
 {% if project.organization %}
   <a href="{% url 'organization_detail' project.organization.organization_id %}" class="breadcrumb-link">{{ project.organization.name }}</a>
 {% else %}
-  <span class="breadcrumb-link">Osobní</span>
+  {% include 'inc/org_context_breadcrumb.html' %}
 {% endif %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'list_contracts' %}" class="breadcrumb-link">Smlouvy</a>

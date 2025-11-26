@@ -2,6 +2,7 @@
 #                    VIEWS.CONTACT.PY
 # -------------------------------------------------------------------
 from django.core.paginator import Paginator
+from django.db import models
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from fdk_cz.models import Contact, Project, ProjectUser, ProjectRole, User
@@ -104,6 +105,18 @@ def list_contacts(request):
         contacts = Contact.objects.filter(project_id=selected_project_id, account=request.user)
     else:
         contacts = Contact.objects.filter(account=request.user)
+
+    # Filter by organization context
+    current_org_id = request.session.get('current_organization_id')
+    if current_org_id:
+        # Organization context: show only contacts from this organization or its projects
+        contacts = contacts.filter(
+            models.Q(organization_id=current_org_id) |
+            models.Q(project__organization_id=current_org_id)
+        )
+    else:
+        # Personal context: show only contacts without organization
+        contacts = contacts.filter(organization__isnull=True, project__organization__isnull=True)
 
     # Přidáme stránkování
     paginator = Paginator(contacts, 10)  # 10 kontaktů na stránku

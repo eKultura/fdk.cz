@@ -6,7 +6,7 @@
 {% block header_subtitle %}{% trans "Přidání nového obchodního kontaktu" %}{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Osobní</span>
+{% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'my_contacts' %}" class="breadcrumb-link">Kontakty</a>
 <span class="breadcrumb-sep">→</span>

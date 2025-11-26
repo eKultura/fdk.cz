@@ -9,7 +9,7 @@
 {% elif swot.project %}
   <a href="{% url 'detail_project' swot.project.project_id %}" class="breadcrumb-link">{{ swot.project.name }}</a>
 {% else %}
-  <span class="breadcrumb-link">Osobní</span>
+  {% include 'inc/org_context_breadcrumb.html' %}
 {% endif %}
 <span class="breadcrumb-sep">→</span>
 <a href="{% url 'list_swot_analyses' %}" class="breadcrumb-link">SWOT analýzy</a>
