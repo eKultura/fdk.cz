@@ -31,6 +31,8 @@ def create_contact(request, project_id=None):
 
     if request.method == 'POST':
         form = contact_form(request.POST)
+        # Set queryset before validation to ensure only member projects can be selected
+        form.fields['project'].queryset = available_projects
         if form.is_valid():
             new_contact = form.save(commit=False)
             new_contact.account = request.user

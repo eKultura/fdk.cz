@@ -41,9 +41,9 @@
         </div>
         <div>
           <label for="id_last_name" class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">
-            {% trans "Příjmení" %} <span class="text-red-500">*</span>
+            {% trans "Příjmení" %}
           </label>
-          <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ form.last_name.value|default_if_none:'' }}" required>
+          <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ form.last_name.value|default_if_none:'' }}">
           {% if form.last_name.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors|join:", " }}</p>
           {% endif %}
@@ -51,7 +51,7 @@
       </div>
 
       <!-- Kontaktní údaje -->
-      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">📞 {% trans "Kontaktní údaje" %}</h4>
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6 pb-2 border-b-2 border-gray-200">📞 {% trans "Kontaktní údaje" %}</h4>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
@@ -75,7 +75,7 @@
       </div>
 
       <!-- Organizace a projekt -->
-      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-8 pb-2 border-b-2 border-gray-200">🏢 {% trans "Organizace" %}</h4>
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6 pb-2 border-b-2 border-gray-200">🏢 {% trans "Organizace" %}</h4>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div>

@@ -6,7 +6,7 @@
 {% block context_breadcrumbs %}
 {% include 'inc/org_context_breadcrumb.html' %}
 <span class="breadcrumb-sep">→</span>
-<a href="{% url 'law_dashboard' %}" class="breadcrumb-link">AI Právník</a>
+<a href="{% url 'pravo_ai' %}" class="breadcrumb-link">AI Právník</a>
 <span class="breadcrumb-sep">→</span>
 <span style="font-weight: 600; color: #1e293b;">Detail dotazu</span>
 {% endblock %}
@@ -29,7 +29,7 @@
       </span>
     </div>
     <div class="flex gap-3">
-      <a href="{% url 'law_dashboard' %}" class="btn btn-outline">� Zpt na dashboard</a>
+      <a href="{% url 'pravo_ai' %}" class="btn btn-outline">� Zpt na dashboard</a>
       <a href="{% url 'law_query' %}" class="btn btn-secondary">+ Nový dotaz</a>
     </div>
   </div>
