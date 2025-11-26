@@ -5,20 +5,17 @@
 {% block header_title %}💻 {% trans "Upravit IT aktivum" %}{% endblock %}
 {% block header_subtitle %}{{ asset.name }}{% endblock %}
 
+{% block context_breadcrumbs %}
+  <a href="{% url 'it_dashboard' %}" class="breadcrumb-link">IT</a>
+  <span class="breadcrumb-sep">→</span>
+  <a href="{% url 'list_it_assets' %}" class="breadcrumb-link">Majetek</a>
+  <span class="breadcrumb-sep">→</span>
+  <a href="{% url 'detail_it_asset' asset.asset_id %}" class="breadcrumb-link">{{ asset.name|safe }}</a>
+  <span class="breadcrumb-sep">→</span>
+  <span style="font-weight: 600; color: #1e293b;">Úprava</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'it_dashboard' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">IT</a>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'list_it_assets' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Aktiva</a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Úprava</span>
-  </div>
-</div>
 
 <div class="max-w-4xl mx-auto">
   <!-- Actions -->

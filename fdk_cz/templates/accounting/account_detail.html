@@ -5,17 +5,17 @@
 {% block header_title %}📋 {{ account.account_number }} - {{ account.name }}{% endblock %}
 {% block header_subtitle %}{{ context.name }} – {% trans "Detail účtu" %}{% endblock %}
 
-{% block content %}
-<!-- Breadcrumbs -->
-<nav style="margin-bottom: 1.5rem; font-size: 0.875rem;">
-  <a href="{% url 'index' %}" style="color: #3b82f6; text-decoration: none;">Domů</a>
-  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+{% block context_breadcrumbs %}
+<nav style="font-size: 0.875rem;">
   <a href="{% url 'accounting_dashboard' %}" style="color: #3b82f6; text-decoration: none;">Účetnictví</a>
   <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
   <a href="{% url 'chart_of_accounts' %}" style="color: #3b82f6; text-decoration: none;">Účtová osnova</a>
   <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
-  <span style="color: #1e293b; font-weight: 500;">{{ account.account_number }}</span>
+  <span style="color: #1e293b; font-weight: 500;">{{ account.account_number }} - {{ account.name }}</span>
 </nav>
+{% endblock %}
+
+{% block content %}
 
 <div class="max-w-7xl mx-auto">
   <!-- Account Info Card -->

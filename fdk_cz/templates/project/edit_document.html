@@ -12,30 +12,19 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 {% endblock %}
 
+{% block context_breadcrumbs %}
+  <a href="{% url 'index_project_cs' %}" class="breadcrumb-link">Projekty</a>
+  <span class="breadcrumb-sep">→</span>
+  <a href="{% url 'detail_project' document.project.project_id %}" class="breadcrumb-link">{{ document.project.name }}</a>
+  <span class="breadcrumb-sep">→</span>
+  <span>Dokumenty</span>
+  <span class="breadcrumb-sep">→</span>
+  <a href="{% url 'detail_document' document.pk %}" class="breadcrumb-link">{{ document.title|safe }}</a>
+  <span class="breadcrumb-sep">→</span>
+  <span style="font-weight: 600; color: #1e293b;">Úprava</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    {% if document.project.organization %}
-      <a href="{% url 'organization_detail' document.project.organization.organization_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-        {{ document.project.organization.name }}
-      </a>
-    {% else %}
-      <span style="font-weight: 500; color: #1e293b;">Osobní</span>
-    {% endif %}
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'index_project_cs' %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-      Projekty
-    </a>
-    <span style="color: #9ca3af;">→</span>
-    <a href="{% url 'detail_project' document.project.project_id %}" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-      {{ document.project.name }}
-    </a>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">Upravit dokument</span>
-  </div>
-</div>
 
 <div class="max-w-4xl mx-auto">
   <div class="content-card">

@@ -4,11 +4,9 @@
 {% block header_subtitle %}Přehled firemního majetku a aktiv{% endblock %}
 
 {% block context_breadcrumbs %}
-<span class="breadcrumb-link">Organizace</span>
-<span class="breadcrumb-sep">→</span>
-<a href="{% url 'asset_dashboard' %}" class="breadcrumb-link">Majetek</a>
-<span class="breadcrumb-sep">→</span>
-<span style="font-weight: 600; color: #1e293b;">Seznam</span>
+  <a href="{% url 'asset_dashboard' %}" class="breadcrumb-link">Majetek</a>
+  <span class="breadcrumb-sep">→</span>
+  <span style="font-weight: 600; color: #1e293b;">Aktiva</span>
 {% endblock %}
 
 {% block content %}

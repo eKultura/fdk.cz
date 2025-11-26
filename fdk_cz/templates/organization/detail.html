@@ -3,16 +3,13 @@
 {% block header_title %}🏢 {{ organization.name }}{% endblock %}
 {% block header_subtitle %}IČO: {{ organization.ico }} · Vytvořeno: {{ organization.created_at|date:"d.m.Y" }}{% endblock %}
 
+{% block context_breadcrumbs %}
+<a href="{% url 'organization_dashboard' %}" class="breadcrumb-link">Organizace</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">{{ organization.name|safe }}</span>
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumbs -->
-<div style="margin-bottom: 1.5rem; background: linear-gradient(to right, #eff6ff, #eef2ff); border: 2px solid #bfdbfe; border-radius: 8px; padding: 1rem;">
-  <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-    <span style="color: #64748b;">📍 Kontext:</span>
-    <span style="font-weight: 500; color: #1e293b;">Organizace</span>
-    <span style="color: #9ca3af;">→</span>
-    <span style="font-weight: 600; color: #1e293b;">{{ organization.name|safe }}</span>
-  </div>
-</div>
 
 <div style="max-width: 1200px; margin: 0 auto;">
 

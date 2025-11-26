@@ -5,16 +5,18 @@
 {% block header_title %}📝 {% trans "Nový účetní zápis" %}{% endblock %}
 {% block header_subtitle %}{{ context.name }} – {% trans "Podvojné účetnictví" %}{% endblock %}
 
+{% block context_breadcrumbs %}
+<nav style="font-size: 0.875rem;">
+  <a href="{% url 'accounting_dashboard' %}" style="color: #3b82f6; text-decoration: none;">Účetnictví</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <a href="{% url 'journal_ledger' %}" style="color: #3b82f6; text-decoration: none;">Deník</a>
+  <span style="color: #9ca3af; margin: 0 0.5rem;">→</span>
+  <span style="color: #1e293b; font-weight: 500;">Nový zápis</span>
+</nav>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-7xl mx-auto">
-  <!-- Breadcrumbs -->
-  <nav class="text-sm text-gray-600 mb-4">
-    <a href="{% url 'accounting_dashboard' %}" class="hover:text-blue-600">{% trans "Účetnictví" %}</a>
-    <span class="mx-2">›</span>
-    <a href="{% url 'journal_ledger' %}" class="hover:text-blue-600">{% trans "Účetní deník" %}</a>
-    <span class="mx-2">›</span>
-    <span class="text-gray-900 font-semibold">{% trans "Nový zápis" %}</span>
-  </nav>
 
   <!-- Context Info -->
   <div class="content-card mb-6">
