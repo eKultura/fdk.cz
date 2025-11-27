@@ -90,9 +90,9 @@
                 <a href="{% url 'index_project_cs' %}" class="dropdown-item">&#128203; Projekty</a>
                 <a href="{% url 'user_settings' %}" class="dropdown-item">&#9881; Nastavení</a>
 
-                {% if user_organizations %}
+                {% if can_switch_organizations and user_organizations %}
                 <div class="dropdown-divider"></div>
-                <div class="dropdown-label">Organizace</div>
+                <div class="dropdown-label">Organizace (Superadmin)</div>
                 {% if current_organization %}
                   <a href="{% url 'set_personal_context' %}" class="dropdown-item">
                     <span style="color: #10b981;">●</span> Osobní
