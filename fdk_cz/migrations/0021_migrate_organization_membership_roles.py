@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
     """
 
     dependencies = [
-        ('fdk_cz', '0017_comprehensive_roles_permissions'),
+        ('fdk_cz', '0020_comprehensive_roles_permissions'),
     ]
 
     operations = [

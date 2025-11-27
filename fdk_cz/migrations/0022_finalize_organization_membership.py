@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     """
 
     dependencies = [
-        ('fdk_cz', '0018_migrate_organization_membership_roles'),
+        ('fdk_cz', '0021_migrate_organization_membership_roles'),
     ]
 
     operations = [

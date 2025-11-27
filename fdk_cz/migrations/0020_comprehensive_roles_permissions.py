@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     """
 
     dependencies = [
-        ('fdk_cz', '0016_merge_20251123_1324'),
+        ('fdk_cz', '0017_invoice_created_by_invoice_organization_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
