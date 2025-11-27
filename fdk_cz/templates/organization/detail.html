@@ -13,11 +13,16 @@
 
 <div style="max-width: 1200px; margin: 0 auto;">
 
-  <!-- Back Button -->
-  <div style="margin-bottom: 2rem;">
+  <!-- Back Button & Actions -->
+  <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
     <a href="{% url 'organization_dashboard' %}" class="btn btn-outline">
       ← Zpět na přehled organizací
     </a>
+    {% if is_admin %}
+    <a href="{% url 'organization_iam' organization.organization_id %}" class="btn btn-primary">
+      🔐 IAM Správa
+    </a>
+    {% endif %}
   </div>
 
   <!-- Organization Info -->
@@ -66,13 +71,21 @@
     {% if is_admin %}
     <div id="addMemberForm" style="display: none; background: #f8fafc; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
       <h4 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Přidat nového člena</h4>
-      <form method="POST" action="{% url 'add_organization_member' organization.organization_id %}">
+      <form method="POST" action="{% url 'add_organization_member' organization.organization_id %}" id="addMemberFormElement">
         {% csrf_token %}
         <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
           <div class="form-group">
-            <label for="id_user_id" class="form-label">Vyberte uživatele</label>
-            <input type="number" id="id_user_id" name="user_id" class="form-control" placeholder="ID uživatele" required>
-            <div class="form-help">Zadejte ID uživatele, kterého chcete přidat</div>
+            <label for="id_user_search" class="form-label">Vyhledat uživatele</label>
+            <input
+              type="text"
+              id="id_user_search"
+              class="form-control"
+              placeholder="Začněte psát jméno nebo email..."
+              autocomplete="off"
+            >
+            <input type="hidden" id="id_user_id" name="user_id" required>
+            <div id="searchResults" style="display: none; position: absolute; z-index: 1000; background: white; border: 1px solid #e2e8f0; border-radius: 8px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: calc(100% - 3rem);"></div>
+            <div class="form-help" id="selectedUserInfo" style="display: none; margin-top: 0.5rem; padding: 0.5rem; background: #dbeafe; border-radius: 4px; color: #1e40af;"></div>
           </div>
           <div class="form-group">
             <label for="id_role" class="form-label">Role</label>
@@ -84,8 +97,8 @@
           </div>
         </div>
         <div style="display: flex; gap: 0.75rem;">
-          <button type="submit" class="btn btn-primary btn-sm">Přidat</button>
-          <button type="button" onclick="document.getElementById('addMemberForm').style.display='none'" class="btn btn-outline btn-sm">Zrušit</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="submitMemberBtn" disabled>Přidat</button>
+          <button type="button" onclick="cancelAddMember()" class="btn btn-outline btn-sm">Zrušit</button>
         </div>
       </form>
     </div>
@@ -174,5 +187,95 @@
   .data-value {
     color: #1e293b;
   }
+
+  .search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+  }
+
+  .search-result-item:hover {
+    background: #f8fafc;
+  }
+
+  .search-result-item:last-child {
+    border-bottom: none;
+  }
 </style>
+
+<script>
+let searchTimeout = null;
+let selectedUserId = null;
+
+function cancelAddMember() {
+  document.getElementById('addMemberForm').style.display = 'none';
+  document.getElementById('id_user_search').value = '';
+  document.getElementById('id_user_id').value = '';
+  document.getElementById('searchResults').style.display = 'none';
+  document.getElementById('selectedUserInfo').style.display = 'none';
+  document.getElementById('submitMemberBtn').disabled = true;
+  selectedUserId = null;
+}
+
+document.getElementById('id_user_search')?.addEventListener('input', function(e) {
+  const query = e.target.value.trim();
+
+  if (query.length < 2) {
+    document.getElementById('searchResults').style.display = 'none';
+    return;
+  }
+
+  // Debounce
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetch(`/api/search-users/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        const resultsDiv = document.getElementById('searchResults');
+
+        if (data.users.length === 0) {
+          resultsDiv.innerHTML = '<div style="padding: 1rem; text-align: center; color: #64748b;">Žádní uživatelé nenalezeni</div>';
+          resultsDiv.style.display = 'block';
+          return;
+        }
+
+        resultsDiv.innerHTML = data.users.map(user => `
+          <div class="search-result-item" onclick="selectUser(${user.id}, '${user.full_name}', '${user.email}')">
+            <div style="font-weight: 600; color: #1e293b;">${user.full_name}</div>
+            <div style="font-size: 0.875rem; color: #64748b;">${user.email}</div>
+          </div>
+        `).join('');
+
+        resultsDiv.style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error searching users:', error);
+      });
+  }, 300);
+});
+
+function selectUser(userId, fullName, email) {
+  selectedUserId = userId;
+  document.getElementById('id_user_id').value = userId;
+  document.getElementById('id_user_search').value = fullName;
+  document.getElementById('searchResults').style.display = 'none';
+
+  const infoDiv = document.getElementById('selectedUserInfo');
+  infoDiv.innerHTML = `✓ Vybrán: <strong>${fullName}</strong> (${email})`;
+  infoDiv.style.display = 'block';
+
+  document.getElementById('submitMemberBtn').disabled = false;
+}
+
+// Close search results when clicking outside
+document.addEventListener('click', function(e) {
+  const searchInput = document.getElementById('id_user_search');
+  const searchResults = document.getElementById('searchResults');
+
+  if (searchInput && searchResults && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+    searchResults.style.display = 'none';
+  }
+});
+</script>
 {% endblock %}
