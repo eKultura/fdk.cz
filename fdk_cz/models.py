@@ -104,14 +104,59 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+# ============================================================================
+# ORGANIZATION ROLES & PERMISSIONS
+# ============================================================================
+
+class OrganizationRole(models.Model):
+    """Role v organizaci (např. owner, admin, member, viewer)"""
+    role_id = models.AutoField(primary_key=True)
+    role_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True, help_text="Stručný popis role")
+
+    def __str__(self):
+        return self.role_name
+
+    class Meta:
+        db_table = 'FDK_organization_roles'
+        verbose_name = 'Organizační role'
+        verbose_name_plural = 'Organizační role'
+
+
+class OrganizationPermission(models.Model):
+    """Oprávnění v rámci organizace"""
+    permission_id = models.AutoField(primary_key=True)
+    permission_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.permission_name
+
+    class Meta:
+        db_table = 'FDK_organization_permissions'
+        verbose_name = 'Organizační oprávnění'
+        verbose_name_plural = 'Organizační oprávnění'
+
+
+class OrganizationRolePermission(models.Model):
+    """Vazba mezi organizační rolí a oprávněními"""
+    role = models.ForeignKey(OrganizationRole, on_delete=models.CASCADE, related_name='permissions')
+    permission = models.ForeignKey(OrganizationPermission, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('role', 'permission')
+        db_table = 'FDK_organization_role_permissions'
+
+
 class OrganizationMembership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=[('admin', 'Admin'), ('member', 'Člen'), ('viewer', 'Pozorovatel')])
+    role = models.ForeignKey(OrganizationRole, on_delete=models.CASCADE, related_name='memberships')
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'FDK_organization_membership'
+        unique_together = ('user', 'organization')
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True, db_column='project_id')
@@ -182,24 +227,48 @@ class ProjectMilestone(models.Model):
 
 
 
+# ============================================================================
+# PROJECT ROLES & PERMISSIONS
+# ============================================================================
+
 class ProjectRole(models.Model):
+    """
+    Role v projektu:
+    - project_owner: vlastník projektu
+    - project_admin: administrátor projektu
+    - project_manager: projektový manažer
+    - project_editor: editor projektu
+    - project_contributor: přispěvatel
+    - project_viewer: pozorovatel
+    - project_stakeholder: stakeholder
+    - project_controller: kontrolor
+    """
     role_id = models.AutoField(primary_key=True)
     role_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True, help_text="Stručný popis role")
 
     def __str__(self):
         return self.role_name
+
     class Meta:
         db_table = 'FDK_roles'
+        verbose_name = 'Projektová role'
+        verbose_name_plural = 'Projektové role'
 
 
 class ProjectPermission(models.Model):
+    """Oprávnění v rámci projektu"""
     permission_id = models.AutoField(primary_key=True)
     permission_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.permission_name
+
     class Meta:
         db_table = 'FDK_permissions'
+        verbose_name = 'Projektové oprávnění'
+        verbose_name_plural = 'Projektová oprávnění'
 
 
 
@@ -227,6 +296,91 @@ class ProjectRolePermission(models.Model):
     class Meta:
         unique_together = ('role', 'permission')
         db_table = 'FDK_role_permisssions'
+
+
+# ============================================================================
+# MODULE ROLES & PERMISSIONS
+# ============================================================================
+
+class ModuleRole(models.Model):
+    """
+    Role pro jednotlivé moduly (warehouse, contact, invoice, atd.)
+    Např.: module_manager, module_viewer
+    """
+    role_id = models.AutoField(primary_key=True)
+    role_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True, help_text="Stručný popis role")
+
+    def __str__(self):
+        return self.role_name
+
+    class Meta:
+        db_table = 'FDK_module_roles'
+        verbose_name = 'Modulová role'
+        verbose_name_plural = 'Modulové role'
+
+
+class ModulePermission(models.Model):
+    """
+    Oprávnění pro moduly (read, write, delete, manage)
+    """
+    permission_id = models.AutoField(primary_key=True)
+    permission_name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.permission_name
+
+    class Meta:
+        db_table = 'FDK_module_permissions'
+        verbose_name = 'Modulové oprávnění'
+        verbose_name_plural = 'Modulová oprávnění'
+
+
+class ModuleRolePermission(models.Model):
+    """Vazba mezi modulovou rolí a oprávněními"""
+    role = models.ForeignKey(ModuleRole, on_delete=models.CASCADE, related_name='permissions')
+    permission = models.ForeignKey(ModulePermission, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('role', 'permission')
+        db_table = 'FDK_module_role_permissions'
+
+
+class ModuleAccess(models.Model):
+    """
+    Přístup uživatele k modulu v rámci projektu nebo organizace
+    Např: Jan má roli 'warehouse_manager' pro modul 'warehouse' v projektu X
+    """
+    MODULE_CHOICES = [
+        ('warehouse', 'Sklad'),
+        ('contact', 'Kontakty'),
+        ('invoice', 'Faktury'),
+        ('task', 'Úkoly'),
+        ('document', 'Dokumenty'),
+        ('milestone', 'Milníky'),
+    ]
+
+    access_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_accesses')
+    role = models.ForeignKey(ModuleRole, on_delete=models.CASCADE, related_name='accesses')
+    module_name = models.CharField(max_length=50, choices=MODULE_CHOICES)
+
+    # Přístup může být buď na úrovni projektu NEBO organizace
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, null=True, blank=True, related_name='module_accesses')
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE, null=True, blank=True, related_name='module_accesses')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'FDK_module_access'
+        unique_together = ('user', 'module_name', 'project', 'organization')
+        verbose_name = 'Modulový přístup'
+        verbose_name_plural = 'Modulové přístupy'
+
+    def __str__(self):
+        context = self.project.name if self.project else self.organization.name
+        return f"{self.user.username} - {self.module_name} ({self.role.role_name}) - {context}"
 
 
 
