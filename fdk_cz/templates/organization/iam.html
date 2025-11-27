@@ -48,8 +48,6 @@
           <th>Uživatel</th>
           <th>Email</th>
           <th>Základní role</th>
-          <th>Organizační role</th>
-          <th>Modulové role</th>
           {% if is_admin %}<th class="text-right">Akce</th>{% endif %}
         </tr>
       </thead>
@@ -68,45 +66,19 @@
             <form method="POST" action="{% url 'change_member_role' organization.organization_id membership.user.id %}" style="display: inline;">
               {% csrf_token %}
               <select name="role" onchange="this.form.submit()" class="form-control" style="display: inline-block; width: auto; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
-                <option value="admin" {% if membership.role == 'admin' %}selected{% endif %}>Admin</option>
-                <option value="member" {% if membership.role == 'member' %}selected{% endif %}>Člen</option>
-                <option value="viewer" {% if membership.role == 'viewer' %}selected{% endif %}>Pozorovatel</option>
+                <option value="admin" {% if membership.role.role_name == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="member" {% if membership.role.role_name == 'member' %}selected{% endif %}>Člen</option>
+                <option value="viewer" {% if membership.role.role_name == 'viewer' %}selected{% endif %}>Pozorovatel</option>
               </select>
             </form>
             {% else %}
             <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
-              {% if membership.role == 'admin' %}background: #dbeafe; color: #1e40af;
-              {% elif membership.role == 'member' %}background: #f0fdf4; color: #166534;
+              {% if membership.role.role_name == 'admin' %}background: #dbeafe; color: #1e40af;
+              {% elif membership.role.role_name == 'member' %}background: #f0fdf4; color: #166534;
               {% else %}background: #f8fafc; color: #64748b;{% endif %}">
-              {{ membership.get_role_display }}
+              {{ membership.role.role_name|title }}
             </span>
             {% endif %}
-          </td>
-          <td>
-            {% with org_roles=membership.organization_roles.all %}
-              {% if org_roles %}
-                {% for role in org_roles %}
-                  <span style="background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
-                    {{ role.role_type }}
-                  </span>
-                {% endfor %}
-              {% else %}
-                <span style="color: #94a3b8; font-size: 0.875rem;">—</span>
-              {% endif %}
-            {% endwith %}
-          </td>
-          <td>
-            {% with mod_roles=membership.module_roles.all %}
-              {% if mod_roles %}
-                {% for role in mod_roles %}
-                  <span style="background: #fce7f3; color: #831843; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
-                    {{ role.module.name }}: {{ role.role_type }}
-                  </span>
-                {% endfor %}
-              {% else %}
-                <span style="color: #94a3b8; font-size: 0.875rem;">—</span>
-              {% endif %}
-            {% endwith %}
           </td>
           {% if is_admin %}
           <td class="text-right">
@@ -121,7 +93,7 @@
           {% endif %}
         </tr>
         {% empty %}
-        <tr><td colspan="{% if is_admin %}6{% else %}5{% endif %}" class="data-table-empty">Žádní členové</td></tr>
+        <tr><td colspan="{% if is_admin %}4{% else %}3{% endif %}" class="data-table-empty">Žádní členové</td></tr>
         {% endfor %}
       </tbody>
     </table>

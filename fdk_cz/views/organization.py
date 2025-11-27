@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
-from fdk_cz.models import Organization, OrganizationMembership, User, OrganizationRole, ModuleRole
+from fdk_cz.models import Organization, OrganizationMembership, User, OrganizationRole, ModuleRole, ModuleAccess
 
 
 @login_required
@@ -245,30 +245,26 @@ def organization_iam(request, organization_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role='admin'
+        role__role_name='admin'
     ).exists()
-
-    # Získat všechny role organizace
-    org_roles = OrganizationRole.objects.filter(
-        organization=org
-    ).select_related('membership__user').prefetch_related('permissions')
-
-    # Získat všechny modulové role
-    module_roles = ModuleRole.objects.filter(
-        organization=org
-    ).select_related('membership__user', 'module').prefetch_related('permissions')
 
     # Členové s jejich rolemi
     memberships = OrganizationMembership.objects.filter(
         organization=org
-    ).select_related('user').prefetch_related('organization_roles', 'module_roles')
+    ).select_related('user', 'role').prefetch_related('role__permissions')
+
+    # Modulové přístupy pro organizaci
+    module_accesses = ModuleAccess.objects.filter(
+        organization=org,
+        project__isnull=True  # Pouze přístupy na úrovni organizace
+    ).select_related('user', 'role').prefetch_related('role__permissions')
 
     context = {
         'organization': org,
         'is_admin': is_admin,
         'memberships': memberships,
-        'org_roles': org_roles,
-        'module_roles': module_roles,
+        'org_roles': [],  # Prozatím prázdné - pro budoucí rozšíření
+        'module_roles': module_accesses,
     }
     return render(request, 'organization/iam.html', context)
 
@@ -282,7 +278,7 @@ def change_member_role(request, organization_id, user_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role='admin'
+        role__role_name='admin'
     ).exists()
 
     if not is_admin:
@@ -290,9 +286,9 @@ def change_member_role(request, organization_id, user_id):
         return redirect('organization_detail', organization_id=organization_id)
 
     if request.method == 'POST':
-        new_role = request.POST.get('role')
+        new_role_name = request.POST.get('role')
 
-        if new_role not in ['admin', 'member', 'viewer']:
+        if new_role_name not in ['admin', 'member', 'viewer']:
             messages.error(request, 'Neplatná role.')
             return redirect('organization_iam', organization_id=organization_id)
 
@@ -306,11 +302,15 @@ def change_member_role(request, organization_id, user_id):
             if org.created_by.id == user_id:
                 messages.error(request, 'Nelze změnit roli tvůrce organizace.')
             else:
-                old_role = membership.role
+                # Najít objekt role podle jména
+                new_role = OrganizationRole.objects.get(role_name=new_role_name)
+                old_role_name = membership.role.role_name
                 membership.role = new_role
                 membership.save()
-                messages.success(request, f'Role uživatele {membership.user.username} změněna z {old_role} na {new_role}.')
+                messages.success(request, f'Role uživatele {membership.user.username} změněna z {old_role_name} na {new_role_name}.')
         except OrganizationMembership.DoesNotExist:
             messages.error(request, 'Člen nenalezen.')
+        except OrganizationRole.DoesNotExist:
+            messages.error(request, f'Role "{new_role_name}" neexistuje v databázi.')
 
     return redirect('organization_iam', organization_id=organization_id)
