@@ -38,11 +38,22 @@ def accounting_dashboard(request):
 
     invoices = Invoice.objects.filter(company__users=request.user)[:10]  # Last 10 invoices
 
-    # Get user's accounting contexts
-    accounting_contexts = AccountingContext.objects.filter(
-        user=request.user,
-        is_active=True
-    ).order_by('-fiscal_year', 'name')
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
+
+    # Get user's accounting contexts filtered by organization context
+    if current_org_id:
+        accounting_contexts = AccountingContext.objects.filter(
+            user=request.user,
+            is_active=True,
+            organization_id=current_org_id
+        ).order_by('-fiscal_year', 'name')
+    else:
+        accounting_contexts = AccountingContext.objects.filter(
+            user=request.user,
+            is_active=True,
+            organization__isnull=True
+        ).order_by('-fiscal_year', 'name')
 
     # Calculate income statement (výsledovka) for current context
     current_context = get_current_context(request)
@@ -260,13 +271,36 @@ def set_accounting_context(request, context_id):
 def get_current_context(request):
     """Helper to get current accounting context from session"""
     context_id = request.session.get('accounting_context_id')
+
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
+
     if context_id:
         try:
-            return AccountingContext.objects.get(context_id=context_id, user=request.user)
+            context = AccountingContext.objects.get(context_id=context_id, user=request.user)
+            # Verify context matches current organization context
+            if current_org_id:
+                if context.organization_id == current_org_id:
+                    return context
+            else:
+                if context.organization is None:
+                    return context
         except AccountingContext.DoesNotExist:
             pass
-    # Return first active context or None
-    return AccountingContext.objects.filter(user=request.user, is_active=True).first()
+
+    # Return first active context matching organization context
+    if current_org_id:
+        return AccountingContext.objects.filter(
+            user=request.user,
+            is_active=True,
+            organization_id=current_org_id
+        ).first()
+    else:
+        return AccountingContext.objects.filter(
+            user=request.user,
+            is_active=True,
+            organization__isnull=True
+        ).first()
 
 
 @login_required

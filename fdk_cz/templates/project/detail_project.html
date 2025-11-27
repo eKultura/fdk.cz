@@ -134,7 +134,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 
       <!-- Table View -->
       <div id="task_table">
-        <div style="overflow-x:auto;">
+        <div class="overflow-x-auto">
           <table class="data-table">
             <thead>
               <tr>
@@ -266,7 +266,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
       <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
         <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">💡 Nice to Have úkoly</h3>
         <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem;">Úkoly s nízkou prioritou, které by bylo hezké mít, ale nejsou nezbytné</p>
-        <div style="overflow-x:auto;">
+        <div class="overflow-x-auto">
           <table class="data-table">
             <thead>
               <tr>
@@ -347,7 +347,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <a href="{% url 'create_milestone' project.project_id %}" class="btn btn-primary">＋ Přidat milník</a>
         {% endif %}
       </div>
-      <div style="overflow-x:auto;">
+      <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
             <tr>
@@ -386,7 +386,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <a href="{% url 'create_document' project.project_id %}" class="btn btn-primary">＋ Přidat dokument</a>
         {% endif %}
       </div>
-      <div style="overflow-x:auto;">
+      <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
             <tr>
@@ -471,7 +471,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <a href="{% url 'create_contact_project' project.project_id %}" class="btn btn-primary">＋ Nový kontakt</a>
         {% endif %}
       </div>
-      <div style="overflow-x:auto;">
+      <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
             <tr>
@@ -591,7 +591,7 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         <a href="{% url 'create_test_error_for_project' project.project_id %}" class="btn btn-primary">＋ Nová chyba</a>
         {% endif %}
       </div>
-      <div style="overflow-x:auto;">
+      <div class="overflow-x-auto">
         <table class="data-table">
           <thead>
             <tr>

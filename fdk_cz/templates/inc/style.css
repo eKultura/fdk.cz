@@ -2017,6 +2017,11 @@ select.form-control {
   font-size: 13px;
 }
 
+/* Table overflow wrapper - Ensures tables scroll horizontally on small screens */
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
 
 
 

@@ -16,37 +16,37 @@ from fdk_cz.forms.risk import RiskForm
 @login_required
 def risk_dashboard(request):
     """Dashboard pro správu rizik"""
-    # Get user's organizations and projects
-    user_orgs = Organization.objects.filter(
-        Q(created_by=request.user) | Q(members=request.user)
-    ).distinct()
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
 
-    user_projects = Project.objects.filter(
-        Q(owner=request.user) | Q(project_users__user=request.user)
-    ).distinct()
+    # Build base query based on organization context
+    if current_org_id:
+        # Organization context: show only risks from this organization
+        base_query = Q(organization_id=current_org_id) | Q(project__organization_id=current_org_id)
+    else:
+        # Personal context: show only risks without organization
+        base_query = Q(organization__isnull=True, project__organization__isnull=True)
 
     # Get risks
     risks = Risk.objects.filter(
-        Q(organization__in=user_orgs) | Q(project__in=user_projects)
+        base_query
     ).select_related('project', 'organization', 'owner').order_by('-risk_score', '-created_at')[:10]
 
     # Statistics
-    total_risks = Risk.objects.filter(
-        Q(organization__in=user_orgs) | Q(project__in=user_projects)
-    ).count()
+    total_risks = Risk.objects.filter(base_query).count()
 
     critical_risks = Risk.objects.filter(
-        Q(organization__in=user_orgs) | Q(project__in=user_projects),
+        base_query,
         risk_score__gte=15  # High probability (4-5) * High impact (4-5)
     ).count()
 
     avg_risk_score = Risk.objects.filter(
-        Q(organization__in=user_orgs) | Q(project__in=user_projects)
+        base_query
     ).aggregate(Avg('risk_score'))['risk_score__avg'] or 0
 
     # Risks by status
     risks_by_status = Risk.objects.filter(
-        Q(organization__in=user_orgs) | Q(project__in=user_projects)
+        base_query
     ).values('status').annotate(count=Count('risk_id'))
 
     context = {
