@@ -241,9 +241,9 @@ document.getElementById('id_user_search')?.addEventListener('input', function(e)
         }
 
         resultsDiv.innerHTML = data.users.map(user => `
-          <div class="search-result-item" onclick="selectUser(${user.id}, '${user.full_name}', '${user.email}')">
+          <div class="search-result-item" onclick="selectUser(${user.id}, '${user.full_name}', '${user.username}')">
             <div style="font-weight: 600; color: #1e293b;">${user.full_name}</div>
-            <div style="font-size: 0.875rem; color: #64748b;">${user.email}</div>
+            <div style="font-size: 0.875rem; color: #64748b;">@${user.username}</div>
           </div>
         `).join('');
 
@@ -255,14 +255,14 @@ document.getElementById('id_user_search')?.addEventListener('input', function(e)
   }, 300);
 });
 
-function selectUser(userId, fullName, email) {
+function selectUser(userId, fullName, username) {
   selectedUserId = userId;
   document.getElementById('id_user_id').value = userId;
   document.getElementById('id_user_search').value = fullName;
   document.getElementById('searchResults').style.display = 'none';
 
   const infoDiv = document.getElementById('selectedUserInfo');
-  infoDiv.innerHTML = `✓ Vybrán: <strong>${fullName}</strong> (${email})`;
+  infoDiv.innerHTML = `✓ Vybrán: <strong>${fullName}</strong> (@${username})`;
   infoDiv.style.display = 'block';
 
   document.getElementById('submitMemberBtn').disabled = false;
