@@ -66,15 +66,15 @@
             <form method="POST" action="{% url 'change_member_role' organization.organization_id membership.user.id %}" style="display: inline;">
               {% csrf_token %}
               <select name="role" onchange="this.form.submit()" class="form-control" style="display: inline-block; width: auto; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
-                <option value="admin" {% if membership.role.role_name == 'admin' %}selected{% endif %}>Admin</option>
-                <option value="member" {% if membership.role.role_name == 'member' %}selected{% endif %}>Člen</option>
-                <option value="viewer" {% if membership.role.role_name == 'viewer' %}selected{% endif %}>Pozorovatel</option>
+                <option value="organization_admin" {% if membership.role.role_name == 'organization_admin' %}selected{% endif %}>Admin</option>
+                <option value="organization_member" {% if membership.role.role_name == 'organization_member' %}selected{% endif %}>Člen</option>
+                <option value="organization_viewer" {% if membership.role.role_name == 'organization_viewer' %}selected{% endif %}>Pozorovatel</option>
               </select>
             </form>
             {% else %}
             <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
-              {% if membership.role.role_name == 'admin' %}background: #dbeafe; color: #1e40af;
-              {% elif membership.role.role_name == 'member' %}background: #f0fdf4; color: #166534;
+              {% if membership.role.role_name == 'organization_admin' %}background: #dbeafe; color: #1e40af;
+              {% elif membership.role.role_name == 'organization_member' %}background: #f0fdf4; color: #166534;
               {% else %}background: #f8fafc; color: #64748b;{% endif %}">
               {{ membership.role.role_name|title }}
             </span>

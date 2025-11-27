@@ -90,9 +90,9 @@
           <div class="form-group">
             <label for="id_role" class="form-label">Role</label>
             <select id="id_role" name="role" class="form-control">
-              <option value="member">Člen</option>
-              <option value="admin">Admin</option>
-              <option value="viewer">Pozorovatel</option>
+              <option value="organization_member">Člen</option>
+              <option value="organization_admin">Admin</option>
+              <option value="organization_viewer">Pozorovatel</option>
             </select>
           </div>
         </div>
@@ -127,10 +127,10 @@
           <td>{{ membership.user.email|default:"—" }}</td>
           <td>
             <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
-              {% if membership.role == 'admin' %}background: #dbeafe; color: #1e40af;
-              {% elif membership.role == 'member' %}background: #f0fdf4; color: #166534;
+              {% if membership.role.role_name == 'organization_admin' %}background: #dbeafe; color: #1e40af;
+              {% elif membership.role.role_name == 'organization_member' %}background: #f0fdf4; color: #166534;
               {% else %}background: #f8fafc; color: #64748b;{% endif %}">
-              {{ membership.get_role_display }}
+              {{ membership.role.role_name|title }}
             </span>
           </td>
           <td>{{ membership.joined_at|date:"d.m.Y" }}</td>
