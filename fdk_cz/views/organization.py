@@ -49,10 +49,11 @@ def create_organization(request):
         )
 
         # Přidání tvůrce jako admin
+        admin_role = OrganizationRole.objects.get(role_name='admin')
         OrganizationMembership.objects.create(
             user=request.user,
             organization=org,
-            role='admin'
+            role=admin_role
         )
 
         messages.success(request, f'Organizace "{name}" byla úspěšně vytvořena.')
@@ -87,7 +88,7 @@ def organization_detail(request, organization_id):
         'is_admin': org.created_by == request.user or OrganizationMembership.objects.filter(
             organization=org,
             user=request.user,
-            role='admin'
+            role__role_name='admin'
         ).exists()
     }
     return render(request, 'organization/detail.html', context)
@@ -112,7 +113,6 @@ def search_users(request):
     results = [{
         'id': user.id,
         'username': user.username,
-        'email': user.email,
         'full_name': user.get_full_name() or user.username
     } for user in users]
 
@@ -128,7 +128,7 @@ def add_member(request, organization_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role='admin'
+        role__role_name='admin'
     ).exists()
 
     if not is_admin:
@@ -146,14 +146,18 @@ def add_member(request, organization_id):
             if OrganizationMembership.objects.filter(organization=org, user=user).exists():
                 messages.warning(request, f'Uživatel {user.username} již je členem organizace.')
             else:
+                # Získat objekt role podle jména
+                role_obj = OrganizationRole.objects.get(role_name=role)
                 OrganizationMembership.objects.create(
                     organization=org,
                     user=user,
-                    role=role
+                    role=role_obj
                 )
                 messages.success(request, f'Uživatel {user.username} byl přidán do organizace.')
         except User.DoesNotExist:
             messages.error(request, 'Uživatel nenalezen.')
+        except OrganizationRole.DoesNotExist:
+            messages.error(request, f'Role "{role}" neexistuje v databázi.')
 
     return redirect('organization_detail', organization_id=organization_id)
 
@@ -167,7 +171,7 @@ def remove_member(request, organization_id, user_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role='admin'
+        role__role_name='admin'
     ).exists()
 
     if not is_admin:
