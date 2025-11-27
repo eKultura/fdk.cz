@@ -57,7 +57,11 @@ from fdk_cz.views.test import (
 
 from fdk_cz.views.user import login, logout, user_profile, registration, user_settings, toggle_module_visibility
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
-from fdk_cz.views.organization import organization_dashboard, create_organization, organization_detail, add_member, remove_member, set_current_organization
+from fdk_cz.views.organization import (
+    organization_dashboard, create_organization, organization_detail,
+    add_member, remove_member, set_current_organization,
+    search_users, organization_iam, change_member_role
+)
 
 from fdk_cz.views.warehouse import (
     all_stores,
@@ -161,6 +165,9 @@ urlpatterns = [
     path('organizace/<int:organization_id>/', organization_detail, name='organization_detail'),
     path('organizace/<int:organization_id>/pridat-clena/', add_member, name='add_organization_member'),
     path('organizace/<int:organization_id>/odebrat-clena/<int:user_id>/', remove_member, name='remove_organization_member'),
+    path('organizace/<int:organization_id>/iam/', organization_iam, name='organization_iam'),
+    path('organizace/<int:organization_id>/zmenit-roli/<int:user_id>/', change_member_role, name='change_member_role'),
+    path('api/search-users/', search_users, name='search_users'),
     path('kontext/organizace/<int:organization_id>/', set_current_organization, name='set_organization_context'),
     path('kontext/osobni/', set_current_organization, name='set_personal_context'),
 

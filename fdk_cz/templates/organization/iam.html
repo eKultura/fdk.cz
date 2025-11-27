@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}IAM Správa - {{ organization.name }} | FDK.cz{% endblock %}
+{% block header_title %}🔐 IAM Správa: {{ organization.name }}{% endblock %}
+{% block header_subtitle %}Správa rolí a oprávnění organizace{% endblock %}
+
+{% block context_breadcrumbs %}
+<a href="{% url 'organization_dashboard' %}" class="breadcrumb-link">Organizace</a>
+<span class="breadcrumb-sep">→</span>
+<a href="{% url 'organization_detail' organization.organization_id %}" class="breadcrumb-link">{{ organization.name|safe }}</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">IAM Správa</span>
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Back Button -->
+  <div style="margin-bottom: 2rem;">
+    <a href="{% url 'organization_detail' organization.organization_id %}" class="btn btn-outline">
+      ← Zpět na detail organizace
+    </a>
+  </div>
+
+  <!-- Info Box -->
+  <div class="content-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
+    <div style="display: flex; align-items: start; gap: 1rem;">
+      <div style="font-size: 2rem;">ℹ️</div>
+      <div>
+        <h3 style="font-size: 1rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">Co je IAM?</h3>
+        <p style="color: #78350f; font-size: 0.875rem; margin: 0;">
+          IAM (Identity and Access Management) umožňuje řídit, kdo má přístup k jakým zdrojům v organizaci.
+          Můžete přiřazovat role členům a spravovat jejich oprávnění na úrovni organizace i jednotlivých modulů.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Členové a jejich role -->
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1.5rem;">
+      👥 Členové a základní role
+    </h3>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Uživatel</th>
+          <th>Email</th>
+          <th>Základní role</th>
+          <th>Organizační role</th>
+          <th>Modulové role</th>
+          {% if is_admin %}<th class="text-right">Akce</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in memberships %}
+        <tr>
+          <td>
+            <strong>{{ membership.user.username }}</strong>
+            {% if membership.user == organization.created_by %}
+              <span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 0.5rem;">Vlastník</span>
+            {% endif %}
+          </td>
+          <td>{{ membership.user.email|default:"—" }}</td>
+          <td>
+            {% if is_admin and membership.user != organization.created_by %}
+            <form method="POST" action="{% url 'change_member_role' organization.organization_id membership.user.id %}" style="display: inline;">
+              {% csrf_token %}
+              <select name="role" onchange="this.form.submit()" class="form-control" style="display: inline-block; width: auto; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                <option value="admin" {% if membership.role == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="member" {% if membership.role == 'member' %}selected{% endif %}>Člen</option>
+                <option value="viewer" {% if membership.role == 'viewer' %}selected{% endif %}>Pozorovatel</option>
+              </select>
+            </form>
+            {% else %}
+            <span style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;
+              {% if membership.role == 'admin' %}background: #dbeafe; color: #1e40af;
+              {% elif membership.role == 'member' %}background: #f0fdf4; color: #166534;
+              {% else %}background: #f8fafc; color: #64748b;{% endif %}">
+              {{ membership.get_role_display }}
+            </span>
+            {% endif %}
+          </td>
+          <td>
+            {% with org_roles=membership.organization_roles.all %}
+              {% if org_roles %}
+                {% for role in org_roles %}
+                  <span style="background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
+                    {{ role.role_type }}
+                  </span>
+                {% endfor %}
+              {% else %}
+                <span style="color: #94a3b8; font-size: 0.875rem;">—</span>
+              {% endif %}
+            {% endwith %}
+          </td>
+          <td>
+            {% with mod_roles=membership.module_roles.all %}
+              {% if mod_roles %}
+                {% for role in mod_roles %}
+                  <span style="background: #fce7f3; color: #831843; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
+                    {{ role.module.name }}: {{ role.role_type }}
+                  </span>
+                {% endfor %}
+              {% else %}
+                <span style="color: #94a3b8; font-size: 0.875rem;">—</span>
+              {% endif %}
+            {% endwith %}
+          </td>
+          {% if is_admin %}
+          <td class="text-right">
+            {% if membership.user != organization.created_by %}
+              <button class="btn btn-sm btn-outline" onclick="alert('Správa detailních rolí bude přidána v další verzi')">
+                ⚙️ Spravovat
+              </button>
+            {% else %}
+              <span style="color: #94a3b8; font-size: 0.875rem;">Vlastník</span>
+            {% endif %}
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="{% if is_admin %}6{% else %}5{% endif %}" class="data-table-empty">Žádní členové</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vysvětlení základních rolí -->
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      📋 Základní role v organizaci
+    </h3>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+      <div style="padding: 1rem; border: 2px solid #3b82f6; border-radius: 8px; background: #eff6ff;">
+        <h4 style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">👑 Admin</h4>
+        <p style="font-size: 0.875rem; color: #1e293b; margin: 0;">
+          Plná správa organizace včetně přidávání/odebírání členů, změny rolí a správy IAM.
+        </p>
+      </div>
+
+      <div style="padding: 1rem; border: 2px solid #10b981; border-radius: 8px; background: #f0fdf4;">
+        <h4 style="font-weight: 600; color: #166534; margin-bottom: 0.5rem;">👤 Člen</h4>
+        <p style="font-size: 0.875rem; color: #1e293b; margin: 0;">
+          Standardní člen s přístupem k projektům a modulům organizace podle přiřazených modulových rolí.
+        </p>
+      </div>
+
+      <div style="padding: 1rem; border: 2px solid #64748b; border-radius: 8px; background: #f8fafc;">
+        <h4 style="font-weight: 600; color: #475569; margin-bottom: 0.5rem;">👁️ Pozorovatel</h4>
+        <p style="font-size: 0.875rem; color: #1e293b; margin: 0;">
+          Pouze čtení - může zobrazit informace, ale nemůže provádět změny.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Organizační role (pokud existují) -->
+  {% if org_roles %}
+  <div class="content-card" style="margin-bottom: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      🎯 Organizační role
+    </h3>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Uživatel</th>
+          <th>Typ role</th>
+          <th>Oprávnění</th>
+          <th>Přiřazeno</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for role in org_roles %}
+        <tr>
+          <td><strong>{{ role.membership.user.username }}</strong></td>
+          <td>
+            <span style="background: #e0e7ff; color: #3730a3; padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+              {{ role.role_type }}
+            </span>
+          </td>
+          <td>
+            {% for perm in role.permissions.all %}
+              <span style="background: #f0fdf4; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
+                {{ perm.name }}
+              </span>
+            {% empty %}
+              <span style="color: #94a3b8; font-size: 0.875rem;">Žádná oprávnění</span>
+            {% endfor %}
+          </td>
+          <td style="font-size: 0.875rem; color: #64748b;">{{ role.assigned_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Modulové role (pokud existují) -->
+  {% if module_roles %}
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">
+      📦 Modulové role
+    </h3>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Uživatel</th>
+          <th>Modul</th>
+          <th>Typ role</th>
+          <th>Oprávnění</th>
+          <th>Přiřazeno</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for role in module_roles %}
+        <tr>
+          <td><strong>{{ role.membership.user.username }}</strong></td>
+          <td>
+            <span style="background: #f3f4f6; color: #1e293b; padding: 4px 8px; border-radius: 6px; font-size: 0.875rem;">
+              {{ role.module.display_name }}
+            </span>
+          </td>
+          <td>
+            <span style="background: #fce7f3; color: #831843; padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+              {{ role.role_type }}
+            </span>
+          </td>
+          <td>
+            {% for perm in role.permissions.all %}
+              <span style="background: #f0fdf4; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 0.25rem;">
+                {{ perm.name }}
+              </span>
+            {% empty %}
+              <span style="color: #94a3b8; font-size: 0.875rem;">Žádná oprávnění</span>
+            {% endfor %}
+          </td>
+          <td style="font-size: 0.875rem; color: #64748b;">{{ role.assigned_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
