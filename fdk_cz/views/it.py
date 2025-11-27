@@ -16,27 +16,33 @@ from fdk_cz.forms.it import ITAssetForm, ITIncidentForm
 @login_required
 def it_dashboard(request):
     """Dashboard pro správu IT"""
-    # Get user's organizations
-    user_orgs = Organization.objects.filter(
-        Q(created_by=request.user) | Q(members=request.user)
-    ).distinct()
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
+
+    # Build base query based on organization context
+    if current_org_id:
+        # Organization context: show only data from this organization
+        org_filter = Q(organization_id=current_org_id)
+    else:
+        # Personal context: show only data without organization
+        org_filter = Q(organization__isnull=True)
 
     # Get IT assets
     assets = ITAsset.objects.filter(
-        organization__in=user_orgs
+        org_filter
     ).select_related('assigned_to').order_by('-created_at')[:10]
 
     # Get recent incidents
     incidents = ITIncident.objects.filter(
-        organization__in=user_orgs
+        org_filter
     ).select_related('affected_asset', 'assigned_to').order_by('-reported_at')[:10]
 
     # Statistics
-    total_assets = ITAsset.objects.filter(organization__in=user_orgs).count()
-    active_assets = ITAsset.objects.filter(organization__in=user_orgs, status='active').count()
-    total_incidents = ITIncident.objects.filter(organization__in=user_orgs).count()
+    total_assets = ITAsset.objects.filter(org_filter).count()
+    active_assets = ITAsset.objects.filter(org_filter, status='active').count()
+    total_incidents = ITIncident.objects.filter(org_filter).count()
     open_incidents = ITIncident.objects.filter(
-        organization__in=user_orgs,
+        org_filter,
         status__in=['new', 'assigned', 'in_progress']
     ).count()
 
@@ -58,13 +64,20 @@ def it_dashboard(request):
 @login_required
 def list_assets(request):
     """Seznam IT aktiv"""
-    user_orgs = Organization.objects.filter(
-        Q(created_by=request.user) | Q(members=request.user)
-    ).distinct()
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
 
-    assets = ITAsset.objects.filter(
-        organization__in=user_orgs
-    ).select_related('assigned_to', 'organization').order_by('name')
+    # Build base query based on organization context
+    if current_org_id:
+        # Organization context: show only assets from this organization
+        assets = ITAsset.objects.filter(
+            organization_id=current_org_id
+        ).select_related('assigned_to', 'organization').order_by('name')
+    else:
+        # Personal context: show only assets without organization
+        assets = ITAsset.objects.filter(
+            organization__isnull=True
+        ).select_related('assigned_to', 'organization').order_by('name')
 
     # Filter by asset type
     asset_type = request.GET.get('type')
@@ -167,13 +180,19 @@ def delete_asset(request, asset_id):
 @login_required
 def list_incidents(request):
     """Seznam IT incidentů (ITIL Incident Management)"""
-    user_orgs = Organization.objects.filter(
-        Q(created_by=request.user) | Q(members=request.user)
-    ).distinct()
+    # Get current organization context
+    current_org_id = request.session.get('current_organization_id')
 
-    incidents = ITIncident.objects.filter(
-        organization__in=user_orgs
-    ).select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
+    if current_org_id:
+        # Organization context: show only incidents from this organization
+        incidents = ITIncident.objects.filter(
+            organization_id=current_org_id
+        ).select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
+    else:
+        # Personal context: show only incidents without organization
+        incidents = ITIncident.objects.filter(
+            organization__isnull=True
+        ).select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
 
     # Filter by status
     status = request.GET.get('status')
