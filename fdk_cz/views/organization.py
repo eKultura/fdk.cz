@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
+from django.db import transaction
 from fdk_cz.models import Organization, OrganizationMembership, User, OrganizationRole, ModuleRole, ModuleAccess
 
 
@@ -36,28 +37,41 @@ def create_organization(request):
             messages.error(request, 'Vyplňte prosím název a IČO organizace.')
             return render(request, 'organization/create.html')
 
+        # Kontrola limitu organizací pro uživatele
+        # Aktuálně je povolena 1 organizace na uživatele (lze rozšířit o VIP logiku)
+        existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
+        if existing_orgs_count >= 1:
+            messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření další organizace je potřeba VIP účet.')
+            return redirect('organization_dashboard')
+
         # Kontrola, zda IČO již není použito
         if Organization.objects.filter(ico=ico).exists():
             messages.error(request, 'Organizace s tímto IČO již existuje.')
             return render(request, 'organization/create.html', {'name': name, 'ico': ico})
 
-        # Vytvoření organizace
-        org = Organization.objects.create(
-            name=name,
-            ico=ico,
-            created_by=request.user
-        )
+        # Použít transakci pro atomické vytvoření organizace a členství
+        try:
+            with transaction.atomic():
+                # Vytvoření organizace
+                org = Organization.objects.create(
+                    name=name,
+                    ico=ico,
+                    created_by=request.user
+                )
 
-        # Přidání tvůrce jako admin
-        admin_role = OrganizationRole.objects.get(role_name='admin')
-        OrganizationMembership.objects.create(
-            user=request.user,
-            organization=org,
-            role=admin_role
-        )
+                # Přidání tvůrce jako admin
+                admin_role = OrganizationRole.objects.get(role_name='organization_admin')
+                OrganizationMembership.objects.create(
+                    user=request.user,
+                    organization=org,
+                    role=admin_role
+                )
 
-        messages.success(request, f'Organizace "{name}" byla úspěšně vytvořena.')
-        return redirect('organization_detail', organization_id=org.organization_id)
+            messages.success(request, f'Organizace "{name}" byla úspěšně vytvořena.')
+            return redirect('organization_detail', organization_id=org.organization_id)
+        except OrganizationRole.DoesNotExist:
+            messages.error(request, 'Systémová chyba: Role "organization_admin" neexistuje v databázi. Kontaktujte administrátora.')
+            return render(request, 'organization/create.html', {'name': name, 'ico': ico})
 
     return render(request, 'organization/create.html')
 
@@ -88,7 +102,7 @@ def organization_detail(request, organization_id):
         'is_admin': org.created_by == request.user or OrganizationMembership.objects.filter(
             organization=org,
             user=request.user,
-            role__role_name='admin'
+            role__role_name='organization_admin'
         ).exists()
     }
     return render(request, 'organization/detail.html', context)
@@ -128,7 +142,7 @@ def add_member(request, organization_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role__role_name='admin'
+        role__role_name='organization_admin'
     ).exists()
 
     if not is_admin:
@@ -137,7 +151,7 @@ def add_member(request, organization_id):
 
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
-        role = request.POST.get('role', 'member')
+        role = request.POST.get('role', 'organization_member')
 
         try:
             user = User.objects.get(pk=user_id)
@@ -171,7 +185,7 @@ def remove_member(request, organization_id, user_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role__role_name='admin'
+        role__role_name='organization_admin'
     ).exists()
 
     if not is_admin:
@@ -249,7 +263,7 @@ def organization_iam(request, organization_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role__role_name='admin'
+        role__role_name='organization_admin'
     ).exists()
 
     # Členové s jejich rolemi
@@ -282,7 +296,7 @@ def change_member_role(request, organization_id, user_id):
     is_admin = org.created_by == request.user or OrganizationMembership.objects.filter(
         organization=org,
         user=request.user,
-        role__role_name='admin'
+        role__role_name='organization_admin'
     ).exists()
 
     if not is_admin:
@@ -292,7 +306,7 @@ def change_member_role(request, organization_id, user_id):
     if request.method == 'POST':
         new_role_name = request.POST.get('role')
 
-        if new_role_name not in ['admin', 'member', 'viewer']:
+        if new_role_name not in ['organization_admin', 'organization_member', 'organization_viewer']:
             messages.error(request, 'Neplatná role.')
             return redirect('organization_iam', organization_id=organization_id)
 
