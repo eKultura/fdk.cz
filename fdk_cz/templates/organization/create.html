@@ -13,6 +13,20 @@
 
 <div style="max-width: 700px; margin: 0 auto;">
 
+  {% if existing_orgs_count >= max_orgs %}
+  <!-- Warning - Limit reached -->
+  <div style="background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: #991b1b; margin-bottom: 0.75rem;">
+      ⚠️ Máte maximum organizací
+    </h3>
+    <p style="color: #991b1b; font-size: 0.875rem; line-height: 1.8; margin: 0;">
+      Již máte vytvořenou jednu organizaci. Pro vytvoření další organizace je potřeba VIP účet.
+      <br>
+      <a href="{% url 'organization_dashboard' %}" style="text-decoration: underline; font-weight: 600;">← Zpět na přehled organizací</a>
+    </p>
+  </div>
+  {% endif %}
+
   <!-- Info Card -->
   <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
     <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e40af; margin-bottom: 0.75rem;">
@@ -23,12 +37,15 @@
       <li>Můžete přidávat další členy</li>
       <li>Organizace slouží pro sdílení projektů, smluv a dalších dat</li>
       <li>Organizace bude po vytvoření okamžitě aktivní</li>
+      {% if existing_orgs_count < max_orgs %}
+      <li><strong>Můžete vytvořit až {{ max_orgs }} organizaci</strong> (máte {{ existing_orgs_count }})</li>
+      {% endif %}
     </ul>
   </div>
 
   <!-- Form -->
   <div class="content-card">
-    <form method="POST">
+    <form method="POST" {% if existing_orgs_count >= max_orgs %}style="pointer-events: none; opacity: 0.6;"{% endif %}>
       {% csrf_token %}
 
       <div class="form-group">
@@ -70,7 +87,7 @@
       <!-- Actions -->
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; margin-top: 2rem;">
         <a href="{% url 'organization_dashboard' %}" class="btn btn-outline">Zrušit</a>
-        <button type="submit" class="btn btn-primary">✓ Vytvořit organizaci</button>
+        <button type="submit" class="btn btn-primary" {% if existing_orgs_count >= max_orgs %}disabled{% endif %}>✓ Vytvořit organizaci</button>
       </div>
     </form>
   </div>

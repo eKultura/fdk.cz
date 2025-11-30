@@ -27,20 +27,34 @@
     {% if owned_organizations %}
       <div style="display: grid; gap: 1rem;">
         {% for org in owned_organizations %}
-        <div style="border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); transition: all 0.2s;">
+        <div style="border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); transition: all 0.2s; {% if current_organization and org.organization_id == current_organization.organization_id %}box-shadow: 0 0 0 3px #93c5fd;{% endif %}">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
             <div style="flex: 1;">
               <h4 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
                 {{ org.name }}
+                {% if current_organization and org.organization_id == current_organization.organization_id %}
+                <span style="background: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">AKTIVNÍ</span>
+                {% endif %}
               </h4>
               <div style="font-size: 0.875rem; color: #64748b;">
                 IČO: <span style="font-weight: 500; color: #3b82f6;">{{ org.ico }}</span> ·
                 Vytvořeno: {{ org.created_at|date:"d.m.Y" }}
               </div>
             </div>
-            <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-primary btn-sm">
-              Detail →
-            </a>
+            <div style="display: flex; gap: 0.5rem;">
+              {% if current_organization and org.organization_id == current_organization.organization_id %}
+              <a href="{% url 'set_personal_context' %}" class="btn btn-outline btn-sm">
+                ← Vystoupit
+              </a>
+              {% else %}
+              <a href="{% url 'set_organization_context' org.organization_id %}" class="btn btn-primary btn-sm">
+                Vstoupit →
+              </a>
+              {% endif %}
+              <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-outline btn-sm">
+                Detail
+              </a>
+            </div>
           </div>
         </div>
         {% endfor %}
@@ -65,19 +79,33 @@
     {% if member_organizations %}
       <div style="display: grid; gap: 1rem;">
         {% for org in member_organizations %}
-        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; background: white; transition: all 0.2s;">
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; background: white; transition: all 0.2s; {% if current_organization and org.organization_id == current_organization.organization_id %}box-shadow: 0 0 0 3px #93c5fd;{% endif %}">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
             <div style="flex: 1;">
               <h4 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
                 {{ org.name }}
+                {% if current_organization and org.organization_id == current_organization.organization_id %}
+                <span style="background: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">AKTIVNÍ</span>
+                {% endif %}
               </h4>
               <div style="font-size: 0.875rem; color: #64748b;">
                 IČO: {{ org.ico }} · Vlastník: {{ org.created_by.username }}
               </div>
             </div>
-            <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-outline btn-sm">
-              Detail →
-            </a>
+            <div style="display: flex; gap: 0.5rem;">
+              {% if current_organization and org.organization_id == current_organization.organization_id %}
+              <a href="{% url 'set_personal_context' %}" class="btn btn-outline btn-sm">
+                ← Vystoupit
+              </a>
+              {% else %}
+              <a href="{% url 'set_organization_context' org.organization_id %}" class="btn btn-primary btn-sm">
+                Vstoupit →
+              </a>
+              {% endif %}
+              <a href="{% url 'organization_detail' org.organization_id %}" class="btn btn-outline btn-sm">
+                Detail
+              </a>
+            </div>
           </div>
         </div>
         {% endfor %}

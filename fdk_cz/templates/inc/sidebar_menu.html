@@ -14,6 +14,32 @@ Centrální sidebar menu pro celý FDK.cz systém
   <a href="{% url 'organization_dashboard' %}" class="nav-item">
     <span class="nav-icon">&#127970;</span> Moje organizace
   </a>
+
+  {% comment %} Aktuální kontext - organizace nebo osobní {% endcomment %}
+  {% if current_organization %}
+  <div style="margin: 0.5rem 0; padding: 0.75rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 8px; border-left: 3px solid #3b82f6;">
+    <div style="font-size: 0.75rem; color: #1e40af; font-weight: 600; margin-bottom: 0.25rem;">
+      🏢 AKTIVNÍ ORGANIZACE
+    </div>
+    <div style="font-size: 0.875rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">
+      {{ current_organization.name }}
+    </div>
+    {% if can_switch_organizations %}
+    <a href="{% url 'organization_dashboard' %}" style="font-size: 0.75rem; color: #3b82f6; text-decoration: underline;">
+      Přepnout organizaci
+    </a>
+    {% endif %}
+  </div>
+  {% elif user_organizations %}
+  <div style="margin: 0.5rem 0; padding: 0.75rem; background: #f1f5f9; border-radius: 8px; border-left: 3px solid #94a3b8;">
+    <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">
+      👤 OSOBNÍ KONTEXT
+    </div>
+    <a href="{% url 'organization_dashboard' %}" style="font-size: 0.75rem; color: #3b82f6; text-decoration: underline;">
+      Přepnout na organizaci
+    </a>
+  </div>
+  {% endif %}
   {% endif %}
 </div>
 
@@ -83,7 +109,8 @@ Centrální sidebar menu pro celý FDK.cz systém
   {% endfor %}
 </div>
 
-{% comment %} KATEGORIE: Finance {% endcomment %}
+{% comment %} KATEGORIE: Finance - zobrazí se jen když má nějaké moduly {% endcomment %}
+{% if category_visibility.Finance %}
 <div class="nav-section">
   <div class="nav-section-title">Finance</div>
   {% for module in visible_modules %}
@@ -93,9 +120,14 @@ Centrální sidebar menu pro celý FDK.cz systém
       <a href="{% url 'grant_list' %}" class="nav-item"><span class="nav-icon">&#128176;</span> Granty &amp; Dotace</a>
     {% endif %}
   {% endfor %}
+  <a href="{% url 'user_settings' %}" class="nav-item" style="color: #94a3b8; font-size: 0.875rem;">
+    <span class="nav-icon">&#128161;</span> Zapnout další moduly v nastavení
+  </a>
 </div>
+{% endif %}
 
-{% comment %} KATEGORIE: Business {% endcomment %}
+{% comment %} KATEGORIE: Business - zobrazí se jen když má nějaké moduly {% endcomment %}
+{% if category_visibility.Business %}
 <div class="nav-section">
   <div class="nav-section-title">Business</div>
   {% for module in visible_modules %}
@@ -105,7 +137,11 @@ Centrální sidebar menu pro celý FDK.cz systém
       <a href="{% url 'list_contracts' %}" class="nav-item"><span class="nav-icon">&#128196;</span> Smlouvy</a>
     {% endif %}
   {% endfor %}
+  <a href="{% url 'user_settings' %}" class="nav-item" style="color: #94a3b8; font-size: 0.875rem;">
+    <span class="nav-icon">&#128161;</span> Zapnout další moduly v nastavení
+  </a>
 </div>
+{% endif %}
 
 {% comment %} KATEGORIE: Nástroje {% endcomment %}
 <div class="nav-section">

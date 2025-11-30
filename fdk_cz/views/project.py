@@ -227,8 +227,8 @@ def index_project(request):
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
 
-    # Base query: user's projects (member or owner)
-    base_query = Q(project_users__user=request.user) | Q(owner=request.user)
+    # Base query: user's projects (member, owner, or created by user)
+    base_query = Q(project_users__user=request.user) | Q(owner=request.user) | Q(created_by=request.user)
 
     # Filter by organization context
     current_org_id = request.session.get('current_organization_id')

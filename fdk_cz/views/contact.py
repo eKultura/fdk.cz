@@ -21,9 +21,12 @@ from fdk_cz.forms.contact import contact_form
 @login_required
 def create_contact(request, project_id=None):
     """Vytvoření nového kontaktu, s možností přednastavení projektu"""
-    # Získáme projekty, kde má uživatel roli (nemusí být admin)
+    # Získáme projekty, kde má uživatel roli (nemusí být admin) nebo které vytvořil
+    from django.db.models import Q
     user_projects = ProjectUser.objects.filter(user=request.user)
-    available_projects = Project.objects.filter(project_id__in=[up.project_id for up in user_projects])
+    available_projects = Project.objects.filter(
+        Q(project_id__in=[up.project_id for up in user_projects]) | Q(created_by=request.user) | Q(owner=request.user)
+    ).distinct()
 
     # Přednostně použijeme project_id z URL, pak z GET parametru
     selected_project_id = project_id or request.GET.get('id_projektu')
@@ -59,14 +62,22 @@ def create_contact(request, project_id=None):
 
 @login_required
 def edit_contact(request, contact_id):
+    from django.db.models import Q
     contact_instance = get_object_or_404(Contact, pk=contact_id)
 
-    # ✅ OPRAVA: Získání projektů, kde je uživatel vlastníkem nebo administrátorem
+    # ✅ OPRAVA: Získání projektů, kde je uživatel vlastníkem, administrátorem nebo tvůrcem
     # Použití get_or_create místo get
     admin_role, _ = ProjectRole.objects.get_or_create(role_name='Administrator')
     owner_role, _ = ProjectRole.objects.get_or_create(role_name='Owner')
 
     user_projects = ProjectUser.objects.filter(user=request.user, role__in=[admin_role, owner_role])
+
+    # Get actual Project objects for the dropdown (including created projects)
+    projects = Project.objects.filter(
+        Q(project_id__in=[user_project.project_id for user_project in user_projects]) |
+        Q(created_by=request.user) |
+        Q(owner=request.user)
+    ).distinct()
 
     if request.method == 'POST':
         form = contact_form(request.POST, instance=contact_instance)
@@ -76,19 +87,18 @@ def edit_contact(request, contact_id):
             return redirect('my_contacts')
     else:
         form = contact_form(instance=contact_instance)
-        form.fields['project'].queryset = Project.objects.filter(
-            project_id__in=[user_project.project_id for user_project in user_projects]
-        )
+        form.fields['project'].queryset = projects
 
     return render(request, 'contact/edit_contact.html', {
         'form': form,
-        'projects': user_projects,
+        'projects': projects,
         'contact': contact_instance
     })
 
 
 @login_required
 def list_contacts(request):
+    from django.db.models import Q
     # ✅ OPRAVA: Získáme role vlastníka a administrátora
     # Použití get_or_create místo get - vytvoří role, pokud neexistují
     admin_role, _ = ProjectRole.objects.get_or_create(role_name='Administrator')
@@ -97,8 +107,12 @@ def list_contacts(request):
     # Získáme projekty, kde je uživatel vlastníkem nebo administrátorem
     user_projects = ProjectUser.objects.filter(user=request.user, role__in=[admin_role, owner_role])
 
-    # Získání projektů, které odpovídají uživateli
-    projects = Project.objects.filter(project_id__in=[user_project.project_id for user_project in user_projects])
+    # Získání projektů, které odpovídají uživateli (včetně vytvořených)
+    projects = Project.objects.filter(
+        Q(project_id__in=[user_project.project_id for user_project in user_projects]) |
+        Q(created_by=request.user) |
+        Q(owner=request.user)
+    ).distinct()
 
     # Kontakty filtrované podle projektů
     selected_project_id = request.GET.get('project_id', None)
