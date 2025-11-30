@@ -348,10 +348,22 @@ def user_modules(request):
     # Získat aktivní modul pro menu
     active_module = get_active_module(request)
 
+    # Zjistit, které kategorie mají viditelné moduly
+    visible_module_names = {module.name for module in visible_modules}
+
+    category_visibility = {}
+    for category in MENU_CONFIG['categories']:
+        has_visible_modules = any(
+            module_name in visible_module_names
+            for module_name in category['modules']
+        )
+        category_visibility[category['name']] = has_visible_modules
+
     return {
         'user_has_module': user_has_module,
         'all_modules': all_modules,
         'visible_modules': visible_modules,
         'menu_config': MENU_CONFIG,
         'active_module': active_module,
+        'category_visibility': category_visibility,
     }

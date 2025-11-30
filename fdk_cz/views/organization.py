@@ -29,25 +29,35 @@ def organization_dashboard(request):
 @login_required
 def create_organization(request):
     """Vytvoření nové organizace"""
+    # Kontrola limitu organizací pro uživatele už při GET požadavku
+    existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
+    max_orgs = 1  # Aktuálně je povolena 1 organizace na uživatele (lze rozšířit o VIP logiku)
+
     if request.method == 'POST':
         name = request.POST.get('name')
         ico = request.POST.get('ico')
 
         if not name or not ico:
             messages.error(request, 'Vyplňte prosím název a IČO organizace.')
-            return render(request, 'organization/create.html')
+            return render(request, 'organization/create.html', {
+                'existing_orgs_count': existing_orgs_count,
+                'max_orgs': max_orgs
+            })
 
         # Kontrola limitu organizací pro uživatele
-        # Aktuálně je povolena 1 organizace na uživatele (lze rozšířit o VIP logiku)
-        existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
-        if existing_orgs_count >= 1:
+        if existing_orgs_count >= max_orgs:
             messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření další organizace je potřeba VIP účet.')
             return redirect('organization_dashboard')
 
         # Kontrola, zda IČO již není použito
         if Organization.objects.filter(ico=ico).exists():
             messages.error(request, 'Organizace s tímto IČO již existuje.')
-            return render(request, 'organization/create.html', {'name': name, 'ico': ico})
+            return render(request, 'organization/create.html', {
+                'name': name,
+                'ico': ico,
+                'existing_orgs_count': existing_orgs_count,
+                'max_orgs': max_orgs
+            })
 
         # Použít transakci pro atomické vytvoření organizace a členství
         try:
@@ -71,9 +81,17 @@ def create_organization(request):
             return redirect('organization_detail', organization_id=org.organization_id)
         except OrganizationRole.DoesNotExist:
             messages.error(request, 'Systémová chyba: Role "organization_admin" neexistuje v databázi. Kontaktujte administrátora.')
-            return render(request, 'organization/create.html', {'name': name, 'ico': ico})
+            return render(request, 'organization/create.html', {
+                'name': name,
+                'ico': ico,
+                'existing_orgs_count': existing_orgs_count,
+                'max_orgs': max_orgs
+            })
 
-    return render(request, 'organization/create.html')
+    return render(request, 'organization/create.html', {
+        'existing_orgs_count': existing_orgs_count,
+        'max_orgs': max_orgs
+    })
 
 
 @login_required
