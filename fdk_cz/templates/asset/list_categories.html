@@ -12,6 +12,11 @@
 {% block content %}
 
 <div style="max-width: 1200px; margin: 0 auto;">
+  <!-- Actions -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
+    <a href="{% url 'create_asset_category' %}" class="btn btn-primary">➕ Nová kategorie</a>
+  </div>
+
   <div class="content-card">
     {% if categories %}
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
