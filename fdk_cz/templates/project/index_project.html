@@ -60,7 +60,8 @@
     <div>
       <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0; color: #6b7280;">📦 {% trans "Archiv projektů" %}</h3>
       <p style="color: #9ca3af; margin: 0; font-size: 0.875rem;">
-        {{ archived_projects|length }} {% if archived_projects|length == 1 %}projekt{% elif archived_projects|length < 5 %}projekty{% else %}projektů{% endif %}
+        {{ archived_projects.paginator.count }} {% if archived_projects.paginator.count == 1 %}projekt{% elif archived_projects.paginator.count < 5 %}projekty{% else %}projektů{% endif %}
+        {% if archived_projects.paginator.num_pages > 1 %}(stránka {{ archived_projects.number }} z {{ archived_projects.paginator.num_pages }}){% endif %}
       </p>
     </div>
   </div>
@@ -99,6 +100,25 @@
     </a>
     {% endfor %}
   </div>
+
+  <!-- Pagination for archived projects -->
+  {% if archived_projects.paginator.num_pages > 1 %}
+  <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 0.5rem; align-items: center;">
+    {% if archived_projects.has_previous %}
+      <a href="?archived_page=1" class="btn btn-secondary" style="padding: 0.5rem 1rem;">« První</a>
+      <a href="?archived_page={{ archived_projects.previous_page_number }}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">‹ Předchozí</a>
+    {% endif %}
+
+    <span style="color: #6b7280; font-weight: 500;">
+      Stránka {{ archived_projects.number }} z {{ archived_projects.paginator.num_pages }}
+    </span>
+
+    {% if archived_projects.has_next %}
+      <a href="?archived_page={{ archived_projects.next_page_number }}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Další ›</a>
+      <a href="?archived_page={{ archived_projects.paginator.num_pages }}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Poslední »</a>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endif %}
 

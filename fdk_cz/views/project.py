@@ -224,6 +224,8 @@ def edit_project(request, project_id):
 @login_required
 def index_project(request):
     from datetime import date
+    from django.core.paginator import Paginator
+
     # Načteme instanci uživatele podle jeho primárního klíče (ID)
     current_user = User.objects.get(pk=request.user.pk)
 
@@ -235,9 +237,8 @@ def index_project(request):
     if current_org_id:
         # Organization context: show only projects from this organization
         base_query = base_query & Q(organization_id=current_org_id)
-    else:
-        # Personal context: show only projects without organization
-        base_query = base_query & Q(organization__isnull=True)
+    # REMOVED: else branch that filtered out organization projects
+    # Now in personal context, we show ALL user's projects regardless of organization
 
     # Aktivní projekty = bez end_date NEBO s end_date >= dnes
     user_projects = Project.objects.filter(base_query).filter(
@@ -245,9 +246,14 @@ def index_project(request):
     ).distinct().order_by('-created')
 
     # Archivované projekty = s end_date < dnes
-    archived_projects = Project.objects.filter(base_query).filter(
+    archived_projects_query = Project.objects.filter(base_query).filter(
         end_date__lt=date.today()  # Ukončené projekty
     ).distinct().order_by('-end_date')
+
+    # Pagination for archived projects
+    archived_page_number = request.GET.get('archived_page', 1)
+    archived_paginator = Paginator(archived_projects_query, 12)  # 12 projects per page
+    archived_projects = archived_paginator.get_page(archived_page_number)
 
     assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
 
