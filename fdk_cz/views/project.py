@@ -249,10 +249,23 @@ def delete_project(request, project_id):
 
 
 
-# View for editing an existing project 
+# View for editing an existing project
+@login_required
 def edit_project(request, project_id):
+    from datetime import date
+
     # Načtěte projekt, který se má upravit
     project_instance = get_object_or_404(Project, pk=project_id)
+
+    # Kontrola, zda je projekt ukončen (archivován)
+    is_project_closed = project_instance.end_date and project_instance.end_date < date.today()
+    if is_project_closed:
+        messages.error(
+            request,
+            f'Projekt "{project_instance.name}" je ukončen a nelze jej upravovat. '
+            f'Archivované projekty jsou pouze pro čtení.'
+        )
+        return redirect('detail_project', project_id=project_instance.project_id)
 
     if request.method == 'POST':
         form = project_form(request.POST, instance=project_instance, user=request.user)
