@@ -100,13 +100,13 @@ class ProjectTask(models.Model):
     task_id = models.AutoField(primary_key=True, db_column='task_id')
     title = models.CharField(max_length=255, db_column='title')
     description = models.TextField(null=True, blank=True, db_column='description')
-    category = models.ForeignKey(ProjectCategory, on_delete=models.CASCADE, null=True, related_name='tasks', db_column='category_id')
+    category = models.ForeignKey('ProjectCategory', on_delete=models.CASCADE, null=True, related_name='tasks', db_column='category_id')
     priority = models.CharField(max_length=16, null=True, blank=True, db_column='priority')
     status = models.CharField(max_length=50, null=True, blank=True, db_column='status')
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tasks', db_column='creator_id')
     assigned = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='assigned_tasks', db_column='assigned_id')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, related_name='tasks', db_column='project_id')
-    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks', db_column='organization_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, related_name='tasks', db_column='project_id')
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks', db_column='organization_id')
     due_date = models.DateField(null=True, blank=True, db_column='due_date')
     created = models.DateTimeField(null=True, blank=True, db_column='created')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks', db_column='parent_id')
@@ -132,7 +132,7 @@ class ProjectComment(models.Model):
     comment_id = models.AutoField(primary_key=True, db_column='comment_id')
     task = models.ForeignKey(ProjectTask, on_delete=models.CASCADE, related_name='comments', db_column='task_id')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='comments', db_column='user_id')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, related_name='comments', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, related_name='comments', db_column='project_id')
     comment = models.TextField(null=True, blank=True, db_column='comment')
     posted = models.DateTimeField(null=True, blank=True, db_column='posted')
 
@@ -141,9 +141,9 @@ class ProjectComment(models.Model):
 
 class ProjectDocument(models.Model):
     document_id = models.AutoField(primary_key=True, db_column='document_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='documents', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='documents', db_column='project_id')
     document_type = models.CharField(max_length=255, db_column='document_type')
-    category = models.ForeignKey(ProjectCategory, on_delete=models.SET_NULL, db_column='category', null=True, blank=True)
+    category = models.ForeignKey('ProjectCategory', on_delete=models.SET_NULL, db_column='category', null=True, blank=True)
     title = models.CharField(max_length=255, db_column='title')
     url = models.CharField(max_length=255, db_column='url')
     description = models.TextField(null=True, blank=True, db_column='description')
@@ -160,7 +160,7 @@ class Flist(models.Model):
     list_id = models.AutoField(primary_key=True, db_column='list_id')
     name = models.CharField(max_length=255, db_column='name')
     description = models.TextField(null=True, blank=True, db_column='description')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name='lists', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='lists', db_column='project_id')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_lists', db_column='owner_id')
     is_private = models.BooleanField(default=True, db_column='is_private')
     created = models.DateTimeField(default=timezone.now, db_column='created')  # Přidáme výchozí hodnotu
@@ -203,9 +203,9 @@ class Contact(models.Model):
     description = models.TextField(null=True, blank=True, db_column='description')
     added_on = models.DateTimeField(auto_now_add=True, db_column='added_on')
     last_contacted = models.DateTimeField(null=True, blank=True, db_column='last_contacted')
-    
+
     # Vazba na projekt nebo účet
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='project_id')
     organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='organization_id')
     account = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='account_id')
 
@@ -286,7 +286,7 @@ class Contract(models.Model):
     description = models.TextField(null=True, blank=True, db_column='description')
     start_date = models.DateField(null=True, blank=True, db_column='start_date')
     end_date = models.DateField(null=True, blank=True, db_column='end_date')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='contracts', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='contracts', db_column='project_id')
     document = models.FileField(upload_to='contracts/', null=True, blank=True)
 
     class Meta:
@@ -299,7 +299,7 @@ class Contract(models.Model):
 # -------------------------------------------------------------------
 class TestType(models.Model):
     test_type_id = models.AutoField(primary_key=True, db_column='test_type_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_types', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_types', db_column='project_id')
     name = models.CharField(max_length=255, db_column='name')
     description = models.TextField(null=True, blank=True, db_column='description')
 
@@ -312,7 +312,7 @@ class TestType(models.Model):
 
 class Test(models.Model):
     test_id = models.AutoField(primary_key=True, db_column='test_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tests', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tests', db_column='project_id')
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, related_name='tests', db_column='test_type_id')
     name = models.CharField(max_length=255, db_column='name')
     description = models.TextField(null=True, blank=True, db_column='description')
@@ -328,7 +328,7 @@ class Test(models.Model):
 
 class TestResult(models.Model):
     test_result_id = models.AutoField(primary_key=True, db_column='test_result_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_results', db_column='project_id') 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_results', db_column='project_id') 
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='results', db_column='test_id')
     executed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='executed_tests', db_column='executed_by')
     result = models.CharField(max_length=50, db_column='result')  # Pass, Fail, Blocked, etc.
@@ -349,7 +349,7 @@ class TestError(models.Model):
     ]
     test_error_id = models.AutoField(primary_key=True, db_column='test_error_id')
     test_result = models.ForeignKey(TestResult, db_column='test_result_id', on_delete=models.CASCADE, related_name='errors', null=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
     error_title = models.CharField(max_length=255, db_column='error_title')
     description = models.TextField(null=True, blank=True, db_column='description')
     steps_to_replicate = models.TextField(null=True, blank=True, db_column='steps_to_replicate')
@@ -419,7 +419,7 @@ class TestScenario(models.Model):
 
 class Invoice(models.Model):
     invoice_id = models.AutoField(primary_key=True, db_column='invoice_id')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
+    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='invoices', db_column='organization_id', null=True, blank=True)
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, related_name='invoices', db_column='project_id', null=True, blank=True)
     invoice_number = models.CharField(max_length=20, unique=True, db_column='invoice_number')
@@ -486,7 +486,7 @@ class AccountingContext(models.Model):
                             related_name='accounting_contexts',
                             db_column='user_id',
                             help_text='Vlastník účetnictví')
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE,
                                     null=True, blank=True,
                                     related_name='accounting_contexts',
                                     db_column='organization_id',
@@ -928,10 +928,10 @@ class GrantApplication(models.Model):
     application_id = models.AutoField(primary_key=True, db_column='application_id')
     call = models.ForeignKey(GrantCall, on_delete=models.CASCADE,
                              related_name='applications', db_column='call_id')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL,
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL,
                                 related_name='grant_applications',
                                 db_column='project_id', null=True, blank=True)
-    organization = models.ForeignKey(Company, on_delete=models.SET_NULL,
+    organization = models.ForeignKey('Company', on_delete=models.SET_NULL,
                                      related_name='grant_applications',
                                      db_column='organization_id', null=True, blank=True)
     applicant = models.ForeignKey(User, on_delete=models.SET_NULL,

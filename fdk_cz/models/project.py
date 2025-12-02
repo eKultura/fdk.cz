@@ -570,7 +570,7 @@ class TestScenario(models.Model):
 
 class Invoice(models.Model):
     invoice_id = models.AutoField(primary_key=True, db_column='invoice_id')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
+    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='invoices', db_column='organization_id', null=True, blank=True)
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, related_name='invoices', db_column='project_id', null=True, blank=True)
     invoice_number = models.CharField(max_length=20, unique=True, db_column='invoice_number')
@@ -1079,10 +1079,10 @@ class GrantApplication(models.Model):
     application_id = models.AutoField(primary_key=True, db_column='application_id')
     call = models.ForeignKey(GrantCall, on_delete=models.CASCADE,
                              related_name='applications', db_column='call_id')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL,
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL,
                                 related_name='grant_applications',
                                 db_column='project_id', null=True, blank=True)
-    organization = models.ForeignKey(Company, on_delete=models.SET_NULL,
+    organization = models.ForeignKey('Company', on_delete=models.SET_NULL,
                                      related_name='grant_applications',
                                      db_column='organization_id', null=True, blank=True)
     applicant = models.ForeignKey(User, on_delete=models.SET_NULL,

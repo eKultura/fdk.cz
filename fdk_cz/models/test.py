@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class TestType(models.Model):
     test_type_id = models.AutoField(primary_key=True, db_column='test_type_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_types', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_types', db_column='project_id')
     name = models.CharField(max_length=255, db_column='name')
     description = models.TextField(null=True, blank=True, db_column='description')
 
@@ -21,7 +21,7 @@ class TestType(models.Model):
 
 class Test(models.Model):
     test_id = models.AutoField(primary_key=True, db_column='test_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tests', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tests', db_column='project_id')
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, related_name='tests', db_column='test_type_id')
     name = models.CharField(max_length=255, db_column='name')
     description = models.TextField(null=True, blank=True, db_column='description')
@@ -38,7 +38,7 @@ class Test(models.Model):
 
 class TestResult(models.Model):
     test_result_id = models.AutoField(primary_key=True, db_column='test_result_id')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_results', db_column='project_id') 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_results', db_column='project_id') 
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='results', db_column='test_id')
     executed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='executed_tests', db_column='executed_by')
     result = models.CharField(max_length=50, db_column='result')  # Pass, Fail, Blocked, etc.
@@ -60,7 +60,7 @@ class TestError(models.Model):
     ]
     test_error_id = models.AutoField(primary_key=True, db_column='test_error_id')
     test_result = models.ForeignKey(TestResult, db_column='test_result_id', on_delete=models.CASCADE, related_name='errors', null=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='test_errors', db_column='project_id') 
     error_title = models.CharField(max_length=255, db_column='error_title')
     description = models.TextField(null=True, blank=True, db_column='description')
     steps_to_replicate = models.TextField(null=True, blank=True, db_column='steps_to_replicate')
