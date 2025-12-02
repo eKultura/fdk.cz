@@ -57,9 +57,7 @@ def list_test_types(request):
     if current_org_id:
         # Organization context: show only projects from this organization
         user_projects = user_projects.filter(organization_id=current_org_id)
-    else:
-        # Personal context: show only projects without organization
-        user_projects = user_projects.filter(organization__isnull=True)
+    # else: Personal context - show ALL user's projects regardless of organization
 
     test_types = TestType.objects.filter(project__in=user_projects)
     return render(request, 'test/list_test_types.html', {'test_types': test_types, 'projects': user_projects})
@@ -107,9 +105,7 @@ def list_tests(request):
     if current_org_id:
         # Organization context: show only projects from this organization
         user_projects = user_projects.filter(organization_id=current_org_id)
-    else:
-        # Personal context: show only projects without organization
-        user_projects = user_projects.filter(organization__isnull=True)
+    # else: Personal context - show ALL user's projects regardless of organization
 
     tests = Test.objects.filter(project__in=user_projects)
     test_types = TestType.objects.filter(project__in=user_projects)
