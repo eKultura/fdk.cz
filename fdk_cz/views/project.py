@@ -285,8 +285,9 @@ def index_project(request):
     if current_org_id:
         # Organization context: show only projects from this organization
         base_query = base_query & Q(organization_id=current_org_id)
-    # REMOVED: else branch that filtered out organization projects
-    # Now in personal context, we show ALL user's projects regardless of organization
+    else:
+        # Personal context: show only projects without organization
+        base_query = base_query & Q(organization__isnull=True)
 
     # Aktivní projekty = bez end_date NEBO s end_date >= dnes
     user_projects = Project.objects.filter(base_query).filter(
