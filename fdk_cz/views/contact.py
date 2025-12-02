@@ -25,7 +25,7 @@ def create_contact(request, project_id=None):
     from django.db.models import Q
     user_projects = ProjectUser.objects.filter(user=request.user)
     available_projects = Project.objects.filter(
-        Q(project_id__in=[up.project_id for up in user_projects]) | Q(created_by=request.user) | Q(owner=request.user)
+        Q(project_id__in=[up.project_id for up in user_projects]) | Q(owner=request.user)
     ).distinct()
 
     # Přednostně použijeme project_id z URL, pak z GET parametru
@@ -75,7 +75,6 @@ def edit_contact(request, contact_id):
     # Get actual Project objects for the dropdown (including created projects)
     projects = Project.objects.filter(
         Q(project_id__in=[user_project.project_id for user_project in user_projects]) |
-        Q(created_by=request.user) |
         Q(owner=request.user)
     ).distinct()
 
@@ -110,7 +109,6 @@ def list_contacts(request):
     # Získání projektů, které odpovídají uživateli (včetně vytvořených)
     projects = Project.objects.filter(
         Q(project_id__in=[user_project.project_id for user_project in user_projects]) |
-        Q(created_by=request.user) |
         Q(owner=request.user)
     ).distinct()
 

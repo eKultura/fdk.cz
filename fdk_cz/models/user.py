@@ -5,6 +5,26 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+class UserProfile(models.Model):
+    """Rozšíření Django User modelu o další atributy"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', db_column='user_id')
+    is_vip = models.BooleanField(default=False, db_column='is_vip', help_text='VIP uživatelé mají vyšší limity projektů')
+    created_at = models.DateTimeField(auto_now_add=True, db_column='created_at')
+    updated_at = models.DateTimeField(auto_now=True, db_column='updated_at')
+
+    class Meta:
+        db_table = 'FDK_user_profile'
+        verbose_name = 'Profil uživatele'
+        verbose_name_plural = 'Profily uživatelů'
+
+    def __str__(self):
+        return f"Profil: {self.user.username}"
+
+    def get_max_active_projects(self):
+        """Vrátí max. počet aktivních projektů pro uživatele"""
+        return 3 if self.is_vip else 1
+
+
 class ActivityLog(models.Model):
     log_id = models.AutoField(primary_key=True, db_column='log_id')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='activity_logs', db_column='user_id')
