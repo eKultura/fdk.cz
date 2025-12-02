@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class Invoice(models.Model):
     invoice_id = models.AutoField(primary_key=True, db_column='invoice_id')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
+    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoices', db_column='company_id', null=True, blank=True)  # Legacy - kept for backwards compatibility
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE, related_name='invoices', db_column='organization_id', null=True, blank=True)
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, related_name='invoices', db_column='project_id', null=True, blank=True)
     invoice_number = models.CharField(max_length=20, unique=True, db_column='invoice_number')
@@ -76,7 +76,7 @@ class AccountingContext(models.Model):
                             related_name='accounting_contexts',
                             db_column='user_id',
                             help_text='Vlastník účetnictví')
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
+    organization = models.ForeignKey('Organization', on_delete=models.CASCADE,
                                     null=True, blank=True,
                                     related_name='accounting_contexts',
                                     db_column='organization_id',

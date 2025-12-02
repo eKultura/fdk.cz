@@ -183,10 +183,10 @@ class GrantApplication(models.Model):
     application_id = models.AutoField(primary_key=True, db_column='application_id')
     call = models.ForeignKey(GrantCall, on_delete=models.CASCADE,
                              related_name='applications', db_column='call_id')
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL,
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL,
                                 related_name='grant_applications',
                                 db_column='project_id', null=True, blank=True)
-    organization = models.ForeignKey(Company, on_delete=models.SET_NULL,
+    organization = models.ForeignKey('Company', on_delete=models.SET_NULL,
                                      related_name='grant_applications',
                                      db_column='organization_id', null=True, blank=True)
     applicant = models.ForeignKey(User, on_delete=models.SET_NULL,

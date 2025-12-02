@@ -11,7 +11,7 @@ class Contract(models.Model):
     description = models.TextField(null=True, blank=True, db_column='description')
     start_date = models.DateField(null=True, blank=True, db_column='start_date')
     end_date = models.DateField(null=True, blank=True, db_column='end_date')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='contracts', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='contracts', db_column='project_id')
     document = models.FileField(upload_to='contracts/', null=True, blank=True)
 
     class Meta:

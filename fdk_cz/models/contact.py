@@ -15,9 +15,9 @@ class Contact(models.Model):
     description = models.TextField(null=True, blank=True, db_column='description')
     added_on = models.DateTimeField(auto_now_add=True, db_column='added_on')
     last_contacted = models.DateTimeField(null=True, blank=True, db_column='last_contacted')
-    
+
     # Vazba na projekt nebo účet
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='project_id')
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='project_id')
     organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='organization_id')
     account = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contacts', db_column='account_id')
 
