@@ -24,8 +24,8 @@ def it_dashboard(request):
         # Organization context: show only data from this organization
         org_filter = Q(organization_id=current_org_id)
     else:
-        # Personal context: show only data without organization
-        org_filter = Q(organization__isnull=True)
+        # Personal context: show ALL user's data regardless of organization
+        org_filter = Q()  # No filter - show all accessible data
 
     # Get IT assets
     assets = ITAsset.objects.filter(
@@ -74,10 +74,8 @@ def list_assets(request):
             organization_id=current_org_id
         ).select_related('assigned_to', 'organization').order_by('name')
     else:
-        # Personal context: show only assets without organization
-        assets = ITAsset.objects.filter(
-            organization__isnull=True
-        ).select_related('assigned_to', 'organization').order_by('name')
+        # Personal context: show ALL user's assets regardless of organization
+        assets = ITAsset.objects.all().select_related('assigned_to', 'organization').order_by('name')
 
     # Filter by asset type
     asset_type = request.GET.get('type')
@@ -189,10 +187,8 @@ def list_incidents(request):
             organization_id=current_org_id
         ).select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
     else:
-        # Personal context: show only incidents without organization
-        incidents = ITIncident.objects.filter(
-            organization__isnull=True
-        ).select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
+        # Personal context: show ALL user's incidents regardless of organization
+        incidents = ITIncident.objects.all().select_related('affected_asset', 'reported_by', 'assigned_to').order_by('-reported_at')
 
     # Filter by status
     status = request.GET.get('status')

@@ -24,8 +24,8 @@ def risk_dashboard(request):
         # Organization context: show only risks from this organization
         base_query = Q(organization_id=current_org_id) | Q(project__organization_id=current_org_id)
     else:
-        # Personal context: show only risks without organization
-        base_query = Q(organization__isnull=True, project__organization__isnull=True)
+        # Personal context: show ALL user's risks regardless of organization
+        base_query = Q()  # No filter - show all accessible risks
 
     # Get risks
     risks = Risk.objects.filter(

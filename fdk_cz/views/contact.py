@@ -128,9 +128,7 @@ def list_contacts(request):
             models.Q(organization_id=current_org_id) |
             models.Q(project__organization_id=current_org_id)
         )
-    else:
-        # Personal context: show only contacts without organization
-        contacts = contacts.filter(organization__isnull=True, project__organization__isnull=True)
+    # else: Personal context - show ALL user's contacts regardless of organization
 
     # Přidáme stránkování
     paginator = Paginator(contacts, 10)  # 10 kontaktů na stránku
