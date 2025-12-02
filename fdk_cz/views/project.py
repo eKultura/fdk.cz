@@ -45,9 +45,49 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 @login_required
 def new_project(request):
+    from datetime import date
+    from fdk_cz.models import UserProfile
+
+    # Kontrola limitů projektů před zobrazením formuláře
+    # Spočítáme aktivní projekty (bez end_date nebo s end_date >= dnes)
+    active_projects_count = Project.objects.filter(
+        Q(owner=request.user) | Q(project_users__user=request.user)
+    ).filter(
+        Q(end_date__isnull=True) | Q(end_date__gte=date.today())
+    ).distinct().count()
+
+    # Získáme nebo vytvoříme profil uživatele
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    max_projects = user_profile.get_max_active_projects()
+
+    # Kontrola limitu - pokud má dosažen limit, nepustit ho dál
+    if active_projects_count >= max_projects:
+        status_text = "VIP" if user_profile.is_vip else "základní"
+        messages.error(
+            request,
+            f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}) pro {status_text} uživatele. '
+            f'Pro vytvoření nového projektu ukončete některý ze stávajících projektů nastavením data konce.'
+        )
+        return redirect('index_project_cs')
+
     if request.method == 'POST':
         form = project_form(request.POST, user=request.user)
         if form.is_valid():
+            # Kontrola limitu znovu před uložením (pro jistotu)
+            active_projects_count = Project.objects.filter(
+                Q(owner=request.user) | Q(project_users__user=request.user)
+            ).filter(
+                Q(end_date__isnull=True) | Q(end_date__gte=date.today())
+            ).distinct().count()
+
+            if active_projects_count >= max_projects:
+                status_text = "VIP" if user_profile.is_vip else "základní"
+                messages.error(
+                    request,
+                    f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}) pro {status_text} uživatele.'
+                )
+                return redirect('index_project_cs')
+
             new_project = form.save(commit=False)
             new_project.owner = request.user
             new_project.save()
@@ -73,7 +113,15 @@ def new_project(request):
             return redirect('index_project_cs')
     else:
         form = project_form(user=request.user)
-    return render(request, 'project/new_project.html', {'form': form})
+
+    # Přidáme info o limitech do kontextu
+    context = {
+        'form': form,
+        'active_projects_count': active_projects_count,
+        'max_projects': max_projects,
+        'is_vip': user_profile.is_vip,
+    }
+    return render(request, 'project/new_project.html', context)
 
 
 
