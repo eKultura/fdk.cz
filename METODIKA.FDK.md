@@ -1,7 +1,7 @@
 # 📘 METODIKA VÝVOJE FDK.cz — ZÁSADY A PRAVIDLA
 
 Tento dokument definuje závazné postupy pro architekturu, vývoj, styl kódu, bezpečnost a rozšiřování systému **FDK.cz**.
-Slouží jako centrální metodika pro projekt, dostupná na `metodika.fdk`.
+Slouží jako centrální metodika pro projekt. Tento dokument se nemění bez konzultace s Martinem.
 
 ---
 
@@ -26,6 +26,9 @@ modul/
 ├── views/
 │   └── nazev_modulu.py
 └── (modely jsou centralizované dle domén)
+├── models/
+│   └── nazev_modulu.py
+└── (modely jsou centralizované dle domén)
 ```
 
 > **Views jsou vždy ve složce `views/` a pojmenované `nazev_modulu.py`.**
@@ -37,6 +40,8 @@ modul/
   `/modul/…`
 - Moduly nesmí přepisovat URL jiných modulů.
 - URL musí být konzistentní a čitelné.
+
+- existuje výjimka urls/accountings.py a to slouží jen pro poddomenu ucetnictvi.fdk.cz (k tomu je pevně přiřazeno views.ucetnictvi_fdk_cz.py a templates/accounting/subdomain/ zde je umístněná i METODIKA pro toto oddelení. Funguje to nezavisle samostatně, ale využívá stejné models a záznamy templates/accounting/subdomain/METODIKA.md
 
 ---
 
