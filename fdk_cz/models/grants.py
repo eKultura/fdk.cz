@@ -178,6 +178,15 @@ class GrantRequirement(models.Model):
         return self.name
 
 
+# Status choices for GrantApplication
+STATUS_CHOICES = [
+    ('draft', 'Koncept'),
+    ('submitted', 'Odesláno'),
+    ('approved', 'Schváleno'),
+    ('rejected', 'Zamítnuto'),
+    ('in_progress', 'V procesu'),
+]
+
 
 class GrantApplication(models.Model):
     application_id = models.AutoField(primary_key=True, db_column='application_id')
