@@ -29,9 +29,15 @@ def organization_dashboard(request):
 @login_required
 def create_organization(request):
     """Vytvoření nové organizace"""
+    from fdk_cz.models import UserProfile
+
+    # Získáme nebo vytvoříme profil uživatele
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
     # Kontrola limitu organizací pro uživatele už při GET požadavku
     existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
-    max_orgs = 1  # Aktuálně je povolena 1 organizace na uživatele (lze rozšířit o VIP logiku)
+    # VIP uživatelé můžou mít až 3 organizace, základní pouze 1
+    max_orgs = 3 if user_profile.is_vip else 1
 
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -46,7 +52,10 @@ def create_organization(request):
 
         # Kontrola limitu organizací pro uživatele
         if existing_orgs_count >= max_orgs:
-            messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření další organizace je potřeba VIP účet.')
+            if user_profile.is_vip:
+                messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}) pro VIP uživatele.')
+            else:
+                messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření dalších organizací (až 3) aktivujte VIP účet.')
             return redirect('organization_dashboard')
 
         # Kontrola, zda IČO již není použito
@@ -208,6 +217,11 @@ def remove_member(request, organization_id, user_id):
 
     if not is_admin:
         messages.error(request, 'Nemáte oprávnění odebírat členy.')
+        return redirect('organization_detail', organization_id=organization_id)
+
+    # Zaměstnanci/členové nemohou sami sebe odebrat - pouze admin může odebrat ostatní
+    if user_id == request.user.id:
+        messages.error(request, 'Nemůžete sami sebe odebrat z organizace. O odebrání požádejte administrátora organizace.')
         return redirect('organization_detail', organization_id=organization_id)
 
     try:
