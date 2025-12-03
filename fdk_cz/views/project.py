@@ -297,17 +297,19 @@ def index_project(request):
     current_org_id = request.session.get('current_organization_id')
     if current_org_id:
         # Organization context: show only projects from this organization
-        base_query = base_query & Q(organization_id=current_org_id)
-    # else: Personal context - show ALL user's projects regardless of organization
+        projects_base = Project.objects.filter(base_query).filter(organization=current_org_id)
+    else:
+        # Personal context - show ALL user's projects regardless of organization
+        projects_base = Project.objects.filter(base_query)
 
     # Aktivní projekty = bez end_date NEBO s end_date >= dnes
-    user_projects = Project.objects.filter(base_query).filter(
-        Q(end_date__isnull=True) | Q(end_date__gte=date.today())  # Aktivní projekty
+    user_projects = projects_base.filter(
+        Q(end_date__isnull=True) | Q(end_date__gte=date.today())
     ).distinct().order_by('-created')
 
     # Archivované projekty = s end_date < dnes
-    archived_projects_query = Project.objects.filter(base_query).filter(
-        end_date__lt=date.today()  # Ukončené projekty
+    archived_projects_query = projects_base.filter(
+        end_date__lt=date.today()
     ).distinct().order_by('-end_date')
 
     # Pagination for archived projects
@@ -316,6 +318,14 @@ def index_project(request):
     archived_projects = archived_paginator.get_page(archived_page_number)
 
     assigned_tasks = ProjectTask.objects.filter(assigned=request.user).exclude(deleted=True).order_by('-created')
+
+    # Debug info (odstranit později)
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"User: {request.user.username}")
+    logger.info(f"Organization context: {current_org_id}")
+    logger.info(f"Active projects count: {user_projects.count()}")
+    logger.info(f"Archived projects count: {archived_projects_query.count()}")
 
     return render(request, 'project/index_project.html', {
         'user_projects': user_projects,
