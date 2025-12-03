@@ -11,6 +11,36 @@
 
 {% block content %}
 
+<!-- Context Indicator -->
+<div style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: {% if current_organization %}linear-gradient(to right, #dbeafe, #eff6ff){% else %}linear-gradient(to right, #d1fae5, #ecfdf5){% endif %}; border-left: 4px solid {% if current_organization %}#3b82f6{% else %}#10b981{% endif %}; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <span style="font-size: 0.875rem; color: #64748b; font-weight: 500;">📍 Aktuální kontext:</span>
+    <span style="font-size: 1rem; font-weight: 700; color: {% if current_organization %}#1e40af{% else %}#065f46{% endif %}; margin-left: 0.5rem;">
+      {% if current_organization %}
+        🏢 {{ current_organization.name }}
+      {% else %}
+        👤 Osobní
+      {% endif %}
+    </span>
+  </div>
+  {% if can_switch_organizations %}
+  <div style="display: flex; gap: 0.5rem;">
+    {% if current_organization %}
+      <a href="{% url 'set_personal_context' %}" style="padding: 0.375rem 0.75rem; background: white; border: 2px solid #10b981; color: #10b981; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='#10b981'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#10b981';">
+        👤 Přepnout na osobní
+      </a>
+    {% endif %}
+    {% for org in user_organizations %}
+      {% if not current_organization or org.organization_id != current_organization.organization_id %}
+      <a href="{% url 'set_organization_context' org.organization_id %}" style="padding: 0.375rem 0.75rem; background: white; border: 2px solid #3b82f6; color: #3b82f6; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s;" onmouseover="this.style.background='#3b82f6'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#3b82f6';">
+        🏢 {{ org.name|truncatewords:3 }}
+      </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
 <!-- Quick Actions Bar -->
 <div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
   {% with url="new_project_cs" icon="📁" label="Nový projekt" %}

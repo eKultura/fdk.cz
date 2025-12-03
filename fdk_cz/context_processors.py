@@ -257,8 +257,9 @@ def organization_context(request):
             user_organizations.append(org)
 
     # Check if user can switch organizations
-    # Superadmins (user.id <= 10) can switch, others cannot
-    can_switch = request.user.id <= 10
+    # Everyone can switch between personal and organization context
+    # VIP users can have multiple organizations
+    can_switch = len(user_organizations) > 0
 
     # Get current organization from session
     current_org_id = request.session.get('current_organization_id')
@@ -278,14 +279,12 @@ def organization_context(request):
             if 'current_organization_id' in request.session:
                 del request.session['current_organization_id']
 
-    # For non-superadmin users with exactly one organization, set it automatically
-    if not can_switch and not current_organization and len(user_organizations) == 1:
-        current_organization = user_organizations[0]
-        request.session['current_organization_id'] = current_organization.organization_id
+    # Default to personal context (no automatic org selection)
+    # Users explicitly choose organization or stay in personal context
 
     return {
         'current_organization': current_organization,
-        'user_organizations': user_organizations if can_switch else [],
+        'user_organizations': user_organizations,
         'is_personal_context': current_organization is None,
         'can_switch_organizations': can_switch
     }
