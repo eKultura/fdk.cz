@@ -29,15 +29,21 @@ def organization_dashboard(request):
 @login_required
 def create_organization(request):
     """Vytvoření nové organizace"""
-    from fdk_cz.models import UserProfile
 
     # Získáme nebo vytvoříme profil uživatele
-    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    try:
+        from fdk_cz.models import UserProfile
+        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+        max_orgs = 3 if user_profile.is_vip else 1
+    except Exception as e:
+        # Fallback pokud tabulka UserProfile neexistuje
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"UserProfile table doesn't exist yet: {e}")
+        max_orgs = 1  # Výchozí limit
 
     # Kontrola limitu organizací pro uživatele už při GET požadavku
     existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
-    # VIP uživatelé můžou mít až 3 organizace, základní pouze 1
-    max_orgs = 3 if user_profile.is_vip else 1
 
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -52,10 +58,13 @@ def create_organization(request):
 
         # Kontrola limitu organizací pro uživatele
         if existing_orgs_count >= max_orgs:
-            if user_profile.is_vip:
-                messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}) pro VIP uživatele.')
-            else:
-                messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření dalších organizací (až 3) aktivujte VIP účet.')
+            try:
+                if user_profile.is_vip:
+                    messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}) pro VIP uživatele.')
+                else:
+                    messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření dalších organizací (až 3) aktivujte VIP účet.')
+            except:
+                messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}).')
             return redirect('organization_dashboard')
 
         # Kontrola, zda IČO již není použito

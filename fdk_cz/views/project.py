@@ -46,7 +46,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 @login_required
 def new_project(request):
     from datetime import date
-    from fdk_cz.models import UserProfile
 
     # Kontrola limitů projektů před zobrazením formuláře
     # Spočítáme aktivní projekty (bez end_date nebo s end_date >= dnes)
@@ -57,15 +56,24 @@ def new_project(request):
     ).distinct().count()
 
     # Získáme nebo vytvoříme profil uživatele
-    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-    max_projects = user_profile.get_max_active_projects()
+    try:
+        from fdk_cz.models import UserProfile
+        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+        max_projects = user_profile.get_max_active_projects()
+        is_vip = user_profile.is_vip
+    except Exception as e:
+        # Fallback pokud tabulka UserProfile neexistuje
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"UserProfile table doesn't exist yet: {e}")
+        max_projects = 1  # Výchozí limit pro uživatele bez profilu
+        is_vip = False
 
     # Kontrola limitu - pokud má dosažen limit, nepustit ho dál
     if active_projects_count >= max_projects:
-        status_text = "VIP" if user_profile.is_vip else "základní"
         messages.error(
             request,
-            f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}) pro {status_text} uživatele. '
+            f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}). '
             f'Pro vytvoření nového projektu ukončete některý ze stávajících projektů nastavením data konce.'
         )
         return redirect('index_project_cs')
@@ -81,10 +89,9 @@ def new_project(request):
             ).distinct().count()
 
             if active_projects_count >= max_projects:
-                status_text = "VIP" if user_profile.is_vip else "základní"
                 messages.error(
                     request,
-                    f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}) pro {status_text} uživatele.'
+                    f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}).'
                 )
                 return redirect('index_project_cs')
 
@@ -119,7 +126,7 @@ def new_project(request):
         'form': form,
         'active_projects_count': active_projects_count,
         'max_projects': max_projects,
-        'is_vip': user_profile.is_vip,
+        'is_vip': is_vip,
     }
     return render(request, 'project/new_project.html', context)
 
