@@ -25,7 +25,7 @@
   {% if messages %}
   <div class="messages" id="messages">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    <div class="alert alert-{{ message.tags }} {{ message.extra_tags }}">{{ message }}</div>
     {% endfor %}
   </div>
   {% endif %}
@@ -41,46 +41,53 @@
           <div class="logo-icon">&#9889;</div>
           FDK.cz
         </a>
-      </div>
 
-      <!-- Context Indicator in Sidebar -->
-      {% if user.is_authenticated %}
-      <div style="padding: 0.75rem 1rem; margin: 0.5rem 1rem; background: {% if current_organization %}linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%){% else %}linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%){% endif %}; border-radius: 8px; border-left: 3px solid {% if current_organization %}#3b82f6{% else %}#10b981{% endif %};">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-          <span style="font-size: 0.75rem; font-weight: 600; color: {% if current_organization %}#1e40af{% else %}#065f46{% endif %}; text-transform: uppercase; letter-spacing: 0.05em;">Kontext</span>
+        <!-- Organization Name Under Logo -->
+        {% if user.is_authenticated and current_organization %}
+        <div style="margin-top: 0.5rem; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);">
+          <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Organizace
+          </div>
+          <div style="font-size: 0.95rem; color: #ffffff; font-weight: 600; line-height: 1.3;">
+            {{ current_organization.name }}
+          </div>
           {% if can_switch_organizations %}
-          <button onclick="toggleContextMenu()" style="background: none; border: none; cursor: pointer; padding: 0; color: {% if current_organization %}#1e40af{% else %}#065f46{% endif %}; font-size: 0.875rem;">
-            ⚙️
+          <button onclick="toggleContextMenu()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            ⚙️ Přepnout kontext
           </button>
           {% endif %}
         </div>
-        <div style="font-size: 0.9rem; font-weight: 700; color: {% if current_organization %}#1e3a8a{% else %}#064e3b{% endif %};">
-          {% if current_organization %}
-            🏢 {{ current_organization.name|truncatewords:3 }}
-          {% else %}
-            👤 Osobní
+        {% elif user.is_authenticated %}
+        <div style="margin-top: 0.5rem; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);">
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); font-weight: 500;">
+            👤 Osobní kontext
+          </div>
+          {% if can_switch_organizations %}
+          <button onclick="toggleContextMenu()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            🏢 Přepnout na organizaci
+          </button>
           {% endif %}
         </div>
+        {% endif %}
 
-        <!-- Context Switch Menu -->
-        {% if can_switch_organizations %}
-        <div id="contextSwitchMenu" style="display: none; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+        <!-- Context Switch Menu (Dropdown) -->
+        {% if user.is_authenticated and can_switch_organizations %}
+        <div id="contextSwitchMenu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
           {% if current_organization %}
-            <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.375rem 0.5rem; margin: 0.25rem 0; background: white; border-radius: 4px; text-decoration: none; color: #065f46; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#10b981'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#065f46';">
+            <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.5rem; margin: 0.25rem 0; background: rgba(16, 185, 129, 0.1); border-radius: 4px; text-decoration: none; color: #10b981; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#10b981'; this.style.color='white';" onmouseout="this.style.background='rgba(16, 185, 129, 0.1)'; this.style.color='#10b981';">
               👤 Přepnout na osobní
             </a>
           {% endif %}
           {% for org in user_organizations %}
             {% if not current_organization or org.organization_id != current_organization.organization_id %}
-            <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.375rem 0.5rem; margin: 0.25rem 0; background: white; border-radius: 4px; text-decoration: none; color: #1e40af; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#3b82f6'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#1e40af';">
-              🏢 {{ org.name|truncatewords:3 }}
+            <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.5rem; margin: 0.25rem 0; background: rgba(59, 130, 246, 0.1); border-radius: 4px; text-decoration: none; color: #3b82f6; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#3b82f6'; this.style.color='white';" onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'; this.style.color='#3b82f6';">
+              🏢 {{ org.name }}
             </a>
             {% endif %}
           {% endfor %}
         </div>
         {% endif %}
       </div>
-      {% endif %}
 
       <nav class="sidebar-nav">
         {% include 'inc/sidebar_menu.html' %}
@@ -291,17 +298,21 @@
       if (userTrigger && !userTrigger.contains(e.target)) userMenu.classList.remove('active');
     });
 
-    // Auto-hide messages after 5 seconds
+    // Auto-hide messages after timeout (longer for persistent messages)
     document.addEventListener('DOMContentLoaded', function() {
       const messages = document.getElementById('messages');
       if (messages) {
+        // Check if message is persistent (has 'persistent' class)
+        const isPersistent = messages.querySelector('.alert-persistent, .persistent');
+        const timeout = isPersistent ? 8000 : 5000; // 8 seconds for persistent, 5 for normal
+
         setTimeout(function() {
           messages.style.transition = 'opacity 0.5s ease';
           messages.style.opacity = '0';
           setTimeout(function() {
             messages.style.display = 'none';
           }, 500);
-        }, 5000);
+        }, timeout);
       }
 
     });

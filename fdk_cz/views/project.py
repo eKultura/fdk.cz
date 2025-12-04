@@ -47,13 +47,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 def new_project(request):
     from datetime import date
 
-    # Kontrola limitů projektů před zobrazením formuláře
-    # Spočítáme aktivní projekty (bez end_date nebo s end_date >= dnes)
-    active_projects_count = Project.objects.filter(
-        Q(owner=request.user) | Q(project_users__user=request.user)
-    ).filter(
-        Q(end_date__isnull=True) | Q(end_date__gte=date.today())
-    ).distinct().count()
+    # Získáme aktuální kontext (osobní nebo organizační)
+    current_org_id = request.session.get('current_organization_id')
 
     # Získáme nebo vytvoříme profil uživatele
     try:
@@ -69,34 +64,65 @@ def new_project(request):
         max_projects = 1  # Výchozí limit pro uživatele bez profilu
         is_vip = False
 
+    # Kontrola limitů projektů v AKTUÁLNÍM KONTEXTU
+    # Spočítáme aktivní projekty podle kontextu
+    base_query = Q(owner=request.user) | Q(project_users__user=request.user)
+    active_query = Q(end_date__isnull=True) | Q(end_date__gte=date.today())
+
+    if current_org_id:
+        # Organizační kontext - počítáme jen projekty této organizace
+        active_projects_count = Project.objects.filter(base_query).filter(
+            organization=current_org_id
+        ).filter(active_query).distinct().count()
+        context_name = "v této organizaci"
+    else:
+        # Osobní kontext - počítáme jen osobní projekty (bez organizace)
+        active_projects_count = Project.objects.filter(base_query).filter(
+            organization__isnull=True
+        ).filter(active_query).distinct().count()
+        context_name = "v osobním kontextu"
+
     # Kontrola limitu - pokud má dosažen limit, nepustit ho dál
     if active_projects_count >= max_projects:
         messages.error(
             request,
-            f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}). '
-            f'Pro vytvoření nového projektu ukončete některý ze stávajících projektů nastavením data konce.'
+            f'Dosáhli jste maximálního počtu aktivních projektů {context_name} ({max_projects}). '
+            f'Pro vytvoření nového projektu ukončete některý ze stávajících projektů {context_name} '
+            f'nastavením data konce v editaci projektu.',
+            extra_tags='persistent'
         )
         return redirect('index_project_cs')
 
     if request.method == 'POST':
         form = project_form(request.POST, user=request.user)
         if form.is_valid():
-            # Kontrola limitu znovu před uložením (pro jistotu)
-            active_projects_count = Project.objects.filter(
-                Q(owner=request.user) | Q(project_users__user=request.user)
-            ).filter(
-                Q(end_date__isnull=True) | Q(end_date__gte=date.today())
-            ).distinct().count()
+            # Kontrola limitu znovu před uložením v aktuálním kontextu (pro jistotu)
+            if current_org_id:
+                # Organizační kontext
+                active_projects_count = Project.objects.filter(base_query).filter(
+                    organization=current_org_id
+                ).filter(active_query).distinct().count()
+            else:
+                # Osobní kontext
+                active_projects_count = Project.objects.filter(base_query).filter(
+                    organization__isnull=True
+                ).filter(active_query).distinct().count()
 
             if active_projects_count >= max_projects:
                 messages.error(
                     request,
-                    f'Dosáhli jste maximálního počtu aktivních projektů ({max_projects}).'
+                    f'Dosáhli jste maximálního počtu aktivních projektů {context_name} ({max_projects}).',
+                    extra_tags='persistent'
                 )
                 return redirect('index_project_cs')
 
             new_project = form.save(commit=False)
             new_project.owner = request.user
+
+            # Přiřadíme projekt k aktuální organizaci (pokud je v organizačním kontextu)
+            if current_org_id:
+                new_project.organization_id = current_org_id
+
             new_project.save()
 
             # Přiřadíme uživatele jako administrátora do tabulky project_user

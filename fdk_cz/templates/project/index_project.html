@@ -47,9 +47,31 @@
     {% endfor %}
   </div>
   {% else %}
-    {% with icon="📁" title="Žádné projekty" message="Začněte vytvořením nového projektu" action_url="new_project_cs" action_label="Nový projekt" %}
+    <!-- Empty state with context-aware message -->
+    {% if current_organization %}
+    <div style="background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 2rem; text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">
+        Žádné projekty v organizaci {{ current_organization.name }}
+      </h3>
+      <p style="color: #3b82f6; margin-bottom: 1.5rem; font-size: 0.95rem;">
+        V této organizaci zatím nemáte žádné aktivní projekty.<br>
+        Vytvořte první projekt pro tuto organizaci nebo přepněte do osobního kontextu.
+      </p>
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'new_project_cs' %}" class="btn btn-primary">
+          ➕ Vytvořit projekt v organizaci
+        </a>
+        <a href="{% url 'set_personal_context' %}" class="btn btn-outline">
+          👤 Přepnout na osobní
+        </a>
+      </div>
+    </div>
+    {% else %}
+    {% with icon="📁" title="Žádné osobní projekty" message="Začněte vytvořením nového projektu v osobním kontextu" action_url="new_project_cs" action_label="Nový osobní projekt" %}
       {% include 'inc/components.html' with component='empty_state' %}
     {% endwith %}
+    {% endif %}
   {% endif %}
 </div>
 
