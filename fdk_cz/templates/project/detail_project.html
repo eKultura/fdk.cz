@@ -28,8 +28,8 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
         ✏️ Upravit projekt
       </a>
     {% endif %}
-    <a href="{% url 'project_settings' project.project_id %}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-      ⚙️ Nastavení
+    <a href="{% url 'manage_project_users' project.project_id %}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+      👥 Správa týmu
     </a>
   </div>
 
