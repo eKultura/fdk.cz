@@ -25,7 +25,7 @@
   {% if messages %}
   <div class="messages" id="messages">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    <div class="alert alert-{{ message.tags }} {{ message.extra_tags }}">{{ message }}</div>
     {% endfor %}
   </div>
   {% endif %}
@@ -298,17 +298,21 @@
       if (userTrigger && !userTrigger.contains(e.target)) userMenu.classList.remove('active');
     });
 
-    // Auto-hide messages after 5 seconds
+    // Auto-hide messages after timeout (longer for persistent messages)
     document.addEventListener('DOMContentLoaded', function() {
       const messages = document.getElementById('messages');
       if (messages) {
+        // Check if message is persistent (has 'persistent' class)
+        const isPersistent = messages.querySelector('.alert-persistent, .persistent');
+        const timeout = isPersistent ? 8000 : 5000; // 8 seconds for persistent, 5 for normal
+
         setTimeout(function() {
           messages.style.transition = 'opacity 0.5s ease';
           messages.style.opacity = '0';
           setTimeout(function() {
             messages.style.display = 'none';
           }, 500);
-        }, 5000);
+        }, timeout);
       }
 
     });
