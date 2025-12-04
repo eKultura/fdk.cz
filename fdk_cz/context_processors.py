@@ -269,7 +269,10 @@ def organization_context(request):
         try:
             # Verify user has access to this organization
             org = Organization.objects.get(organization_id=current_org_id)
-            if org in user_organizations:
+
+            # Check access by comparing organization IDs (more reliable than object comparison)
+            org_ids = [o.organization_id for o in user_organizations]
+            if org.organization_id in org_ids:
                 current_organization = org
             else:
                 # User doesn't have access, clear session
