@@ -2,9 +2,9 @@
 
 > **Purpose**: This document provides comprehensive guidance for AI assistants working with the FDK.cz Django codebase. It explains architecture, conventions, workflows, and critical patterns to follow when developing features or fixing bugs.
 
-**Last Updated**: 2025-12-04
+**Last Updated**: 2025-12-04 (Verified and updated)
 **Django Version**: 5.1.1
-**Database**: MySQL (fdk_db, 41 tables)
+**Database**: MySQL (fdk_db)
 **Language**: Czech (primary), with multi-language support
 
 ---
@@ -44,12 +44,13 @@
 │   │   ├── accounting.py            # Invoicing & double-entry
 │   │   ├── grants.py                # Grant management
 │   │   └── ... (15 more files)
-│   ├── views/                       # 24 view modules (2400+ LOC total)
-│   │   ├── project.py               # 1800+ lines
-│   │   ├── grants.py                # 454 lines
-│   │   └── ... (22 more files)
-│   ├── forms/                       # 11+ form modules
-│   ├── templates/                   # 26 template directories
+│   ├── views/                       # 24 view modules
+│   │   ├── project.py               # 1471 lines (primary module)
+│   │   ├── law.py                   # Law compliance & AI assistant
+│   │   ├── grants.py                # 392 lines
+│   │   └── ... (21 more files)
+│   ├── forms/                       # 17 form modules
+│   ├── templates/                   # 24 template directories
 │   ├── middleware/                  # Custom middleware
 │   │   └── module_access.py         # Subscription enforcement
 │   ├── context_processors.py        # Global context (menu, org context)
@@ -58,7 +59,7 @@
 ├── users/                           # Authentication app (uses Django auth.User)
 ├── static/                          # Static assets (CSS, JS, images)
 ├── locale/                          # i18n translations (Czech primary)
-└── Documentation files (9 MD files including this one)
+└── Documentation files (10 MD files including this one)
 ```
 
 ### Tech Stack
@@ -70,7 +71,7 @@
 - **Server**: uWSGI 2.0.26 (production)
 - **i18n**: Django translation framework (Czech default)
 
-### Implemented Modules (11 Production-Ready)
+### Implemented Modules (12 Production-Ready)
 
 1. ✅ **Project Management** (`/projekty/`) - Projects, tasks, milestones, SWOT, Gantt
 2. ✅ **Task Management** (`/spravce-ukolu/`) - Central task dashboard
@@ -83,6 +84,7 @@
 9. ✅ **Contact Management** (`/kontakty/`) - Address book
 10. ✅ **Lists** (`/seznamy/`) - Custom lists with permissions
 11. ✅ **Articles/Blog/Help** (`/clanky/`) - Content management
+12. ✅ **Document Management (DMS)** (`/dms/`) - Document storage and organization
 
 ### Stub Modules (Not Implemented)
 
@@ -1199,7 +1201,9 @@ mysql -u fdk_user -p fdk_db
 - **GRANTS_MODULE_ENHANCEMENT.md** - Grants module documentation
 - **SUBSCRIPTION_SYSTEM_DESIGN.md** - Subscription system details
 - **ROLES_PERMISSIONS_GUIDE.md** - Authorization system guide
+- **ROLES_PERMISSIONS_DEPLOYMENT.md** - Roles & permissions deployment guide
 - **DEPLOYMENT_INSTRUCTIONS.md** - Deployment procedures
+- **README.md** - Project README
 
 ### Key Files to Reference
 
@@ -1273,6 +1277,8 @@ mysql -u fdk_user -p fdk_db
 - **2025-12-04**: Updated with modular model structure (21 files)
 - **2025-12-04**: Added context switching documentation
 - **2025-12-04**: Added subscription system details
+- **2025-12-04**: Verified and updated counts (templates: 24, forms: 17, modules: 12)
+- **2025-12-04**: Added DMS module and ROLES_PERMISSIONS_DEPLOYMENT.md to documentation
 
 ---
 
