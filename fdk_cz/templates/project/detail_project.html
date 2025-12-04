@@ -21,6 +21,18 @@ Volný projekt bez organizace &middot; {{ project.tasks.count }} úkolů
 {% block content %}
 <div style="width: 100%;">
 
+  <!-- Project Actions Bar -->
+  <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-bottom: 1.5rem;">
+    {% if not is_project_closed %}
+      <a href="{% url 'edit_project' project.project_id %}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        ✏️ Upravit projekt
+      </a>
+    {% endif %}
+    <a href="{% url 'project_settings' project.project_id %}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+      ⚙️ Nastavení
+    </a>
+  </div>
+
   <!-- Project Closed Warning -->
   {% if is_project_closed %}
   <div class="content-card" style="border-left: 4px solid #ef4444; background: linear-gradient(to right, #fef2f2, #ffffff); margin-bottom: 2rem;">
