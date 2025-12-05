@@ -27,6 +27,11 @@ Centrální sidebar menu pro celý FDK.cz systém
         👤 Osobní
       {% endif %}
     </div>
+    <!-- DEBUG INFO -->
+    <div style="font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem; font-family: monospace;">
+      DEBUG: current_org={{ current_organization|default:"None" }}
+      {% if current_organization %}(ID: {{ current_organization.organization_id }}){% endif %}
+    </div>
     {% if can_switch_organizations %}
     <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.2);">
       {% if current_organization %}
