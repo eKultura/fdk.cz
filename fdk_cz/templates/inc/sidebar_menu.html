@@ -14,6 +14,36 @@ Centrální sidebar menu pro celý FDK.cz systém
   <a href="{% url 'organization_dashboard' %}" class="nav-item">
     <span class="nav-icon">&#127970;</span> Moje organizace
   </a>
+
+  <!-- Current Context Display -->
+  <div style="margin: 0.5rem 0.75rem; padding: 0.5rem; background: {% if current_organization %}#1e40af{% else %}#059669{% endif %}; border-radius: 6px; border-left: 3px solid {% if current_organization %}#3b82f6{% else %}#10b981{% endif %};">
+    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+      {% if current_organization %}Organizace{% else %}Kontext{% endif %}
+    </div>
+    <div style="font-size: 0.9rem; color: #ffffff; font-weight: 600;">
+      {% if current_organization %}
+        🏢 {{ current_organization.name }}
+      {% else %}
+        👤 Osobní
+      {% endif %}
+    </div>
+    {% if can_switch_organizations %}
+    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.2);">
+      {% if current_organization %}
+        <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; text-decoration: none; text-align: center; font-weight: 500;">
+          👤 Přepnout na osobní
+        </a>
+      {% endif %}
+      {% for org in user_organizations %}
+        {% if not current_organization or org.organization_id != current_organization.organization_id %}
+        <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.25rem 0.5rem; margin-top: 0.25rem; background: rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; text-decoration: none; text-align: center; font-weight: 500;">
+          🏢 {{ org.name }}
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
   {% endif %}
 </div>
 
