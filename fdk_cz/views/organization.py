@@ -19,28 +19,51 @@ def organization_dashboard(request):
     # Organizace, kde je uživatel členem
     member_orgs = Organization.objects.filter(members=request.user).exclude(created_by=request.user)
 
+    # Zkontrolovat VIP status
+    try:
+        from fdk_cz.models import UserProfile
+        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+        is_vip = user_profile.is_vip
+        can_create_org = is_vip or request.user.is_superuser
+    except:
+        is_vip = False
+        can_create_org = request.user.is_superuser
+
     context = {
         'owned_organizations': owned_orgs,
         'member_organizations': member_orgs,
+        'can_create_org': can_create_org,
+        'is_vip': is_vip,
     }
     return render(request, 'organization/dashboard.html', context)
 
 
 @login_required
 def create_organization(request):
-    """Vytvoření nové organizace"""
+    """Vytvoření nové organizace - pouze pro VIP uživatele"""
 
     # Získáme nebo vytvoříme profil uživatele
     try:
         from fdk_cz.models import UserProfile
         user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-        max_orgs = 3 if user_profile.is_vip else 1
+        is_vip = user_profile.is_vip
+        max_orgs = 3 if is_vip else 0  # Základní uživatelé nemohou vytvářet organizace
     except Exception as e:
         # Fallback pokud tabulka UserProfile neexistuje
         import logging
         logger = logging.getLogger(__name__)
         logger.warning(f"UserProfile table doesn't exist yet: {e}")
-        max_orgs = 1  # Výchozí limit
+        is_vip = False
+        max_orgs = 0  # Výchozí = nelze vytvořit organizaci
+
+    # Kontrola oprávnění - pouze VIP nebo superuser může vytvářet organizace
+    if not is_vip and not request.user.is_superuser:
+        messages.error(
+            request,
+            'Vytváření organizací je dostupné pouze pro VIP uživatele. '
+            'Aktivujte VIP účet nebo požádejte administrátora o TEST roli.'
+        )
+        return redirect('organization_dashboard')
 
     # Kontrola limitu organizací pro uživatele už při GET požadavku
     existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
