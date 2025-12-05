@@ -305,9 +305,17 @@ def set_current_organization(request, organization_id=None):
             messages.error(request, 'Nemáte přístup k této organizaci.')
             return redirect('index')
 
+        # Save to session with extra logging
         request.session['current_organization_id'] = organization_id
         request.session.modified = True  # Force session save
-        logger.info(f"User {request.user.username} switched to organization {org.name} (ID: {organization_id})")
+        request.session.save()  # Explicitly save session
+
+        # Verify it was saved
+        saved_id = request.session.get('current_organization_id')
+        logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to org {org.name} (ID: {organization_id})")
+        logger.info(f"CONTEXT SWITCH: Session key 'current_organization_id' = {saved_id}")
+        logger.info(f"CONTEXT SWITCH: Session modified flag = {request.session.modified}")
+
         messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
 
     # Redirect back to previous page or index
