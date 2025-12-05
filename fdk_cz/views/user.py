@@ -34,8 +34,8 @@ def login(request):
 
             # Získat všechny organizace uživatele
             # DŮLEŽITÉ: Preferujeme organizace které uživatel vytvořil (admin), pak membership
-            created_orgs = Organization.objects.filter(created_by=user).order_by('-created_at')
-            memberships = OrganizationMembership.objects.filter(user=user).select_related('organization').order_by('-created_at')
+            created_orgs = Organization.objects.filter(created_by=user)
+            memberships = OrganizationMembership.objects.filter(user=user).select_related('organization')
 
             primary_org = None
 
