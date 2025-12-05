@@ -281,11 +281,16 @@ def set_current_organization(request, organization_id=None):
     Set current organization context in session.
     If organization_id is None, sets to personal context.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
     if organization_id is None:
         # Switch to personal context
         if 'current_organization_id' in request.session:
             del request.session['current_organization_id']
-        messages.success(request, 'Přepnuto na osobní kontext.')
+            request.session.modified = True
+        logger.info(f"User {request.user.username} switched to personal context")
+        messages.success(request, '🟢 Nyní jste v osobním kontextu', extra_tags='persistent')
     else:
         # Verify user has access to this organization
         org = get_object_or_404(Organization, pk=organization_id)
@@ -301,7 +306,9 @@ def set_current_organization(request, organization_id=None):
             return redirect('index')
 
         request.session['current_organization_id'] = organization_id
-        messages.success(request, f'Přepnuto na organizaci: {org.name}')
+        request.session.modified = True  # Force session save
+        logger.info(f"User {request.user.username} switched to organization {org.name} (ID: {organization_id})")
+        messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
 
     # Redirect back to previous page or index
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
