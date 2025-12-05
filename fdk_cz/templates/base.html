@@ -138,7 +138,7 @@
 
                 {% if can_switch_organizations and user_organizations %}
                 <div class="dropdown-divider"></div>
-                <div class="dropdown-label">Organizace (Superadmin)</div>
+                <div class="dropdown-label">⚙️ Přepnout kontext</div>
                 {% if current_organization %}
                   <a href="{% url 'set_personal_context' %}" class="dropdown-item">
                     <span style="color: #10b981;">●</span> Osobní
@@ -176,6 +176,24 @@
 
 <!-- Obsah stránky -->
 <div class="page-content">
+
+  <!-- Organization Context Banner -->
+  {% if user.is_authenticated and current_organization %}
+  <div style="background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%); border-left: 4px solid #3b82f6; padding: 0.75rem 1.25rem; margin: -1rem -1.5rem 1.5rem -1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-size: 1.5rem;">🏢</span>
+      <div>
+        <div style="font-size: 0.75rem; color: #1e40af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Organizace</div>
+        <div style="font-size: 1rem; font-weight: 700; color: #1e3a8a;">{{ current_organization.name }}</div>
+      </div>
+    </div>
+    {% if can_switch_organizations %}
+    <button onclick="toggleContextMenu()" style="padding: 0.375rem 0.75rem; background: white; border: 1px solid #3b82f6; border-radius: 6px; color: #3b82f6; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#3b82f6'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#3b82f6';">
+      ⚙️ Přepnout
+    </button>
+    {% endif %}
+  </div>
+  {% endif %}
 
   <!-- Modulový header -->
   <div class="page-header" style="margin-bottom: 1.5rem;">

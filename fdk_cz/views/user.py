@@ -25,6 +25,29 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
+
+            # Automaticky nastavit organizační kontext po přihlášení
+            # Organizace je nadřazená - pokud je uživatel členem organizace, přihlásit ho rovnou do ní
+            from fdk_cz.models import OrganizationMembership, Organization
+
+            # Získat všechny organizace uživatele (membership + created)
+            memberships = OrganizationMembership.objects.filter(user=user).select_related('organization')
+            created_orgs = Organization.objects.filter(created_by=user)
+
+            # Preferujeme organizaci, kde je uživatel členem (ne jen tvůrcem)
+            primary_org = None
+            if memberships.exists():
+                # První organizace kde je členem
+                primary_org = memberships.first().organization
+            elif created_orgs.exists():
+                # Pokud není členem nikde, ale vytvořil organizaci
+                primary_org = created_orgs.first()
+
+            # Nastavit organizační kontext
+            if primary_org:
+                request.session['current_organization_id'] = primary_org.organization_id
+                # Zprávu neukazujeme, protože to je automatické při loginu
+
             return redirect('index')  # přesměrování na index nebo dashboard
         else:
             messages.error(request, "Nesprávné uživatelské jméno nebo heslo.")  # Zobrazit chybovou zprávu
