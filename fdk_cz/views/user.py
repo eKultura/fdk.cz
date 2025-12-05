@@ -27,26 +27,43 @@ def login(request):
             auth_login(request, user)
 
             # Automaticky nastavit organizační kontext po přihlášení
-            # Organizace je nadřazená - pokud je uživatel členem organizace, přihlásit ho rovnou do ní
+            # Pro korporátní systém: zaměstnanci se přihlašují rovnou do organizace
             from fdk_cz.models import OrganizationMembership, Organization
+            import logging
+            logger = logging.getLogger(__name__)
 
-            # Získat všechny organizace uživatele (membership + created)
-            memberships = OrganizationMembership.objects.filter(user=user).select_related('organization')
-            created_orgs = Organization.objects.filter(created_by=user)
+            # Získat všechny organizace uživatele
+            # DŮLEŽITÉ: Preferujeme organizace které uživatel vytvořil (admin), pak membership
+            created_orgs = Organization.objects.filter(created_by=user).order_by('-created_at')
+            memberships = OrganizationMembership.objects.filter(user=user).select_related('organization').order_by('-created_at')
 
-            # Preferujeme organizaci, kde je uživatel členem (ne jen tvůrcem)
             primary_org = None
-            if memberships.exists():
-                # První organizace kde je členem
-                primary_org = memberships.first().organization
-            elif created_orgs.exists():
-                # Pokud není členem nikde, ale vytvořil organizaci
-                primary_org = created_orgs.first()
 
-            # Nastavit organizační kontext
+            # 1. Priorita: Organizace které uživatel vytvořil (je admin)
+            if created_orgs.exists():
+                primary_org = created_orgs.first()
+                logger.info(f"Login: Setting primary org to created org: {primary_org.name} (ID: {primary_org.organization_id})")
+            # 2. Fallback: Organizace kde je pouze členem
+            elif memberships.exists():
+                primary_org = memberships.first().organization
+                logger.info(f"Login: Setting primary org to membership org: {primary_org.name} (ID: {primary_org.organization_id})")
+            else:
+                logger.info(f"Login: User {user.username} has no organizations, staying in personal context")
+
+            # Nastavit organizační kontext - KORPORÁTNÍ default
             if primary_org:
                 request.session['current_organization_id'] = primary_org.organization_id
-                # Zprávu neukazujeme, protože to je automatické při loginu
+                request.session.modified = True  # Force session save
+                logger.info(f"Login: Successfully set org context for {user.username} to {primary_org.name}")
+                # Zobrazit welcome message s organizací
+                messages.success(
+                    request,
+                    f'Vítejte v organizaci {primary_org.name}',
+                    extra_tags='persistent'
+                )
+            else:
+                # Pouze pokud nemá žádnou organizaci - osobní kontext
+                logger.warning(f"Login: User {user.username} has no organization - personal context")
 
             return redirect('index')  # přesměrování na index nebo dashboard
         else:
