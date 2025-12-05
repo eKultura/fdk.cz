@@ -43,28 +43,23 @@
         </a>
 
         <!-- Organization Name Under Logo -->
-        {% if user.is_authenticated and current_organization %}
+        {% if user.is_authenticated %}
         <div style="margin-top: 0.5rem; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);">
-          <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            Organizace
-          </div>
-          <div style="font-size: 0.95rem; color: #ffffff; font-weight: 600; line-height: 1.3;">
+          {% if current_organization %}
+          <!-- Organization Context -->
+          <div style="font-size: 1rem; color: #ffffff; font-weight: 700; line-height: 1.4; margin-bottom: 0.5rem;">
             {{ current_organization.name }}
           </div>
-          {% if can_switch_organizations %}
-          <button onclick="toggleContextMenu()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-            ⚙️ Přepnout kontext
-          </button>
-          {% endif %}
-        </div>
-        {% elif user.is_authenticated %}
-        <div style="margin-top: 0.5rem; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);">
-          <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); font-weight: 500;">
+          {% else %}
+          <!-- Personal Context -->
+          <div style="font-size: 0.875rem; color: rgba(255,255,255,0.8); font-weight: 500;">
             👤 Osobní kontext
           </div>
+          {% endif %}
+
           {% if can_switch_organizations %}
-          <button onclick="toggleContextMenu()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-            🏢 Přepnout na organizaci
+          <button onclick="toggleContextMenu()" style="margin-top: 0.5rem; padding: 0.375rem 0.5rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s; font-weight: 500;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            ⚙️ Přepnout kontext
           </button>
           {% endif %}
         </div>

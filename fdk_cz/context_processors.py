@@ -265,22 +265,35 @@ def organization_context(request):
     current_org_id = request.session.get('current_organization_id')
     current_organization = None
 
+    # Debug logging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Context processor: user={request.user.username}, current_org_id={current_org_id}")
+
     if current_org_id:
         try:
             # Verify user has access to this organization
             org = Organization.objects.get(organization_id=current_org_id)
+            logger.debug(f"Found organization: {org.name} (ID: {org.organization_id})")
 
             # Check access by comparing organization IDs (more reliable than object comparison)
             org_ids = [o.organization_id for o in user_organizations]
+            logger.debug(f"User org IDs: {org_ids}")
+
             if org.organization_id in org_ids:
                 current_organization = org
+                logger.info(f"User {request.user.username} in org context: {org.name}")
             else:
                 # User doesn't have access, clear session
+                logger.warning(f"User {request.user.username} doesn't have access to org {org.name}")
                 del request.session['current_organization_id']
+                request.session.modified = True
         except Organization.DoesNotExist:
             # Invalid org id, clear session
+            logger.error(f"Organization {current_org_id} not found, clearing session")
             if 'current_organization_id' in request.session:
                 del request.session['current_organization_id']
+                request.session.modified = True
 
     # Default to personal context (no automatic org selection)
     # Users explicitly choose organization or stay in personal context
