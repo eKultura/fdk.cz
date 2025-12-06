@@ -276,51 +276,62 @@ def remove_member(request, organization_id, user_id):
 
 
 @login_required
-def set_current_organization(request, organization_id=None):
+def set_current_organization(request, organization_id):
     """
     Set current organization context in session.
-    If organization_id is None, sets to personal context.
     """
     import logging
     logger = logging.getLogger(__name__)
 
-    if organization_id is None:
-        # Switch to personal context
-        if 'current_organization_id' in request.session:
-            del request.session['current_organization_id']
-            request.session.modified = True
-        logger.info(f"User {request.user.username} switched to personal context")
-        messages.success(request, '🟢 Nyní jste v osobním kontextu', extra_tags='persistent')
-    else:
-        # Verify user has access to this organization
-        org = get_object_or_404(Organization, pk=organization_id)
+    # Verify user has access to this organization
+    org = get_object_or_404(Organization, pk=organization_id)
 
-        # Check if user is member or creator
-        is_member = OrganizationMembership.objects.filter(
-            organization=org,
-            user=request.user
-        ).exists()
+    # Check if user is member or creator
+    is_member = OrganizationMembership.objects.filter(
+        organization=org,
+        user=request.user
+    ).exists()
 
-        if not is_member and org.created_by != request.user:
-            messages.error(request, 'Nemáte přístup k této organizaci.')
-            return redirect('index')
+    if not is_member and org.created_by != request.user:
+        messages.error(request, 'Nemáte přístup k této organizaci.')
+        return redirect('organization_dashboard')
 
-        # Save to session with extra logging
-        request.session['current_organization_id'] = organization_id
-        request.session.modified = True  # Force session save
+    # Save to session with extra logging
+    request.session['current_organization_id'] = organization_id
+    request.session.modified = True  # Force session save
+    request.session.save()  # Explicitly save session
+
+    # Verify it was saved
+    saved_id = request.session.get('current_organization_id')
+    logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to org {org.name} (ID: {organization_id})")
+    logger.info(f"CONTEXT SWITCH: Session key 'current_organization_id' = {saved_id}")
+    logger.info(f"CONTEXT SWITCH: Session modified flag = {request.session.modified}")
+
+    messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
+
+    # Redirect to organization dashboard to show the context
+    return redirect('organization_dashboard')
+
+
+@login_required
+def set_personal_context(request):
+    """
+    Switch to personal context (remove organization from session).
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+
+    # Remove organization from session
+    if 'current_organization_id' in request.session:
+        del request.session['current_organization_id']
+        request.session.modified = True
         request.session.save()  # Explicitly save session
 
-        # Verify it was saved
-        saved_id = request.session.get('current_organization_id')
-        logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to org {org.name} (ID: {organization_id})")
-        logger.info(f"CONTEXT SWITCH: Session key 'current_organization_id' = {saved_id}")
-        logger.info(f"CONTEXT SWITCH: Session modified flag = {request.session.modified}")
+    logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to personal context")
+    messages.success(request, '👤 Nyní jste v osobním kontextu', extra_tags='persistent')
 
-        messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
-
-    # Redirect back to previous page or index
-    next_url = request.GET.get('next', request.META.get('HTTP_REFERER', '/'))
-    return redirect(next_url)
+    # Redirect to dashboard
+    return redirect('dashboard')
 
 
 @login_required
