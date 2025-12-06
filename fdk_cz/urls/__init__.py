@@ -59,7 +59,7 @@ from fdk_cz.views.user import login, logout, user_profile, registration, user_se
 from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help_delete
 from fdk_cz.views.organization import (
     organization_dashboard, create_organization, organization_detail,
-    add_member, remove_member, set_current_organization,
+    add_member, remove_member, set_current_organization, set_personal_context,
     search_users, organization_iam, change_member_role
 )
 
@@ -169,7 +169,7 @@ urlpatterns = [
     path('organizace/<int:organization_id>/zmenit-roli/<int:user_id>/', change_member_role, name='change_member_role'),
     path('api/search-users/', search_users, name='search_users'),
     path('kontext/organizace/<int:organization_id>/', set_current_organization, name='set_organization_context'),
-    path('kontext/osobni/', set_current_organization, name='set_personal_context'),
+    path('kontext/osobni/', set_personal_context, name='set_personal_context'),
 
     # EN
     path('login/', login, name='login_en'),
