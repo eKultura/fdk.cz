@@ -235,6 +235,9 @@ def organization_context(request):
     """
     Context processor that provides current organization context and user's organizations
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
     if not request.user.is_authenticated:
         return {
             'current_organization': None,
@@ -242,6 +245,15 @@ def organization_context(request):
             'is_personal_context': True,
             'can_switch_organizations': False
         }
+
+    # DEBUG: Log ALL session data
+    logger.info(f"=" * 80)
+    logger.info(f"CONTEXT PROCESSOR CALLED")
+    logger.info(f"User: {request.user.username}")
+    logger.info(f"Session key: {request.session.session_key}")
+    logger.info(f"Session items: {dict(request.session.items())}")
+    logger.info(f"Session modified: {request.session.modified}")
+    logger.info(f"=" * 80)
 
     # Get all organizations user is member of
     memberships = OrganizationMembership.objects.filter(
@@ -265,10 +277,7 @@ def organization_context(request):
     current_org_id = request.session.get('current_organization_id')
     current_organization = None
 
-    # Debug logging
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.debug(f"Context processor: user={request.user.username}, current_org_id={current_org_id}")
+    logger.info(f"Current org ID from session: {current_org_id}")
 
     if current_org_id:
         try:
