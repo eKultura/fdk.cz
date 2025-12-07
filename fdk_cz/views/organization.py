@@ -283,6 +283,13 @@ def set_current_organization(request, organization_id):
     import logging
     logger = logging.getLogger(__name__)
 
+    logger.info(f"=" * 80)
+    logger.info(f"SET_CURRENT_ORGANIZATION CALLED")
+    logger.info(f"User: {request.user.username}")
+    logger.info(f"Organization ID: {organization_id}")
+    logger.info(f"Session key BEFORE: {request.session.session_key}")
+    logger.info(f"Session data BEFORE: {dict(request.session.items())}")
+
     # Verify user has access to this organization
     org = get_object_or_404(Organization, pk=organization_id)
 
@@ -299,13 +306,18 @@ def set_current_organization(request, organization_id):
     # Save to session with extra logging
     request.session['current_organization_id'] = organization_id
     request.session.modified = True  # Force session save
-    request.session.save()  # Explicitly save session
 
-    # Verify it was saved
+    logger.info(f"Session data AFTER setting: {dict(request.session.items())}")
+
+    # Explicitly save session
+    request.session.save()
+
+    logger.info(f"Session key AFTER save: {request.session.session_key}")
+
+    # Verify it was saved by reading it back
     saved_id = request.session.get('current_organization_id')
-    logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to org {org.name} (ID: {organization_id})")
-    logger.info(f"CONTEXT SWITCH: Session key 'current_organization_id' = {saved_id}")
-    logger.info(f"CONTEXT SWITCH: Session modified flag = {request.session.modified}")
+    logger.info(f"Verification - saved_id: {saved_id}")
+    logger.info(f"=" * 80)
 
     messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
 
