@@ -11,27 +11,28 @@
 
 <div style="max-width: 1200px; margin: 0 auto;">
 
-  <!-- Action Button (pouze pro VIP) -->
-  {% if can_create_org %}
-  <div style="margin-bottom: 2rem; display: flex; justify-content: flex-end;">
-    <a href="{% url 'create_organization' %}" class="btn btn-primary">
-      ➕ Vytvořit novou organizaci
-    </a>
-  </div>
-  {% else %}
-  <div style="margin-bottom: 2rem; padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; border-radius: 8px;">
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-      <span style="font-size: 1.5rem;">⭐</span>
-      <div>
-        <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">Vytváření organizací je dostupné jen pro VIP uživatele</div>
-        <div style="font-size: 0.875rem; color: #b45309;">
-          Aktivujte VIP účet pro možnost vytvořit až 3 organizace.
-          <a href="{% url 'subscription_pricing' %}" style="color: #1e40af; text-decoration: underline; font-weight: 500;">Zobrazit ceny</a>
+  <!-- Action Button -->
+  <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1;">
+      <div style="padding: 1rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 4px solid #3b82f6; border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.5rem;">ℹ️</span>
+          <div>
+            <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">Systém pro neziskovou organizaci eKultura</div>
+            <div style="font-size: 0.875rem; color: #1e40af;">
+              V případě zájmu o použití systému napište na
+              <a href="mailto:organizace@ekultura.eu" style="color: #1e40af; text-decoration: underline; font-weight: 500;">organizace@ekultura.eu</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <div style="margin-left: 1rem;">
+      <a href="{% url 'create_organization' %}" class="btn btn-primary">
+        ➕ Vytvořit novou organizaci
+      </a>
+    </div>
   </div>
-  {% endif %}
 
   <!-- Owned Organizations -->
   <div class="content-card" style="margin-bottom: 2rem;">
