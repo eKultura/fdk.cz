@@ -29,7 +29,8 @@ from fdk_cz.models import (
     ProjectRole,
     ProjectTask,
     SwotAnalysis,
-    TestError
+    TestError,
+    TestType
 )
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -142,6 +143,19 @@ def new_project(request):
                     name=category_name,
                     project=new_project,  # Specifické pro tento projekt
                     description=f'Základní kategorie: {category_name}'
+                )
+
+            # Přiřadíme defaultní typy testů
+            default_test_types = [
+                {'name': 'Unit Testing', 'description': 'Testy jednotlivých komponent a funkcí'},
+                {'name': 'Integration Testing', 'description': 'Testy integrace mezi systémy a moduly'},
+                {'name': 'QA Testing', 'description': 'Funkční a akceptační testování'}
+            ]
+            for test_type_data in default_test_types:
+                TestType.objects.create(
+                    project=new_project,
+                    name=test_type_data['name'],
+                    description=test_type_data['description']
                 )
 
             messages.success(request, f'Projekt "{new_project.name}" byl úspěšně vytvořen.')
