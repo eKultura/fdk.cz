@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
 from django.db import transaction
+from django.utils import timezone
 from fdk_cz.models import Organization, OrganizationMembership, User, OrganizationRole, ModuleRole, ModuleAccess
 
 
@@ -432,3 +433,42 @@ def change_member_role(request, organization_id, user_id):
             messages.error(request, f'Role "{new_role_name}" neexistuje v databázi.')
 
     return redirect('organization_iam', organization_id=organization_id)
+
+
+@login_required
+def organization_admin(request):
+    """Admin panel pro správu všech organizací - pouze pro superusera"""
+    if not request.user.is_superuser:
+        messages.error(request, 'Nemáte oprávnění k přístupu k admin panelu.')
+        return redirect('organization_dashboard')
+
+    from fdk_cz.models import Project
+
+    # Načtení všech organizací
+    organizations = Organization.objects.all().order_by('-created_at')
+
+    # Přidání statistik k jednotlivým organizacím
+    org_data = []
+    for org in organizations:
+        # Počet projektů
+        project_count = Project.objects.filter(organization=org).count()
+        active_project_count = Project.objects.filter(
+            organization=org
+        ).filter(
+            Q(end_date__isnull=True) | Q(end_date__gte=timezone.now())
+        ).count()
+
+        # Počet členů
+        member_count = OrganizationMembership.objects.filter(organization=org).count()
+
+        org_data.append({
+            'organization': org,
+            'project_count': project_count,
+            'active_project_count': active_project_count,
+            'member_count': member_count,
+        })
+
+    context = {
+        'org_data': org_data,
+    }
+    return render(request, 'organization/admin_panel.html', context)

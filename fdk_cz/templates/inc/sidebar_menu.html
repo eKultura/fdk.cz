@@ -11,37 +11,29 @@ Centrální sidebar menu pro celý FDK.cz systém
     <span class="nav-icon">&#127968;</span> Domů
   </a>
   {% if user.is_authenticated %}
-  <a href="{% url 'organization_dashboard' %}" class="nav-item">
-    <span class="nav-icon">&#127970;</span> Moje organizace
-  </a>
 
-  <!-- Current Context Display -->
-  <div style="margin: 0.5rem 0.75rem; padding: 0.5rem; background: {% if current_organization %}#1e40af{% else %}#059669{% endif %}; border-radius: 6px; border-left: 3px solid {% if current_organization %}#3b82f6{% else %}#10b981{% endif %};">
-    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-      {% if current_organization %}Organizace{% else %}Kontext{% endif %}
+  <!-- Current Context Display - PROMINENT -->
+  <div style="margin: 0.75rem 0.5rem; padding: 0.75rem; background: linear-gradient(135deg, {% if current_organization %}#1e40af{% else %}#047857{% endif %} 0%, {% if current_organization %}#3b82f6{% else %}#10b981{% endif %} 100%); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.65rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 500;">
+      {% if current_organization %}Pracuji v organizaci{% else %}Osobní režim{% endif %}
     </div>
-    <div style="font-size: 0.9rem; color: #ffffff; font-weight: 600;">
+    <div style="font-size: 1.1rem; color: #ffffff; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.3;">
       {% if current_organization %}
         🏢 {{ current_organization.name }}
       {% else %}
-        👤 Osobní
+        👤 Osobní projekty
       {% endif %}
     </div>
-    <!-- DEBUG INFO -->
-    <div style="font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem; font-family: monospace;">
-      DEBUG: current_org={{ current_organization|default:"None" }}
-      {% if current_organization %}(ID: {{ current_organization.organization_id }}){% endif %}
-    </div>
     {% if can_switch_organizations %}
-    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.2);">
+    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.25);">
       {% if current_organization %}
-        <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; text-decoration: none; text-align: center; font-weight: 500;">
+        <a href="{% url 'set_personal_context' %}" style="display: block; padding: 0.5rem; background: rgba(255,255,255,0.15); border-radius: 6px; color: white; font-size: 0.8rem; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
           👤 Přepnout na osobní
         </a>
       {% endif %}
       {% for org in user_organizations %}
         {% if not current_organization or org.organization_id != current_organization.organization_id %}
-        <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.25rem 0.5rem; margin-top: 0.25rem; background: rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 0.75rem; text-decoration: none; text-align: center; font-weight: 500;">
+        <a href="{% url 'set_organization_context' org.organization_id %}" style="display: block; padding: 0.5rem; margin-top: 0.5rem; background: rgba(255,255,255,0.15); border-radius: 6px; color: white; font-size: 0.8rem; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
           🏢 {{ org.name }}
         </a>
         {% endif %}
@@ -49,6 +41,10 @@ Centrální sidebar menu pro celý FDK.cz systém
     </div>
     {% endif %}
   </div>
+
+  <a href="{% url 'organization_dashboard' %}" class="nav-item">
+    <span class="nav-icon">&#127970;</span> Správa organizací
+  </a>
   {% endif %}
 </div>
 
@@ -177,6 +173,7 @@ Centrální sidebar menu pro celý FDK.cz systém
 {% if user.is_superuser or user.is_staff %}
 <div class="nav-section">
   <div class="nav-section-title">Administrace</div>
+  <a href="{% url 'organization_admin' %}" class="nav-item"><span class="nav-icon">&#127970;</span> Správa organizací</a>
   <a href="{% url 'admin_modules' %}" class="nav-item"><span class="nav-icon">&#128176;</span> Správa modulů</a>
   <a href="{% url 'admin_subscriptions' %}" class="nav-item"><span class="nav-icon">&#128196;</span> Předplatná</a>
   <a href="{% url 'admin_assign_module' %}" class="nav-item"><span class="nav-icon">&#10133;</span> Přiřadit modul</a>

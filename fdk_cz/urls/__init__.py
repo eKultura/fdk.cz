@@ -60,7 +60,7 @@ from fdk_cz.views.help import help_index, help_detail, help_add, help_edit, help
 from fdk_cz.views.organization import (
     organization_dashboard, create_organization, organization_detail,
     add_member, remove_member, set_current_organization, set_personal_context,
-    search_users, organization_iam, change_member_role
+    search_users, organization_iam, change_member_role, organization_admin
 )
 
 from fdk_cz.views.warehouse import (
@@ -162,6 +162,7 @@ urlpatterns = [
     # Organization paths
     path('organizace/', organization_dashboard, name='organization_dashboard'),
     path('organizace/nova/', create_organization, name='create_organization'),
+    path('organizace/admin/', organization_admin, name='organization_admin'),  # Admin panel
     path('organizace/<int:organization_id>/', organization_detail, name='organization_detail'),
     path('organizace/<int:organization_id>/pridat-clena/', add_member, name='add_organization_member'),
     path('organizace/<int:organization_id>/odebrat-clena/<int:user_id>/', remove_member, name='remove_organization_member'),
