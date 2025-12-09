@@ -87,8 +87,8 @@ def new_project(request):
         messages.error(
             request,
             f'Dosáhli jste maximálního počtu aktivních projektů {context_name} ({max_projects}). '
-            f'Pro vytvoření nového projektu ukončete některý ze stávajících projektů {context_name} '
-            f'nastavením data konce v editaci projektu.',
+            f'Pro více projektů je možné získat status neziskové organizace nebo placený tarif. '
+            f'Kontaktujte nás na organizace@ekultura.eu',
             extra_tags='persistent'
         )
         return redirect('index_project_cs')
@@ -111,7 +111,9 @@ def new_project(request):
             if active_projects_count >= max_projects:
                 messages.error(
                     request,
-                    f'Dosáhli jste maximálního počtu aktivních projektů {context_name} ({max_projects}).',
+                    f'Dosáhli jste maximálního počtu aktivních projektů {context_name} ({max_projects}). '
+                    f'Pro více projektů je možné získat status neziskové organizace nebo placený tarif. '
+                    f'Kontaktujte nás na organizace@ekultura.eu',
                     extra_tags='persistent'
                 )
                 return redirect('index_project_cs')

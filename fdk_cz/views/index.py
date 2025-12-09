@@ -62,9 +62,13 @@ def index(request):
 
 @login_required
 def dashboard(request):
-    # Načtení úkolů aktuálního uživatele
-    user_tasks = ProjectTask.objects.filter(assigned=request.user).order_by('-due_date')[:5]
-    
+    # Načtení úkolů aktuálního uživatele (BEZ hotových úkolů)
+    user_tasks = ProjectTask.objects.filter(
+        assigned=request.user
+    ).exclude(
+        status='Hotovo'  # Vyloučit hotové úkoly z dashboardu
+    ).order_by('-due_date')[:5]
+
     # Načtení projektů, na kterých uživatel pracuje nebo které vlastní
     user_projects = Project.objects.filter(project_users__user=request.user).distinct()[:5]
 
