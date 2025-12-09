@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import JsonResponse
 from django.db import transaction
+from django.utils import timezone
 from fdk_cz.models import Organization, OrganizationMembership, User, OrganizationRole, ModuleRole, ModuleAccess
 
 
@@ -19,53 +20,28 @@ def organization_dashboard(request):
     # Organizace, kde je uživatel členem
     member_orgs = Organization.objects.filter(members=request.user).exclude(created_by=request.user)
 
-    # Zkontrolovat VIP status
-    try:
-        from fdk_cz.models import UserProfile
-        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-        is_vip = user_profile.is_vip
-        can_create_org = is_vip or request.user.is_superuser
-    except:
-        is_vip = False
-        can_create_org = request.user.is_superuser
+    # Všichni přihlášení uživatelé mohou vytvářet organizace
+    # Pro neziskovou organizaci eKultura
+    can_create_org = True
 
     context = {
         'owned_organizations': owned_orgs,
         'member_organizations': member_orgs,
         'can_create_org': can_create_org,
-        'is_vip': is_vip,
     }
     return render(request, 'organization/dashboard.html', context)
 
 
 @login_required
 def create_organization(request):
-    """Vytvoření nové organizace - pouze pro VIP uživatele"""
+    """Vytvoření nové organizace"""
 
-    # Získáme nebo vytvoříme profil uživatele
-    try:
-        from fdk_cz.models import UserProfile
-        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-        is_vip = user_profile.is_vip
-        max_orgs = 3 if is_vip else 0  # Základní uživatelé nemohou vytvářet organizace
-    except Exception as e:
-        # Fallback pokud tabulka UserProfile neexistuje
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"UserProfile table doesn't exist yet: {e}")
-        is_vip = False
-        max_orgs = 0  # Výchozí = nelze vytvořit organizaci
+    # Maximální počet organizací pro uživatele
+    # Pro neziskovou organizaci eKultura - základní limit 1
+    # Superuser může vytvořit neomezený počet
+    max_orgs = 999 if request.user.is_superuser else 1
 
-    # Kontrola oprávnění - pouze VIP nebo superuser může vytvářet organizace
-    if not is_vip and not request.user.is_superuser:
-        messages.error(
-            request,
-            'Vytváření organizací je dostupné pouze pro VIP uživatele. '
-            'Aktivujte VIP účet nebo požádejte administrátora o TEST roli.'
-        )
-        return redirect('organization_dashboard')
-
-    # Kontrola limitu organizací pro uživatele už při GET požadavku
+    # Kontrola limitu organizací pro uživatele
     existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
 
     if request.method == 'POST':
@@ -81,13 +57,11 @@ def create_organization(request):
 
         # Kontrola limitu organizací pro uživatele
         if existing_orgs_count >= max_orgs:
-            try:
-                if user_profile.is_vip:
-                    messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}) pro VIP uživatele.')
-                else:
-                    messages.error(request, 'Již máte vytvořenou jednu organizaci. Pro vytvoření dalších organizací (až 3) aktivujte VIP účet.')
-            except:
-                messages.error(request, f'Dosáhli jste maximálního počtu organizací ({max_orgs}).')
+            messages.error(
+                request,
+                f'Dosáhli jste maximálního počtu organizací ({max_orgs}). '
+                'V případě potřeby vyššího limitu napište na organizace@ekultura.eu'
+            )
             return redirect('organization_dashboard')
 
         # Kontrola, zda IČO již není použito
@@ -303,6 +277,10 @@ def set_current_organization(request, organization_id):
         messages.error(request, 'Nemáte přístup k této organizaci.')
         return redirect('organization_dashboard')
 
+    # CRITICAL: Clear any existing session data first
+    if 'current_organization_id' in request.session:
+        del request.session['current_organization_id']
+
     # Save to session with extra logging
     request.session['current_organization_id'] = organization_id
     request.session.modified = True  # Force session save
@@ -321,8 +299,19 @@ def set_current_organization(request, organization_id):
 
     messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
 
-    # Redirect to organization dashboard to show the context
-    return redirect('organization_dashboard')
+    # Use HttpResponseRedirect with no-cache headers to force full page reload
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse
+
+    redirect_url = reverse('organization_dashboard')
+    response = HttpResponseRedirect(redirect_url)
+
+    # Force no-cache headers to prevent browser/Django caching
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+
+    return response
 
 
 @login_required
@@ -331,6 +320,8 @@ def set_personal_context(request):
     Switch to personal context (remove organization from session).
     """
     import logging
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse
     logger = logging.getLogger(__name__)
 
     # Remove organization from session
@@ -342,8 +333,16 @@ def set_personal_context(request):
     logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to personal context")
     messages.success(request, '👤 Nyní jste v osobním kontextu', extra_tags='persistent')
 
-    # Redirect to dashboard
-    return redirect('dashboard')
+    # Use HttpResponseRedirect with no-cache headers to force full page reload
+    redirect_url = reverse('dashboard')
+    response = HttpResponseRedirect(redirect_url)
+
+    # Force no-cache headers
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+
+    return response
 
 
 @login_required
@@ -434,3 +433,42 @@ def change_member_role(request, organization_id, user_id):
             messages.error(request, f'Role "{new_role_name}" neexistuje v databázi.')
 
     return redirect('organization_iam', organization_id=organization_id)
+
+
+@login_required
+def organization_admin(request):
+    """Admin panel pro správu všech organizací - pouze pro superusera"""
+    if not request.user.is_superuser:
+        messages.error(request, 'Nemáte oprávnění k přístupu k admin panelu.')
+        return redirect('organization_dashboard')
+
+    from fdk_cz.models import Project
+
+    # Načtení všech organizací
+    organizations = Organization.objects.all().order_by('-created_at')
+
+    # Přidání statistik k jednotlivým organizacím
+    org_data = []
+    for org in organizations:
+        # Počet projektů
+        project_count = Project.objects.filter(organization=org).count()
+        active_project_count = Project.objects.filter(
+            organization=org
+        ).filter(
+            Q(end_date__isnull=True) | Q(end_date__gte=timezone.now())
+        ).count()
+
+        # Počet členů
+        member_count = OrganizationMembership.objects.filter(organization=org).count()
+
+        org_data.append({
+            'organization': org,
+            'project_count': project_count,
+            'active_project_count': active_project_count,
+            'member_count': member_count,
+        })
+
+    context = {
+        'org_data': org_data,
+    }
+    return render(request, 'organization/admin_panel.html', context)

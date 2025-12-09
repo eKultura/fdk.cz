@@ -269,8 +269,7 @@ def organization_context(request):
             user_organizations.append(org)
 
     # Check if user can switch organizations
-    # Everyone can switch between personal and organization context
-    # VIP users can have multiple organizations
+    # Users can switch between personal and organization context
     can_switch = len(user_organizations) > 0
 
     # Get current organization from session

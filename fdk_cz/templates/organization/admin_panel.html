@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Admin: Správa organizací | FDK.cz{% endblock %}
+{% block header_title %}🔧 Administrace organizací{% endblock %}
+{% block header_subtitle %}Superuser panel pro správu všech organizací{% endblock %}
+
+{% block context_breadcrumbs %}
+<a href="{% url 'organization_dashboard' %}" class="breadcrumb-link">Organizace</a>
+<span class="breadcrumb-sep">→</span>
+<span style="font-weight: 600; color: #1e293b;">Admin Panel</span>
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 1400px; margin: 0 auto;">
+
+  <!-- Info Banner -->
+  <div style="margin-bottom: 2rem; padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; border-radius: 8px;">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-size: 1.5rem;">⚠️</span>
+      <div>
+        <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">Superuser režim</div>
+        <div style="font-size: 0.875rem; color: #b45309;">
+          Tento panel je dostupný pouze pro superusery. Zde můžete spravovat limity a nastavení všech organizací.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Summary -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="content-card" style="text-align: center; padding: 1.5rem;">
+      <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">{{ org_data|length }}</div>
+      <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">Celkem organizací</div>
+    </div>
+    <div class="content-card" style="text-align: center; padding: 1.5rem;">
+      <div style="font-size: 2rem; font-weight: 700; color: #10b981;">
+        {% widthratio org_data|length|add:"0" 1 1 %}
+      </div>
+      <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">Aktivních organizací</div>
+    </div>
+  </div>
+
+  <!-- Organizations Table -->
+  <div class="content-card">
+    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1.5rem;">
+      📋 Seznam všech organizací
+    </h3>
+
+    {% if org_data %}
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+              <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #475569; font-size: 0.875rem;">Organizace</th>
+              <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #475569; font-size: 0.875rem;">Vlastník</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600; color: #475569; font-size: 0.875rem;">Projekty</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600; color: #475569; font-size: 0.875rem;">Aktivní</th>
+              <th style="padding: 0.75rem; text-align: center; font-weight: 600; color: #475569; font-size: 0.875rem;">Členů</th>
+              <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #475569; font-size: 0.875rem;">Vytvořeno</th>
+              <th style="padding: 0.75rem; text-align: right; font-weight: 600; color: #475569; font-size: 0.875rem;">Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in org_data %}
+            <tr style="border-bottom: 1px solid #e2e8f0; {% cycle 'background: white;' 'background: #f8fafc;' %}">
+              <td style="padding: 1rem;">
+                <div style="font-weight: 600; color: #1e293b;">{{ data.organization.name }}</div>
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">IČO: {{ data.organization.ico }}</div>
+              </td>
+              <td style="padding: 1rem;">
+                <div style="font-size: 0.875rem; color: #475569;">{{ data.organization.created_by.username }}</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">{{ data.organization.created_by.email }}</div>
+              </td>
+              <td style="padding: 1rem; text-align: center;">
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #eff6ff; color: #3b82f6; border-radius: 12px; font-weight: 600; font-size: 0.875rem;">
+                  {{ data.project_count }}
+                </span>
+              </td>
+              <td style="padding: 1rem; text-align: center;">
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1fae5; color: #059669; border-radius: 12px; font-weight: 600; font-size: 0.875rem;">
+                  {{ data.active_project_count }}
+                </span>
+              </td>
+              <td style="padding: 1rem; text-align: center;">
+                <span style="font-weight: 600; color: #475569; font-size: 0.875rem;">{{ data.member_count }}</span>
+              </td>
+              <td style="padding: 1rem;">
+                <div style="font-size: 0.875rem; color: #475569;">{{ data.organization.created_at|date:"d.m.Y" }}</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">{{ data.organization.created_at|date:"H:i" }}</div>
+              </td>
+              <td style="padding: 1rem; text-align: right;">
+                <a href="{% url 'organization_detail' data.organization.organization_id %}" class="btn btn-sm btn-outline">
+                  Detail
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 8px;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🏢</div>
+        <p style="color: #64748b;">Zatím nejsou žádné organizace</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Actions -->
+  <div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'organization_dashboard' %}" class="btn btn-outline">
+      ← Zpět na dashboard
+    </a>
+  </div>
+
+</div>
+{% endblock %}

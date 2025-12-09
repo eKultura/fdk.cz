@@ -20,7 +20,8 @@
       ⚠️ Máte maximum organizací
     </h3>
     <p style="color: #991b1b; font-size: 0.875rem; line-height: 1.8; margin: 0;">
-      Již máte vytvořenou jednu organizaci. Pro vytvoření další organizace je potřeba VIP účet.
+      Dosáhli jste maximálního počtu organizací ({{ max_orgs }}).
+      V případě potřeby vyššího limitu napište na <a href="mailto:organizace@ekultura.eu" style="text-decoration: underline; font-weight: 600;">organizace@ekultura.eu</a>
       <br>
       <a href="{% url 'organization_dashboard' %}" style="text-decoration: underline; font-weight: 600;">← Zpět na přehled organizací</a>
     </p>
@@ -38,7 +39,7 @@
       <li>Organizace slouží pro sdílení projektů, smluv a dalších dat</li>
       <li>Organizace bude po vytvoření okamžitě aktivní</li>
       {% if existing_orgs_count < max_orgs %}
-      <li><strong>Můžete vytvořit až {{ max_orgs }} organizaci</strong> (máte {{ existing_orgs_count }})</li>
+      <li><strong>Můžete vytvořit až {{ max_orgs }} organizací</strong> (máte {{ existing_orgs_count }})</li>
       {% endif %}
     </ul>
   </div>
