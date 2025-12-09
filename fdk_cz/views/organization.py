@@ -36,8 +36,9 @@ def create_organization(request):
     """Vytvoření nové organizace"""
 
     # Maximální počet organizací pro uživatele
-    # Pro neziskovou organizaci eKultura - rozumný limit
-    max_orgs = 10
+    # Pro neziskovou organizaci eKultura - základní limit 1
+    # Superuser může vytvořit neomezený počet
+    max_orgs = 999 if request.user.is_superuser else 1
 
     # Kontrola limitu organizací pro uživatele
     existing_orgs_count = Organization.objects.filter(created_by=request.user).count()
@@ -275,6 +276,10 @@ def set_current_organization(request, organization_id):
         messages.error(request, 'Nemáte přístup k této organizaci.')
         return redirect('organization_dashboard')
 
+    # CRITICAL: Clear any existing session data first
+    if 'current_organization_id' in request.session:
+        del request.session['current_organization_id']
+
     # Save to session with extra logging
     request.session['current_organization_id'] = organization_id
     request.session.modified = True  # Force session save
@@ -293,8 +298,19 @@ def set_current_organization(request, organization_id):
 
     messages.success(request, f'🏢 Nyní jste v organizaci: {org.name}', extra_tags='persistent')
 
-    # Redirect to organization dashboard to show the context
-    return redirect('organization_dashboard')
+    # Use HttpResponseRedirect with no-cache headers to force full page reload
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse
+
+    redirect_url = reverse('organization_dashboard')
+    response = HttpResponseRedirect(redirect_url)
+
+    # Force no-cache headers to prevent browser/Django caching
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+
+    return response
 
 
 @login_required
@@ -303,6 +319,8 @@ def set_personal_context(request):
     Switch to personal context (remove organization from session).
     """
     import logging
+    from django.http import HttpResponseRedirect
+    from django.urls import reverse
     logger = logging.getLogger(__name__)
 
     # Remove organization from session
@@ -314,8 +332,16 @@ def set_personal_context(request):
     logger.info(f"CONTEXT SWITCH: User {request.user.username} switched to personal context")
     messages.success(request, '👤 Nyní jste v osobním kontextu', extra_tags='persistent')
 
-    # Redirect to dashboard
-    return redirect('dashboard')
+    # Use HttpResponseRedirect with no-cache headers to force full page reload
+    redirect_url = reverse('dashboard')
+    response = HttpResponseRedirect(redirect_url)
+
+    # Force no-cache headers
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+
+    return response
 
 
 @login_required
