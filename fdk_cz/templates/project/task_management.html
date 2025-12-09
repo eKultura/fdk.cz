@@ -57,8 +57,20 @@
                   {{ task.status|default:"Nezahájeno" }}
                 </span>
               </td>
-              <td class="hidden md:table-cell text-gray-600">
-                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              <td class="hidden md:table-cell">
+                {% if task.due_date %}
+                  {% load tz %}
+                  {% now "Y-m-d" as today_str %}
+                  {% if task.due_date|date:"Y-m-d" < today_str and task.status != "Hotovo" %}
+                    <span style="background: #fecaca; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">⚠️ {{ task.due_date|date:"d.m.Y" }}</span>
+                  {% elif task.due_date|date:"Y-m-d" == today_str and task.status != "Hotovo" %}
+                    <span style="background: #fed7aa; color: #9a3412; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">🔔 Dnes!</span>
+                  {% else %}
+                    <span style="color: #64748b;">{{ task.due_date|date:"d.m.Y" }}</span>
+                  {% endif %}
+                {% else %}
+                  <span style="color: #94a3b8;">—</span>
+                {% endif %}
               </td>
             </tr>
             {% endif %}
@@ -113,8 +125,20 @@
                   {{ task.status|default:"Nezahájeno" }}
                 </span>
               </td>
-              <td class="hidden md:table-cell text-gray-600">
-                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              <td class="hidden md:table-cell">
+                {% if task.due_date %}
+                  {% load tz %}
+                  {% now "Y-m-d" as today_str %}
+                  {% if task.due_date|date:"Y-m-d" < today_str and task.status != "Hotovo" %}
+                    <span style="background: #fecaca; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">⚠️ {{ task.due_date|date:"d.m.Y" }}</span>
+                  {% elif task.due_date|date:"Y-m-d" == today_str and task.status != "Hotovo" %}
+                    <span style="background: #fed7aa; color: #9a3412; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">🔔 Dnes!</span>
+                  {% else %}
+                    <span style="color: #64748b;">{{ task.due_date|date:"d.m.Y" }}</span>
+                  {% endif %}
+                {% else %}
+                  <span style="color: #94a3b8;">—</span>
+                {% endif %}
               </td>
             </tr>
             {% endif %}
@@ -165,8 +189,20 @@
                   {{ task.status|default:"Nezahájeno" }}
                 </span>
               </td>
-              <td class="hidden md:table-cell text-gray-600">
-                {{ task.due_date|date:"d.m.Y"|default:"—" }}
+              <td class="hidden md:table-cell">
+                {% if task.due_date %}
+                  {% load tz %}
+                  {% now "Y-m-d" as today_str %}
+                  {% if task.due_date|date:"Y-m-d" < today_str and task.status != "Hotovo" %}
+                    <span style="background: #fecaca; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">⚠️ {{ task.due_date|date:"d.m.Y" }}</span>
+                  {% elif task.due_date|date:"Y-m-d" == today_str and task.status != "Hotovo" %}
+                    <span style="background: #fed7aa; color: #9a3412; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.875rem;">🔔 Dnes!</span>
+                  {% else %}
+                    <span style="color: #64748b;">{{ task.due_date|date:"d.m.Y" }}</span>
+                  {% endif %}
+                {% else %}
+                  <span style="color: #94a3b8;">—</span>
+                {% endif %}
               </td>
             </tr>
             {% endif %}

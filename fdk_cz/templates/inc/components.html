@@ -113,7 +113,15 @@ Usage:
     <span class="badge badge-{{ task.status|slugify }}">{{ task.status }}</span>
 
     {% if task.due_date %}
-      <span class="badge badge-gray">📅 {{ task.due_date|date:'d.m.Y' }}</span>
+      {% load tz %}
+      {% now "Y-m-d" as today_str %}
+      {% if task.due_date|date:"Y-m-d" < today_str and task.status != "Hotovo" %}
+        <span class="badge" style="background: #fecaca; color: #991b1b; font-weight: 600;">⚠️ {{ task.due_date|date:'d.m.Y' }}</span>
+      {% elif task.due_date|date:"Y-m-d" == today_str and task.status != "Hotovo" %}
+        <span class="badge" style="background: #fed7aa; color: #9a3412; font-weight: 600;">🔔 Dnes!</span>
+      {% else %}
+        <span class="badge badge-gray">📅 {{ task.due_date|date:'d.m.Y' }}</span>
+      {% endif %}
     {% endif %}
   </div>
 
