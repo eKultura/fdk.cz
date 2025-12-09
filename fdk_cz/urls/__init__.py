@@ -27,7 +27,7 @@ from fdk_cz.views.grants import (
     application_create, application_detail, application_edit, application_delete, application_list
 )
 
-from fdk_cz.views.index import index, dashboard
+from fdk_cz.views.index import index, dashboard, global_search
 from fdk_cz.views.law import ai_assistant, contract_templates, create_query, law_dashboard, law_detail, law_documents, law_list, query_detail
 from fdk_cz.views.project import (
     all_project_logs, create_category, create_document, create_task, create_milestone,
@@ -136,6 +136,7 @@ urlpatterns = [
 
     path('', index, name='index'),
     path('dashboard', dashboard, name='dashboard'),
+    path('vyhledavani/', global_search, name='global_search'),
 
     # Subscription URLs
     path('predplatne/', subscription.subscription_dashboard, name='subscription_dashboard'),

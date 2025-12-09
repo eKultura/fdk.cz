@@ -472,3 +472,31 @@ def organization_admin(request):
         'org_data': org_data,
     }
     return render(request, 'organization/admin_panel.html', context)
+
+
+@login_required
+def debug_session(request):
+    """DEBUG view to show session data"""
+    import json
+    from django.http import HttpResponse
+    
+    session_data = dict(request.session.items())
+    
+    html = f"""
+    <html>
+    <head><title>Session Debug</title></head>
+    <body style="font-family: monospace; padding: 2rem;">
+        <h1>Session Debug Info</h1>
+        <p><strong>User:</strong> {request.user.username}</p>
+        <p><strong>Session Key:</strong> {request.session.session_key}</p>
+        <p><strong>Session Modified:</strong> {request.session.modified}</p>
+        <h2>Session Data:</h2>
+        <pre>{json.dumps(session_data, indent=2, default=str)}</pre>
+        <h2>Current Org ID:</h2>
+        <pre>{request.session.get('current_organization_id', 'NOT SET')}</pre>
+        <hr>
+        <a href="/organizace/">Back to Organizations</a>
+    </body>
+    </html>
+    """
+    return HttpResponse(html)

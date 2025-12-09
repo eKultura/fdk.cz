@@ -2,11 +2,11 @@
 #                    VIEWS.INDEX.PY
 # -------------------------------------------------------------------
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
-from fdk_cz.models import  Contact, Project, ProjectTask, Test, TestResult, User
+from fdk_cz.models import  Contact, Project, ProjectTask, ProjectDocument, Test, TestResult, User
 from django.shortcuts import render
 
 # -------------------------------------------------------------------
@@ -82,6 +82,49 @@ def dashboard(request):
     })
 
 
+@login_required
+def global_search(request):
+    """
+    Globální vyhledávání napříč projekty, úkoly a dokumenty
+    """
+    query = request.GET.get('q', '').strip()
+
+    # Inicializace prázdných výsledků
+    projects = []
+    tasks = []
+    documents = []
+
+    if query and len(query) >= 2:
+        # Filtr pouze na projekty/úkoly/dokumenty, ke kterým má uživatel přístup
+
+        # Vyhledávání projektů (vlastní nebo je členem)
+        projects = Project.objects.filter(
+            Q(project_users__user=request.user) | Q(owner=request.user)
+        ).filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        ).distinct()[:10]
+
+        # Vyhledávání úkolů (přiřazené nebo v projektech, kde je členem)
+        tasks = ProjectTask.objects.filter(
+            Q(assigned=request.user) | Q(project__project_users__user=request.user)
+        ).filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        ).distinct()[:15]
+
+        # Vyhledávání dokumentů (v projektech, kde je členem)
+        documents = ProjectDocument.objects.filter(
+            Q(project__project_users__user=request.user) | Q(project__owner=request.user)
+        ).filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        ).distinct()[:10]
+
+    return render(request, 'search_results.html', {
+        'query': query,
+        'projects': projects,
+        'tasks': tasks,
+        'documents': documents,
+        'total_results': len(projects) + len(tasks) + len(documents),
+    })
 
 
 
