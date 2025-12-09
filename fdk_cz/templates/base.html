@@ -298,6 +298,26 @@
     });
   </script>
 
+  <!-- Global Search Handler -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+
+    if (searchInput) {
+      // Handle Enter key press
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const query = searchInput.value.trim();
+          if (query.length >= 2) {
+            window.location.href = '{% url "global_search" %}?q=' + encodeURIComponent(query);
+          }
+        }
+      });
+    }
+  });
+  </script>
+
   <!-- Command Palette -->
   {% if user.is_authenticated %}
     {% include 'inc/command_palette.html' %}
