@@ -82,9 +82,18 @@ def initialize_project_forms(post_data=None):
     
 
 class task_form(forms.ModelForm):
+    # Pole pro výběr nadřazeného úkolu (pro vytvoření podúkolu)
+    parent_task = forms.ModelChoiceField(
+        queryset=ProjectTask.objects.none(),
+        required=False,
+        empty_label="--- Hlavní úkol (bez nadřazeného) ---",
+        label="Podúkol k úkolu",
+        help_text="Pokud chcete vytvořit podúkol, vyberte nadřazený úkol"
+    )
+
     class Meta:
         model = ProjectTask
-        fields = ['title', 'description', 'category', 'priority', 'status', 'due_date', 'assigned']
+        fields = ['title', 'description', 'category', 'priority', 'status', 'due_date', 'assigned', 'parent']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Název úkolu'}),
             'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Popis úkolu'}),
@@ -92,10 +101,12 @@ class task_form(forms.ModelForm):
             'status': forms.Select(attrs={}),
             'due_date': forms.DateInput(attrs={'type': 'date'}),
             'assigned': forms.Select(attrs={}),
+            'parent': forms.HiddenInput(),  # Skryté pole, nastavuje se z parent_task
         }
 
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
+        parent_task_id = kwargs.pop('parent_task_id', None)  # Pro přímé vytvoření podúkolu
         super().__init__(*args, **kwargs)
 
         # Kategorie podle projektu
@@ -107,6 +118,25 @@ class task_form(forms.ModelForm):
             from fdk_cz.models import ProjectUser
             project_members = User.objects.filter(user_projects__project=project).distinct()
             self.fields['assigned'].queryset = project_members
+
+            # Filtrovat parent_task na úkoly stejného projektu (POUZE hlavní úkoly, ne podúkoly)
+            main_tasks = ProjectTask.objects.filter(
+                project=project,
+                parent__isnull=True,  # Pouze hlavní úkoly
+                deleted=False
+            ).order_by('title')
+            self.fields['parent_task'].queryset = main_tasks
+
+            # Pokud vytváříme podúkol k specifickému úkolu
+            if parent_task_id:
+                try:
+                    parent_task = ProjectTask.objects.get(task_id=parent_task_id, project=project)
+                    self.initial['parent'] = parent_task
+                    self.initial['parent_task'] = parent_task
+                    # Zakázat změnu parent, protože je to explicitní podúkol
+                    self.fields['parent_task'].disabled = True
+                except ProjectTask.DoesNotExist:
+                    pass
         else:
             self.fields['category'].queryset = ProjectCategory.objects.none()
             self.fields['category'].required = False
@@ -115,6 +145,14 @@ class task_form(forms.ModelForm):
         self.fields['category'].empty_label = "Vyberte kategorii"
         self.fields['assigned'].required = False
         self.fields['assigned'].empty_label = "Nepřiřazeno"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        parent_task = cleaned_data.get('parent_task')
+        # Pokud uživatel vybral parent_task, nastav ho jako parent
+        if parent_task:
+            cleaned_data['parent'] = parent_task
+        return cleaned_data
 
 
 

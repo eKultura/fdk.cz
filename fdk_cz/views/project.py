@@ -466,8 +466,19 @@ def create_task(request, project_id):
 @login_required
 def create_task(request, project_id):
     proj = get_object_or_404(Project, pk=project_id)
+
+    # Podpora pro vytvoření podúkolu - parametr parent_task_id v URL
+    parent_task_id = request.GET.get('parent_task_id')
+    parent_task = None
+    if parent_task_id:
+        try:
+            parent_task = ProjectTask.objects.get(task_id=parent_task_id, project=proj)
+        except ProjectTask.DoesNotExist:
+            messages.error(request, 'Nadřazený úkol nenalezen.')
+            parent_task_id = None
+
     if request.method == 'POST':
-        form = task_form(request.POST, project=proj)
+        form = task_form(request.POST, project=proj, parent_task_id=parent_task_id)
         if form.is_valid():
             task = form.save(commit=False)
             task.project = proj
@@ -485,12 +496,25 @@ def create_task(request, project_id):
                     assigned_by=request.user
                 )
 
-            messages.success(request, f"Úkol '{task.title}' byl vytvořen{' a přiřazen uživateli ' + task.assigned.username if task.assigned else ''}.")
-            return redirect('detail_project', project_id=project_id)
-    else:
-        form = task_form(project=proj)
+            task_type = "Podúkol" if task.parent else "Úkol"
+            parent_info = f" k úkolu '{task.parent.title}'" if task.parent else ""
+            messages.success(request, f"{task_type} '{task.title}' byl vytvořen{parent_info}{' a přiřazen uživateli ' + task.assigned.username if task.assigned else ''}.")
 
-    return render(request, 'project/create_task.html', {'form': form, 'project': proj})
+            # Pokud je to podúkol, vrať se na detail nadřazeného úkolu
+            if task.parent:
+                return redirect('detail_task', task_id=task.parent.task_id)
+            else:
+                return redirect('detail_project', project_id=project_id)
+    else:
+        form = task_form(project=proj, parent_task_id=parent_task_id)
+
+    context = {
+        'form': form,
+        'project': proj,
+        'parent_task': parent_task,
+        'is_subtask': parent_task is not None
+    }
+    return render(request, 'project/create_task.html', context)
 
 
 
@@ -501,6 +525,12 @@ def detail_task(request, task_id):
     task_obj = get_object_or_404(ProjectTask, pk=task_id)
     project = task_obj.project
     comments = task_obj.comments.order_by('-posted')  # Načte komentáře pro úkol
+
+    # Načtení podúkolů (subtasks)
+    subtasks = ProjectTask.objects.filter(
+        parent=task_obj,
+        deleted=False
+    ).order_by('created')
 
     if request.method == 'POST' and 'comment' in request.POST:
         new_comment = ProjectComment()
@@ -517,6 +547,8 @@ def detail_task(request, task_id):
         'task': task_obj,
         'project': project,
         'comments': comments,
+        'subtasks': subtasks,  # Podúkoly
+        'has_subtasks': subtasks.exists(),
         'today': date.today()
     })
 
